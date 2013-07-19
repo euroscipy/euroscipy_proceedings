@@ -25,7 +25,7 @@ proc_dict = dict(config.items() +
                 {'pdf': 'pdfs/proceedings.pdf'}.items() +
                 {'bibtex': 'bib/' + citation_key}.items())
 
-for dest_fn in ['index', 'organization', 'students']:
+for dest_fn in ['index', 'organization']:
     html_from_tmpl(dest_fn+'.html', proc_dict, dest_fn)
 
 for article in config['toc']:

@@ -28,9 +28,8 @@ $(TEXDIR)/%.pdf: $(TEXDIR)/%.tex
 title-pdf: $(TEXDIR)/title.pdf
 copyright-pdf: $(TEXDIR)/copyright.pdf
 organization-pdf: $(TEXDIR)/organization.pdf
-students-pdf: $(TEXDIR)/students.pdf
 
-front-pdf: title-pdf copyright-pdf organization-pdf students-pdf
+front-pdf: title-pdf copyright-pdf organization-pdf
 
 papers:
 	./build_papers.py
