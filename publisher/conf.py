@@ -16,7 +16,7 @@ pdf_dir       = os.path.join(build_dir, 'pdfs')
 html_dir      = os.path.join(build_dir, 'html')
 bib_dir       = os.path.join(html_dir, 'bib')
 toc_conf      = os.path.join(build_dir, 'toc.json')
-proc_conf     = os.path.join(work_dir,'../scipy_proc.json')
+proc_conf     = os.path.join(work_dir,'../euroscipy_proc.json')
 
 if os.path.isfile(toc_list):
     with open(toc_list) as f:

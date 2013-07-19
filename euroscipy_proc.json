@@ -1,0 +1,132 @@
+{
+  "proceedings": {
+     "citation_key": "proc-euroscipy-2013",
+     "title": {
+       "acronym": "EuroSciPy",
+       "conference": "European Conference on Python in Science",
+       "ordinal": "6th",
+       "short": "PROC. OF THE 6th EUR. CONF ON PYTHON IN SCIENCE. (EUROSCIPY 2013)",
+       "full": "Proceedings of the 6th European Conference on Python in Science"
+     },
+     "year": "2013",
+     "editor": [
+        "Pierre de Buyl",
+        "Nelle Varoquaux"
+     ],
+     "volume": 6,
+     "number": 1,
+     "isbn": "value",
+     "location": "Brussels, Belgium",
+     "dates": "21 August - 25 August",
+     "copyright": {
+       "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+       "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors",
+                       "This is an open-access publication and is distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+                       "For more information, please see:  http://creativecommons.org/licenses/by/3.0/"],
+       "license": "Creative Commons Attribution License (CCAL)"}
+  },
+  "organization": [
+
+        {
+            "name": "Conference Chairs",
+            "members": [
+                {"name": "Pierre de Buyl",
+                 "org": "Université libre de Bruxelles"},
+                {"name": "Jonathan Rocher",
+                 "org": "Université libre de Bruxelles"}
+                ]
+        },
+ 
+        {
+            "name": "Program Committee Chair",
+            "members": [
+                {"name": "Tiziano Zito",
+                 "org": "Humboldt-Universität zu Berlin"}
+                ]
+        },
+
+        {
+            "name": "Tutorial Chairs",
+            "members": [
+                {"name": "Nicolas Rougier",
+                 "org": "Inria Nancy"}
+                ]
+        },
+
+        {
+            "name": "Program Committee",
+            "members": [
+                {"name": "Aron Ahmadia",
+                 "org": ""},
+                {"name": "Tom Aldcroft",
+                 "org": ""},
+                {"name": "Chris Barker",
+                 "org": ""},
+                {"name": "Nathan Bell",
+                 "org": ""},
+                {"name": "Joshua Bloom",
+                 "org": ""},
+                {"name": "Matthew Brett",
+                 "org": ""},
+                {"name": "Brad Chapman",
+                 "org": ""},
+                {"name": "Matt Davis",
+                 "org": ""},
+                {"name": "Daniel Dye",
+                 "org": ""},
+                {"name": "Satrajit Ghosh",
+                 "org": ""},
+                {"name": "Perry Greenfield",
+                 "org": ""},
+                {"name": "Kelsey Jordahl",
+                 "org": ""},
+                {"name": "Matthew Knepley",
+                 "org": ""},
+                {"name": "Jessica Lu",
+                 "org": ""},
+                {"name": "Hilary Mason",
+                 "org": ""},
+                {"name": "Mike McKerns",
+                 "org": ""},
+                {"name": "Zain Memon",
+                 "org": ""},
+                {"name": "Aronne Merrelli",
+                 "org": ""},
+                {"name": "Shelia Miguez",
+                 "org": ""},
+                {"name": "August Muench",
+                 "org": ""},
+                {"name": "Cait Pickens",
+                 "org": ""},
+                {"name": "Serge Rey",
+                 "org": ""},
+                {"name": "Tom Robitaille",
+                 "org": ""},
+                {"name": "Dan Schult",
+                 "org": ""},
+                {"name": "Rich Signell",
+                 "org": ""},
+                {"name": "William Spotz",
+                 "org": ""},
+                {"name": "Matt Terry",
+                 "org": ""},
+                {"name": "Erik Tollerud ",
+                 "org": ""},
+                {"name": "James Turner",
+                 "org": ""},
+                {"name": "Geraldine van der Auwera",
+                 "org": ""},
+                {"name": "Jake van der Plas",
+                 "org": ""},
+                {"name": "Gael Varoquax",
+                 "org": ""},
+                {"name": "Peter Wang",
+                 "org": ""},
+                {"name": "Andrew Wilson",
+                 "org": ""}
+            ]
+        }
+
+
+    ]
+}
