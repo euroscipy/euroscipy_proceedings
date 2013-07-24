@@ -1,10 +1,10 @@
 {
 
-  "conference": "SciPy 2011",
-  "year": "2011",
+  "conference": "EuroSciPy 2013",
+  "year": "2013",
   "due": "April 29, 2012",
-  "download": "http://jarrodmillman.com/scipy2011",
-  "editors": "Stefan van der Walt and Jarrod Millman",
+  "download": "http://www.euroscipy.org/",
+  "editors": "Pierre de Buyl and Nelle Varoquaux",
   "sender": {
      "login": "jarrod.millman",
      "name": "Jarrod Millman <jarrod.millman+scipy2011@gmail.com>",
