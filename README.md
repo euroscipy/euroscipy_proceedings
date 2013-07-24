@@ -9,7 +9,7 @@ Papers are formatted using reStructuredText and the compiled version should be
 no longer than 7 pages, including figures.  Here are the steps to produce a
 paper:
 
-- Fork the `scipy_proceedings <https://github.com/euroscipy/scipy_proceedings>`__
+- Fork the [scipy_proceedings](https://github.com/euroscipy/scipy_proceedings)
   repository on GitHub.
 
 - An example paper is provided in ``papers/00_vanderwalt``.  Create a new
@@ -49,8 +49,9 @@ examples of how to:
 
 Requirements
 ------------
- - IEEETran (often packaged as ``texlive-publishers``, or download from `CTAN
-   <http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/>`__) LaTeX
+
+ - IEEETran (often packaged as ``texlive-publishers``, or download from
+   [CTAN](http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/) LaTeX
    class
  - AMSmath LaTeX classes (included in most LaTeX distributions)
  - `docutils` 0.8 or later (``easy_install docutils``)
