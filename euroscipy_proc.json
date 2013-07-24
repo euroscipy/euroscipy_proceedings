@@ -63,7 +63,7 @@
 		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
 		 "org": "France"},
 		{"name": "Kael Hanson",
-		 "org": "Université Libre de Bruxelles"},
+		 "org": "Université libre de Bruxelles"},
 		{"name": "Konrad Hinsen",
 		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
 		{"name": "Hans Petter Langtangen",
@@ -81,8 +81,31 @@
 		{"name": "Pauli Virtanen",
 		 "org": "Aalto University"}
 	    ]
-        }
+        },
 
+        {
+            "name": "Organizing Committee",
+            "members": [
+		{"name": "Nicolas Chauvat",
+		 "org": "Logilab"},
+		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
+		 "org": "France"},
+		{"name": "Kael Hanson",
+		 "org": "Université libre de Bruxelles"},
+		{"name": "Renaud Lambiotte",
+		 "org": "University of Namur"},
+		{"name": "Thomas Lecocq",
+		 "org": "Royal Observatory of Belgium"},
+		{"name": "Mike Müller",
+		 "org": "Python Academy"},
+		{"name": "Didrik Pinte",
+		 "org": "Enthought Europe"},
+		{"name": "Gaël Varoquaux",
+		 "org": "INRIA Parietal"},
+		{"name": "Nelle Varoquaux",
+		 "org": "Mines ParisTech"}
+		]
+	}
 
     ]
 }
