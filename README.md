@@ -21,8 +21,6 @@ paper:
   ``output/firstname_surname/paper.pdf``.
 
 - Once you are ready to submit your paper, file a pull request on GitHub.
-  **Please ensure that you file against the correct branch**--your branch should
-  be named master, and the pull-request should be against our master branch.
 
 - Please do not modify any files outside of your paper directory.
 
