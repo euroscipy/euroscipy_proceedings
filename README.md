@@ -27,6 +27,13 @@ paper:
 Pull requests are to be submitted by **September 30th**, but modifications are
 allowed during the review period.
 
+The articles in the Proceedings remain copyrighted and owned by their original
+authors. By submitting, the authors agree to publish their contribution under
+the terms of the Creative Commons Attribution License, which permits
+unrestricted use, distribution, and reproduction in any medium, provided the
+original author and source are credited. For more information, please see:
+http://creativecommons.org/licenses/by/3.0/
+
 General Guidelines
 ------------------
 - All figures and tables should have captions.
