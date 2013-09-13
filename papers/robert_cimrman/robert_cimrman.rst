@@ -1,0 +1,362 @@
+:author: Robert Cimrman
+:email: cimrman3@ntc.zcu.cz
+:institution: New Technologies Research Centre, University of West Bohemia,
+              Plzeň, Czech Republic
+
+-------------------------------------
+SfePy - Write Your Own FE Application
+-------------------------------------
+
+.. class:: abstract
+
+   SfePy (Simple Finite Elements in Python) is a framework for solving various
+   kinds of problems (mechanics, physics, biology, ...) described by partial
+   differential equations in two or three space dimensions by the finite
+   element method. The paper illustrates its use in an interactive environment
+   or as a framework for building custom finite-element based solvers.
+
+.. class:: keywords
+
+   partial differential equations, finite element method, Python
+
+Introduction
+------------
+
+SfePy (Simple Finite Elements in Python) is a multi-platform (Linux, Mac OS X,
+Windows) software released under the New BSD license, see http://sfepy.org. It
+implements one of the standard ways of discretizing partial differential
+equations (PDEs) which is the finite element method (FEM). The software can be
+used as a
+
+- collection of modules (a library) for building custom or domain-specific
+  applications,
+- highly configurable "black box" PDE solver with problem description files in
+  Python.
+
+In this paper we focus on illustrating the former use by using a particular
+example. All examples presented below were tested to work with the version
+2013.3 of SfePy.
+
+Short Description
+-----------------
+
+The code is written mostly in Python. For speed in general, it relies on fast
+vectorized operations provided by NumPy arrays, with heavy use of advanced
+broadcasting and "index tricks" features. C and Cython are used in places where
+vectorization is not possible, or is too difficult/unreadable. Other components
+of the scientific Python software stack are used as well, among others: SciPy
+solvers and algorithms, Matplotlib for 2D plots, Mayavi for 3D plots and simple
+postprocessing GUI, IPython for a customized shell, SymPy for symbolic
+operations/code generation etc.
+
+The basic structure of the code allows flexible definition of various
+problems. The problems are defined using components directly corresponding to
+mathematical counterparts of a weak formulation in the finite element setting:
+solution domain and its sub-domains (regions), variables from various discrete
+function spaces, equations as sums of terms (weak form integrals), various
+kinds of boundary conditions, material/constitutive parameters etc.
+
+The key notion in SfePy is a *term*, which is the smallest unit that can be
+used to build *equations*. It corresponds to a weak formulation integral and
+takes usually several arguments: optional material parameters, a single virtual
+(or test) function variable and zero or more state (or unknown) variables. The
+available terms are listed at our web site
+(http://sfepy.org/doc-devel/terms_overview.html). The already existing terms
+allow to solve problems from many scientific domains, see Figure
+:ref:`gallery`.
+
+Thermoelasticity Example: Code
+------------------------------
+
+This example involves calculating a **temperature distribution** in an object
+followed by an **elastic deformation analysis** of the object loaded by the
+thermal expansion and boundary displacement constraints. It shows how to use
+SfePy in a script/interactively. Explanation of the code is in the next
+Section.
+
+.. code-block:: python
+   :linenos:
+
+    import numpy as np
+
+    from sfepy.fem import (Mesh, Domain, Field,
+                           FieldVariable,
+                           Material, Integral,
+                           Equation, Equations,
+                           ProblemDefinition)
+    from sfepy.terms import Term
+    from sfepy.fem.conditions import Conditions, EssentialBC
+    from sfepy.solvers.ls import ScipyDirect
+    from sfepy.solvers.nls import Newton
+    from sfepy.postprocess import Viewer
+
+    mesh = Mesh.from_file('meshes/2d/square_tri2.mesh')
+    domain = Domain('domain', mesh)
+
+    omega = domain.create_region('Omega', 'all')
+    left = domain.create_region('Left',
+                                'vertices in x < -0.999',
+                                'facet')
+    right = domain.create_region('Right',
+                                 'vertices in x > 0.999',
+                                 'facet')
+    bottom = domain.create_region('Bottom',
+                                  'vertices in y < -0.999',
+                                  'facet')
+    top = domain.create_region('Top',
+                               'vertices in y > 0.999',
+                               'facet')
+
+    domain.save_regions_as_groups('regions.vtk')
+
+    field_t = Field.from_args('temperature', np.float64,
+                              'scalar', omega, 2)
+    t = FieldVariable('t', 'unknown', field_t, 1)
+    s = FieldVariable('s', 'test', field_t, 1,
+                      primary_var_name='t')
+
+    integral = Integral('i', order=2)
+
+    term = Term.new('dw_laplace(s, t)', integral, omega,
+                    s=s, t=t)
+    eq = Equation('temperature', term)
+    eqs = Equations([eq])
+
+    t_left = EssentialBC('t_left',
+                         left, {'t.0' : 10.0})
+    t_right = EssentialBC('t_right',
+                          right, {'t.0' : 30.0})
+
+    ls = ScipyDirect({})
+    nls = Newton({}, lin_solver=ls)
+
+    pb = ProblemDefinition('temperature', equations=eqs,
+                           nls=nls, ls=ls)
+    pb.time_update(ebcs=Conditions([t_left, t_right]))
+
+    temperature = pb.solve()
+    out = temperature.create_output_dict()
+
+    field_u = Field.from_args('displacement', np.float64,
+                              'vector', omega, 1)
+    u = FieldVariable('u', 'unknown', field_u, mesh.dim)
+    v = FieldVariable('v', 'test', field_u, mesh.dim,
+                      primary_var_name='u')
+
+    lam = 10.0 # Lame parameters.
+    mu = 5.0
+    te = 0.5 # Thermal expansion coefficient.
+    T0 = 20.0 # Background temperature.
+    eye_sym = np.array([[1], [1], [0]],
+                       dtype=np.float64)
+    m = Material('m', lam=lam, mu=mu,
+                 alpha=te * eye_sym)
+
+    t2 = FieldVariable('t', 'parameter', field_t, 1,
+                       primary_var_name='(set-to-None)')
+    t2.set_data(t() - T0)
+
+    term1 = Term.new('dw_lin_elastic_iso(m.lam, m.mu, v, u)',
+                     integral, omega, m=m, v=v, u=u)
+    term2 = Term.new('dw_biot(m.alpha, v, t)',
+                     integral, omega, m=m, v=v, t=t2)
+    eq = Equation('temperature', term1 - term2)
+    eqs = Equations([eq])
+
+    u_bottom = EssentialBC('u_bottom',
+                           bottom, {'u.all' : 0.0})
+    u_top = EssentialBC('u_top',
+                        top, {'u.[0]' : 0.0})
+
+    pb.set_equations_instance(eqs, keep_solvers=True)
+    pb.time_update(ebcs=Conditions([u_bottom, u_top]))
+
+    displacement = pb.solve()
+    out.update(displacement.create_output_dict())
+
+    pb.save_state('thermoelasticity.vtk', out=out)
+
+    view = Viewer('thermoelasticity.vtk')
+    view(vector_mode='warp_norm',
+         rel_scaling=1, is_scalar_bar=True,
+         is_wireframe=True,
+         opacity={'wireframe' : 0.1})
+
+Results
+```````
+
+The above script saves results into ``'thermoelasticity.vtk'`` file and also
+displays the results using Mayavi. The results are shown in Figures
+:ref:`temperature` and :ref:`displacement`.
+
+.. figure:: temperature.png
+   :scale: 20%
+   :figclass: h
+
+   The temperature distribution. :label:`temperature`
+
+.. figure:: displacement.png
+   :scale: 20%
+   :figclass: h
+
+   The deformed mesh showing displacements. :label:`displacement`
+
+Thermoelasticity Example: Description
+-------------------------------------
+
+The bold numbers in parentheses refer to the line numbers above.
+
+#. **(1-12)** Import modules. The SfePy package is organized
+   into several sub-packages. The example uses:
+
+   - ``sfepy.fem``: the finite element method (FEM) modules
+   - ``sfepy.terms``: the weak formulation terms - equations building
+     blocks
+   - ``sfepy.solvers``: interfaces to various solvers (SciPy, PETSc,
+     \dots)
+   - ``sfepy.postprocess``: post-processing \& visualization based on
+     Mayavi
+
+#. **(14-15)** Load a mesh file defining the object geometry.
+#. **(17-29)** Define solution and boundary conditions domains, called regions.
+#. **(31)** Save regions for visualization.
+#. **(33-37)** Use a quadratic approximation for temperature field, define
+   unknown $T$ and test $s$ variables.
+#. **(39)** Define numerical quadrature -- approximate integration rule.
+#. **(41-44)** Define the Laplace equation governing temperature distribution:
+
+   .. math::
+
+      \int_{\Omega} \nabla s \cdot \nabla T = 0 \;, \quad \forall s \;.
+
+#. **(46-49)** Set boundary conditions for temperature: :math:`T = 10 \mbox{ on
+   } \Gamma_{\rm left}`, :math:`T = 30 \mbox{ on } \Gamma_{\rm right}`.
+#. **(51-52)** Create linear (ScipyDirect) and nonlinear solvers (Newton).
+#. **(54-56)** Combine the equations, boundary conditions and solvers to form a
+   full problem definition.
+#. **(58-59)** Solve the temperature distribution problem to get :math:`T`.
+#. **(61-65)** Use a linear approximation for displacement field, define
+   unknown :math:`\underline{u}` and test :math:`\underline{v}` variables. The
+   variables are vectors with two components in any point, as we are solving on
+   a 2D domain.
+#. **(67-74)** Set Lamé parameters of elasticity :math:`\lambda`, :math:`\mu`,
+   thermal expansion coefficient :math:`\alpha_{ij}` and background temperature
+   :math:`T_0`. Constant values are used here. In general, material parameters
+   can be given as functions of space and time.
+#. **(76-78)** Define and set the temperature load variable to :math:`T - T_0`.
+#. **(80-85)** Define the thermoelasticity equation governing structure
+   deformation:
+
+   .. math::
+
+      \int_{\Omega} D_{ijkl}\ e_{ij}(\underline{v}) e_{kl}(\underline{u}) -
+      \int_{\Omega} (T - T_0)\ \alpha_{ij} e_{ij}(\underline{v}) = 0 \;, \quad
+      \forall \underline{v} \;,
+
+   where :math:`D_{ijkl} = \mu (\delta_{ik} \delta_{jl}+\delta_{il}
+   \delta_{jk}) + \lambda \ \delta_{ij} \delta_{kl}` is the homogeneous
+   isotropic elasticity tensor and :math:`e_{ij}(\underline{u}) =
+   \frac{1}{2}(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial
+   x_i})` is the small strain tensor. The equation can be built as a linear
+   combination of terms.
+#. **(87-90)** Set boundary conditions for displacements: :math:`\underline{u}
+   = 0 \mbox{ on } \Gamma_{\rm bottom}`, :math:`u_1 = 0.0 \mbox{ on }
+   \Gamma_{\rm top}` (:math:`x` -component).
+#. **(92-93)** Set the thermoelasticity equations and boundary conditions to
+   the problem definition.
+#. **(95-96)** Solve the thermoelasticity problem to get :math:`\underline{u}`.
+#. **(98)** Save the solution of both problems into a single VTK file.
+#. **(100-104)** Display the solution using Mayavi.
+
+Alternative Way: Problem Description Files
+------------------------------------------
+
+Problem description files (PDF) are Python modules (files) containing
+definitions of the various components (mesh, regions, fields, equations, ...)
+using mostly ``dict`` and ``tuple``. For simple problems, no programming at all
+is required. On the other hand, all the power of Python (and supporting SfePy
+modules) is available when needed. The definitions are used to construct and
+initialize in an automatic way the corresponding objects, similarly to what was
+presented in the example above, and the problem is solved. The main script for
+running simulation described in a PDF is called ``simple.py``.
+
+Example: Temperature Distribution
+`````````````````````````````````
+
+This example defines the problem of temperature distribution on a 2D
+rectangular domain. It directly corresponds to the temperature part of the
+thermoelasticity example, only for the sake of completeness a definition of
+material coefficient is shown as well.
+
+.. code-block:: python
+
+    from sfepy import data_dir
+    filename_mesh = data_dir + '/meshes/2d/square_tri2.mesh'
+
+    materials = {
+        'coef' : ({'val' : 1.0},),
+    }
+
+    regions = {
+        'Omega' : 'all',
+        'Left' : ('vertices in (x < -0.999)', 'facet'),
+        'Right' : ('vertices in (x > 0.999)', 'facet'),
+    }
+
+    fields = {
+        'temperature' : ('real', 1, 'Omega', 2),
+    }
+
+    variables = {
+        't' : ('unknown field', 'temperature', 0),
+        's' : ('test field',    'temperature', 't'),
+    }
+
+    ebcs = {
+        't_left' : ('Left', {'t.0' : 10.0}),
+        't_right' : ('Right', {'t.0' : 30.0}),
+    }
+
+    integrals = {
+        'i1' : ('v', 2),
+    }
+
+    equations = {
+        'eq' : 'dw_laplace.i1.Omega(coef.val, s, t) = 0'
+    }
+
+    solvers = {
+        'ls' : ('ls.scipy_direct', {}),
+        'newton' : ('nls.newton',
+                    {'i_max'      : 1,
+                     'eps_a'      : 1e-10,
+        }),
+    }
+
+    options = {
+        'nls' : 'newton',
+        'ls' : 'ls',
+    }
+
+Many more examples can be found at http://docs.sfepy.org/gallery/gallery or
+http://sfepy.org/doc-devel/examples.html.
+
+.. figure:: gallery.png
+   :align: center
+   :scale: 90%
+   :figclass: w
+
+   Gallery of applications. Perfusion and acoustic images by Vladimír
+   Lukeš. :label:`gallery`
+
+Conclusion
+----------
+
+We introduced the open source finite element package SfePy as a tool for
+building domain-specific FE-based solvers as well as a black-box PDE solver.
+
+Support
+```````
+
+Work on SfePy is partially supported by the Grant Agency of the Czech Republic,
+project P108/11/0853.
