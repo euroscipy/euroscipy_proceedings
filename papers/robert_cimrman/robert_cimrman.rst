@@ -51,16 +51,17 @@ operations/code generation etc.
 
 The basic structure of the code allows flexible definition of various
 problems. The problems are defined using components directly corresponding to
-mathematical counterparts of a weak formulation in the finite element setting:
-solution domain and its sub-domains (regions), variables from various discrete
-function spaces, equations as sums of terms (weak form integrals), various
-kinds of boundary conditions, material/constitutive parameters etc.
+mathematical counterparts present in a weak formulation of a problem in the
+finite element setting: a solution domain and its sub-domains (regions),
+variables belonging to suitable discrete function spaces, equations as sums
+of terms (weak form integrals), various kinds of boundary conditions,
+material/constitutive parameters etc.
 
 The key notion in SfePy is a *term*, which is the smallest unit that can be
 used to build *equations*. It corresponds to a weak formulation integral and
-takes usually several arguments: optional material parameters, a single virtual
-(or test) function variable and zero or more state (or unknown) variables. The
-available terms are listed at our web site
+takes usually several arguments: (optional) material parameters, a single
+virtual (or test) function variable and zero or more state (or unknown)
+variables. The available terms are listed at our web site
 (http://sfepy.org/doc-devel/terms_overview.html). The already existing terms
 allow to solve problems from many scientific domains, see Figure
 :ref:`gallery`.
@@ -71,8 +72,7 @@ Thermoelasticity Example: Code
 This example involves calculating a **temperature distribution** in an object
 followed by an **elastic deformation analysis** of the object loaded by the
 thermal expansion and boundary displacement constraints. It shows how to use
-SfePy in a script/interactively. Explanation of the code is in the next
-Section.
+SfePy in a script/interactively. The code is explained in the next Section.
 
 .. code-block:: python
    :linenos:
@@ -185,7 +185,8 @@ Section.
 Results
 ```````
 
-The above script saves results into ``'thermoelasticity.vtk'`` file and also
+The above script saves the domain geometry as well as the temperature and
+displacement fields into a VTK file called ``'thermoelasticity.vtk'`` and also
 displays the results using Mayavi. The results are shown in Figures
 :ref:`temperature` and :ref:`displacement`.
 
@@ -212,8 +213,7 @@ The bold numbers in parentheses refer to the line numbers above.
    - ``sfepy.fem``: the finite element method (FEM) modules
    - ``sfepy.terms``: the weak formulation terms - equations building
      blocks
-   - ``sfepy.solvers``: interfaces to various solvers (SciPy, PETSc,
-     \dots)
+   - ``sfepy.solvers``: interfaces to various solvers (SciPy, PETSc, ...)
    - ``sfepy.postprocess``: post-processing \& visualization based on
      Mayavi
 
@@ -221,16 +221,18 @@ The bold numbers in parentheses refer to the line numbers above.
 #. **(17-29)** Define solution and boundary conditions domains, called regions.
 #. **(31)** Save regions for visualization.
 #. **(33-37)** Use a quadratic approximation for temperature field, define
-   unknown $T$ and test $s$ variables.
-#. **(39)** Define numerical quadrature -- approximate integration rule.
-#. **(41-44)** Define the Laplace equation governing temperature distribution:
+   unknown :math:`T` and test :math:`s` variables.
+#. **(39)** Define numerical quadrature for the approximate integration rule.
+#. **(41-44)** Define the Laplace equation governing the temperature
+   distribution:
 
    .. math::
 
       \int_{\Omega} \nabla s \cdot \nabla T = 0 \;, \quad \forall s \;.
 
-#. **(46-49)** Set boundary conditions for temperature: :math:`T = 10 \mbox{ on
-   } \Gamma_{\rm left}`, :math:`T = 30 \mbox{ on } \Gamma_{\rm right}`.
+#. **(46-49)** Set boundary conditions for the temperature: :math:`T = 10
+   \mbox{ on } \Gamma_{\rm left}`, :math:`T = 30 \mbox{ on } \Gamma_{\rm
+   right}`.
 #. **(51-52)** Create linear (ScipyDirect) and nonlinear solvers (Newton).
 #. **(54-56)** Combine the equations, boundary conditions and solvers to form a
    full problem definition.
@@ -257,11 +259,11 @@ The bold numbers in parentheses refer to the line numbers above.
    \delta_{jk}) + \lambda \ \delta_{ij} \delta_{kl}` is the homogeneous
    isotropic elasticity tensor and :math:`e_{ij}(\underline{u}) =
    \frac{1}{2}(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial
-   x_i})` is the small strain tensor. The equation can be built as a linear
-   combination of terms.
-#. **(87-90)** Set boundary conditions for displacements: :math:`\underline{u}
-   = 0 \mbox{ on } \Gamma_{\rm bottom}`, :math:`u_1 = 0.0 \mbox{ on }
-   \Gamma_{\rm top}` (:math:`x` -component).
+   x_i})` is the small strain tensor. The equations can be built as linear
+   combinations of terms.
+#. **(87-90)** Set boundary conditions for the displacements:
+   :math:`\underline{u} = 0 \mbox{ on } \Gamma_{\rm bottom}`, :math:`u_1 = 0.0
+   \mbox{ on } \Gamma_{\rm top}` (:math:`x` -component).
 #. **(92-93)** Set the thermoelasticity equations and boundary conditions to
    the problem definition.
 #. **(95-96)** Solve the thermoelasticity problem to get :math:`\underline{u}`.
@@ -271,14 +273,14 @@ The bold numbers in parentheses refer to the line numbers above.
 Alternative Way: Problem Description Files
 ------------------------------------------
 
-Problem description files (PDF) are Python modules (files) containing
-definitions of the various components (mesh, regions, fields, equations, ...)
-using mostly ``dict`` and ``tuple``. For simple problems, no programming at all
-is required. On the other hand, all the power of Python (and supporting SfePy
-modules) is available when needed. The definitions are used to construct and
-initialize in an automatic way the corresponding objects, similarly to what was
-presented in the example above, and the problem is solved. The main script for
-running simulation described in a PDF is called ``simple.py``.
+Problem description files (PDF) are Python modules containing definitions of
+the various components (mesh, regions, fields, equations, ...)  using basic
+data types such as ``dict`` and ``tuple``. For simple problems, no programming
+at all is required. On the other hand, all the power of Python (and supporting
+SfePy modules) is available when needed. The definitions are used to construct
+and initialize in an automatic way the corresponding objects, similarly to what
+was presented in the example above, and the problem is solved. The main script
+for running a simulation described in a PDF is called ``simple.py``.
 
 Example: Temperature Distribution
 `````````````````````````````````
@@ -286,7 +288,7 @@ Example: Temperature Distribution
 This example defines the problem of temperature distribution on a 2D
 rectangular domain. It directly corresponds to the temperature part of the
 thermoelasticity example, only for the sake of completeness a definition of
-material coefficient is shown as well.
+a material coefficient is shown as well.
 
 .. code-block:: python
 
@@ -352,8 +354,9 @@ http://sfepy.org/doc-devel/examples.html.
 Conclusion
 ----------
 
-We introduced the open source finite element package SfePy as a tool for
-building domain-specific FE-based solvers as well as a black-box PDE solver.
+We briefly introduced the open source finite element package SfePy as a tool
+for building domain-specific FE-based solvers as well as a black-box PDE
+solver.
 
 Support
 ```````
