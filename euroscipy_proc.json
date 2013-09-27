@@ -1,0 +1,111 @@
+{
+  "proceedings": {
+     "citation_key": "proc-euroscipy-2013",
+     "title": {
+       "acronym": "EuroSciPy",
+       "conference": "European Conference on Python in Science",
+       "ordinal": "6th",
+       "short": "PROC. OF THE 6th EUR. CONF ON PYTHON IN SCIENCE. (EUROSCIPY 2013)",
+       "full": "Proceedings of the 6th European Conference on Python in Science"
+     },
+     "year": "2013",
+     "editor": [
+        "Pierre de Buyl",
+        "Nelle Varoquaux"
+     ],
+     "volume": 6,
+     "number": 1,
+     "isbn": "value",
+     "location": "Brussels, Belgium",
+     "dates": "21 August - 25 August",
+     "copyright": {
+       "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+       "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors",
+                       "This is an open-access publication and is distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
+                       "For more information, please see:  http://creativecommons.org/licenses/by/3.0/"],
+       "license": "Creative Commons Attribution License (CCAL)"}
+  },
+  "organization": [
+
+        {
+            "name": "Conference Chairs",
+            "members": [
+                {"name": "Pierre de Buyl",
+                 "org": "Université libre de Bruxelles"},
+                {"name": "Jonathan Rocher",
+                 "org": "Université libre de Bruxelles"}
+                ]
+        },
+ 
+        {
+            "name": "Program Committee Chair",
+            "members": [
+                {"name": "Tiziano Zito",
+                 "org": "Humboldt-Universität zu Berlin"}
+                ]
+        },
+
+        {
+            "name": "Tutorial Chairs",
+            "members": [
+                {"name": "Nicolas Rougier",
+                 "org": "Inria Nancy"}
+                ]
+        },
+
+        {
+            "name": "Program Committee",
+            "members": [
+		{"name": "Pierre de Buyl",
+		 "org": "Université libre de Bruxelles"},
+		{"name": "Ralf Gommers",
+		 "org": "ASML"},
+		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
+		 "org": "France"},
+		{"name": "Kael Hanson",
+		 "org": "Université libre de Bruxelles"},
+		{"name": "Konrad Hinsen",
+		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
+		{"name": "Hans Petter Langtangen",
+		 "org": "Simula and University of Oslo"},
+		{"name": "Mike Müller",
+		 "org": "Python Academy"},
+		{"name": "Raphael Ritz",
+		 "org": "International Neuroinformatics Coordinating Facility"},
+		{"name": "Stéfan van der Walt",
+		 "org": "Applied Mathematics"},
+		{"name": "Gaël Varoquaux",
+		 "org": "INRIA Parietal"},
+		{"name": "Nelle Varoquaux",
+		 "org": "Mines ParisTech"},
+		{"name": "Pauli Virtanen",
+		 "org": "Aalto University"}
+	    ]
+        },
+
+        {
+            "name": "Organizing Committee",
+            "members": [
+		{"name": "Nicolas Chauvat",
+		 "org": "Logilab"},
+		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
+		 "org": "France"},
+		{"name": "Kael Hanson",
+		 "org": "Université libre de Bruxelles"},
+		{"name": "Renaud Lambiotte",
+		 "org": "University of Namur"},
+		{"name": "Thomas Lecocq",
+		 "org": "Royal Observatory of Belgium"},
+		{"name": "Mike Müller",
+		 "org": "Python Academy"},
+		{"name": "Didrik Pinte",
+		 "org": "Enthought Europe"},
+		{"name": "Gaël Varoquaux",
+		 "org": "INRIA Parietal"},
+		{"name": "Nelle Varoquaux",
+		 "org": "Mines ParisTech"}
+		]
+	}
+
+    ]
+}
