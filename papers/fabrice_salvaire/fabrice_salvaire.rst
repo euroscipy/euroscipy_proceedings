@@ -6,8 +6,8 @@
 
 .. Notes
 
-   HDF5 tools
-   unusual way to use a dataset
+   n't
+   performance
 
 .. -------------------------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ High-Content Digital Microscopy with Python
  
 .. class:: keywords
 
-  high-content microscopy, digital microscopy
+  high-content microscopy, digital microscopy, high-throughput scanner, virtual slide, slide viewer, HDF5, ZeroMQ, OpenGL
 
 Introduction
 ------------
@@ -60,25 +60,23 @@ way for new research and medical diagnostic.
 Data Acquisition
 ----------------
 
-.. Now to appreciate the volume of data to acquire, 
-   reasoning ?
-
-We will first measure how big are the data and understand why? To reach the required resolution to
+We will first evaluate how big are the data and understand why? To reach the required resolution to
 see specimen details, optical microscopes use objectives having a magnification up to the
 diffraction limit which is about :math:`100\times`. Nowadays the pixel size for a CCD and sCMOS
-camera is about 6.5 um, thus at magnification :math:`40\times` we reach a resolution of 162.5 nm. To
-continue our reasoning, we will consider a specimen deposited on a cover slip which is a glass
-square surface of 18 mm wide. Later we will relate the support and the specimen by the more generic
-therm *slide*, which corresponds to a larger glass surface. Consequently to cover this surface at
-this magnification we have to acquire an area larger than :math:`100\,000` px wide, thus of the
-order of 10 billion of pixels which is roughly 300 times larger than the actual largest professional
-digital camera (36 Mpx). In light of foregoing digital microscopy are big data similar to spatial
-images and involve a software platform similar to the well known Google Map.
+camera is about :math:`6.5\,\text{um}`, thus at magnification :math:`40\times` we reach a resolution
+of :math:`162.5\,\text{nm}`. To continue our reasoning, we will consider a specimen put on a cover
+slip which is a glass square surface of 18 mm wide. Later we will relate the support and the
+specimen by the more generic word *slide*, which corresponds to a larger glass surface. Consequently
+to cover this surface at this magnification we have to acquire an area larger than :math:`100\,000`
+px wide, thus of the order of 10 billion of pixels which is roughly 300 times larger than the actual
+largest professional digital camera (:math:`36\,\text{Mpx}`). In light of foregoing digital
+microscopy are big data similar to spatial images and involve a software framework similar to the
+well known Google Map.
 
 For scientific application, we use preferably monochrome camera so as to avoid the interpolation of
 a Bayer mosaic. Instead to capture all the colour spectrum at the same time, colours are captured
 sequentially where a filter with the corresponding wave length transmission is placed in front of
-the camera. These shots are called colour field of view. Figure :ref:`epifluorescence-microscope`
+the camera. These shots are called *colour fields of view*. Figure :ref:`epifluorescence-microscope`
 shows the schematic of an epifluorescence microscope which is an application of this acquisition
 method.
 
@@ -87,19 +85,21 @@ method.
     :figclass: bht
 
     Schematic of an epifluorescence microscope where specimens are labelled with fluorescent
-    molecules so called fluorophores. In this example we are capturing an image for a fluorophore
+    molecules so called *fluorophores*. In this example we are capturing an image for a fluorophore
     having an excitation wave length in the blue and an emission wave length in the green. The
     filters are used to restrict the excitation and filter the
     emission. :label:`epifluorescence-microscope`
 
-A camera like the Andor Neo sCMOS features a sensor of :math:`2560 \times 2160` px that corresponds
-to a surface of :math:`416 \times 351` um. So to cover the whole specimen surface we have to capture
-a mosaic of fields of view of size :math:`40 \times 50` (2000 tiles) using an automatised stagger.
+A camera like the Andor Neo sCMOS features a sensor of :math:`2560 \times 2160\,\text{px}` that
+corresponds to a surface of :math:`416 \times 351\,\text{um}`. So to cover the whole specimen
+surface we have to capture a mosaic of fields of view of size :math:`43 \times 51` (2193 tiles)
+using an automatised stagger.
 
 The sCMOS Andor Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
 another stage with a combination of two amplifier-DACs to achieve a 16-bit resolution for high
 dynamic image. Thus image pixels must be encoded using an unsigned 16-bit integer data type. It
-means a colour field of view weights 10 MB and our mosaic 20 GB for one colour.
+means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weights
+:math:`23\,\text{GB}` for one colour.
 
 Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
 of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
@@ -111,12 +111,12 @@ the first one is to acquire a mosaic per colour and the second one is to acquire
 field of view. Both methods have advantages and disadvantages. One of the differences is the
 uncertainty that occurs on the registration of the colour fields of view. When we capture several
 colour per field of view at the same staging position, the relative positioning error is due to the
-optic. While when we capture a mosaic per colour, the error is also due to the reproducibility of
-the stagger. The regularity of the mosaic which depends of the step positioning error is always due
-to the stagger precision. So as to perform a field of view registration without black zone in the
-reconstructed image, we drive the stagger with a sufficient overlapping zone on both
-direction. Another irregularity on the field of view mosaic is due to the camera alignment error
-according to the stagger axes that draw a sheared mosaic pattern as you can see in figure
+optical path. While when we capture a mosaic per colour, the error is also due to the
+reproducibility of the stagger. The regularity of the mosaic which depends of the step positioning
+error is always due to the stagger precision. So as to perform a field of view registration without
+black zone in the reconstructed image, we drive the stagger with a sufficient overlapping zone on
+both directions. Another irregularity on the field of view mosaic is due to the camera alignment
+error according to the stagger axes that draw a sheared mosaic pattern as you can see in figure
 :ref:`sheared-mosaic`. The shearing has any serious effect on the reconstructed image since it only
 displaces systematically the fields of view in the mosaic frame.
 
@@ -131,36 +131,35 @@ All these uncertainties could be studied using fluorescent beads with an appropr
 cover slip and an image registration algorithm.
 
 The third dimension of a specimen could be accessed using the vertical focus axis of the microscope
-so as to perform a so called z-stack of images that enlarge the depth of field virtually and could
+so as to perform a so called *z-stack* of images that enlarge the depth of field virtually and thus
 improve the focus accuracy.
 
 Virtual Slide Format and Storage
 --------------------------------
 
-We can now defines the data structure of an acquisition so called later a virtual slide.  A virtual
+We can now defines the data structure of an acquisition so called later a *virtual slide*.  A virtual
 slide is made of a mosaic of fields of view and a set of attributes that constitute the so called
-*slide header*. Examples of attribute are a slide identifier, a date of acquisition or an assay
+*slide header*. Examples of attributes are a slide identifier, a date of acquisition or an assay
 type.
 
 The mosaic is a set of colour fields of view made of a mosaic index :math:`(r,c)`, a stagger
 position :math:`(x,y,z)`, a colour index :math:`w` and an image array of unsigned 16-bit integers.
 To store images in memory, the Numpy [Numpy]_ library is well appropriate since it maps efficiently
-a C linear array data structure in Python.
-
-.. Notes
-   and features like B-Tree indexing and rewriting
+a C linear array data structure on Python. In the followings we will refer the fields of view as
+*tiles* or *images* according to the context.
 
 From this mosaic of field of views, we can imagine to reconstruct once the slide image and produce a
-giant image, where we could use for this purpose the BigTIFF [BigTIFF] extension to the TIFF
+giant image, where we could use for this purpose the BigTIFF [BigTIFF]_ extension to the TIFF
 format. But if we want to keep raw data without information loss we have to imagine a way to store
-the original fields of view and process them on-line. 
+the original fields of view and process them on-line.
 
-The HDF5 [HDF5]_ library and its h5py [h5py]_ Python bindings is perfectly suited for this
+The HDF5 [HDF5]_ library and its h5py [h5py]_ Python binding is perfectly suited for this
 purpose. The content of an HDF5 file is self defined and the library is open source which guaranty a
-long therm access to the data. The structure of an HDF5 file is similar to a file system having
-folder objects so called groups and N-dimensional array objects so called dataset that corresponds
-here to files. Each of these objects could have attached attributes. This virtual file system
-provides the same flexibility than a real file system similar to an Unix loop device.
+long term access to the data. The structure of an HDF5 file is similar to a file system having
+folder objects so called *groups* and N-dimensional array objects so called *dataset* that
+corresponds here to files. Each of these objects could have attached attributes.  This virtual file
+system provides the same flexibility than a real file system similar to an Unix loop device. Figure
+:ref:`hdf5-file-system` shows an example.
 
 .. figure:: figure-hdf5-file-system.pdf
    :scale: 60%
@@ -185,18 +184,21 @@ snippet gives an overview of its usage:
   data = np.arange(n*n, dtype=np.uint16).reshape((n,n))
   image_dataset[n:2*n,n:2*n] = data
 
-As usual for large data set, the HDF5 library implements a data blocking concept so called
-chunk. Indeed the data compression as well the efficiency of the data transfer require dataset to be
-splitted in chunks. This feature permits to only read and write a subset of the dataset which is
-called an hyperslab. Moreover it provides a way to Python to map concepts such view and
-broadcasting. It permits also to implement a read-ahead and cache mechanism to speedup the data
+As usual when large data sets are involved, the HDF5 library implements a data blocking concept so
+called *chunk* which is an application of the divide-conquer paradigm. Indeed the data compression
+as well the efficiency of the data transfer require datasets to be splitted in chunks. This feature
+is a conerstone that open the way to many things. It permits to only read and write a subset of the
+dataset so called an *hyperslab*, which provides a way to Python to map concepts such view and
+broadcasting. Moreover it permits to implement a read-ahead and cache mechanism to speedup the data
 transfer from storage to memory.
 
-Another key feature of the HDF5 library is to implement a modular and powerful data transfer
-pipeline (Figure :ref:`hdf5-pipeline`) whose aim is to decompress the data from stored chunks,
+..  key feature
+
+Another cornerstone of the HDF5 library is to implement a modular and powerful data transfer
+pipeline shown on Figure :ref:`hdf5-pipeline` whose aim is to decompress the data from stored chunks,
 scatter-gather the data and transform them, for example to apply a scale-offset filter. The h5py
 module provides the classic GZIP compression as well its faster counterpart LZF [LZF]_ and other
-compression algorithm could be added easily as plugin.
+compression algorithms could be added easily as plugins.
 
 .. figure:: figure-hdf5-pipeline.pdf
    :scale: 60%
@@ -208,18 +210,21 @@ compression algorithm could be added easily as plugin.
 
 The flexibility of HDF5 permits to use different strategies to store our fields of view according to
 our application. The guideline is to think how images will be retrieved and used. For example if we
-want to get the field of view as a planar image then we should use the same shape for the dataset,
-i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:`(N_w*H,W)` where
+want to get the fields of view as a planar image then we should use the same shape for the dataset,
+i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:`(N_w\,H,W)` where
 :math:`N_w` is the number of colour planes. Like this we can map directly the data from storage to
 memory. The planar format is usually more suited for analysis purpose, but if we want to privilege
-the display then we could choose an interleaved format.
+the display then we could choose an interleaved format instead. However we cannot use an interleaved
+format if we consider there is an offset between the colour fields of view.
+
+.. layout, flatten, seek time
 
 To store the mosaic we could use a dataset per field of view or pack everything in only one dataset
 thanks to the data blocking to make this efficient and transparent. For example if the mosaic shape
-is :math:`(R,C)` then we could create a dataset of shape :math:`(R*N_w*H,C*W)` with a chunk size of
-:math:`(h,w)` where :math:`H = n*h`, :math:`W = n*w` and :math:`n \in \mathbb{Z}^{*+}` (Figure
-:ref:`mosaic-dataset`). The induced overhead will be smoothed by the fact the images are stored in
-chunks.
+is :math:`(R,C)` then we could create a dataset of shape :math:`(R\,N_w\,H,C\,W)` with a chunk size
+of :math:`(h,w)` where :math:`(H, W) = (n\,h, n\,w)` and :math:`n \in \mathbb{Z}^{*+}`. Figure
+:ref:`mosaic-dataset` shows an example of a packed mosaic. The induced overhead will be smoothed by
+the fact the images are stored in chunks.
 
 .. figure:: figure-dataset.pdf
    :scale: 50%
@@ -228,25 +233,25 @@ chunks.
    A dataset and its chunks for a :math:`2 \times 2` mosaic. :label:`mosaic-dataset`
 
 However if we want to load at the same time a set of consecutive images, then we could use this
-linear dataset shape :math:`(R*C*N_w*H,W)` and index the image using the linearised index
-:math:`r*W + c` (Figure :ref:`linear-dataset`). For example the code to get the field of view in the
-interval :math:`[10,20:30]` would be:
+linear dataset shape :math:`(R\,C\,N_w\,H,W)` and index the image using the linearised index
+:math:`r\,C + c`. Figure :ref:`linear-dataset` shows an example of a linearised mosaic . For example
+the code to get the fields of view in the slice :math:`[10,20:30]` would be:
 
 .. code-block:: python
 
-  lower_index = 10*W + 20
-  upper_index = 10*W + 30
+  lower_index = 10*C + 20
+  upper_index = 10*C + 30
   field_of_view_step = NW * H
   lower_r = lower_index * field_of_view_step
-  upper_r = upper_index * (field_of_view_step + 1)
+  upper_r = upper_index * field_of_view_step
   memory_map = image_dataset[lower_r:upper_r,:]
 
 And to get from here the w-th colour plane of the i-th field of view, the code would be:
 
 .. code-block:: python
 
-  row_offset = i*NW + w
-  colour_image = memory[row_offset:row_offset +NW,:]
+  row_offset = i * field_of_view_step + w * H
+  colour_image = memory[row_offset:row_offset +H,:]
 
 If the mosaic is sparse we can pack the mosaic and use a bisection algorithm to perform a binary
 search to get the corresponding linear index used for the storage.
@@ -258,57 +263,69 @@ search to get the corresponding linear index used for the storage.
    A linear dataset for an acquisition having 3 colours where the pointer to a tile and a plane are
    shown. :label:`linear-dataset`
 
+On can argue this approach is not natural, but if we encapsulate the slice computation in an virtual
+slide API then we have an efficient way to store and retrieve our data. A better approach would be
+to have a direct access to the chunks, but the HDF5 API doesn't give a such facility. Thus if we
+don't want to rewrite the library, the hyperslab mechanism is a solution. However if we dislike this
+packing method, we can still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk
+layout :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test
+several dataset layouts and measure the I/O performance. The tools *h5perf* is made available for
+this purpose.  More details about chunking could be found in the reference [HDF5-Chunking]_.
+
+This storage method could be easily extended to a more complicated acquisition scheme having
+z-stacks or a time dimension.
+ 
 Remote Virtual Slide
 ====================
-
-.. We have now defined a way to store our virtual slide and an API based on top of the stack
-   HDF5-h5py.
 
 We have now defined a framework to store our virtual slide based on top of the stack HDF5/h5py, that
 relies on an HDF5 file stored on a local system or a network file system to work in a client-server
 manner. This framework works perfectly, but a network file system has some limitations in comparison
 to a real client-server framework. In particular a network file system is complex and has side
 effects on an IT infrastructure, for example the need to setup an authentication mechanism for
-security. Moreover we cannot build a complex network topology and route data on it.
+security. Moreover we cannot build a complex network topology made of a virtual slide broadcast
+server and clients.
 
-We will now introduce the concept of remote virtual slide so as to add a real client-server feature
+We will now introduce the concept of remote virtual slides so as to add a real client-server feature
 to our framework. We have two types of data to send over the network, the slide header and the
 images. Since images are a flow of bytes, it is easy to send them over the network and use the Blosc
-[Blosc]_ real-time compression to reduce the playload. For the slide header, we could serialise the
-set of attributes to a JSON string, since the attributes data types are numbers, strings and tuples
-of them.
+[Blosc]_ real-time compression to reduce the payload. For the slide header, we could serialise the
+set of attributes to a JSON [JSON]_ string, since the attributes data types are numbers, strings and
+tuples of them.
 
 .. seen as a male and female socket
 
 For the networking layer, we use the ZeroMQ [ZMQ]_ library and its Python binding PyZMQ
 [PyZMQ]_. ZeroMQ is a socket library that acts as a concurrency framework, carries message across
-several types of socket and provide several connection patterns. This library is notably used by the
-IPython framework for networking. The remote virtual slide framework use the request-reply pattern
-to provide a client-server model. This pattern could be used to build a complex network topology
-with data dealer, router and consumer. ZeroMQ is also an elegant solution to the global interpreter
-lock [GIL]_ of the CPython interpreter that prevent real multi-threading. Indeed the connection
-patterns and the message queues offer a simple way to exchange data between processes and
-synchronise them.
+several types of socket and provide several connection patterns. ZeroMQ is also an elegant solution
+to the global interpreter lock [GIL]_ of the CPython interpreter that prevent real
+multi-threading. Indeed the connection patterns and the message queues offer a simple way to
+exchange data between processes and synchronise them. This library is notably used by the IPython
+[IPython]_ for messaging.
+
+The remote virtual slide framework uses the request-reply pattern to provide a client-server
+model. This pattern could be used to build a complex network topology with data dealer, router and
+consumer.
 
 Microscope Interconnection
 --------------------------
 
 As a first illustration of the remote virtual slide, we will look at the data flow between the
-automatised microscope so called scanner and the software component, so called slide writer, that
-write the HDF5 file on the file server. This client-server or producer-consumer framework is shown
-on Figure :ref:`slide-writer-architecture`. To understand the design of this framework, we have to consider
-these constrains. The first is due to the fact that the producer doesn't run at the same speed than
-the consumer. Indeed we want to maximise the scanner throughput and at the same time maximise the
-data compression which is a time consuming task. Thus there is a contradiction in our
-requirements. Moreover the GIL prevent real time multi-threading. Thus we have to add a FIFO buffer
-between the producer and the consumer so as to handle the speed difference between them. This FIFO
-is called *slide proxy* and act as an image cache. The second constrain is due to the fact that the
-slide writer could complete its job after the end of scan. It means the slide writer will not be
+automatised microscope so called *scanner* and the software component, so called *slide writer*,
+that write the HDF5 file on the file server. This client-server or producer-consumer framework is
+shown on Figure :ref:`slide-writer-architecture`. To understand the design of this framework, we
+have to consider these constrains. The first one is due to the fact that the producer doesn't run at
+the same speed than the consumer. Indeed we want to maximise the scanner throughput and at the same
+time maximise the data compression which is a time consuming task. Thus there is a contradiction in
+our requirements. Moreover the GIL prevent real time multi-threading. Thus we have to add a FIFO
+buffer between the producer and the consumer so as to handle the speed difference between them. This
+FIFO is called *slide proxy* and act as an image cache. The second constrain is due to the fact that
+the slide writer could complete its job after the end of scan. It means the slide writer will not be
 ready to process immediately another slide, which is a drawback if we want to scan a batch of
-slide. Thus we need a third process called *slide manager* whose aim is to fork a slide writer for
+slides. Thus we need a third process called *slide manager* whose aim is to fork a slide writer for
 each scan that will itself fork the slide proxy. Due to the fork mechanism, the three processes,
 slide manager, slide writer and slide proxy must run on same host so called *slide server*. For the
-other component, all the configuration could be envisaged.
+other component, all the configurations could be envisaged.
 
 The last component of this framework is the slide database whose aim is to store the path of the
 HDF5 file on the slide server so as to retrieve easily the virtual slide.
@@ -324,7 +341,7 @@ HDF5 file on the slide server so as to retrieve easily the virtual slide.
 
    Virtual Slide Writer Architecture. :label:`slide-writer-architecture`
 
-Image Viewer Graphic Engine
+Slide Viewer Graphic Engine
 ---------------------------
 
 .. Notes 
@@ -339,49 +356,28 @@ Image Viewer Graphic Engine
    zoom > 1
    detection layer
 
-.. figure:: figure-viewer.pdf
-   :scale: 50%
-   :figclass: bht
-
-   Viewer Architecture. :label:`viewer-architecture`
-
-The image viewer graphic engine works as Google Map using image tiles and follows our concept to
+The slide viewer graphic engine works as Google Map using image tiles and follows our concept to
 reconstruct the slide image online. We can imagine several strategies to reconstruct the slide
 image. The first one would be to perform all the computation on CPU. But nowadays we have GPU that
 offers an higher level of parallelism for such a task. GPU could be accessed using several API like
-CUDA, OpenCL and OpenGL. The first ones are more suited for an exact computation and the last one
-for image rendering. OpenGL API provides a way to perform a mapping of a 2D texture to a triangle
-and by extension to a quad which is a particular form of a triangle strip. This feature is perfectly
-suited to render a tile patchwork. Indeed the slide viewer requires to manage the viewport, the zoom
-and an image processing to adjust the contrast for example. All these needs are provided by
-OpenGL. Graphics items outside the viewport are discarded. Zoom is managed by texture sampler. And
-fragment shaders provide a way to perform an image processing.
+CUDA, OpenCL and OpenGL [OpenGL]_. The first ones are more suited for an exact computation and the
+last one for image rendering. In the followings we are talking about modern OpenGL where the fixed
+pipeline is deprecated in favour of a programmable pipeline.
 
-A texture could have from one to four colour component (RGBA), which make easy to render a slide
-acquisition with up to four colours. To render more colours, we just need more than one texture by
-tile and a more complicated fragment shader. If the tile are stored in planar format then we have to
-convert them to an interleaved format, we call this task texture preparation. However we can also
-use a texture per colour but in this case we have to take care to the maximal number of texture slot
-provided by the OpenGL implementation, else we have to perform a blending. The main advantage of
-using a multi-colour texture is for efficiency the since colour processing is vectorised
-naturally. However if we want to register the colour online, then the texture lookup is anymore
-efficient.
+..  a patchwork of 16-bit tile images on the display
 
-To render the viewport, the slide viewer must perform several tasks. First it must find the list of
-tiles that compose the viewport and load these tiles from the HDF5 file. Then it must prepare the
-data for the corresponding textures and load them to OpenGL. The time consuming task are last
-three. In order to accelerate the rendering, it would be judicious to perform these tasks in
-parallel, which is not simple using Python. For the loading, we could build on our remote virtual
-slide to perform an intelligent read-ahead and to eventually prepare the data for the texture.  The
-parallelisation of the texture loading is the most tricky and depends of the OpenGL implementation.
-Modern XWindows server supports texture loading within a thread, but this approach couldn't be used
-efficiently in Python due to the GIL. Moreover we can't use a process to do that since it requires
-that process could share OpenGL context. Also we don't have guaranty the multi-threading would be
-efficient in our case due to the fact we are rendering a patchwork and thus textures are short life
-time. And the added complexity could be at the end a drawback.
-
-Since our mosaic could be irregular, we cannot found by simple computation which tiles are in the
-viewport. Instead we use an R-Tree for this purpose, that is an extension of B-Tree to 2D.
+The main features of the slide viewer are to manage the viewport, the zoom level and to provide an
+image processing to render a patchwork of 16-bit images. All these requirements are provided by
+OpenGL. The API provides a way to perform a mapping of a 2D texture to a triangle and by extension
+to a quadrilateral which is a particular form of a triangle strip. This feature is perfectly suited
+to render a tile patchwork. The OpenGL programmable pipeline is made of several stages. For our
+topic, the most important ones are the vertex shader, the rasterizer and the fragment shader, where
+a fragment corresponds to a pixel. The vertex shader is mainly used to map the scene referential to
+the OpenGL window viewport. Then the rasterizer generates the fragments of the triangles using a
+scanline algorithm and discards fragments which are outside the viewport. Finally a fragment shader
+provides a way to perform image processing and to manage the zoom level using a texture
+sampler. Figure :ref:`opengl-viewport` shows an illustration of the texture painting on the
+viewport.
 
 .. figure:: figure-viewport.pdf
    :scale: 50%
@@ -391,7 +387,48 @@ viewport. Instead we use an R-Tree for this purpose, that is an extension of B-T
    tiles. The red rectangle shows the viewport area. And the blue rectangle illustrates the
    rendering of a texture for a tile which is partially out of the viewport area. The horizontal
    line represents the sampling of the triangle using a scanline algorithm. Pixels out of the
-   viewport are discarded. :label:`linear-dataset`
+   viewport are discarded. :label:`opengl-viewport`
+
+A texture could have from one to four colour components (RGBA), which make easy to render a slide
+acquisition with up to four colours. To render more colours, we just need more than one texture by
+tile and a more complicated fragment shader. If the tile are stored in planar format then we have to
+convert them to an interleaved format, we call this task texture preparation. However we can also
+use a texture per colour but in this case we have to take care to the maximal number of texture
+slots provided by the OpenGL implementation, else we have to perform a blending. The main advantage
+of using a multi-colour texture is for efficiency since the colour processing is vectorised
+naturally. However if we want to register the colour on-line, then the texture lookup is anymore
+efficient.
+
+To render the viewport, the slide viewer must perform several tasks. First it must find the list of
+tiles that compose the viewport and load these tiles from the HDF5 file. Then it must prepare the
+data for the corresponding textures and load them to OpenGL. The time consuming tasks are the last
+three. In order to accelerate the rendering, it would be judicious to perform these tasks in
+parallel, which is not simple using Python.
+
+For the tile loading, we could build on our remote virtual slide framework in order to perform an
+intelligent read-ahead and to eventually prepare the data for the texture.
+
+The parallelisation of the texture loading is the most difficult part and it depends of the OpenGL
+implementation. Modern OpenGL Extension to the X Window server (GLX) supports texture loading within
+a thread, but this approach couldn't be used efficiently in Python due to the GIL. Moreover we can't
+use a separate process to do that since it requires processes could share an OpenGL context, which
+is only available for indirect rendering (glXImportContextExt). Also we couldn't be sure the
+multi-threading would be efficient in our case due to the fact we are rendering a subset of the
+mosaic at a time and thus textures have a short life time. And the added complexity could prove to
+be a drawback.
+
+Since our mosaic could be irregular, we cannot found by a simple computation which tiles are in the
+viewport. Instead we use an R-Tree for this purpose, that is an extension of B-Tree to two
+dimensions.
+
+.. figure:: figure-viewer.pdf
+   :scale: 50%
+   :figclass: bht
+
+   Slide Viewer Architecture. :label:`viewer-architecture`
+
+Vertex and Fragment Shaders
+===========================
 
 We use a subset OpenGL V4.x since the new programmable rendering pipeline improve considerably the
 power of OpenGL. In modern OpenGL all the computations must be performed by hand from the viewport
@@ -488,7 +525,8 @@ References
 .. [GIL] http://www.dabeaz.com/python/UnderstandingGIL.pdf
 .. [HDF5] HDF Group, http://www.hdfgroup.org/HDF5
 .. [h5py] Andrew Collette and contributers, http://www.h5py.org
-.. [IPython] http://ipython.org
+.. [HDF5-Chunking] http://www.hdfgroup.org/HDF5/doc/Advanced/Chunking/index.html, http://www.hdfgroup.org/HDF5/doc/Advanced/Chunking/Chunking_Tutorial_EOS13_2009.pdf, http://www.hdfgroup.org/HDF5/doc/Advanced/DirectChunkWrite/UsingDirectChunkWrite.pdf
+.. [IPython] http://ipython.org/ipython-doc/stable/development/messaging.html
 .. [JSON] http://www.json.org
 .. [LZF] Andrew Collette http://www.h5py.org/lzf, Marc Lehmann http://oldhome.schmorp.de/marc/liblzf.html
 .. [Numpy] Travis Oliphant and Numpy developers, http://www.numpy.org
