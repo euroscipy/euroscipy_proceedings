@@ -1,0 +1,91 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,shapes,shadows,arrows,external}
+\tikzexternalize % activate! & run "pdflatex -shell-escape test.tex"
+\usepackage{pgffor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzsetnextfilename{figure-sheared-mosaic}
+\def\CrossRadius{.5}
+\def\BoxWidth{5}
+\def\BoxHeight{.8*\BoxWidth}
+\def\BoxOverlap{.10*\BoxWidth}
+\def\CoverSlipSize{1.6}
+\def\Angle{5}
+\begin{tikzpicture}
+  \foreach \x in {-1,...,1}
+  \foreach \y in {-1,...,1}
+  {
+    % \node (a) at ($(\x*{\BoxWidth-\BoxOverlap},\y*{\BoxHeight-\BoxOverlap})$) {};
+    \coordinate (a) at (\x*\BoxWidth-\x*\BoxOverlap,\y*\BoxHeight-\y*\BoxOverlap);
+    \draw ($(a) - (\CrossRadius,0)$) -- ++(2*\CrossRadius,0);
+    \draw ($(a) - (0,\CrossRadius)$) -- ++(0,2*\CrossRadius);
+    \draw[rotate around={\Angle:(a)}] ($(a) - .5*(\BoxWidth,\BoxHeight)$) rectangle ++(\BoxWidth,\BoxHeight);
+  }
+  \coordinate (c) at ($-\CoverSlipSize*(\BoxWidth,\BoxHeight)$);
+  \draw (c) rectangle ($\CoverSlipSize*(\BoxWidth,\BoxHeight)$);
+  \draw (0,1.5*\BoxHeight) node {Cover Slip Area};
+  \draw (0,\CrossRadius) node[anchor=south] {Field of View Centre};
+  %
+  \coordinate (os) at ($(c) + (45:.7)$);
+  \draw (os) node[anchor=north west] {Stagger Frame};
+  \draw[->] ($(os)$) -- ++(1,0);
+  \draw[->] ($(os)$) -- ++(0,1);
+  %
+  \coordinate (om) at ($(c) + (45:2)$);
+  \draw (om) node[anchor=north west] {Mosaic Frame};
+  \draw[rotate around={\Angle:(om)},->] ($(om)$) -- ++(1,0);
+  \draw[rotate around={\Angle:(om)},->] ($(om)$) -- ++(0,1);
+\end{tikzpicture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzsetnextfilename{figure-viewport}
+\begin{tikzpicture}
+  \draw[ultra thick,fill=red!20,fill opacity=.5] (.5*\BoxWidth,.5*\BoxHeight) rectangle (2.5*\BoxWidth,2.5*\BoxHeight);
+  \coordinate (n1) at (0,\BoxHeight-\BoxOverlap);
+  \coordinate (n2) at ($(n1) + (0,\BoxHeight)$);
+  \coordinate (n3) at ($(n1) + (\BoxWidth,0)$);
+  \draw[ultra thick,fill=blue!20,fill opacity=.5] (n1) rectangle ++(\BoxWidth,\BoxHeight);
+  \foreach \x in {0,...,2}
+  \foreach \y in {0,...,2}
+  {
+    \coordinate (a) at (\x*\BoxWidth-\x*\BoxOverlap,\y*\BoxHeight-\y*\BoxOverlap);
+    \draw (a) rectangle ++(\BoxWidth,\BoxHeight);
+  }
+  \draw[ultra thick] (n1) rectangle ++(.5*\BoxWidth,\BoxHeight);
+  \draw[thick] (n2) -- (n3);
+  \fill[black] (n1) circle (3pt);
+  \fill[black] (n2) circle (3pt);
+  \fill[black] (n3) circle (3pt);
+  %
+  \coordinate (n12) at ($(n1)!.6!(n2)$);
+  \coordinate (n23) at ($(n3)!.6!(n2)$);
+  \coordinate (p) at ($(n12)!.5!(n23)$);
+  \draw[thick] (n12) -- (n23);
+  \fill[black] (p) circle (2pt);
+  \draw (p) node[anchor=north,text width=10ex] {discarded fragment};
+  %
+  \coordinate (n12) at ($(n1)!.2!(n2)$);
+  \coordinate (n23) at ($(n3)!.2!(n2)$);
+  \coordinate (p) at ($(n12)!.8!(n23)$);
+  \draw[thick] (n12) -- (n23);
+  \fill[black] (p) circle (2pt);
+  % 
+  \draw (1.5*\BoxWidth-\BoxOverlap,1.5*\BoxHeight-\BoxOverlap) node {\color{red!80} viewport};
+  \draw[thick,<-] ($(n1) + (-45:.3)$) -- ++(-60:2) node[anchor=north west] {\color{blue!80} texture anchor};
+\end{tikzpicture}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
