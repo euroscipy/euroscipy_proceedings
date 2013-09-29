@@ -6,8 +6,8 @@
 
 .. Notes
 
-   n't
    performance
+   discuss how to parallelise the job, network
 
 .. -------------------------------------------------------------------------------------------------
 
@@ -17,15 +17,16 @@ High-Content Digital Microscopy with Python
 
 .. class:: abstract
 
-  High-Content Digital Microscopy open the way for new research and medical diagnostic due to the
+  High-Content Digital Microscopy open the way to new researches and medical diagnostics due to the
   enhancement on user comfort, data storage and throughput. A digital microscopy platform has for
-  aim to capture an image of a cover slip, to store the information on file server and database, to
-  visualise the image and perform analysis. We will discuss how the Python ecosystem could provide
-  efficiently a such software platform.
+  aim to capture an image of a cover slip, to store the information on a file server and a database,
+  to visualise the image and perform analysis. We will discuss how the Python ecosystem could
+  provide efficiently a such software platform.
  
 .. class:: keywords
 
-  high-content microscopy, digital microscopy, high-throughput scanner, virtual slide, slide viewer, HDF5, ZeroMQ, OpenGL
+  high-content microscopy, digital microscopy, high-throughput scanner, virtual slide, slide viewer,
+  multi-processing, Python language, HDF5, ZeroMQ, OpenGL
 
 Introduction
 ------------
@@ -43,19 +44,25 @@ Introduction
   specimen
   virtual slide
 
+.. An anecdote about this stress is that many people relate they continue to see fluorescent signal
+.. labelling when they go to sleep.
+
 Since early times optical microscopy play an important role in biology research and medical
 diagnostic. Nowadays digital microscopy is a natural evolution of the technology that provide many
 enhancements on user comfort, data storage and throughput. In comparison to binocular microscopy,
-monitor vision improves considerably the comfort of the staff. Indeed binocular microscopes cause
-severe stress to eyes due to the low light intensity entering in the eyes. An anecdote about this
-stress is that many people relate they continue to see fluorescent signal labelling when they go to
-sleep. The second kind of enhancement is the benefit of the digitisation of the material to freeze
-and store the information for short to long term storage. Most of the original materials need to be
-stored at low temperature and in the dark for a maximal period. In comparison digital storage is
-able to compress and duplicate easily the information, to protect the data integrity by checksum and
-data confidentiality by cryptography. The third enhancement concerns high-content application where
-the automation provide a considerable scale-up of the data processing throughput and thus open the
-way for new research and medical diagnostic.
+monitor display improves considerably the comfort of the staff. Indeed binocular microscopes cause
+severe stress to eyes due to the low light intensity of the specimens.  The second kind of
+enhancement is the benefit of the digitisation of the specimens to freeze and store the information
+for short to long term storage. Most of the specimens need to be stored at low temperature and in
+the dark for a maximal duration. In comparison digital storage is able to compress and duplicate
+easily the information, to protect the data integrity by checksum and data confidentiality by
+cryptography. The third enhancement concerns high-content application where the automation provide a
+considerable scale-up of the data processing throughput and thus open the way to new researches and
+medical diagnostics.
+
+We will discuss in this article how the Python ecosystem could provide efficiently a software
+platform for the digital microscopy. Our discussion will first present the data acquisition method,
+then we will describe the data storage and finally the image viewer.
 
 Data Acquisition
 ----------------
@@ -187,7 +194,7 @@ snippet gives an overview of its usage:
 As usual when large data sets are involved, the HDF5 library implements a data blocking concept so
 called *chunk* which is an application of the divide-conquer paradigm. Indeed the data compression
 as well the efficiency of the data transfer require datasets to be splitted in chunks. This feature
-is a conerstone that open the way to many things. It permits to only read and write a subset of the
+is a cornerstone that open the way to many things. It permits to only read and write a subset of the
 dataset so called an *hyperslab*, which provides a way to Python to map concepts such view and
 broadcasting. Moreover it permits to implement a read-ahead and cache mechanism to speedup the data
 transfer from storage to memory.
@@ -230,7 +237,8 @@ the fact the images are stored in chunks.
    :scale: 50%
    :figclass: bht
 
-   A dataset and its chunks for a :math:`2 \times 2` mosaic. :label:`mosaic-dataset`
+   A dataset for a :math:`2 \times 2` mosaic, chunks are represented by dotted
+   squares. :label:`mosaic-dataset`
 
 However if we want to load at the same time a set of consecutive images, then we could use this
 linear dataset shape :math:`(R\,C\,N_w\,H,W)` and index the image using the linearised index
@@ -265,8 +273,8 @@ search to get the corresponding linear index used for the storage.
 
 On can argue this approach is not natural, but if we encapsulate the slice computation in an virtual
 slide API then we have an efficient way to store and retrieve our data. A better approach would be
-to have a direct access to the chunks, but the HDF5 API doesn't give a such facility. Thus if we
-don't want to rewrite the library, the hyperslab mechanism is a solution. However if we dislike this
+to have a direct access to the chunks, but the HDF5 API does not give a such facility. Thus if we
+do not want to rewrite the library, the hyperslab mechanism is a solution. However if we dislike this
 packing method, we can still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk
 layout :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test
 several dataset layouts and measure the I/O performance. The tools *h5perf* is made available for
@@ -314,7 +322,7 @@ As a first illustration of the remote virtual slide, we will look at the data fl
 automatised microscope so called *scanner* and the software component, so called *slide writer*,
 that write the HDF5 file on the file server. This client-server or producer-consumer framework is
 shown on Figure :ref:`slide-writer-architecture`. To understand the design of this framework, we
-have to consider these constrains. The first one is due to the fact that the producer doesn't run at
+have to consider these constrains. The first one is due to the fact that the producer does not run at
 the same speed than the consumer. Indeed we want to maximise the scanner throughput and at the same
 time maximise the data compression which is a time consuming task. Thus there is a contradiction in
 our requirements. Moreover the GIL prevent real time multi-threading. Thus we have to add a FIFO
@@ -359,7 +367,7 @@ Slide Viewer Graphic Engine
 The slide viewer graphic engine works as Google Map using image tiles and follows our concept to
 reconstruct the slide image online. We can imagine several strategies to reconstruct the slide
 image. The first one would be to perform all the computation on CPU. But nowadays we have GPU that
-offers an higher level of parallelism for such a task. GPU could be accessed using several API like
+offer an higher level of parallelism for such a task. GPU could be accessed using several API like
 CUDA, OpenCL and OpenGL [OpenGL]_. The first ones are more suited for an exact computation and the
 last one for image rendering. In the followings we are talking about modern OpenGL where the fixed
 pipeline is deprecated in favour of a programmable pipeline.
@@ -370,14 +378,15 @@ The main features of the slide viewer are to manage the viewport, the zoom level
 image processing to render a patchwork of 16-bit images. All these requirements are provided by
 OpenGL. The API provides a way to perform a mapping of a 2D texture to a triangle and by extension
 to a quadrilateral which is a particular form of a triangle strip. This feature is perfectly suited
-to render a tile patchwork. The OpenGL programmable pipeline is made of several stages. For our
-topic, the most important ones are the vertex shader, the rasterizer and the fragment shader, where
-a fragment corresponds to a pixel. The vertex shader is mainly used to map the scene referential to
-the OpenGL window viewport. Then the rasterizer generates the fragments of the triangles using a
-scanline algorithm and discards fragments which are outside the viewport. Finally a fragment shader
-provides a way to perform image processing and to manage the zoom level using a texture
-sampler. Figure :ref:`opengl-viewport` shows an illustration of the texture painting on the
-viewport.
+to render a tile patchwork.
+
+The OpenGL programmable pipeline is made of several stages. For our topic, the most important ones
+are the vertex shader, the rasterizer and the fragment shader, where a fragment corresponds to a
+pixel. The vertex shader is mainly used to map the scene referential to the OpenGL window
+viewport. Then the rasterizer generates the fragments of the triangles using a scanline algorithm
+and discards fragments which are outside the viewport. Finally a fragment shader provides a way to
+perform an image processing and to manage the zoom level using a texture sampler. Figure
+:ref:`opengl-viewport` shows an illustration of the texture painting on the viewport.
 
 .. figure:: figure-viewport.pdf
    :scale: 50%
@@ -386,8 +395,8 @@ viewport.
    OpenGL viewport and texture painting. The overlapped black rectangles represent the mosaic of
    tiles. The red rectangle shows the viewport area. And the blue rectangle illustrates the
    rendering of a texture for a tile which is partially out of the viewport area. The horizontal
-   line represents the sampling of the triangle using a scanline algorithm. Pixels out of the
-   viewport are discarded. :label:`opengl-viewport`
+   line represents the sampling of the triangle defined by the vertexes (1, 2, 3) using a scanline
+   algorithm. Pixels out of the viewport are discarded. :label:`opengl-viewport`
 
 A texture could have from one to four colour components (RGBA), which make easy to render a slide
 acquisition with up to four colours. To render more colours, we just need more than one texture by
@@ -395,14 +404,14 @@ tile and a more complicated fragment shader. If the tile are stored in planar fo
 convert them to an interleaved format, we call this task texture preparation. However we can also
 use a texture per colour but in this case we have to take care to the maximal number of texture
 slots provided by the OpenGL implementation, else we have to perform a blending. The main advantage
-of using a multi-colour texture is for efficiency since the colour processing is vectorised
-naturally. However if we want to register the colour on-line, then the texture lookup is anymore
-efficient.
+of using a multi-colour texture is for efficiency since the colour processing is vectorised in the
+fragment shader. However if we want to register the colour on-line, then the texture lookup is
+anymore efficient.
 
 To render the viewport, the slide viewer must perform several tasks. First it must find the list of
 tiles that compose the viewport and load these tiles from the HDF5 file. Then it must prepare the
 data for the corresponding textures and load them to OpenGL. The time consuming tasks are the last
-three. In order to accelerate the rendering, it would be judicious to perform these tasks in
+three ones. In order to accelerate the rendering, it would be judicious to perform these tasks in
 parallel, which is not simple using Python.
 
 For the tile loading, we could build on our remote virtual slide framework in order to perform an
@@ -410,35 +419,59 @@ intelligent read-ahead and to eventually prepare the data for the texture.
 
 The parallelisation of the texture loading is the most difficult part and it depends of the OpenGL
 implementation. Modern OpenGL Extension to the X Window server (GLX) supports texture loading within
-a thread, but this approach couldn't be used efficiently in Python due to the GIL. Moreover we can't
-use a separate process to do that since it requires processes could share an OpenGL context, which
-is only available for indirect rendering (glXImportContextExt). Also we couldn't be sure the
+a thread, but this approach could not be used efficiently in Python due to the GIL. Moreover we
+cannot use a separate process to do that since it requires processes could share an OpenGL context,
+which is only available for indirect rendering (glXImportContextExt). Also we could not be sure the
 multi-threading would be efficient in our case due to the fact we are rendering a subset of the
 mosaic at a time and thus textures have a short life time. And the added complexity could prove to
 be a drawback.
 
 Since our mosaic could be irregular, we cannot found by a simple computation which tiles are in the
-viewport. Instead we use an R-Tree for this purpose, that is an extension of B-Tree to two
-dimensions.
+viewport. Instead we use an R-tree for this purpose. All the tiles boundaries are filled in the
+R-tree. And to get the list of tiles within the viewport, we perform an intersection query of the
+R-tree with the viewport boundary.
+
+.. , that is an extension of B-Tree to two dimensions
 
 .. figure:: figure-viewer.pdf
    :scale: 50%
    :figclass: bht
 
-   Slide Viewer Architecture. :label:`viewer-architecture`
+   Slide Viewer Architecture. :label:`slide-viewer-architecture`
 
-Vertex and Fragment Shaders
-===========================
+Figure :ref:`slide-viewer-architecture` shows the architecture of our slide viewer. The virtual
+slide API could access the data through the file or the remote driver. The HDF5 files are stored on
+a file server that could provide a network file system to access the files remotely. The remote
+virtual slide could be used in two different ways. The process that corresponds to the server side
+is called *tile dealer*. If this process runs on the same host as the slide viewer, then we could
+use it to implement our read-ahead mechanism to parralelise the tile loading. And if it runs on the
+file server, then we could use it at an alternative to the network file system in a similar way as a
+virtual slide broadcast service. This second example demonstrates the remote virtual slide is a
+fundamental software component in our framework that open the way to many things.
 
-We use a subset OpenGL V4.x since the new programmable rendering pipeline improve considerably the
-power of OpenGL. In modern OpenGL all the computations must be performed by hand from the viewport
-modelling to the fragment processing, excepted the texture lookup which is supported by GSL
-functions.
+Another way to access efficiently the data, it to use a local cache to store temporally the virtual
+slide. Nowadays we can build on a very fast locale cache using a PCI-e SSD card, which commonly
+reach a read/write bandwidth of :math:`1000\,\text{MB/s}` and thus outperforms most of the hardware
+RAID bandwidth.
 
-Since we are doing 2D rendering, it simplifies considerably the viewport model and the coordinate
-transformation. OpenGL discards all the fragment that are outside the :math:`[-1,1]\times[-1,1]` 2D
-interval. Thus to manage the viewport, we have to transform the slide frame coordinate using the
-following model matrix:
+The slide viewer implements two Least Recently Used caches to store the tiles and the
+textures. These caches are a cornerstone for the fluidity of the navigation within the slide, since
+it helps to reduce the viewer latency. Nowadays we could have on a workstation :math:`64\,\text{GB}`
+of RAM for a decent cost, which open the way to a large in memory cache in complement to a PCI-e SSD
+cache. In this way we can build a 3-tier system made of a file server to store tera bytes of data, a
+PCI-e SSD cache to store temporally slides and an in memory cache to store a subset of the virtual
+slide.
+
+Vertex and Fragment Shader
+==========================
+
+In modern OpenGL all the computations must be performed by hand from the viewport modelling to the
+fragment processing, excepted the texture sampling which is provided by the OpenGL Shading Language.
+
+Since we are doing a two dimensional rendering, it simplifies considerably the viewport model and
+the coordinate transformation. OpenGL discards all the fragment that are outside the
+:math:`[-1,1]\times[-1,1]` interval. Thus to manage the viewport, we have to transform the slide
+frame coordinate using the following model matrix:
 
 .. math::
    :label: viewport matrix
@@ -466,11 +499,38 @@ following model matrix:
 where :math:`[x_{inf},x_{sup}]\times[y_{inf},y_{sup}]` is the viewport interval and
 :math:`(x_s,y_s)` is a coordinate in the slide frame.
 
+OpenGL represents fragment colour by a normalised float in the range :math:`[0,1]` and values which
+are outside this range are clamped. Thus to transform our 16-bit pixel intensity we have to use this
+formulae:
+
 .. math::
    :label: normalised luminance
 
    % _\text{normalised
    \hat{l} = \frac{l - I_{inf}}{I_{sup} - I_{inf}}
+
+where :math:`0 <= I_{inf} < I_{sup} < 2^{16}`. This normalisation could be used to perform an image
+contrast by adjusting the values of :math:`I_{inf}` and :math:`I_{sup}`.
+
+The fact OpenGL supports the unsigned 16-bit data type for texture permits to load the raw data
+directly in the fragment shader without information loss. According to the configuration of OpenGL,
+the RAMDAC of the video adapter will convert the normalised floats to an unsigned 8-bit intensity
+for a standard monitor or to 10-bit for high resolution monitor like DICOM compliant models.
+
+As soons as we have converted our pixel intensities to float, we could apply some image processing
+treatments like a gamma correction.
+
+In the previous paragraphs, we told we could load in a texture up to four colours using RGBA
+textures. Since monitors can only render three colour components (RGB), we must transform a four
+components colour space to a three components colour space using a *mixer matrix*. This computation
+could be easily extended to any number of colours using more than one texture. The mixer matrix
+coefficients should be choose so as to respect the normalised float range.
+
+Another important feature of the slide viewer is to permit to the user to select which colours will
+be displayed on the screen. This feature is easily implemented using a diagonal matrix so called
+*status matrix* with zero or one depending of the colour status.
+
+We can now write the matrix computation for the rendering of up to fours colours:
 
 .. math::
    :label: texture fragment shader
@@ -500,6 +560,10 @@ where :math:`[x_{inf},x_{sup}]\times[y_{inf},y_{sup}]` is the viewport interval 
    \vdots \\
    \hat{l}_3 \\
    \end{array}\right)
+
+If we consider a GPU with more than 1024 cores, then most of the rows of our display will be
+processed in parallel which is nowadays impossible to perform with a multi-core CPU. It is why our
+approach to render a mosaic of tiles is so efficient and the rendering is nearly done in real time.
 
 .. -------------------------------------------------------------------------------------------------
 

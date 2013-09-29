@@ -36,7 +36,7 @@
   nodestyle/.style={
     rectangle,
     draw=black,
-    minimum size=20mm,
+    minimum size=30mm,
     very thick,
   }]
 \node[nodestyle] (storage) {storage};
@@ -61,7 +61,7 @@
     \foreach \i in {-1,1}
     \foreach \j in {-1,1}
     {
-      \node (b) at ($(a) - .25*(\i*\BoxWidth,\j*\BoxHeight)$) {chunk (\x,\y,\i,\j)};
+      \node (b) at ($(a) - .25*(\i*\BoxWidth,\j*\BoxHeight)$) {}; % {chunk (\x,\y,\i,\j)};
       \draw[dotted] ($(b) - .25*(\BoxWidth,\BoxHeight)$) rectangle ++($.5*(\BoxWidth,\BoxHeight)$);
     }
     \draw[very thick] ($(a) - .5*(\BoxWidth,\BoxHeight)$) rectangle ++(\BoxWidth,\BoxHeight);
@@ -84,12 +84,13 @@
   \draw[decorate, decoration={random steps,segment length=3pt,amplitude=1pt}]
   (0,0) -- (0,-\Margin) -- (\BoxWidth,-\Margin) -- (\BoxWidth,0)
   (0,\Bottom) -- (0,\BottomMargin) -- (\BoxWidth,\BottomMargin) -- (\BoxWidth,\Bottom);
+  \draw[<->] (0,-.5) -- node[above] {W} ++(\BoxWidth,0);
   \coordinate (p) at (-.5,0);
   \draw[->] (p) -- (0,0);
-  \node[anchor=east] at (p) {$p(r,c)=(r*W+c)(N_w*H*W)$};
+  \node[anchor=east] at (p) {$p(r,c)=(r\,C+c)(N_w\,H)$};
   \coordinate (pw1) at ($(0,\BoxHeight) + (-.5,0)$);
   \draw[->] (pw1) -- (0,\BoxHeight);
-  \node[anchor=east] at (pw1) {$p(r,c,w)=p(r,c)+w*(H*W)$};
+  \node[anchor=east] at (pw1) {$p(r,c,w)=p(r,c)+w\,H$};
   \foreach \w in {0,...,2}
     {
       \coordinate (a) at (0,\w*\BoxHeight);

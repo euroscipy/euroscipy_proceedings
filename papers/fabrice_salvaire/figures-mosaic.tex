@@ -15,7 +15,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tikzsetnextfilename{figure-sheared-mosaic}
 \def\CrossRadius{.5}
-\def\BoxWidth{5}
+\def\BoxWidth{5.5}
 \def\BoxHeight{.8*\BoxWidth}
 \def\BoxOverlap{.10*\BoxWidth}
 \def\CoverSlipSize{1.6}
@@ -64,6 +64,9 @@
   \fill[black] (n1) circle (3pt);
   \fill[black] (n2) circle (3pt);
   \fill[black] (n3) circle (3pt);
+  \node[left] at (n1) {1};
+  \node[left] at (n2) {2};
+  \node[below right] at (n3) {3};
   %
   \coordinate (n12) at ($(n1)!.6!(n2)$);
   \coordinate (n23) at ($(n3)!.6!(n2)$);
@@ -79,7 +82,8 @@
   \fill[black] (p) circle (2pt);
   % 
   \draw (1.5*\BoxWidth-\BoxOverlap,1.5*\BoxHeight-\BoxOverlap) node {\color{red!80} viewport};
-  \draw[thick,<-] ($(n1) + (-45:.3)$) -- ++(-60:2) node[anchor=north west] {\color{blue!80} texture anchor};
+  \draw[thick,<-] ($(n1) + (-45:.15)$) -- ++(-70:.5);
+  \node[anchor=north west] at ($(n1) + (-80:.6)$) {\color{blue!80} texture anchor};
 \end{tikzpicture}
 \end{document}
 

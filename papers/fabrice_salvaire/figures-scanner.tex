@@ -88,7 +88,7 @@
     fill=white!100,
     thick,
     draw=black!80,
-    minimum height=10mm, minimum width=10mm,
+    minimum height=5mm, minimum width=5mm,
     outer sep=0pt
   }
   ]
@@ -126,6 +126,8 @@
 % File Server
 \node [file server] (file server) at ($(slide writer.south) - (0,3.5)$) {HDF5 File Server\\XFS on RAID 6};
 \node [socket] (file server socket) at (file server.north) {} edge (slide writer file server);
+%
+\path[->,>=latex] (database.south) edge[bend right=-45] node[right] {path} (file server.east);
 % Slide Server Host
 \draw[decorate, decoration={random steps,segment length=3pt,amplitude=1pt}]
 (-3,-7) rectangle (9,8)
@@ -142,7 +144,23 @@
     fill=white!100,
     ultra thick,
     draw=black!80,
-    minimum height=30mm, minimum width=100mm,
+    minimum height=60mm, minimum width=100mm,
+    outer sep=0pt
+  },
+  slide viewer api/.style={
+    rectangle,
+    fill=white!100,
+    ultra thick,
+    draw=black!80,
+    minimum height=15mm, minimum width=100mm,
+    outer sep=0pt
+  },
+  slide viewer driver/.style={
+    rectangle,
+    fill=white!100,
+    ultra thick,
+    draw=black!80,
+    minimum height=15mm, minimum width=50mm,
     outer sep=0pt
   },
   tile cache/.style={
@@ -193,7 +211,7 @@
     fill=white!100,
     thick,
     draw=black!80,
-    minimum height=10mm, minimum width=10mm,
+    minimum height=5mm, minimum width=5mm,
     outer sep=0pt
   },
   socket/.style={
@@ -207,10 +225,15 @@
   ]
 %\draw[help lines] (-5,-10) grid (15,15);
 % Slide Viewer
-\node [slide viewer] (slide viewer) at (0,0) {Slide Viewer};
+\node [slide viewer] (slide viewer) at (0,0) {};
+\node at ($(slide viewer.north)!1/2!(slide viewer.center)$) {Slide Viewer};
+\node [slide viewer api] (slide viewer api) at ($(slide viewer.center)!1/4!(slide viewer.south)$) {Virtual Slide API};
+\node [slide viewer driver] (slide viewer remote) at ($(slide viewer api.south)!.5!(slide viewer.south west)$) {Remote};
+\node [slide viewer driver] (slide viewer file) at ($(slide viewer api.south)!.5!(slide viewer.south
+east)$) {File};
 \node [socket] (slide viewer database) at (slide viewer.east) {};
-\node [socket] (slide viewer file server) at ($(slide viewer.south) + (3,0)$) {};
-\node [zmq socket] (slide viewer dealer req) at ($(slide viewer.south) + (-3,0)$) {Req};
+\node [socket] (slide viewer file server) at (slide viewer file.south) {};
+\node [zmq socket] (slide viewer dealer req) at (slide viewer remote.south) {Req};
 \coordinate (slide viewer tile cache) at ($(slide viewer.north) + (-3,0)$);
 \coordinate (slide viewer texture cache) at ($(slide viewer.north) + (3,0)$);
 % Tile Cache
@@ -229,6 +252,8 @@
   {HDF5 File Server\\ XFS on RAID 6\\ -\\ NFS\\ -\\ PCI-e SSD Local Cache};
 \node [socket] (file server socket) at (file server.north) {} edge (slide viewer file server);
 \node [socket] (file server socket 2) at (file server.west) {};
+%
+\path[->,>=latex] (database.south) edge[bend right=-45] node[right] {path} (file server.east);
 % Slide Dealer
 \node [slide dealer] (slide dealer) at ($(slide viewer dealer req) + (0,-3.5)$) {Tile Dealer};
 \node [zmq socket] (slide viewer dealer rep) at (slide dealer.north) {Rep} edge (slide viewer dealer req);
