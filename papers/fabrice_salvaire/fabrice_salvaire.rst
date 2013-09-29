@@ -8,6 +8,9 @@
 
    performance
    discuss how to parallelise the job, network
+   sequence diagram
+   flatten, seek time
+   accuracy ? position rendering interpolation
 
 .. -------------------------------------------------------------------------------------------------
 
@@ -30,22 +33,6 @@ High-Content Digital Microscopy with Python
 
 Introduction
 ------------
-
-.. Notes
-   as well as other 
-   was widely used to perform
-
-.. lexicon
-  field of view
-  tile
-  mosaic
-  wave length / colour
-  sample
-  specimen
-  virtual slide
-
-.. An anecdote about this stress is that many people relate they continue to see fluorescent signal
-.. labelling when they go to sleep.
 
 Since early times optical microscopy play an important role in biology research and medical
 diagnostic. Nowadays digital microscopy is a natural evolution of the technology that provide many
@@ -199,8 +186,6 @@ dataset so called an *hyperslab*, which provides a way to Python to map concepts
 broadcasting. Moreover it permits to implement a read-ahead and cache mechanism to speedup the data
 transfer from storage to memory.
 
-..  key feature
-
 Another cornerstone of the HDF5 library is to implement a modular and powerful data transfer
 pipeline shown on Figure :ref:`hdf5-pipeline` whose aim is to decompress the data from stored chunks,
 scatter-gather the data and transform them, for example to apply a scale-offset filter. The h5py
@@ -213,8 +198,6 @@ compression algorithms could be added easily as plugins.
 
    HDF5 Data Transfer Pipeline. :label:`hdf5-pipeline`
 
-..  as it would be for a TIFF image file
-
 The flexibility of HDF5 permits to use different strategies to store our fields of view according to
 our application. The guideline is to think how images will be retrieved and used. For example if we
 want to get the fields of view as a planar image then we should use the same shape for the dataset,
@@ -223,8 +206,6 @@ i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:
 memory. The planar format is usually more suited for analysis purpose, but if we want to privilege
 the display then we could choose an interleaved format instead. However we cannot use an interleaved
 format if we consider there is an offset between the colour fields of view.
-
-.. layout, flatten, seek time
 
 To store the mosaic we could use a dataset per field of view or pack everything in only one dataset
 thanks to the data blocking to make this efficient and transparent. For example if the mosaic shape
@@ -301,8 +282,6 @@ images. Since images are a flow of bytes, it is easy to send them over the netwo
 set of attributes to a JSON [JSON]_ string, since the attributes data types are numbers, strings and
 tuples of them.
 
-.. seen as a male and female socket
-
 For the networking layer, we use the ZeroMQ [ZMQ]_ library and its Python binding PyZMQ
 [PyZMQ]_. ZeroMQ is a socket library that acts as a concurrency framework, carries message across
 several types of socket and provide several connection patterns. ZeroMQ is also an elegant solution
@@ -338,11 +317,6 @@ other component, all the configurations could be envisaged.
 The last component of this framework is the slide database whose aim is to store the path of the
 HDF5 file on the slide server so as to retrieve easily the virtual slide.
 
-.. Notes 
-   slide header
-   sequence diagram
-   NFS
-
 .. figure:: figure-scanner.pdf
    :scale: 50%
    :figclass: bht
@@ -352,18 +326,6 @@ HDF5 file on the slide server so as to retrieve easily the virtual slide.
 Slide Viewer Graphic Engine
 ---------------------------
 
-.. Notes 
-   RTree free mosaic
-   LRU cache
-   SSD cache
-   OpenGL -1,1
-   8 and 10-bit monitor resolution dicom
-   colour mixer matrix, colour status matrix, contrast matrix
-   accuracy ? position rendering interpolation
-   zoom manager, zoom layer 16 bin
-   zoom > 1
-   detection layer
-
 The slide viewer graphic engine works as Google Map using image tiles and follows our concept to
 reconstruct the slide image online. We can imagine several strategies to reconstruct the slide
 image. The first one would be to perform all the computation on CPU. But nowadays we have GPU that
@@ -371,8 +333,6 @@ offer an higher level of parallelism for such a task. GPU could be accessed usin
 CUDA, OpenCL and OpenGL [OpenGL]_. The first ones are more suited for an exact computation and the
 last one for image rendering. In the followings we are talking about modern OpenGL where the fixed
 pipeline is deprecated in favour of a programmable pipeline.
-
-..  a patchwork of 16-bit tile images on the display
 
 The main features of the slide viewer are to manage the viewport, the zoom level and to provide an
 image processing to render a patchwork of 16-bit images. All these requirements are provided by
@@ -431,7 +391,8 @@ viewport. Instead we use an R-tree for this purpose. All the tiles boundaries ar
 R-tree. And to get the list of tiles within the viewport, we perform an intersection query of the
 R-tree with the viewport boundary.
 
-.. , that is an extension of B-Tree to two dimensions
+Slide Viewer Architecture
+=========================
 
 .. figure:: figure-viewer.pdf
    :scale: 50%
@@ -565,20 +526,39 @@ If we consider a GPU with more than 1024 cores, then most of the rows of our dis
 processed in parallel which is nowadays impossible to perform with a multi-core CPU. It is why our
 approach to render a mosaic of tiles is so efficient and the rendering is nearly done in real time.
 
-.. -------------------------------------------------------------------------------------------------
+Zoom Layer
+==========
 
-.. Customised LaTeX packages
-.. -------------------------
+.. Let defines the zoom factor as the ratio between the size of a pixel on the camera and the screen. 
+   For a zoom factor larger than one, OpenGL sampler
 
-.. Please avoid using this feature, unless agreed upon with the
-.. proceedings editors.
+When the texture must be magnified, it is important to enlarge the pixel without interpolation. In
+OpenGL it is achieved by using the *GL_NEAREST* mode for the texture magnification filter.
 
-.. ::
+Despite GPU are very powerful, there is a maximal number of tiles in the viewport that could be
+reasonably processed. The amount of memory of the GPU is an indicator of this limitation. If we
+consider a GPU with :math:`2048\,MB`, then we can load 66 textures having a layout of :math:`2560
+\times 2160\,\text{px}` and a 16-bit RGB format. It means we can display a mosaic of :math:`8 \times
+8` at the same time. If we want to display more tiles at the same time, then we have to compute a so
+called *mipmaps* which is a pyramidal collection of mignified textures. Usually we perform a geometric
+series that corresponds to divide by two the size of the texture recursively. Due to the power of
+the GPU, it is not necessary to compute all the pyramid, but just some levels. In our case we could
+compute the levels 8 and 16. For higher levels according to the size of the mosaic, it could be more
+efficient to compute a reconstructed image. These mignified textures could be computed online using
+CUDA or stored in the HDF5 files.
 
-..   .. latex::
-..      :usepackage: somepackage
+Our slide viewer implements a zoom manager in order to control according to the current zoom which
+zoom layer is active and to limit the zoom amplitude to an authorised range. Moreover we can
+implement some excluded zoom ranges and force the zoom to the nearest authorised zoom according to
+the zoom direction.
 
-..      Some custom LaTeX source here.
+Detection Layer
+===============
+
+.. Benchmark, further ...
+
+Conclusion
+----------
 
 .. -------------------------------------------------------------------------------------------------
 
