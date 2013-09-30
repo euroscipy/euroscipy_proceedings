@@ -68,37 +68,40 @@ a way to parallelize existing codecs, and in fact, at the time of writing there
 exists a proof-of-concept implementation in the Blosc Git repository which
 integrates the well known Snappy codec [Snappy]_ into the Blosc framework.
 
-The initial motivation for Blosc was to use in-memory compression to mitigate
-the effects of the memory hierarchy therefore approach problem of the  starving
-CPUs [Alted2009] and memory latency. The goal of in-memory compression
-techniques is to have a numerical container which keeps all data as in-memory
-compressed blocks. If the data needs to be operated on, it is decompressed only
-in the registers and caches of the CPU. Hence, data can be moved faster from
-memory to CPU and the net result is faster computation, since less CPU cycles
-are wasted while waiting for data. Similar techniques are applied successfully
-in other settings. Imagine for example, one wishes to transfer binary files
-over the internet. In this case the transfer time can be significantly improved
-by compressing the data before transferring it and decompressing it after
-having received it. As a result the total compressed transfer time, which is
-taken to be the sum of the compression and decompression process and the time
-taken to transfer the compressed file, is less than the time taken to transfer
-the plain file. For example the well known UNIX tool ``rsync`` [rsync]_ implements
-a `-z` switch which performs compression of the data before sending it and
-decompression after receiving it.  The same basic principle applies to
-in-memory compression, except that we are transferring data from memory to CPU.
-Initial implementations based on Blosc exist, c.f. Blaze [Blaze]_ and Carray
-[CArray]_, and have been shown to yield favourable results [Personal
-communication with Francesc Alted].
+Blosc was initially developed to support in-memory compression in order to
+mitigate the effects of the memory hierarchy [Jacob2009]_. More specifically,
+to mitigate the effects of memory latency, i.e. the ever growing divide between
+the CPU speed and the memory access speed |--| which is also known as the problem of
+the starving CPUs [Alted2009]_.
+
+The goal of in-memory compression techniques is to have a numerical container
+which keeps all data as in-memory compressed blocks. If the data needs to be
+operated on, it is decompressed only in the registers and caches of the CPU.
+Hence, data can be moved faster from memory to CPU and the net result is faster
+computation, since less CPU cycles are wasted while waiting for data. Similar
+techniques are applied successfully in other settings. Imagine for example, one
+wishes to transfer binary files over the internet. In this case the transfer
+time can be significantly improved by compressing the data before transferring
+it and decompressing it after having received it. As a result the total
+compressed transfer time, which is taken to be the sum of the compression and
+decompression process and the time taken to transfer the compressed file, is
+less than the time taken to transfer the plain file. For example the well known
+UNIX tool ``rsync`` [rsync]_ implements a `-z` switch which performs
+compression of the data before sending it and decompression after receiving it.
+The same basic principle applies to in-memory compression, except that we are
+transferring data from memory to CPU.  Initial implementations based on Blosc
+exist, c.f. Blaze [Blaze]_ and Carray [CArray]_, and have been shown to yield
+favourable results [Personal communication with Francesc Alted].
 
 Numpy
 -----
 
-The Numpy [Numpy] ndarray is the de-facto multidimensional numerical container
-for scientific python applications.  It is probably the most fundamental
-package of the scientific python ecosystem and widely used and relied upon by
-third-party libraries and applications. It consists of the n-dimensional array
-class, various different initialization routines and many different ways to
-operate on the data efficiently.
+The Numpy [VanDerWalt2011]_ [Numpy]_ ndarray is the de-facto multidimensional
+numerical container for scientific python applications.  It is probably the
+most fundamental package of the scientific python ecosystem and widely used and
+relied upon by third-party libraries and applications. It consists of the
+N-dimensional array class, various different initialization routines and many
+different ways to operate on the data efficiently.
 
 Existing Lightweight Solutions
 ------------------------------
@@ -185,18 +188,18 @@ is required during the compression and decompression process, for example when
 compressing or decompression from/to an external storage medium.
 
 With version 3 the format was enhanced to allow appending data to an existing
-Bloscpack compressed file (or buffer). This is implemented by preallocating the
-sizes used by the metadata and the offsets sections. For the metadata, we simply
-fill the empty space with null bytes and store how much additional space is
-available in the header.  For the offsets a similar strategy of adding unused
-offsets to file is employed.  Since we can not pre-allocate an infinite amount
-of space, only a limited amount of data can potentially be appended. To provide
-the consumers of the format with as much flexibility as possible, the amount of
-space to preallocate can be configured.
+Bloscpack compressed file. This is achieved by over-allocating the offsets and
+metadata section with dummy values to allow chunks to be appended later and
+metadata to be enlarged. One caveat of this is that we can not pre-allocate an
+infinite amount of space and so only a limited amount of data can potentially be
+appended. However, to provide potential consumers of the format with as much
+flexibility as possible, the amount of space to be pre-allocated is
+configurable.
 
 For an in-depth discussion of the technical details of the  Bloscpack format
 the interested reader is advised to consult the official documentation
-[Bloscpack]_.
+[Bloscpack]_. This contains a full description of the header layout, the
+sizes of the entries and their permissible values.
 
 
 Command Line Interface
@@ -205,17 +208,17 @@ Command Line Interface
 Initially, Bloscpack was conceived as a command-line compression tool. At the
 time of writing, a Python API is in development and, in fact, the command-line
 interface is being used to drive and dog-food the Python API. Contrary to
-existing tools such as ``gzip`` [gzip]_, ``bloscpack`` doesn't use command-line options
-to control its mode of operation but instead uses the subcommand flavour in a
-fashion similar to ``git``.  Here is a simple example:
+existing tools such as ``gzip`` [gzip]_, ``bloscpack`` doesn't use command-line
+options to control its mode of operation, but instead uses the a subcommand
+style. Here is a simple example:
 
 .. code-block:: console
 
     $ ./blpk compress data.dat
     $ ./blpk decompress data.dat.blp data.dcmp
 
-Another interesting subcommand is the ``info`` subcommand which can be used to
-inspect the header and metadata of an existing file:
+Another interesting subcommand is ``info`` which can be used to inspect the
+header and metadata of an existing file:
 
 .. code-block:: console
 
@@ -228,13 +231,14 @@ options and many examples of how to use the command line API.
 Packing Numpy Arrays
 --------------------
 
-As of version `0.4.0` Bloscpack comes with support for serializing Numpy
+As of version 0.4.0 Bloscpack comes with support for serializing Numpy
 ndarrays. The approach is simple and lightweight: the data buffer is saved in
 Blosc compressed chunks as defined by the Bloscpack format. The ``shape``,
-``dtype`` and ``order`` attributes |---| the same ones saved in the NPY format |---|
-are saved in the metadata section.  Upon de-serialization an empty array is
-allocated from the three attributes in the metadata section and then the chunks
-and decompressed into the pre-allocated array.
+``dtype`` and ``order`` attributes |---| the same ones saved in the NPY format
+|---| are saved in the metadata section.  Upon de-serialization, first an empty
+ndarray is allocated from the information in the three metadata attributes.
+Then, the Bloscpack chunks are decompressed directly into the pre-allocated
+array.
 
 The Bloscpack Python API for Numpy ndarray is very similar to the simple NPY
 interface; arrays can be serialized/de-serialized using single function
@@ -307,8 +311,14 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 
 6. *Be reverse engineered.*
 
-   Since the data is compressed it will be very difficult to reverse engineer
-   the format without the appropriate documentation.
+   In this case *reverse engineering* refers to the ability to decode a
+   Bloscpack compressed file after both the Bloscpack code and file-format
+   specification have been lost. For NPY this can be achieved if one roughly
+   knows what to look for, namely three metadata attributes and one plain data
+   block. In the Bloscpack case, things are more difficult. First of all, the
+   header does have a larger number of entries which must first be deciphered.
+   Secondly the data is compressed and without knowledge of the compression
+   scheme and implementation this will be very difficult to reverse engineer.
 
 7. *Allow memory-mapping of the data.*
 
@@ -640,6 +650,10 @@ References
 .. [Bloscpack] Bloscpack https://github.com/esc/bloscpack
 .. [Haenel2013] Valentin Haenel. *Introducing Bloscpack* EuroScipy 2013 Presentation `https://github.com/esc/euroscipy2013-talk-bloscpack <https://github.com/esc/euroscipy2013-talk-bloscpack>`_
 .. [CPU] `Intel® Core™ i7-3667U Processor <http://ark.intel.com/products/64898>`_
+.. [Jacob2009] Bruce Jacob. *The Memory System: You Can't Avoid It, You Can't Ignore It, You Can't Fake It*
+    Synthesis Lectures on Computer Architecture 2009, 77 pages, 
+.. [VanDerWalt2011] Stefan Van Der Walt, S. Chris Colbert, Gaël Varoquaux *The
+   NumPy array: a structure for efficient numerical computation* Computing in Science and Engineering 13, 2 (2011) 22-30
 .. [Alted2010] Francesc Alted. *Why modern CPUs are starving and what can be
    done about it*, Computing in Science & Engineering, Vol. 12, No. 2. (March 2010), pp. 68-71
    http://www.blosc.org/docs/StarvingCPUs-CISE-2010.pdf
