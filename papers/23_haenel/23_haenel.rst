@@ -33,7 +33,7 @@ Introduction
 
 When using compression during storage of numerical data there are two potential
 improvements one can make. First, by using compression, naturally one can save
-storage space. Secondly -- and this is often overlooked -- once can save time.
+storage space. Secondly |---| and this is often overlooked |---| one can save time.
 When using compression during serialization, the total compression time is the
 sum of the time taken to perform the compression and the time taken to write
 the compressed data to the storage medium. Depending on the compression speed
@@ -49,16 +49,16 @@ shuffling Blosc codec.
 Blosc
 -----
 
-Blosc [Blosc] is a fast, multitreaded, blocking and shuffling compressor designed
+Blosc [Blosc]_ is a fast, multitreaded, blocking and shuffling compressor designed
 initially for in-memory compression. Contrary to many other available
 compressors which operate sequentially on a data buffer, Blosc uses the
-blocking technique [Alted2009] [Alted2010] to split the dataset into individual blocks and can
+blocking technique [Alted2009]_ [Alted2010]_ to split the dataset into individual blocks and can
 then operate on each block in a multithreaded fashion. Also, Blosc features a
-shuffle filter [Alted2009](p.71) which may reshuffle multi-byte elements, e.g. 8 byte
+shuffle filter [Alted2009]_ (p.71) which may reshuffle multi-byte elements, e.g. 8 byte
 doubles, by significance. The net-result for series of numerical elements with
 little difference, is that similar bytes are placed closer together and can
 thus be better compressed. Internally, Blosc uses its own codec, blosclz,
-which is a derivative of FastLZ [FastLZ] and implements the LZ77 [LZ77] scheme.
+which is a derivative of FastLZ [FastLZ]_ and implements the LZ77 [LZ77]_ scheme.
 However, it is designed to be extensible, and allows other codecs to be used.
 Another view of this conceptually, is that Blosc is a meta-codec or framework,
 that handles splitting the data into blocks, applying the shuffle filter and
@@ -66,7 +66,7 @@ managing the individual threads. Blosc then relies on a "real" codec to perform
 that actual compression of the data blocks. As such, one can think of Blosc as
 a way to parallelize existing codecs, and in fact, at the time of writing there
 exists a proof-of-concept implementation in the Blosc Git repository which
-leverages the well known Snappy codec [Snappy] into the Blosc framework.
+integrates the well known Snappy codec [Snappy]_ into the Blosc framework.
 
 The initial motivation for Blosc was to use in-memory compression to mitigate
 the effects of the memory hierarchy therefore approach problem of the  starving
@@ -82,13 +82,13 @@ by compressing the data before transferring it and decompressing it after
 having received it. As a result the total compressed transfer time, which is
 taken to be the sum of the compression and decompression process and the time
 taken to transfer the compressed file, is less than the time taken to transfer
-the plain file. For example the well known UNIX tool ``rsync`` [rsync] implements
+the plain file. For example the well known UNIX tool ``rsync`` [rsync]_ implements
 a `-z` switch which performs compression of the data before sending it and
 decompression after receiving it.  The same basic principle applies to
 in-memory compression, except that we are transferring data from memory to CPU.
-Initial implementations based on Blosc exist, c.f. Blaze [Blaze] and Carray
-[Carray], and have been shown to yield favourable results (Personal
-communication with Francesc Alted).
+Initial implementations based on Blosc exist, c.f. Blaze [Blaze]_ and Carray
+[CArray]_, and have been shown to yield favourable results [Personal
+communication with Francesc Alted].
 
 Numpy
 -----
@@ -103,10 +103,9 @@ operate on the data efficiently.
 Existing Lightweight Solutions
 ------------------------------
 
-There are a number of plain (uncompressed) and compressed lightweight
-serialization formats for Numpy arrays that we can compare Bloscpack to. There
-are of course, also more heavyweight solutions, for example HDF5 however they
-do not qualify as lightweight solutions.
+There are a number of other plain (uncompressed) and compressed lightweight
+serialization formats for Numpy arrays that we can compare Bloscpack to. We
+specifically ignore more heavyweight solutions, such as HDF5, in this comparison.
 
 * NPY
 * NPZ
@@ -115,7 +114,7 @@ do not qualify as lightweight solutions.
 NPY
 ...
 
-*NPY* [NPY] is a simple plain serialization format for numpy. It is considered
+*NPY* [NPY]_ is a simple plain serialization format for numpy. It is considered
 somewhat of a gold standard for the serialization. One of its advantages is
 that it is very, very lightweight. The format specification is simple and can
 easily be digested withing an hour. In essence it simply contains the ndarray
@@ -126,25 +125,25 @@ plain serialization format and does not support compression.
 NPZ
 ...
 
-*NPZ* is, simply put, a Zip file which contains multiple NPZ files. Since this is
+*NPZ* is, simply put, a Zip file which contains multiple NPY files. Since this is
 a Zip file it may be optionally compressed, however the main uses case is to
 store multiple ndarrays in a single file. Zip is an implementation of the
-DEFLATE [DEFLATE] algorithm.
+DEFLATE [DEFLATE]_ algorithm.
 
 ZFile
 .....
 
-*ZFile* is the native serialization format that ships with the Joblib [Joblib]
-framework. Joblib is equipped with a caching mechanism that supports caching
+*ZFile* is the native serialization format that ships with the Joblib
+[Joblib]_ framework. Joblib is equipped with a caching mechanism that supports caching
 input and output arguments to functions and can thus avoid running heavy
 computations if the input has not changed. When serializing ndarrays with
 Joblib, a special subclass of the Pickler is used to store the metadata whereas
-the datablock is serialized as a ZFile. ZFile uses zlib [zlib] internally and
+the datablock is serialized as a ZFile. ZFile uses zlib [zlib]_ internally and
 simply runs zlib on the entire data buffer. zlib is also an implementation of
 the DEFLATE algorithm. One drawback of the current ZFile implementation is that
 no chunking scheme is employed. This means that the memory requirements might
-be twice that of the original input. Imagine trying to compress and
-uncompressible buffer of 1GB: in this case the memory requirement would be 2GB,
+be twice that of the original input. Imagine trying to compress an
+incompressible buffer of 1GB: in this case the memory requirement would be 2GB,
 since the entire buffer must be copied in memory as part of the compression
 process before it can be written out to disk.
 
@@ -174,8 +173,8 @@ which is a blosc compressed buffer. Each chunk can be optionally followed by a
 data corruption.
 
 The chunked format was initially chosen to circumvent a 2GB limitation of the
-Blosc codec, In fact, the ZFile format suffers from this exact limitation
-since zlib -- at least the Python bindings -- is also limited to buffers of
+Blosc codec. In fact, the ZFile format suffers from this exact limitation
+since zlib |---| at least the Python bindings |---| is also limited to buffers of
 2GB in size. The limitation stems from the fact that ``int32`` are used
 internally by the algorithms to store the size of the buffer and the maximum
 value of an ``int32`` is indeed 2GB. In any case, using a chunked scheme turned
@@ -197,16 +196,16 @@ space to preallocate can be configured.
 
 For an in-depth discussion of the technical details of the  Bloscpack format
 the interested reader is advised to consult the official documentation
-[Bloscpack].
+[Bloscpack]_.
 
 
 Command Line Interface
 ----------------------
 
 Initially, Bloscpack was conceived as a command-line compression tool. At the
-time of writing, a Python API is in development and in fact, the command-line
+time of writing, a Python API is in development and, in fact, the command-line
 interface is being used to drive and dog-food the Python API. Contrary to
-existing tools such as ``gzip`` [GZIP], ``bloscpack`` doesn't use command-line options
+existing tools such as ``gzip`` [gzip]_, ``bloscpack`` doesn't use command-line options
 to control its mode of operation but instead uses the subcommand flavour in a
 fashion similar to ``git``.  Here is a simple example:
 
@@ -232,13 +231,13 @@ Packing Numpy Arrays
 As of version `0.4.0` Bloscpack comes with support for serializing Numpy
 ndarrays. The approach is simple and lightweight: the data buffer is saved in
 Blosc compressed chunks as defined by the Bloscpack format. The ``shape``,
-``dtype`` and ``order`` attributes -- the same ones saved in the NPY format --
+``dtype`` and ``order`` attributes |---| the same ones saved in the NPY format |---|
 are saved in the metadata section.  Upon de-serialization an empty array is
 allocated from the three attributes in the metadata section and then the chunks
 and decompressed into the pre-allocated array.
 
 The Bloscpack Python API for Numpy ndarray is very similar to the simple NPY
-interface, arrays can be serialized/de-serialized using single function
+interface; arrays can be serialized/de-serialized using single function
 invocations.
 
 Here is an example of serializing a Numpy array to file:
@@ -264,19 +263,19 @@ And here is an example of serializing it to a string:
    >>> assert (a == c).all()
 
 The compression parameters can be configured as keyword arguments to the
-``pack`` functions see the documentation for details.
+``pack`` functions (see the documentation for detail).
 
 Comparison to NPY
 -----------------
 
-The [NPY] specification lists a number of requirements for the NPY format. To
+The [NPY]_ specification lists a number of requirements for the NPY format. To
 compare NPY and Bloscpack feature-wise, let us look at the extent to which
 Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 
 1. *Represent all NumPy arrays including nested record arrays and object arrays.*
 
    Since the support for Numpy ndarrays is very fresh only some empirical
-   results using toy arrays have been tested Simple integer, floating point
+   results using toy arrays have been tested. Simple integer, floating point
    types and string arrays seem to work fine. Even toy object arrays survive
    the round-trip test.  Version 0.4.0 did not handle record and nested record
    arrays correctly, but this is fixed with version 0.4.1.
@@ -284,7 +283,7 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 2. *Represent the data in its native binary form.*
 
    Since Bloscpack will compress the data it is impossible to represent the data
-   in it's native binary form.
+   in its native binary form.
 
 3. *Be contained in a single file.*
 
@@ -302,7 +301,7 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
    shape and dtype on a machine of a different architecture [...] Endianness
    [...] Type.*
 
-   A mentioned above all integer types as well as string  and object arrays are
+   As mentioned above all integer types as well as string  and object arrays are
    handled correctly and their shape is preserved. As for endianness, initial
    toy examples with large-endian dtypes pass the roundtrip test
 
@@ -409,7 +408,7 @@ Hardware
 ........
 
 The machine used was a Lenovo Carbon X1 ultrabook with an Intel Core i7-3667U
-Processor [CPU].  This processor has 2 physical cores with active
+Processor [CPU]_.  This processor has 2 physical cores with active
 hyperthreading resulting in 4 threads. The CPU scaling governor was set to
 `performance` which resulted in a CPU frequency of 2.0Ghz per core. The CPU has
 three levels of cache at: `32K`, `256K` and `4096k` as reported by Linux sysfs.
@@ -466,7 +465,7 @@ the data reported in this article:
 * python: 'Python 2.7.5 :: Anaconda 1.6.1 (64-bit)'
 
 The benchmark-script and results files are available from the repository of
-the  EuroScipy2013 talk about Bloscpack [Haenel2013]. The results file analysed
+the  EuroScipy2013 talk about Bloscpack [Haenel2013]_. The results file analysed
 are contained in the csv file `results_1379809287.csv`.
 
 Bloscpack Settings
