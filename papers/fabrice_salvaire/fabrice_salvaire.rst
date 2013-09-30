@@ -546,12 +546,13 @@ the zoom direction.
 
    Cell displayed in the slide viewer. The slide was acquired with an epifluorescence-microscope at
    magnification :math:`40\times` with a camera of resolution :math:`1392 \times 1040\,\text{px}`
-   and with fours colours. The size of the part of the mosaic shown on the viewport is :math:`19
+   and with four colours. The size of the part of the mosaic shown on the viewport is :math:`19
    \times 22` :label:`slide-viewer-image`, which corresponds to 418 tiles and thus around
    :math:`595\,\text{Mpx}`. The dimension of the visible surface is around :math:`4.9 \times
    3.1\,\text{mm}`. Here the slide image is rendered at magnification :math:`2.5\times` and the zoom
    layer corresponds to a mignification of level :math:`2^4 = 16` and thus to a texture of dimension
-   :math:`87 \times 65\,\text{px}`. So there is around :math:`2\,\text{Mpx}` to process. :label:`slide-viewer-image`
+   :math:`87 \times 65\,\text{px}`. So there is around :math:`2\,\text{Mpx}` to
+   process. :label:`slide-viewer-image`
 
 .. 820\,544\,
 .. 2227940
