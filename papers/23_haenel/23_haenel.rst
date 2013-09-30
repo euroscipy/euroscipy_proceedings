@@ -638,28 +638,30 @@ Stéfan van der Walt for reviewing early drafts of this paper.
 References
 ----------
 
+.. [Alted2009] Francesc Alted. *The Data Access Problem* EuroScipy 2009 Keynote
+   Presentation http://www.blosc.org/docs/StarvingCPUs.pdf
+.. [Alted2010] Francesc Alted. *Why modern CPUs are starving and what can be
+   done about it*, Computing in Science & Engineering, Vol. 12, No. 2. (March 2010), pp. 68-71
+   http://www.blosc.org/docs/StarvingCPUs-CISE-2010.pdf
+.. [DEFLATE] Peter. Deutsch *DEFLATE Compressed Data Format Specification version 1.3* RFC1951 1996 http://tools.ietf.org/html/rfc1951
+.. [Haenel2013] Valentin Haenel. *Introducing Bloscpack* EuroScipy 2013 Presentation `https://github.com/esc/euroscipy2013-talk-bloscpack <https://github.com/esc/euroscipy2013-talk-bloscpack>`_
+.. [Jacob2009] Bruce Jacob. *The Memory System: You Can't Avoid It, You Can't Ignore It, You Can't Fake It*
+    Synthesis Lectures on Computer Architecture 2009, 77 pages, 
+.. [VanDerWalt2011] Stefan Van Der Walt, S. Chris Colbert, Gaël Varoquaux *The
+   NumPy array: a structure for efficient numerical computation* Computing in Science and Engineering 13, 2 (2011) 22-30
+.. [LZ77] Ziv, Jacob; Lempel, Abraham (May 1977). *A Universal Algorithm for
+   Sequential Data Compression*. IEEE Transactions on Information Theory 23
+   (3): 337–343.
 .. [NPY] Robert Kern. *The NPY format* `https://github.com/numpy/numpy/blob/master/doc/neps/npy-format.txt <https://github.com/numpy/numpy/blob/master/doc/neps/npy-format.txt>`_
 .. [Joblib] Joblib `http://pythonhosted.org/joblib/ <http://pythonhosted.org/joblib/>`_
 .. [zlib] Zlib `http://www.zlib.net/ <http://www.zlib.net/>`_
 .. [gzip] Gzip http://www.gzip.org/
-.. [DEFLATE] DEFLATE `http://tools.ietf.org/html/rfc1951 <http://tools.ietf.org/html/rfc1951>`_
 .. [rsync] Rsync http://rsync.samba.org/
 .. [Blaze] Blaze `http://blaze.pydata.org/ <http://blaze.pydata.org/>`_
 .. [CArray] CArray `http://carray.pytables.org/docs/manual/ <http://carray.pytables.org/docs/manual/>`_
 .. [Numpy] Numpy `http://www.numpy.org/ <http://www.numpy.org/>`_
 .. [FastLZ] FastLZ `http://fastlz.org/  <http://fastlz.org/>`_
-.. [LZ77] LZ77 `http://en.wikipedia.org/wiki/LZ77_and_LZ78 <http://en.wikipedia.org/wiki/LZ77_and_LZ78>`_
 .. [Snappy] Snappy  `http://code.google.com/p/snappy/ <http://code.google.com/p/snappy/>`_
 .. [Blosc] Blosc `http://blosc.pytables.org/trac <http://blosc.pytables.org/trac>`_
 .. [Bloscpack] Bloscpack https://github.com/esc/bloscpack
-.. [Haenel2013] Valentin Haenel. *Introducing Bloscpack* EuroScipy 2013 Presentation `https://github.com/esc/euroscipy2013-talk-bloscpack <https://github.com/esc/euroscipy2013-talk-bloscpack>`_
 .. [CPU] `Intel® Core™ i7-3667U Processor <http://ark.intel.com/products/64898>`_
-.. [Jacob2009] Bruce Jacob. *The Memory System: You Can't Avoid It, You Can't Ignore It, You Can't Fake It*
-    Synthesis Lectures on Computer Architecture 2009, 77 pages, 
-.. [VanDerWalt2011] Stefan Van Der Walt, S. Chris Colbert, Gaël Varoquaux *The
-   NumPy array: a structure for efficient numerical computation* Computing in Science and Engineering 13, 2 (2011) 22-30
-.. [Alted2010] Francesc Alted. *Why modern CPUs are starving and what can be
-   done about it*, Computing in Science & Engineering, Vol. 12, No. 2. (March 2010), pp. 68-71
-   http://www.blosc.org/docs/StarvingCPUs-CISE-2010.pdf
-.. [Alted2009] Francesc Alted. *The Data Access Problem* EuroScipy 2009 Keynote
-   Presentation http://www.blosc.org/docs/StarvingCPUs.pdf
