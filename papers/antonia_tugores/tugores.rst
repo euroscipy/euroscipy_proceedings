@@ -1,6 +1,6 @@
 :author: Antònia Tugores
 :email: antonia@ifisc.uib-csic.es
-:institution: Institute for Cross-Disciplinary Physics and Complex Systems, IFISC(UIB-CSIC)
+:institution: Institute for Cross-Disciplinary Physics and Complex Systems, IFISC (UIB-CSIC)
 :author: Pere Colet
 :email: pere@ifisc.uib-csic.es
 :institution: Institute for Cross-Disciplinary Physics and Complex Systems, IFISC(UIB-CSIC)
@@ -17,31 +17,41 @@ people has several accounts in them. Besides, the emergence of
 smartphones helped people to use these accounts constantly, and all these generate
 new sources of information with large and public datasets to be studied. Under
 this conditions, data acquisition and storage is a key point to allow
-data analysis. In this context, we are retrieving geolocated tweets as a source
+data analysis. In this context, we are gathering geolocated tweets as a source
 of information for mobility patterns.
 
 
 .. class:: keywords
 
-   big data, noSQL, storage, management, distributed, computing
+big data, noSQL, data acquisition, benchmark
 
 
 Introduction
 ============
 
-In the framework of EUNOIA project we are currently gathering information related to
-mobility. The aim is to study mobility behavior of people in urban areas , such as
-attitudes and lifestyle, which are particularly important, e.g., for developing demand
+Even that social networks appeared in the old nineties, they matured in the last decade
+at the same time that mobile internet connections has grown. Even that some
+social networks data is not freely accessible, others like Twitter are totally
+public and includes geolocation data. This information can be used to study mobility
+behaviour of people in urban areas, such as attitudes and lifestyle, which are
+particularly important, e.g., for developing demand
 management concepts aiming to influence mobility decisions.
 
-In this context we are using geolocalized tweets as a source of information form
+In the framework of EUNOIA project we are currently gathering information related to
+mobility and in this context we are using geolocated tweets as a source of information
+for
 mobility patterns. In order to collect this data we make use of Python and Tweepy.
-Storing this data and accessing to them quickly is a challenging task for which we rely
-on MongoDB and the Python plugging for it. Analysis and visualization are achieved by
-using raw Python code, networkx and matplotlib. And finally, the Python web framework
-Django is used to share the data between the project partners.
+Storing this data and accessing them quickly is a challenging task for which we rely
+on MongoDB, a noSQL database, and its Python driver.
 
 
+The objective of this paper is to discuss efficient ways to retrieve,
+and store large amounts of data from social networks such as
+Twitter to study human mobility patterns. The paper is organized as
+follows, SQL and noSQL databases are described in section 2, section 3 explains
+how data acquisition is achieved. Section 4 checks performance benchmarks to MongoDB and
+MySQL, preliminary results are shown in section 5 and finally,
+concluding remarks are given in section 6.
 
 Data storage
 ============
@@ -136,7 +146,8 @@ MongoDB configuration
 ---------------------
 
 MongoDB minimal configuration involves a single computer with all the data and
-a Mongo client the user application connects to. In order to ensure automatic failover recovery, a cluster of mongo
+a Mongo client the user application connects to. In order to ensure automatic
+failover recovery, a cluster of mongo
 daemons that replicate amongst one another is needed, a Replica Set.
 Replica sets consist of a minimum of three daemon instances, one of them
 designated as the primary and the others as secondaries. The primary one receives
@@ -699,7 +710,11 @@ urban land use and transportation models will be studied by integrating the role
 Concluding remarks
 ==================
 
-TODO
+In summary, we have presented an example of efficient social networks data acquisition
+and data storage by using Python programming language and specific packages to connect
+user's applications to Twitter APIs and to MongoDB.
+
+
 
 
 Acknowledgements
