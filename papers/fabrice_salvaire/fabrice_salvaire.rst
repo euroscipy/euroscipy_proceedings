@@ -4,16 +4,6 @@
 
 .. -------------------------------------------------------------------------------------------------
 
-.. Notes
-
-   performance
-   discuss how to parallelise the job, network
-   sequence diagram
-   flatten, seek time
-   accuracy ? position rendering interpolation
-
-.. -------------------------------------------------------------------------------------------------
-
 -------------------------------------------
 High-Content Digital Microscopy with Python
 -------------------------------------------
@@ -29,7 +19,7 @@ High-Content Digital Microscopy with Python
 .. class:: keywords
 
   high-content microscopy, digital microscopy, high-throughput scanner, virtual slide, slide viewer,
-  multi-processing, Python language, HDF5, ZeroMQ, OpenGL
+  multi-processing, HDF5, ZeroMQ, OpenGL
 
 Introduction
 ------------
@@ -47,9 +37,9 @@ cryptography. The third enhancement concerns high-content application where the 
 considerable scale-up of the data processing throughput and thus open the way to new researches and
 medical diagnostics.
 
-We will discuss in this article how the Python ecosystem could provide efficiently a software
-platform for the digital microscopy. Our discussion will first present the data acquisition method,
-and then we will describe the data storage and finally the image viewer.
+We will discuss in this paper how the Python ecosystem could provide efficiently a software platform
+for the digital microscopy. Our discussion will first present the data acquisition method, and then
+we will describe the data storage and finally the image viewer.
 
 Data Acquisition
 ----------------
@@ -84,10 +74,10 @@ method.
     filters are used to restrict the excitation and filter the
     emission. :label:`epifluorescence-microscope`
 
-A camera like the Andor Neo sCMOS features a sensor of :math:`2560 \times 2160\,\text{px}` that
-corresponds to a surface of :math:`416 \times 351\,\text{um}` at magnification one. So to cover the
-whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times 51`
-(2193 tiles) using an automated stagger.
+A camera like the Andor Neo sCMOS features a sensor of dimension :math:`2560 \times 2160\,\text{px}`
+that corresponds to a surface of :math:`416 \times 351\,\text{um}` at magnification one. So to cover
+the whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times
+51` (2193 tiles) using an automated stagger.
 
 The sCMOS Andor Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
 another stage with a combination of two amplifier-DACs to achieve a 16-bit resolution for high
@@ -530,9 +520,6 @@ approach to render a mosaic of tiles is so efficient and the rendering is nearly
 Zoom Layer
 ==========
 
-.. Let defines the zoom factor as the ratio between the size of a pixel on the camera and the screen. 
-   For a zoom factor larger than one, OpenGL sampler
-
 When the texture must be magnified, it is important to enlarge the pixel without interpolation. In
 OpenGL it is achieved by using the *GL_NEAREST* mode for the texture magnification filter.
 
@@ -553,13 +540,76 @@ zoom layer is active and to limit the zoom amplitude to an authorised range. Mor
 implement some excluded zoom ranges and force the zoom to the nearest authorised zoom according to
 the zoom direction.
 
+.. figure:: slide-viewer-2.png
+   :scale: 18%
+   :figclass: t
+
+   Cell displayed in the slide viewer. The slide was acquired with an epifluorescence-microscope at
+   magnification :math:`40\times` with a camera of resolution :math:`1392 \times 1040\,\text{px}`
+   and with fours colours. The size of the part of the mosaic shown on the viewport is :math:`19
+   \times 22` :label:`slide-viewer-image`, which corresponds to 418 tiles and thus around
+   :math:`595\,\text{Mpx}`. The dimension of the visible surface is around :math:`4.9 \times
+   3.1\,\text{mm}`. Here the slide image is rendered at magnification :math:`2.5\times` and the zoom
+   layer corresponds to a mignification of level :math:`2^4 = 16` and thus to a texture of dimension
+   :math:`87 \times 65\,\text{px}`. So there is around :math:`2\,\text{Mpx}` to process. :label:`slide-viewer-image`
+
+.. 820\,544\,
+.. 2227940
+
 Detection Layer
 ===============
 
-.. Benchmark, further ...
+Our slide viewer is not limited to display raw images, but can also display tiles from an image
+processing pipeline. When the viewer render a viewport, it first looks which tiles compose the
+viewport, then for each tile, it looks if the OpenGL LRU cache has a texture for the corresponding
+tile and image processing pipeline, if the texture does not exists yet then it cascades the request
+to the tile LRU cache and finally it will asks the image processing pipeline to generate the
+image. The tile loading from the virtual slide corresponds to the so called raw image pipeline and
+each zoom layer owns its image pipeline. Moreover each pipeline could have its own fragment shader
+to customise the rendering.
+
+Benchmark
+=========
+
+Figure :ref:`slide-viewer-image` show a reconstructed image made of 418 tiles. For a tile dimension
+of :math:`1392 \times 1040\,\text{px}` and a four colours acquisition, our slide viewer needs around
+:math:`2\,\text{s}` to render the zoom layer 16 and :math:`6\,\text{s}` for the layer 8 (100 raw
+tiles) on a workstation with a CPU Xeon E5-1620, a GPU GeForce GTX-660 and the HDF5 file stored on a
+local SATA hard disk. The required time to load a tile form the HDF5 file is around
+:math:`50\,\text{ms}`, thus the tile loading account for :math:`80\,\%` of the full rendering time.
 
 Conclusion
 ----------
+
+This paper gives an overview how the Python ecosystem could be used to build a software platform for
+high-content digital microscopy. Our achievement demonstrates Python is well suited to build a
+framework for big data. Despite Python is a high level language, we can handle a large amount of
+data efficiently by using powerful C libraries and GPU.
+
+First we gave an overview how to store and handle virtual slides using Python, Numpy and the HDF5
+library. Different methods to store the images of the fields of view within a dataset was
+discussed. In particular the case where we do not reconstruct an image of slide once and for all,
+but rather perform an on-line reconstruction from the raw images. Despite our method to store the
+images works well, it would be interesting to look deeper in the HDF5 library to see if we could do
+something still better.
+
+We described the concept of remote virtual slide which is a client-server model build on top of our
+virtual slide framework. We gave two examples of utilisation of this client-server model, the
+scanner interconnection with the slide writer and the tile dealer. Also we shown how this
+architecture solve the GIL problem and enhance the performance.
+ 
+Finally we described our slide viewer architecture based on the OpenGL programmable pipeline and a
+texture patchwork. We gave an overview on the vertex and the fragment shader. Thanks to the power of
+GPU, this method can render more than three colours in quasi real time. Moreover we explained how to
+manage the zoom level efficiently so as to overcome the limited amount of RAM of the GPU.
+
+In a near future, it would be interesting to see how the JIT Python interpreter PyPy will enhance
+the performance of this framework. Up to now the lake of support of C library like Numpy and Qt
+prevents to run the code with it.
+
+The Git repository https://github.com/FabriceSalvaire/PyOpenGLV4 provides an oriented object API on
+top of PyOpenGL to work with the OpenGL programmable pipeline. This module is used in our slide
+viewer.
 
 .. -------------------------------------------------------------------------------------------------
 
