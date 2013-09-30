@@ -131,7 +131,8 @@ NPZ
 *NPZ* is, simply put, a Zip file which contains multiple NPY files. Since this is
 a Zip file it may be optionally compressed, however the main uses case is to
 store multiple ndarrays in a single file. Zip is an implementation of the
-DEFLATE [DEFLATE]_ algorithm.
+DEFLATE [DEFLATE]_ algorithm. Unlike the other evaluated compressed formats,
+NPY does not support a compression level setting.
 
 ZFile
 .....
@@ -342,9 +343,9 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 Benchmarks
 ----------
 
-The benchmarks were designed to compare the three alternative serialization
-formats for Numpy ndarrays, NPY, NPZ and ZFile with Bloscpack. To this end, we
-measured compression speed, decompression speed, with and without the Linux
+The benchmarks were designed to compare the following three alternative serialization
+formats for Numpy ndarrays: NPY, NPZ and ZFile with Bloscpack. To this end, we
+measured compression speed, decompression speed, both with and without the Linux
 file system cache and compression ratio for a number of different experimental
 parameters.
 
@@ -372,7 +373,7 @@ The SD card was chosen to represent a class of very slow storage, not because
 we actually expect to serialize anything to an SD card in practice.
 
 To cut down on the number of data points we choose only to evaluate the
-compression levels 1, 3 and 7 for ZFile and additionally 9 for Bloscpack.
+compression levels 1, 3 and 7 for ZFile and 1, 3, 7 and 9 for Bloscpack.
 Although NPZ is a compressed format it does not support modifying the
 compression level. This results in using ``1 + 1 + 3 + 4 = 9`` different
 ``codec`` values.
@@ -496,11 +497,12 @@ the dataset entropy increases vertically across subplots. Figures 1 and 2 show
 results for the SSD storage type and figures 3 and four show results for the SD
 storage type. Figures 1 and 3 compare Bloscpack with NPY whereas figures 2 and
 4 compare Bloscpack with NPZ and ZFile. NPY is shown separately from NPZ and
-ZFile since the performance characteristics are so different that they can not
+ZFile since their performance characteristics are so different that they can not
 be adequately compared visually on the same plot. For all timing plots black
-is compression time, white is decompression time w/o the file system cache and
-gray is decompression time with a hot file system cache.  Lastly, figure 5 shows
-the compression ratios.
+bars indicate compression time, white is used to denote decompression time w/o
+the file system cache and gray identifies decompression time with a hot file system
+cache. For all timing plots, larger values indicate worse performance. Lastly,
+figure 5 shows the compression ratios for all examined formats.
 
 .. figure:: bp_vs_npy_ssd.pdf
    :align: center
@@ -535,25 +537,25 @@ the compression ratios.
    :scale: 60%
    :figclass: :figclass: w
 
-   Compression ratios for all examined solutions.
+   Compression ratios for all examined formats
 
 In Fig. 1 we can see how Bloscpack compares to NPY on the SSD storage type. The
 first thing to note, is that for small datasets (first column of subplots),
 Bloscpack does not lag behind much compared to NPY for compression and is
 actually slightly faster for decompression. However the absolute differences
-here are in the milisecond range, so one might perhaps argue that Bloscpack and
+here are in the millisecond range, so one might perhaps argue that Bloscpack and
 NPY are on par for small datasets. As soon as we move to the medium size
 datasets first gains can be seen. Especially for the low entropy case where
 Bloscpack beats NPY for both compression and decompression w/o file system
 cache. For the medium entropy case, Bloscpack is slightly faster for a few
-settings, at least for the compression and decompression. Surprisingly, for the
-decompression with a hot file system cache, Bloscpack is actually 2 times slower
-under the compression levels 7 and 9. One possibility for this might be that,
-even though the file contents are in memory, reading from the file necessitates
-an initial memory-to-memory copy, before the data can actually be decompressed.
-For the high entropy case, Bloscpack is mostly slightly slower than NPY. For
-the large dataset the results are simply a scaled version of the medium dataset
-size results and yield no additional insights.
+settings, at least for the compression and decompression cases. Surprisingly,
+for the decompression with a hot file system cache, Bloscpack is actually 2
+times slower under the compression levels 7 and 9. One possibility for this
+might be that, even though the file contents are in memory, reading from the
+file necessitates an initial memory-to-memory copy, before the data can
+actually be decompressed.  For the high entropy case, Bloscpack is mostly
+slightly slower than NPY. For the large dataset the results are simply a scaled
+version of the medium dataset size results and yield no additional insights.
 
 Fig. 2 shows the comparison between Bloscpack, NPY and ZFile on the SSD storage
 type. In this comparison, the speed of the Blosc compressor really shines. For
@@ -571,9 +573,9 @@ One very surprising result here is that both NPZ and ZFile with level 7 take
 extraordinary amounts of time to compress the low entropy dataset. In fact they
 take the longest on the low entropy dataset compared to the medium and high
 entropies. Potentially this is related to the high Lempel-Ziv complexity of
-that dataset. Recall that both NPZ and ZFile use the DEFLATE algorithm which
-belongs to the class of LZ77 dictionary encoders, so it may suffer since it
-no shuffle filter as in the case of Blosc is employed.
+that dataset, as mentioned before. Recall that both NPZ and ZFile use the
+DEFLATE algorithm which belongs to the class of LZ77 dictionary encoders, so it
+may suffer since it no shuffle filter as in the case of Blosc is employed.
 
 Figures 3. and 4. show the same results as figures 1. and 2. respectively but
 but for the SD storage class. Since the SD card is much slower than the SSD
@@ -600,11 +602,12 @@ entropy dataset.
 Conclusion
 ----------
 
-In this article Bloscpack was introduced. The features of the file format were
-presented and compared to other serialization formats in the context of Numpy
-ndarrays. Benchmarking results are presented that show how Bloscpack can yield
-performance improvements for serializing Numpy arrays under a variety of
-different circumstances. 
+This article introduced the Bloscpack file-format and python reference
+implementation. The features of the file format were presented and compared to
+other serialization formats in the context of Numpy ndarrays. Benchmarking
+results are presented that show how Bloscpack can yield performance
+improvements for serializing Numpy arrays when compared to existing solutions
+under a variety of different circumstances.
 
 Future Work
 -----------
@@ -615,21 +618,22 @@ results when decompressing with a hot file system cache. Also the bad
 performance of ZFile and NPY on the so-called low entropy dataset must be
 investigated and perhaps an alternative can be found that is not biased towards
 Bloscpack.  Additionally, some mathematical insights into the complexity reduction
-properties of Bloscs shuffle filter would be most valuable.
+properties of Blosc's shuffle filter would be most valuable.
 
-Lastly more comprehensive benchmarks need to be run. This means, finding
-non-artificial datasets and establishing a corpus to test Bloscpack and other
-solutions against. Also, It would be nice to run benchmarks on other
-architectures for machines with more than 2 physical cores, non-uniform
-memory access and an NFS file-system as commonly found in compute clusters.
+Lastly, more comprehensive benchmarks need to be run. This means, first finding
+non-artificial benchmark datasets and establishing a corpus to run Bloscpack
+and the other solutions on. Furthermore, It would be nice to run benchmarks on other
+architectures for machines with more than 2 physical cores, non-uniform memory
+access and an NFS file-system as commonly found in compute clusters.
 
 
 Gratitude
 ---------
 
 The author would like to thank the following people for advice, helpful
-comments and discussions: Pauli Virtanen, Stéfan van der Walt, Gaël Varoquaux,
-Robert Kern, Philippe Gervais and Francesc Alted.
+comments and discussions: Pauli Virtanen, Gaël Varoquaux, Robert Kern, Philippe
+Gervais and Francesc Alted. Also, the author would like to specially thank
+Stéfan van der Walt for reviewing early drafts of this paper.
 
 References
 ----------
