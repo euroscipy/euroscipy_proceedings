@@ -23,7 +23,7 @@ PySTEMM: Executable Concept Modeling for K-12 Learning
 
 
 Introduction
-------------
+============
 
 A model is a simplified representation of part of some world, focusing
 on selected aspects while ignoring others. A model underlies every
@@ -47,6 +47,7 @@ models, based on using objects and pure functions in Python:
 -  are more feasible and approachable than previously thought,
 -  invite bottom-up exploration and assembly, yet build deep
    understanding.
+
 
 Executable Concept Models
 -------------------------
@@ -80,14 +81,15 @@ some key points of the implementation of PySTEMM.
 
 
 Mathematics
------------
+===========
 
 We want to use a pure “functional” approach to our models, and expect
 (functional) concept models to generate (functional) math models. So we
 start with model of math functions:
 
+
 Basic Numeric Functions
-=======================
+-----------------------
 
 We model the domain of a function as a list of integers, and the
 evaluation of a function as a method *eval(int)*. We model two kinds of
@@ -159,8 +161,9 @@ understand.
 In subsequent sections, I will usually elide the original Python code,
 and show what the PySTEMM tool generates.
 
+
 Inverse Functions
-=================
+-----------------
 
 An InverseFunction inverts some other function. InverseFunction is a
 *high-order function*, since it receives a function to invert, and
@@ -185,8 +188,9 @@ function in blue, with the correct *domain* and *eval(10)*.
 
     Concept Instance of InverseFunction.
 
+
 Function Transforms as High-Order Functions
-===========================================
+-------------------------------------------
 
 Functions become very useful when we understand *high-order* functions
 like *inverse*. The graph-transforms commonly taught in middle school —
@@ -248,8 +252,9 @@ molecules, but elides the detailed structure within molecules.
 
     An Instance of a Reaction.
 
+
 Chemistry: Reaction Balancing
-=============================
+-----------------------------
 
 Our next model will do the complex computation of reaction balancing for
 basic chemical reactions. We start with a model of an unbalanced
@@ -277,8 +282,9 @@ the *elem\_balance\_matrix* and other intermediate variables.
 
     Reaction balance matrix and solved coefficients.
 
+
 Chemistry: Layered Models
-=========================
+-------------------------
 
 The previous example illustrates an important advantage of PySTEMM
 concept modeling. We do not directly jump in and try to model the
@@ -448,8 +454,9 @@ functions, we gain several benefits:
 -  Debugging becomes less of an issue, as the models are very close to
    the math taught in schools for physics, chemistry, etc.
 
+
 Templates
-=========
+---------
 
 All visualization is defined by *templates*, such as the one below:
 
@@ -507,7 +514,7 @@ extensions include:
 
 
 References
-----------
+==========
 
 .. [R1] White, Barbara Y. *ThinkerTools: Causal Models, Conceptual Change, and Science Education*,
         Vol. 10. Berkeley: Taylor & Francis, 1993. Print. Cognition and Instruction.
