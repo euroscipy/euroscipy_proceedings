@@ -20,7 +20,9 @@ PySTEMM: Executable Concept Modeling for K-12 Learning
     proof-of-concept tool called PySTEMM and sample models covering topics
     in math, physics, chemistry, and engineering.
 
+.. class:: keywords
 
+    STEM education, concept models, pure functions
 
 Introduction
 ============
