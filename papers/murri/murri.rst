@@ -200,7 +200,7 @@ The CPU time data prompt a few observations:
   details in a later section.
 
 
-.. figure:: Max_used_memory)_of_Python_runtimes_synopsis.pdf
+.. figure:: Max_used_memory_of_Python_runtimes_synopsis.pdf
    :figclass: wtb
    :align: center
 
@@ -240,7 +240,7 @@ the PyPy JIT framework dwarfs the memory used by the program itself.
 We have no explanation for the large memory consumption of Nuitka.
 
 
-.. figure:: CPU_time_of_Python_runtimes_M04.pdf.
+.. figure:: CPU_time_of_Python_runtimes_M04.pdf
    :figclass: tbp
    :align: left
 
@@ -249,7 +249,7 @@ We have no explanation for the large memory consumption of Nuitka.
    values in seconds.
    :label:`cpu-M04`
 
-. figure:: CPU_time_of_Python_runtimes_M05.pdf
+.. figure:: CPU_time_of_Python_runtimes_M05.pdf
    :figclass: tbp
    :align: left
 
