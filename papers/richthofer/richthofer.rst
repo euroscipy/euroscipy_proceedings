@@ -61,11 +61,12 @@ environments.
    JyNI
 
 Because of the complexity of the Python C-API, the task of developing JyNI revealed to be a true challenge.
-Especially the frequent use of macros lets the naive approach of directly delegating every C-API call to Jython fail.
+Especially the frequent occurrence of preprocessor macros in the public C-API allows for no naive approaches like directly delegating every C-API call to Jython.
 It turned out, that most built-in types need individual fixes, considerations and adjustments to allow seamless integration with Jython.
 
 There have been similar approaches for other Python implementations, namely [IRONCLAD]_ for IronPython and [CPYEXT]_ for PyPy.
-As far as we know, these suffer from equal difficulties as JyNI and also did not yet reach a satisfying compatibility level.
+As far as we know, these suffer from equal difficulties as JyNI and also did not yet reach a satisfying compatibility level for
+current Python versions.
 
 Another interesting work is NumPy4J [NP4J]_, which provides Java interfaces for NumPy by embedding the CPython interpreter.
 It features automatic conversion to Java-suitable types and thus allows easy integration with other Java frameworks.
@@ -102,21 +103,21 @@ Alternatively, one can use Jython's start-script::
 Usually the JVM does not look for native library files on the classpath.
 To ease the configuration, we built into JyNI's initializer-code that it also searches for
 native libraries on the classpath. Alternatively you can place ``libJyNI.so`` and
-``libJyNI-loader.so`` anywhere the JVM finds them (i.e. on the java library path).
+``libJyNI-loader.so`` anywhere the JVM finds them, i.e. on the java library path (``java.library.path``) or the system's library path (``LD_LIBRARY_PATH``).
 
 To get an impression of JyNI, proceed as described in the following subsection.
 
 Instructions to run ``JyNIDemo.py``
 ...................................
 
-* Go to [JyNI_GIT]_ and download the resources of the newest release.
+* Go to [JyNI]_, select the newest release in the download section and get the sources and binaries appropriate for your system (32 or 64 bit).
 * Extract ``JyNI-Demo/src/JyNIDemo.py`` from the sources.
-* To launch it with CPython, extract ``DemoExtension.so`` from the bin archive (32 or 64 bit, whatever is appropriate for your system).
+* To launch it with CPython, extract ``DemoExtension.so`` from the bin archive.
 * ``JyNIDemo.py`` adds the extension folder via ``sys.path.append([path])``.
   You can modify that line so it finds your extracted ``DemoExtension.so`` or delete the line and put
   ``DemoExtension.so`` on the pythonpath.
 * If you launch ``JyNIDemo.py`` with Jython, it won't work.
-  Put ``JyNI.jar``, ``libJyNI-Loader.so`` and ``libJyNI.so`` on Jython's pythonpath or classpath.
+  Put ``JyNI.jar``, ``libJyNI-Loader.so`` and ``libJyNI.so`` on Jython's classpath.
   ``libJyNI-Loader.so`` and ``libJyNI.so`` can alternatively be placed somewhere on the Java library path.
 
 Jython should now be able to run ``JyNIDemo.py`` via ::
@@ -149,27 +150,27 @@ Implementation
 --------------
 
 To create JyNI we took the source code of CPython 2.7 and stripped away all functionality that can be provided by Jython and is not needed for mirroring objects (see below). We kept the interface unchanged and reimplemented it to delegate calls to Jython via JNI and vice versa.
-The most difficult thing is to present JNI-``jobject`` s from Jython to extensions such that they look like ``PyObject*`` from Python (C-API). For this task, we use the three different approaches explained below, depending on the way a native type is implemented.
+The most difficult thing is to present JNI-``jobject``'s from Jython to extensions such that they look like ``PyObject*`` from Python (C-API). For this task, we use the three different approaches explained below, depending on the way a native type is implemented.
 
-In this section, we assume that the reader is familiar with the Python [C-API]_ and has some knowledge about the C programming language, especially the meaning of pointers and memory allocation.
+In this section, we assume that the reader is familiar with the Python [C-API]_ and has some knowledge about the C programming language, especially about the meaning of pointers and memory allocation.
 
 
 Python wraps Java
 .................
 
-The best integration with Jython is obtained, if the ``PyObject*`` is only a stub that
+The best integration with Jython is obtained, if ``PyObject*`` is only a stub that
 delegates all its calls to Jython (figure :ref:`pwj`). This is only possible, if Jython features a
-suitable counterpart of the ``PyObject`` (i.e. some child of ``org.python.core.PyObject``
+suitable counterpart of the ``PyObject`` (i.e. some subclass of ``org.python.core.PyObject``
 with similar name, methods and functionality).
 
-Additionally there may not be macros
-in the official C-API that directly access the ``PyObject``'s memory. Also obtaining the
-dictionary by ``tp_dictoffset`` can not be done and member access via ``offset`` from
-``PyMemberDef`` is not possible. Since members are usually only accessed via generic
-getter methods that also look for ``PyGetSetDef`` s with the right name, we usually re-implement
-the members as get-sets.
+Further, there may not exist macros
+in the official C-API that directly access the ``PyObject``'s memory. Consequently, one
+can not use ``tp_dictoffset`` to obtain the object's dictionary or ``offset`` from
+``PyMemberDef`` to access the object's members.
 
-Also the dictionary access is usually performed in methods we can safely
+Since members are usually only accessed via generic
+getter or setter methods that also look for a ``PyGetSetDef`` with the right name, we usually re-implement
+the members as get-sets. Also the dictionary access is usually performed in methods we can safely
 rewrite to versions that get the dictionary from Jython.
 
 .. figure:: PythonWrapsJava.eps
@@ -193,7 +194,8 @@ Mirroring objects
 
 If the Python C-API provides macros to access an object's data, we cannot setup
 the object as a stub, because the stub would not provide the memory-positions needed
-by the macros. To overcome this issue, we mirror the object if macros exist (figure :ref:`miro`).
+by the macros. To overcome this issue, we mirror the object if its C-API features
+such direct access macros (figure :ref:`miro`).
 
 .. figure:: MirrorMode.eps
    :scale: 35%
@@ -202,13 +204,13 @@ by the macros. To overcome this issue, we mirror the object if macros exist (fig
 
 Examples, where this approach is successfully applied are ``PyTuple``, ``PyList``, ``PyString``, ``PyInt``, ``PyLong``, ``PyFloat`` and ``PyComplex``.
 
-The difficulty when mirroring objects is to provide a suitable synchronization between the counterparts.
+The difficulty here is to provide a suitable synchronization between the counterparts.
 If the CPython object is modified by C-code, these changes must be reflected immediately on Jython-side.
-The problem here is, that such changes are not reported, the must be detected. Performing the synchronization when the C-call returns to Jython is only suitable, if no multiple threads exist.
+The problem here is, that such changes are not reported; they must be detected. Performing the synchronization when the C-call returns to Jython is only suitable, if no multiple threads exist.
 However most of the affected objects are immutable anyway, so an initial data-synchronization is sufficient.
 
-``PyList`` is an example for an affected object that is mutable via a macro. For PyList, we
-perform an individual solution. The Jython class ``org.python.core.PyList`` uses a ``java.util.List`` (which is an interface) as a back-end. We wrote a wrapper, that provides access to the memory of the C-struct of ``PyListObject`` on java side in form of the ``java.util.List`` interface. If a PyList is mirrored, we replace its back-end by our wrapper. If it was initially created on Jython-side, we insert all its elements into the C counterpart on initialization.
+``PyList`` is an example for an affected object that is mutable via a macro. For ``PyList``, we
+perform an individual solution. The Jython class ``org.python.core.PyList`` uses a variable of type ``java.util.List`` (which is an interface) to store its back-end. We wrote a wrapper, that provides access to the memory of the C-struct of ``PyListObject`` and implements the ``java.util.List`` interface on Java-side. If a ``PyList`` is mirrored, we replace its back-end by our wrapper. If it was initially created on Jython-side, we insert all its elements into the C counterpart on initialization.
 
 ``PyCell`` and ``PyByteArray`` are other examples that need mirror-mode, but are mutable. However, we have rough ideas how to deal with them, but since they are not used by NumPy, we don't put priority on implementing them. 
 
@@ -217,7 +219,7 @@ Java wraps Python
 .................
 
 If Jython provides no counterpart of an object type, the two approaches described above are not feasible. 
-Typically, this occurs, if an extension natively defines its own ``PyType``-objects, but there are also examples for this in the original Python C-API. If the types were are previously known, we could simply implement Jython counterparts for them and apply one of the two approaches above. However, we decided to avoid implementing new Jython objects where possible and solve this case with one single general approach.
+Typically, this occurs, if an extension natively defines its own ``PyType``-objects, but there are also examples for this in the original Python C-API. If the types were previously known, we could simply implement Jython counterparts for them and apply one of the two approaches above. However, we decided to avoid implementing new Jython objects as far as possible and solve this case with one single general approach.
 ``PyCPeer`` extends ``org.python.core.PyObject`` and redirects the basic methods to a native ``PyObject*`` (figure :ref:`jwp`).
 The corresponding ``PyObject*``-pointer is tracked as a java-``long`` in ``PyCPeer``. Currently ``PyCPeer`` supports attribute access by delegating ``__findattr_ex__``. Further it delegates the methods ``__str__``, ``__repr__`` and ``__call__``. A more exhaustive support is planned.
 
@@ -234,7 +236,7 @@ Object lookup
 
 Every mentioned approach involves tying a ``jobject`` to a ``PyObject*``. To resolve this connection
 as efficient as possible, we prepend an additional header before each ``PyObject`` in memory.
-If a ``PyGC_Head`` is present, we prepend our header even before that as illustrated in figure :ref:`objl`.
+If a ``PyGC_Head`` is present, we prepend our header even before that, as illustrated in figure :ref:`objl`.
 
 .. figure:: MemoryIllustration.eps
    :scale: 35%
@@ -259,10 +261,11 @@ is intended for rare use, so a linked list is a sufficient data-structure with m
 
 To reserve the additional memory, allocation is adjusted wherever it occurs. This is done consequently, also where allocation occurs inline, like in most number types. The adjustment also occurs in ``PyObject_Malloc``. Though this method might not only be used for ``PyObject``-allocation, we always prepend space for a ``JyObject``. We regard this slight overhead in non-``PyObject`` cases as preferable over potential segmentation-fault if a ``PyObject`` is created via ``PyObject_NEW`` or ``PyObject_NEW_VAR``.
 For these adjustments to apply, an extension must be compiled with the ``WITH_PYMALLOC``-flag activated.
-Otherwise several macros would direct to the raw C-methods ``malloc``, ``free``, etc where the neccessary
+Otherwise several macros would direct to the raw C-methods ``malloc``, ``free``, etc., where the neccessary
 extra memory would not be reserved. So an active ``WITH_PYMALLOC`` flag is crucial for JyNI to work.
 However, it should be not much effort to recompile affected extensions with an appropriate ``WITH_PYMALLOC``-flag value.
-``PyType``-objects are treaded as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup-table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java-reflection if converting the other way.
+
+``PyType``-objects are treated as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup-table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java-reflection if converting the other way.
 
 The macros ``AS_JY(o)`` and ``FROM_JY(o)``, defined in ``JyNI.h``, perform the necessary pointer arithmetics to get the ``JyObject``-header from a ``PyObject*`` and vice versa. They are not intended for direct use, but are used internally by the high-level conversion-functions described below, as these also consider special cases like singletons or ``PyType``-objects.
 
@@ -306,14 +309,15 @@ This is not really a lightweight solution, but the only way to provide CPython b
 familiar fashion. The CPython garbage collector will be responsible to collect mirrored objects, native stubs and objects
 created by native extensions. While in mirror case, the corresponding objects can be collected independently,
 in wrapper case we will ensure that the stub keeps the corresponding object alive by maintaining a non-weak reference.
-After the stub has been garbage collected by either collector, the back-end can be collected by the other one. 
+After the stub has been garbage collected by either collector, the reference that keeps the back-end alive vanishes and
+the back-end can be collected by the other collector.
 
 Cross-Platform support
 ......................
 
 We will address cross-platform support when JyNI has reached a sufficiently stable state on our development platform.
 At least we require rough solutions for the remaining gaps. Ideally, we focus
-on cross-platform support after JyNI is capable of running NumPy.
+on cross-platform support when JyNI is capable of running NumPy.
 
 
 License
@@ -363,8 +367,6 @@ References
 .. [NP4J] Joseph Cottam, NumPy4J, https://github.com/JosephCottam/Numpy4J, 02. Sep. 2013, Web. 29 Sep. 2013
 
 .. [JEPP] Mike Johnson, Java embedded Python (JEPP), http://jepp.sourceforge.net/, 14 May 2013, Web. 29 Sep. 2013
-
-.. [JyNI_GIT] Stefan Richthofer, Jython Native Interface (JyNI) Release page (Github),  https://github.com/Stewori/JyNI/releases, 29 Sep. 2013, Web. 29 Sep. 2013
 
 .. [GPL_EXC] Wikipedia, GPL linking exception, http://en.wikipedia.org/wiki/GPL_linking_exception#The_classpath_exception, 23 May 2013, Web. 29 Sep. 2013
 
