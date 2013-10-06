@@ -53,14 +53,14 @@ Blosc [Blosc]_ is a fast, multitreaded, blocking and shuffling
 compressor designed initially for in-memory compression. Contrary to
 many other available compressors which operate sequentially on a data
 buffer, Blosc uses the blocking technique [Alted2009]_ [Alted2010]_ to
-split the dataset into individual blocks and can then operate on each
-block, using a different thread per block, so effectively leading to a
-multithreaded compressor.  The size of each block typically fits
-either into the L1 cache (lower compression levels, i.e. up to 6) or
-into L2 cache (higher compression levels, i.e. larger than 6). As in
-modern CPUs L1 and L2 are typically non-shared between other cores,
-this normally leads to an optimal performance during multi-thread
-operation.
+split the dataset into individual blocks. It can then operate on each
+block using a different thread which effectively leads to a
+multithreaded compressor.  The block size is chosen such that it
+either fits into a typical L1 cache (for compression levels up to 6)
+or L2 cache (for compression levels larger than 6) In modern CPUs L1
+and L2 are typically non-shared between other cores, and so this
+choice of block size leads to an optimal performance during
+multi-thread operation.
 
 Also, Blosc features a shuffle filter [Alted2009]_ (p.71) which may
 reshuffle multi-byte elements, e.g. 8 byte doubles, by
