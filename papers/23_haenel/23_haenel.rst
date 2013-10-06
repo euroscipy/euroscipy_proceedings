@@ -648,9 +648,9 @@ Gratitude
 ---------
 
 The author would like to thank the following people for advice, helpful
-comments and discussions: Pauli Virtanen, Gaël Varoquaux, Robert Kern, Philippe
-Gervais and Francesc Alted. Also, the author would like to specially thank
-Stéfan van der Walt for reviewing early drafts of this paper.
+comments and discussions: Pauli Virtanen, Gaël Varoquaux, Robert Kern and
+Philippe Gervais. Also, the author would like to specially thank Stéfan van der
+Walt and Francecs Alted for reviewing drafts of this paper.
 
 References
 ----------
