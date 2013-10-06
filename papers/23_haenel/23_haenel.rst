@@ -49,24 +49,43 @@ shuffling Blosc codec.
 Blosc
 -----
 
-Blosc [Blosc]_ is a fast, multitreaded, blocking and shuffling compressor designed
-initially for in-memory compression. Contrary to many other available
-compressors which operate sequentially on a data buffer, Blosc uses the
-blocking technique [Alted2009]_ [Alted2010]_ to split the dataset into individual blocks and can
-then operate on each block in a multithreaded fashion. Also, Blosc features a
-shuffle filter [Alted2009]_ (p.71) which may reshuffle multi-byte elements, e.g. 8 byte
-doubles, by significance. The net-result for series of numerical elements with
-little difference, is that similar bytes are placed closer together and can
-thus be better compressed. Internally, Blosc uses its own codec, blosclz,
-which is a derivative of FastLZ [FastLZ]_ and implements the LZ77 [LZ77]_ scheme.
-However, it is designed to be extensible, and allows other codecs to be used.
-Another view of this conceptually, is that Blosc is a meta-codec or framework,
-that handles splitting the data into blocks, applying the shuffle filter and
-managing the individual threads. Blosc then relies on a "real" codec to perform
-that actual compression of the data blocks. As such, one can think of Blosc as
-a way to parallelize existing codecs, and in fact, at the time of writing there
-exists a proof-of-concept implementation in the Blosc Git repository which
-integrates the well known Snappy codec [Snappy]_ into the Blosc framework.
+Blosc [Blosc]_ is a fast, multitreaded, blocking and shuffling
+compressor designed initially for in-memory compression. Contrary to
+many other available compressors which operate sequentially on a data
+buffer, Blosc uses the blocking technique [Alted2009]_ [Alted2010]_ to
+split the dataset into individual blocks and can then operate on each
+block, using a different thread per block, so effectively leading to a
+multithreaded compressor.  The size of each block typically fits
+either into the L1 cache (lower compression levels, i.e. up to 6) or
+into L2 cache (higher compression levels, i.e. larger than 6). As in
+modern CPUs L1 and L2 are typically non-shared between other cores,
+this normally leads to an optimal performance during multi-thread
+operation.
+
+Also, Blosc features a shuffle filter [Alted2009]_ (p.71) which may
+reshuffle multi-byte elements, e.g. 8 byte doubles, by
+significance. The net result for series of numerical elements with
+little difference between elements that are close, is that similar
+bytes are placed closer together and can thus be better compressed
+(this is specially true on time series datasets). Internally, Blosc
+uses its own codec, blosclz, which is a derivative of FastLZ [FastLZ]_
+and implements the LZ77 [LZ77]_ scheme.  The reason for Blosc to
+introduce its own codec is mainly the desire for simplicity (blosclz
+is a highly streamlined version of FastLZ), as well as providing a
+better interaction with Blosc infrastructure.
+
+Moreover, Blosc is designed to be extensible, and allows other codecs
+than blosclz to be used in it. In other words, one can consider Blosc
+as a meta-compressor, in that it handles the splitting of the data
+into blocks, optionally applying the shuffle filter (or other future
+filters), while being responsible of coordinating the individual
+threads during operation. Blosc then relies on a "real" codec to
+perform that actual compression of the data blocks. As such, one can
+think of Blosc as a way to parallelize existing codecs, while allowing
+to apply filters (also called pre-conditioners) and, in fact, at the
+time of writing there exists a proof-of-concept implementation in the
+Blosc Git repository which integrates the well known Snappy codec
+[Snappy]_ as well as LZ4 into the Blosc framework [Snappy_LZ4_Blosc]_.
 
 Blosc was initially developed to support in-memory compression in order to
 mitigate the effects of the memory hierarchy [Jacob2009]_. More specifically,
@@ -76,7 +95,7 @@ the starving CPUs [Alted2009]_.
 
 The goal of in-memory compression techniques is to have a numerical container
 which keeps all data as in-memory compressed blocks. If the data needs to be
-operated on, it is decompressed only in the registers and caches of the CPU.
+operated on, it is decompressed only in the caches of the CPU.
 Hence, data can be moved faster from memory to CPU and the net result is faster
 computation, since less CPU cycles are wasted while waiting for data. Similar
 techniques are applied successfully in other settings. Imagine for example, one
@@ -90,7 +109,7 @@ UNIX tool ``rsync`` [rsync]_ implements a `-z` switch which performs
 compression of the data before sending it and decompression after receiving it.
 The same basic principle applies to in-memory compression, except that we are
 transferring data from memory to CPU.  Initial implementations based on Blosc
-exist, c.f. Blaze [Blaze]_ and Carray [CArray]_, and have been shown to yield
+exist, c.f. Blaze [Blaze]_ and carray [CArray]_, and have been shown to yield
 favourable results [Personal communication with Francesc Alted].
 
 Numpy
@@ -279,11 +298,12 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 
 1. *Represent all NumPy arrays including nested record arrays and object arrays.*
 
-   Since the support for Numpy ndarrays is very fresh only some empirical
-   results using toy arrays have been tested. Simple integer, floating point
-   types and string arrays seem to work fine. Even toy object arrays survive
-   the round-trip test.  Version 0.4.0 did not handle record and nested record
-   arrays correctly, but this is fixed with version 0.4.1.
+   Since the support for Numpy ndarrays is very fresh only some
+   empirical results using toy arrays have been tested. Simple
+   integer, floating point types and string arrays seem to work fine.
+   Structured arrays are also supported (as of 0.4.1), even those with
+   nested data types.  Finally, object arrays also seem to survive the
+   round-trip tests.
 
 2. *Represent the data in its native binary form.*
 
@@ -662,6 +682,7 @@ References
 .. [Numpy] Numpy `http://www.numpy.org/ <http://www.numpy.org/>`_
 .. [FastLZ] FastLZ `http://fastlz.org/  <http://fastlz.org/>`_
 .. [Snappy] Snappy  `http://code.google.com/p/snappy/ <http://code.google.com/p/snappy/>`_
+.. [Snappy_LZ4_Blosc] Support for Snappy and LZ4 in Blosc `https://github.com/FrancescAlted/blosc/tree/new_compressors <https://github.com/FrancescAlted/blosc/tree/new_compressors>`
 .. [Blosc] Blosc `http://blosc.pytables.org/trac <http://blosc.pytables.org/trac>`_
 .. [Bloscpack] Bloscpack https://github.com/esc/bloscpack
 .. [CPU] `Intel® Core™ i7-3667U Processor <http://ark.intel.com/products/64898>`_
