@@ -343,11 +343,14 @@ Bloscpack satisfies these requirements when dealing with Numpy ndarrays.
 
 7. *Allow memory-mapping of the data.*
 
-   Since the data is compressed chunk-wise it is theoretically possible to
-   implement a quasi-mem-mapping scheme. Using the chunk offsets and the
-   typesize and shape from the Numpy ndarray metadata, it will be possible to
-   determine which chunk or chunks contain a single element or a range and thus
-   load and decompress only those chunks from disk.
+   Since the data is compressed it is not possible to use the `mmap`
+   primitive to map the file into memory in a meaningful way.
+   However, due to the chunk-wise nature of the storage, it is
+   theoretically possible to implement a quasi-mem-mapping scheme.
+   Using the chunk offsets and the typesize and shape from the Numpy
+   ndarray metadata, it will be possible to determine which chunk or
+   chunks contain a single element or a range and thus load and
+   decompress only those chunks from disk.
 
 8. *Be read from a file-like stream object instead of an actual file.*
 
