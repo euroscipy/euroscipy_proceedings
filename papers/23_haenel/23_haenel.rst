@@ -482,6 +482,9 @@ resource settings, in particular disk write-back latency and CPU frequency
 scaling governor, when certain system aspects -- e.g. the connectivity to AC
 power -- change and again this might contaminate the benchmarks.
 
+Versions Used
+-------------
+
 The following versions and git-hashes -- where available -- were used to acquire
 the data reported in this article:
 
