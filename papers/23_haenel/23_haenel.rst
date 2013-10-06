@@ -383,7 +383,7 @@ Three different array sizes were chosen:
 
 Three different dataset complexities were chosen:
 
-* **low** ``arange`` (very low Kolmogorov complexity)
+* **low** ``arange`` (very low Kolmogorov complexity [*]_)
 * **medium** ``sin`` + noise
 * **high** random numbers
 
@@ -410,19 +410,19 @@ minimum across all sets was taken as the final value for the datapoint. For the
 with 5 runs were performed. And finally, for the `large` size, 3 sets with 3
 runs each were performed.
 
-The inquisitive reader will note the following caveat at this stage. Perhaps
-Kolmogorov complexity is not the correct choice of complexity measure
-to define low entropy data for a Lempel-Ziv style dictionary encoder. In fact,
-any sequence of consecutive integers by definition has high Lempel-Ziv
-complexity and is not compressible. However, as will be shown during the
-benchmarks later on, Bloscpack is actually very good at compressing these kinds
-of sequences, whereas ZFile and NPZ are not. This is a result of the fact that
-`arange` generated muti-byte type integer data and the shuffle filter for
-Bloscpack can optimize this very well. At this stage we simply state that the
-proposed **low** entropy dataset has been sufficient for the benchmarks. An
-in-depth treatment of the effects the shuffle filter has on the Lempel-Ziv
-complexity is beyond the scope of this paper and will perhaps be the subject of
-a future publication.
+.. [*] The inquisitive reader will note the following caveat at this stage. Perhaps
+    Kolmogorov complexity is not the correct choice of complexity measure
+    to define low entropy data for a Lempel-Ziv style dictionary encoder. In fact,
+    any sequence of consecutive integers by definition has high Lempel-Ziv
+    complexity and is not compressible. However, as will be shown during the
+    benchmarks later on, Bloscpack is actually very good at compressing these kinds
+    of sequences, whereas ZFile and NPZ are not. This is a result of the fact that
+    `arange` generated muti-byte type integer data and the shuffle filter for
+    Bloscpack can optimize this very well. At this stage we simply state that the
+    proposed **low** entropy dataset has been sufficient for the benchmarks. An
+    in-depth treatment of the effects the shuffle filter has on the Lempel-Ziv
+    complexity is beyond the scope of this paper and will perhaps be the subject of
+    a future publication.
 
 Timing
 ......
