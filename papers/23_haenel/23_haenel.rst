@@ -475,18 +475,12 @@ effects and disabling them lead to increased reliability of the results.
 
 First, the daily cronjobs were disable by commenting out the corresponding line
 in ``/etc/crontab``. This is important because when running the benchmarks over
-night, certain IO intensive cronjobs might contaminate the benchmarks, e.g.
-the ``updatedb`` cronjob that updates the database for the ``mlocate`` command.
+night, certain IO intensive cronjobs might contaminate the benchmarks.
 Secondly, the Laptop Mode Tools were disable via a setting in
 ``/etc/laptop-mode/laptop-mode.conf``.  These tools will regulate certain
-resource settings, e.g.  disk write-back latency and CPU frequency scaling
-governor, when certain system aspects -- e.g. the connectivity to AC power --
-change. The problem is that even small disruptions to AC power may cause the
-laptop mode tools to trigger, resulting for example, in a change of CPU
-frequency scaling governor. The new governor may then choose to rescale the CPU
-frequency from 2.0Ghz to 800Mhz resulting in a very significant loss of
-computational power and thus nullifies the results of any benchmark in
-progress.
+resource settings, in particular disk write-back latency and CPU frequency
+scaling governor, when certain system aspects -- e.g. the connectivity to AC
+power -- change and again this might contaminate the benchmarks.
 
 The following versions and git-hashes -- where available -- were used to acquire
 the data reported in this article:
