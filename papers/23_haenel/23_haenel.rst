@@ -61,7 +61,7 @@ or L2 cache (for compression levels larger than 6) In modern CPUs L1
 and L2 are typically non-shared between other cores, and so this
 choice of block size leads to an optimal performance during
 multi-thread operation.
-
+ 
 Also, Blosc features a shuffle filter [Alted2009]_ (p.71) which may
 reshuffle multi-byte elements, e.g. 8 byte doubles, by
 significance. The net result for series of numerical elements with
