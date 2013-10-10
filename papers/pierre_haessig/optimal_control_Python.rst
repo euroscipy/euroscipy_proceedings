@@ -43,6 +43,9 @@ Computing an Optimal Control Policy for an Energy Storage
    Stochastic Dynamic Programming, Policy Iteration Algorithm,
    Autoregressive Models, Ocean Wave Energy, Power Smoothing.
 
+
+.. _s-intro-smoothing:
+
 Introduction to Power Production Smoothing
 ==========================================
 
@@ -76,15 +79,15 @@ Electricity generation from *ocean waves* (with machines called Wave
 Energy Converters) is an example where the output power can be *strongly
 fluctuating*. This is illustrated on figure :ref:`smooth-lin`
 where the output power :math:`P_{prod}(t)` from a particular wave energy
-converter called is represented along 100 seconds.
+converter called SEAREV is represented along 100 seconds.
 
 We just mention that this production time series comes not from
 measurements but from an hydro-mechanical simulation from colleagues
-since the is a big 1 MW - 30 meters long machine which is yet to be
+since the SEAREV is a big 1 MW - 30 meters long machine which is yet to be
 built [Ruellan-2010]_.
 
 The oscillations of :math:`P_{prod}(t)` at a period of about 1.5 s comes
-from the construction of the : in short, it is floating
+from the construction of the SEAREV: in short, it is floating
 *double-pendulum* that oscillates with the waves. Also, because *ocean
 waves have a stochastic behavior*, the amplitude of these oscillations
 is irregular.
@@ -122,11 +125,11 @@ It is a control problem to choose a power smoothing law. We present the
 example of a linear feedback control:
 
 .. math::
+    :label: eq-feedback-lin
 
-   \label{eq:feedback_lin}
      P_{grid}(t) = \frac{P_{max}}{E_{rated}} E_{sto}(t)
 
-where :math:`P_{max}` is the rated power of the (1.1 MW). This law gives
+where :math:`P_{max}` is the rated power of the SEAREV (1.1 MW). This law gives
 “good enough” smoothing results as it can be seen on figure
 :ref:`smooth-lin`.
 
@@ -147,8 +150,8 @@ Optimality will be measured against a *cost function* :math:`J` that
 penalizes the average variability of the power injected to the grid:
 
 .. math::
+    :label: eq-cost
 
-   \label{eq:cost}
     J = \frac{1}{N} \mathbb{E} \left\lbrace
                        \sum_{k=0}^{N-1} c(P_{grid}(k))
                      \right\rbrace
@@ -168,8 +171,8 @@ evolution of the stored energy . To describe the dynamics of the system,
 we use the generic notation
 
 .. math::
+    :label: eq-state-dyn
 
-   \label{eq:state_dyn}
     x_{k+1} = f(x_{k}, u_k, \varepsilon_k)
 
 where :math:`x, u, \varepsilon` are respectively *state* variables,
@@ -188,8 +191,8 @@ analysis of the solution structure. Indeed, once all state variables
 where the control is chosen as *a function of the state:*
 
 .. math::
+    :label: eq-feedback-opt
 
-   \label{eq:feedback_opt}
      P_{grid}(t) = \mu(x(t))
 
 The goal is then to find the *optimal* feedback function :math:`\mu`.
@@ -257,8 +260,8 @@ Withing the ARMA family, we restrict ourselves to the autoregressive
 model for the speed is:
 
 .. math::
+    :label: eq-ar-p
 
-   \label{eq:ar_p}
     \Omega(k) = \phi_1 \Omega(k-1) + \dots +  \phi_p \Omega(k-p) +  \varepsilon(k)
 
 where :math:`p` is the order of the model and :math:`\varepsilon(k)` is
@@ -372,8 +375,8 @@ pendulum. Using :math:`(\Omega, A)` as the state vector, we obtain the
 following state-space model:
 
 .. math::
+   :label: eq-ss-ar2
 
-   \label{eq:ss_ar2}
    \begin{split}
      \begin{pmatrix}
       \Omega_k\\
@@ -408,14 +411,255 @@ just small enough to apply the Stochastic Dynamic Programming method.
 Optimal storage control with Dynamic Programming
 ================================================
 
-blabla
+.. _ss-pol-iter:
+
+The Policy Iteration Algorithm
+------------------------------
+
+We now give an overview of the *policy iteration*
+algorithm that we implemented to solve the power smoothing problem
+described in the introduction. Among the different types of dynamic
+optimization problems, it is an “infinite horizon, average cost per
+stage problem” (as seen in (:ref:`eq-cost`)). While at first this cost equation involves
+a summation over an infinite number of instants, the Dynamic Programming
+approach cuts this into two terms: the present and the whole future. In
+the end, the optimization falls back to solving this equilibrium
+equation:
+
+.. math::
+    :label: eq-dp-avg-equil
+    
+     \begin{split}
+     J + \tilde{J}(x) = \min_{u \in U(x)}                \underset{w}{\mathbb{E}}               \Big\lbrace                 \underbrace{ c(x, u, w)
+                               }_{\text{instant cost}}\\
+                + 
+                \underbrace{  \tilde{J}(f(x, u, w))
+                               }_{\text{cost of the future}}
+                 \Big\rbrace   \end{split}
+
+where :math:`J` is the minimized average cost and :math:`\tilde{J}` is
+the transient (or differential) cost function, also called *value
+function*.
+
+Note that eq. (:ref:`eq-dp-avg-equil`) is a functional equation for :math:`\tilde{J}` which
+should be solved for *any value* of the state :math:`x` in the state
+space. In practice, it is solved in a *discrete grid* that must be
+chosen so that the variations of :math:`\tilde{J}` are represented with
+enough accuracy. Also, the optimal policy :math:`\mu` appears implicitly
+as the *argmin* of this equation, that is the optimal control :math:`u`
+for each :math:`x` value of the state grid.
+
+
+Equation solving
+^^^^^^^^^^^^^^^^
+
+The simplest way to solve eq. (:ref:`eq-dp-avg-equil`) is to iterate the right-hand side,
+starting with a zero value function. This is called *value iteration*.
+
+A more efficient approach is *policy iteration*. It starts with an
+initial policy (like the heuristic linear ) and gradually improves it
+with a two steps procedure:
+
+#. **policy evaluation:** the current policy is evaluated, which
+   includes computing the average cost (:ref:`eq-cost`) and the so-called
+   *value function*
+
+#. **policy improvement:** a single step of optimization with policy
+   iteration yields a improved policy. Then this policy must be again
+   evaluated (step 1).
+
+The policy evaluation involves solving the equilibrium equation without
+the minimization step but with a fixed policy :math:`\mu` instead:
+
+.. math::
+
+     \begin{split}
+     J_\mu+ \tilde{J}_\mu(x) = 
+                 \underset{w}{\mathbb{E}}  \Big\lbrace  \underbrace{ c(x, \mu(x), w)
+                               }_{\text{instant cost}}\\
+                 + 
+                 \underbrace{ \tilde{J}_\mu(f(x, \mu(x), w))
+                              }_{\text{cost of the future}}
+                  \Big\rbrace   \end{split}
+
+It can be solved by iterating the right-hand side like for policy
+iteration but much faster due to the absence of minimization. In the
+end, a few policy improvement iterations are needed to reach
+convergence. More details about the value and policy iteration
+algorithms can be found in [Bertsekas-2005]_ textbook for
+example. The conditions for the convergence, omitted here, are also
+discussed.
+
+
+.. _ss-lib-description:
+
+StoDynProg library description
+------------------------------
+
+We’ve created a small library to *describe*
+and *solve* optimal control problems (in discrete time) using Stochastic
+Dynamic Programming (SDP) method. It implements the value iteration and
+policy iteration algorithms introduced above.
+
+Rationale for a library, benefits of Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Because the SDP algorithms are in fact quite simple (they can be written
+with one set of nested for loops) we were once told that they should be
+written from scratch for each new problem. However we face in our
+research in energy management several optimization problems with slight
+structural differences in each so that code duplication would be
+unacceptably high. Thus the motivation to write a unified code that can
+handle all our use cases, and hopefully some others’.
+
+StoDynProg is pure Python code built with ``numpy`` for
+multi-dimensional array computations. We also notably use an external
+multidimensional interpolation routine by Pablo Winant (see
+:ref:`sss-multi-interp` below).
+
+The key aspect of the flexibility of the code is its ability to handle
+problems of *arbitrary dimensions* (in particular the state space and
+the control space). This impacts particularly the way to iterate over
+those variables. Our code makes thus a heavy use of Python tuple
+packing/unpacking machinery and ``itertools.product`` to iterate on
+rectangular grids of arbitrary dimension.
+
+
+API description
+^^^^^^^^^^^^^^^
+
+StoDynProg provides two main classes: ``SysDescription`` and
+``DPSolver``.
+
+SysDescription
+^^^^^^^^^^^^^^
+
+holds the description of the discrete-time dynamic optimization problem.
+Typically, a user writes its dynamics function (the Python
+implementation of :math:`f` in ) and handles it to a ``SysDescription``
+instance:
+
+.. code-block:: python
+
+    from stodynprog import SysDescription
+    # SysDescription object with proper dimensions
+    # of state (2), control (1) and perturbation (1)
+    mysys = SysDescription((2,1,1))
+
+    def my_dyn(x1, x2, u, w):
+        'dummy dynamics'
+        x1_next = x1 + u + w
+        x2_next = x2 + x1
+        return (x1_next, x2_next)
+
+    # assign the dynamics function:
+    mysys.dyn = my_dyn
+
+
+We use here a setter/getter approach for the ``dyn`` property. The same
+is used to describe the cost function (:math:`c` in (:ref:`eq-cost`)).
+We believe the
+property approach enables simplified user code compared to a class
+inheritance mechanism. With some inspiration of Enthought ``traits``,
+the setter has a basic validation mechanism that checks the signature of
+the function being assigned (with ``getargspec`` from the ``inspect``
+module).
+
+
+DPSolver
+^^^^^^^^
+
+holds parameters that tunes the optimization process, in particular the
+discretized grid of the state. Also, it holds the code of the
+optimization algorithm in its methods. We illustrate here the creation
+of the solver instance attached to the previous system:
+
+.. code-block:: python
+
+    from stodynprog import DPSolver
+    # Create the solver for `mysys` system:
+    dpsolv = DPSolver(mysys)
+    # state discretization
+    x1_min, x1_max, N1 = (0, 2.5, 100)
+    x2_min, x2_max, N2 = (-15, 15, 100)
+    x_grid = dpsolv.discretize_state(x1_min,x1_max,N1,
+                                     x2_min,x1_max,N2)
+
+
+Once the problem is fully described, the optimization can be launched by
+calling ``dpsolv.policy_iteration`` with proper arguments about the
+number of iterations.
+
+For more details on StoDynProg API usage, an example problem of
+*Inventory Control* is treated step-by-step in the documentation
+(created with Sphinx).
+
+.. _sss-multi-interp:
+
+Multidimensional Interpolation Routine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+StoDynProg makes an intensive use of a multidimensional interpolation
+routine that is not available in the “standard scientific Python stack”.
+Interpolation is needed because the algorithm manipulates two scalar
+functions which are discretized on a grid over the state space: the
+value function :math:`\tilde{J}` and feedback policy :math:`\mu`. Thus,
+functions are stored as :math:`n`-d arrays, where :math:`n` is the
+dimension of the state vector (:math:`n=3` for ocean power smoothing
+example). In the course of the algorithm, the value function needs to be
+evaluated between grid point, thus the need for interpolation.
+
+
+Requirements and Algorithm Selection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+No “fancy” interpolation method is required so linear interpolation is a
+good candidate. Speed is very important because it called many times.
+Also, it should accept vectorized inputs, that is interpolate many
+points at the same time. We assert that the functions will be stored on
+a *rectangular grid* which should simplify interpolation computations.
+The most stringent requirement is *multidimensionality* (for
+:math:`0 \leq n \leq 4`) which rules out most available tools.
+
+We have evaluated 4 routines (details available in an IPython Notebook
+within StoDynProg source tree):
+
+-  ``LinearNDInterpolator`` class from ``scipy.interpolate``
+
+-  ``RectBivariateSpline`` class from ``scipy.interpolate``
+
+-  ``map_coordinates`` routine from ``scipy.ndimage``
+
+-  and ``MultilinearInterpolator`` class written by Pablo Winant within
+   its Dolo project [Winant-2010]_ for Economic modelling (available on
+   https://github.com/albop/dolo).
+
+The most interesting in terms of performance and off-the-shelf
+availability is ``RectBivariateSpline`` which exactly meets our needs
+expect for multidimensionality because it’s limited to :math:`n=2`.
+``LinearNDInterpolator`` has no dimensionality limitations but works
+with unstructured data and so does not leverage the rectangular
+structure. Interpolation time was found 4 times longer in 2D, and
+unacceptably long in 3D. Then ``map_coordinates`` and
+``MultilinearInterpolator`` were found to both satisfy all our
+criterions but the latter being consistently 4 times faster (both 2D and
+3D case). Finally we also selected ``MultilinearInterpolator`` because
+it can be instantiated to retain the data once and then called several
+time. We find the usage of this object-oriented interface more
+convenient than functional interface of ``map_coordinates``.
+
+
+.. _ss-results-searev-smooth:
+
+Results for Searev power smoothing
+----------------------------------
 
 .. figure:: P_grid_law.png
 
     Storage control policy: Power injected to the grid as
     a function of speed and acceleration,
     for 7 levels of stored energy between empty and full.
-
+    :label:`fig-P-grid-law`
 
 .. figure:: storage_policy_comparison_annot.pdf
     :figclass: w
@@ -425,7 +669,173 @@ blabla
     the *heuristic* (dark blue) and *optimized* (light blue)
     storage management policies (storage capacity of 10 MJ).
     Stored energy on the bottom panel.
+    :label:`fig-policy-compare`
 
+We have applied the policy iteration algorithm to the SEAREV power smoothing
+problem introduced in section :ref:`s-intro-smoothing`.
+The algorithm is initialized with the linear storage control policy
+(:ref:`eq-feedback-lin`).
+This heuristic choice is then gradually improved by each policy improvement
+step.
+
+Algorithm parameters
+^^^^^^^^^^^^^^^^^^^^
+
+About 5 policy iterations only are needed to converge to an optimal
+strategy. In each policy iteration, there is a policy evaluation step
+which requires 1000 iterations to converge. This latter number is
+dictated by the time constant of the system (1000 steps
+:math:`\leftrightarrow` 100 seconds) and 100 seconds is the time it
+takes for the system to “decorrelate”, that is loose memory of its state
+(both speed and stored energy).
+
+We also need to decide how to discretize and bound the state space of
+the {SEAREV + storage} system:
+
+-  for the stored energy :math:`E_{sto}`, bounds are the natural limits
+   of the storage: :math:`E_{sto} \in [0, E_{rated}]`. A grid of 30
+   points yields precise enough results.
+
+-  for the speed :math:`\Omega` and the acceleration :math:`A`, there
+   are no natural bounds so we have chosen to limit the values to
+   :math:`\pm4` *standard deviations*. This seems wide enough to include
+   most observations but not too wide to keep a good enough resolution.
+   We use grids of 60 points to keep the grid step small enough.
+
+This makes a state space grid of
+:math:`30\times 60 \times 60 \approx 110\text{k}` points. Although this
+number of points can be handled well by a present desktop computer, this
+simple grid size computation illustrates the commonly known weakness of
+Dynamic Programming which is the “Curse of Dimensionality”. Indeed, this
+size grows exponentially with the number of dimensions of the state so
+that for practical purpose state dimension is limited to 3 or 4. This
+explains the motivation to search a low order model for the power
+production time series in section :ref:`s-stoch-model`.
+
+
+Algorithm execution time
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the aforementioned discretization parameters, policy evaluation
+takes about 10 s (for the 1000 iterations) while policy improvement
+takes 20 s (for one single value iteration step). This makes 30 s in
+total for one policy iteration step, which is repeated 5 times.
+Therefore, the optimization converges in about 3 minutes. This duration
+would grow steeply should the grid be refined.
+
+As a comparison of algorithm efficiency, the use of *value iteration*
+would takes much longer than *policy iteration*. Indeed, it needs 1000
+iterations, just like policy evaluation (since it is dictated by the
+system’s “decorrelation time”) but each iteration involves a costly
+optimization of the policy so that it takes 20 s. This makes altogether
+30 minutes of execution time, i.e. 10 times more than policy iteration!
+
+As possible paths to improve the execution time, we see, at the *code
+level*, the use of more/different vectorization patterns although
+vectorized computation is already used a lot. Maybe the use of Cython
+may speed up unavoidable loops but this may not be worth the loss of
+flexibility and the decrease in coding speed. Optimization at the
+*algorithm level*, just as demonstrated with “policy vs. value
+iteration”, is also worth investigating further. In the end, more use of
+Robert Kern’s ``line_profiler`` will be needed to decide the next step.
+
+
+Output of the computation
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The policy iteration algorithm solves equation (:ref:`eq-dp-avg-equil`)
+and outputs the minimized
+cost :math:`J` and two arrays: function :math:`\tilde{J}` (transient
+cost) and function :math:`\mu` (optimal policy (:ref:`eq-feedback-opt`)),
+both expressed on the discrete state grid (3d grid).
+
+We focus on :math:`\mu` which yields the power :math:`P_{grid}` that
+should be injected to the grid for any state of the system.
+Figure :ref:`fig-P-grid-law` is a Mayavi surface plot which shows
+:math:`P_{grid}(\Omega, A)` for various levels of :math:`E_{sto}`.
+Observations of the result are in agreement with what can be expected
+from a reasonable storage control:
+
+-  the more energy there is in the storage, the more power should be
+   injected to the grid (similar to the heuristic control ).
+
+-  the speed and acceleration of the SEAREV also modulates the injected power,
+   but to a lesser extent. We may view speed and acceleration as
+   approximate measurements of the *mechanical energy* of the SEAREV. This
+   energy could be a hidden influential state variable, in parallel with
+   the stored energy.
+
+-  the injected power is often set between 0.2 and 0.3 MW, that is
+   *close to the average* power production.
+
+Such observations show that the algorithm has *learned* from the SEAREV
+behavior to take sharper decisions compared to the heuristic policy it
+was initialized with.
+
+
+Qualitative analysis of the trajectory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To evaluate the storage control policy, we simulate it’s effect on the
+sample SEAREV data we have (instead of using the state space model used for the
+optimization). The only adaptation required for this trajectory
+simulation is to transform the *policy array* (:math:`\mu` known on the
+state grid only) into a *policy function* (:math:`\mu` evaluable on the
+whole state space). This is achieved using the same n-dimensional
+interpolation routine used in the algorithm.
+
+A simulated trajectory is provided on figure
+:ref:`fig-policy-compare` to compare the effect of the optimized
+policy with the heuristic linear policy (:ref:`eq-feedback-lin`).
+As previously said, the
+storage capacity is fixed at :math:`E_{rated}=10\text{ MJ}` or about 9
+seconds of charge/discharge at the rated power.
+
+Positive aspect, the optimized policy yields an output power that is
+generally closer to the average (thin gray line) than the linear policy.
+This better smoothing of the “peaks and valleys” of the production is
+achieved by a better usage of the available storage capacity. Indeed,
+the linear policy generally under-uses the higher levels of energy.
+
+As a slight negative aspect, the optimized policy yields a “spiky”
+output power in the situations of high production (200–220 s). In this
+situation, the output seems worse that the linear policy. We connect
+this underperformance to the linear model (:ref:`eq-ss-ar2`)
+used to represent the SEAREV dynamics.
+The linearity holds well for small movements but not when the
+speed is high and the pendulum motion gets very abrupt (acceleration
+high above 4 standard deviations which contradicts the Gaussian
+distribution assumption). Since the control optimization is based on the
+linear model, the resulting control law cannot appropriately manage
+these non-linear situations. Only an upgraded model would genuinely
+solve this problem but we don’t have yet an appropriate low-order
+non-linear model of the SEAREV. One quick workaround to reduce the power peaks
+is to shave the acceleration measurements (not demonstrated here).
+
+
+Quantitative assessment
+^^^^^^^^^^^^^^^^^^^^^^^
+
+We now numerically check that the optimized policy brings a true
+enhancement over the linear policy. We simulate the storage with the
+three 1000 s long samples we have and compute the power variability
+criterion [2]_ for each.
+
+Figure :ref:`fig-policy-assess` shows the standard deviation for each
+sample in three situations: without storage (which yields the natural
+standard deviation of the SEAREV production), with a storage controlled by the
+linear policy and finally the same storage controlled by the optimized
+policy. Sample ``Em_1.txt`` was used to fit the state space model
+(:ref:`eq-ss-ar2`)
+but we don’t think this should introduce a too big bias because of the low
+model order.
+
+Beyond the intersample variability, we can see the consistent
+improvement brought by the optimized law. Compared to the linear policy,
+the standard deviation of the injected power is reduced by about 20 %
+(27 %, 16 %, 22 % for each sample respectively). We can conclude that
+the variability of the injected power is indeed reduced by using the
+Dynamic Programming.
 
 .. figure:: control_benefits.pdf
     :scale: 60%
@@ -434,8 +844,34 @@ blabla
     production time series.
     Standard deviation compared to the heuristic linear control case
     is reduced by about 20 %.
+    :label:`fig-policy-assess`
 
-.. footnotes
+
+Conclusion
+==========
+
+With the use of standard Python modules for scientific computing, we
+have created StoDynProg, a small library to solve Dynamic Optimization
+problems using Stochastic Dynamic Programming.
+
+We’ve describe the mathematical and coding steps required to apply the
+SDP method on an example problem of realistic complexity, the smoothing
+of the output power of the SEAREV Wave Energy Converter. With its generic
+interface, StoDynProg should be applicable to other Optimal Control
+problems arising in Electrical Engineering, Mechanical Engineering or
+even Life Sciences. The only requirement is an appropriate mathematical
+structure (Markovian model), with the “Curse of Dimensionality”
+requiring a state space of low dimension.
+
+Further improvements on this library should include a better source tree
+organization, an improved test coverage and most importantly an open
+source availability. It should be coming on GitHub at
+https://github.com/pierre-haessig.
+
+
+
+
+.. footnotes of the paper
 
 .. [1]
    In the special case of a linear dynamics and a quadratic cost (“LQ
