@@ -101,15 +101,15 @@ used to smooth out the power :math:`P_{grid}` injected to the
 electricity network:
 
 .. math::
-
-   \label{eq:P_grid}
+    :label: eq-P-grid
+    
      P_{grid}(t) = P_{prod}(t) - P_{sto}(t)
 
 The energy of the storage then evolves as:
 
 .. math::
-
-   \label{eq:E_sto}
+    :label: eq-E-sto
+    
      E_{sto}(k+1) = E_{sto}(k) + P_{sto}(k)\Delta t
 
 expressed here in discrete time (:math:`\Delta t = 0.1 \text{ s}`
@@ -137,13 +137,146 @@ colleagues [Aubry-2010]_. We also don’t discuss the choice of the
 storage *technology*, but it is believed that super-capacitors would be
 the most suitable choice.
 
+Finding an Optimal Smoothing Policy
+-----------------------------------
+
+Control law is an example of heuristic choice of policy and we now try
+to go further by finding an *optimal* policy.
+
+Optimality will be measured against a *cost function* :math:`J` that
+penalizes the average variability of the power injected to the grid:
+
+.. math::
+
+   \label{eq:cost}
+    J = \frac{1}{N} \mathbb{E} \left\lbrace
+                       \sum_{k=0}^{N-1} c(P_{grid}(k))
+                     \right\rbrace
+                     \quad
+                     \text{with $N \rightarrow \infty$}
+
+where :math:`c` is the *instantaneous cost* (or penalty) function which
+can be :math:`c(P_{grid}) = P_{grid}^2` for example.
+Expectation :math:`\mathbb{E}` is needed because the production
+:math:`P_{prod}` is a stochastic input, so that the output power
+:math:`P_{grid}` is also a random variable.
+
+This minimization problem falls in the class of *stochastic dynamic
+optimization*. It is *dynamic* because decisions at each time-step
+cannot be taken independently due coupling along time introduced by
+evolution of the stored energy . To describe the dynamics of the system,
+we use the generic notation
+
+.. math::
+
+   \label{eq:state_dyn}
+    x_{k+1} = f(x_{k}, u_k, \varepsilon_k)
+
+where :math:`x, u, \varepsilon` are respectively *state* variables,
+*control* variables and *perturbations*. State variables are the
+“memory” of the system. The stored energy :math:`E_{sto}` is here the
+only state variable, but more will appear in section
+[ss:ss:sub:`m`\ odel]. Control variables, which is here the injected
+power :math:`P_{grid}` are the one which value be chosen to optimize the
+cost :math:`J`.
+
+Dynamic optimization (also called *optimal control*) is addressed by the
+Dynamic Programming method [Bertsekas-2005]_ which yields a theoretical
+analysis of the solution structure. Indeed, once all state variables
+(i.e. “memories”) of the system are identified, the optimum of the cost
+:math:`J` is attained by a “state feedback” policy, that is a policy
+where the control is chosen as *a function of the state:*
+
+.. math::
+
+   \label{eq:feedback_opt}
+     P_{grid}(t) = \mu(x(t))
+
+The goal is then to find the *optimal* feedback function :math:`\mu`.
+Since :math:`E_{sto}` is a state variable, policy is in fact a special
+case of . Since :math:`\mu` has no special structure in the general
+case [1]_, it will be *numerically computed on a grid* over the state
+space. We cover the algorithm for this computation in
+section :ref:`s-opt-sto-ctrl`.
+
+Prerequisite
+^^^^^^^^^^^^
+
+Dynamic Programming do require that stochastic perturbations are
+*independent* random variables (i.e. the overall dynamical model must be
+Markovian) and this is not true for the :math:`P_{prod}(k)` time series.
+Therefore we devote section :ref:`s-stoch-model` to the problem of
+expressing :math:`P_{prod}` as a discrete-time Markov process, using
+*time series analysis*. This will yield new state variables accounting
+for the dynamics of :math:`P_{prod}`.
+
+
+.. _s-stoch-model:
+
+Stochastic Model of a Wave Energy Production
+============================================
+
+We now take a closer look at the :math:`P_{prod}` time series. A 1000 s
+long simulation is presented on figure :ref:`speed-pow`, along
+with a zoom to better see the structure at short time scales. An
+histogram is also provided which shows that :math:`P_{prod}` is clearly
+*non-gaussian*. This precludes the direct use of “standard” time series
+models based on Autoregressive Moving Average (ARMA) models [Brockwell-1991]_.
+
+However, we can leverage the knowledge of the inner working of the SEAREV.
+Indeed, by calling :math:`\Omega` the rotational speed of the inner
+pendulum with respect to the hull, we know that the output power is:
+
+.. math::
+    :label: eq-P-prod
+    
+     P_{prod} = T_{PTO}(\Omega).\Omega
+
+where :math:`T_{PTO}` is the torque applied to the pendulum by the
+electric machine which harvest the energy (PTO stands for “Power Take
+Off”). Finding the best :math:`T_{PTO}` command is actually another
+optimal control problem which is still an active area of research in the
+Wave Energy Conversion community [Kovaltchouk-2013]_. We use here a
+“viscous damping law, with power leveling”, that is
+:math:`T_{PTO}(\Omega) = \beta.\Omega`. This law is applied as long as
+it yields a power below :math:`P_{max}`. Otherwise the torque is reduced
+to level the power at 1.1 MW as can be seen on figure
+:ref:`speed-pow` whenever the speed is more than 0.5 rad/s.
+
+Thanks to equation (:ref:`eq-P-prod`), we can thus model the speed :math:`\Omega` and then
+deduce :math:`P_{prod}`. Modeling the speed is much easier because it is
+quite Gaussian (see fig. :ref:`speed-pow`) and has a much more
+regular behavior which can be captured by an ARMA process.
+
+
+Autoregressive Model of the Speed
+---------------------------------
+
+Withing the ARMA family, we restrict ourselves to the autoregressive
+(AR) processes because we need a Markovian model. Equation of an AR(p)
+model for the speed is:
+
+.. math::
+
+   \label{eq:ar_p}
+    \Omega(k) = \phi_1 \Omega(k-1) + \dots +  \phi_p \Omega(k-p) +  \varepsilon(k)
+
+where :math:`p` is the order of the model and :math:`\varepsilon(k)` is
+a series independent random variables. Equation indeed yields a
+Markovian process, using the lagged observations of the speed
+:math:`\Omega(k-1), \dots, \Omega(k-p)` as state variables.
+
+AR(p) model fitting consists in *selecting* the order :math:`p` and
+*estimating* the unknown coefficients :math:`\phi_1, \dots, \phi_p` as
+well as the unknown variance of :math:`\varepsilon` which we denote
+:math:`\sigma_{\varepsilon}^2`.
 
 .. figure:: speed_acf_AR2.pdf
 
     Autocorrelation (acf) of the speed data,
     compared with the acf from two AR(2) models,
     fitted with two different methods.
-
+    :label:`fig-speed-acf-AR2`
 
 .. figure:: speed_power_Em1.pdf
     :figclass: w
@@ -152,6 +285,130 @@ the most suitable choice.
     Speed & Power time series from a 1000 seconds SEAREV simulation (sample Em_1.txt).
     The gray rectangle time interval is enlarged in the middle panel.
     Distribution histogram on the right.
+    :label:`speed-pow`
+
+
+Order selection
+^^^^^^^^^^^^^^^
+
+is generally done using *information criterions* such as AIC or
+BIC [Brockwell-1991]_, but for this modeling problem, we
+restrict ourselves to the smallest order which can give a “good-enough”
+fit of the autocorrelation structure. Autocorrelation (acf) of the speed
+is plotted on figure :ref:`fig-speed-acf-AR2` where we can
+see that a model of order :math:`p=2` can indeed reproduce the
+autocorrelation up to about 15 s of time lags.
+
+Keeping the model order low is required to maintain the dimension of the
+overall state vector under 3 or 4. The underlying issue of an
+exponentially growing complexity will appear in section
+:ref:`s-opt-sto-ctrl` when solving the Dynamic Programming
+equation.
+
+
+Parameter estimation:
+^^^^^^^^^^^^^^^^^^^^^
+
+once the order is selected, we have to estimate coefficients
+:math:`\phi_1`, :math:`\phi_2` and :math:`\sigma_{\varepsilon}^2`.
+“Classical” fitting methodology [Brockwell-1991]_ is based on
+Conditional Maximum Likelihood Estimators (CMLE). This method is readily
+available in ``GNU R`` with the ``arima`` routine or in Python with
+``statsmodel.tsa.ar_model``.
+
+However, we have plotted the autocorrelation of the estimated AR(2)
+model on figure :ref:`fig-speed-acf-AR2` to show that CMLE
+is *not appropriate:* oscillations of the acf clearly decay too slowly
+compared to the data acf.
+
+The poor adequacy of this fit is actually a consequence of our choice of
+a low order model which implies that the AR(2) process can only be an
+*approximation of the true process*. Statistically speaking, our model
+is *misspecified*, whereas CMLE is efficient for correctly specified
+models only. This problem has been discussed in the literature
+[McElroy-2013]_ and has yield the “Multi-step ahead fitting procedure”.
+
+Being unfamiliar with the latter approach, we compute instead
+:math:`\phi_1, \phi_2` estimates which *minimize the difference* between
+the theoretical AR(2) acf and the data acf. The minimization criterion
+is the sum of the squared acf differences over a range of lag times
+which can be chosen. We name this approach the “multi-lags acf fitting”
+method. Minimization is conducted with ``fmin`` from ``scipy.optimize``.
+
+.. 
+    table commented out ! (generates LaTex compilation error) :label:`tab-ar2-fit`
+    caption: AR(2) fitting results from the two methods (along with standard error when available)
+    +---------------+------------------------+------------------------+--------------------------------------+
+    | method        | :math:`\hat{\phi}_1`   | :math:`\hat{\phi}_2`   | :math:`\hat{\sigma}_{\varepsilon}`   |
+    +===============+========================+========================+======================================+
+    | CMLE          | 1.9883 (.0007)         | -0.9975 (.0007)        | 0.00172                              |
+    +---------------+------------------------+------------------------+--------------------------------------+
+    | fit on 15 s   | 1.9799                 | -0.9879                | 0.00347                              |
+    +---------------+------------------------+------------------------+--------------------------------------+
+
+The result of this acf fitting over lag times up to 15 s (i.e. 150 lags)
+is shown on figure :ref:`fig-speed-acf-AR2` while
+numerical estimation results are given in table :ref:`tab-ar2-fit`.
+
+With the model obtained from this multi-lags method, we can simulate
+speed and power trajectories and check that they have a “realistic
+behavior”. We can thus infer that the dynamic optimization algorithm
+should make appropriate control decisions out of it. This will be
+discussed in section [ss:results:sub:`s`\ earev\ :sub:`s`\ mooth].
+
+.. _ss-ss-model:
+
+Reformulation as a state-space model
+------------------------------------
+
+The AR(2) model is a state-space model with state
+variables being the lagged observations of the speed :math:`\Omega(k-1)`
+and :math:`\Omega(k-2)`. In order to get a model with a better “physical
+interpretation” we introduce the variable
+:math:`A_k = (\Omega_k - \Omega_{k-1})/\Delta t` which is the backward
+discrete derivative of :math:`\Omega`. As the timestep gets smaller
+:math:`A_k` comes close to the acceleration (in rad/s\ :sup:`2`) of the
+pendulum. Using :math:`(\Omega, A)` as the state vector, we obtain the
+following state-space model:
+
+.. math::
+
+   \label{eq:ss_ar2}
+   \begin{split}
+     \begin{pmatrix}
+      \Omega_k\\
+      A_k
+     \end{pmatrix}
+     =&
+     \begin{bmatrix}
+      \phi_1 + \phi_2&                -\phi_2 \Delta t\\
+      (\phi_1 + \phi_2 - 1)/\Delta t& -\phi_2
+     \end{bmatrix}
+     \begin{pmatrix}
+      \Omega_{k-1}\\
+      A_{k-1}
+     \end{pmatrix}\\
+     +&
+     \begin{bmatrix}
+      1\\
+      1/\Delta t
+     \end{bmatrix}
+     \varepsilon_k
+   \end{split}
+
+We now have a stochastic Markovian model for the power production of the SEAREV.
+Taken together with state equation of the storage :ref:`eq-E-sto`
+and algebraic relations :ref:`eq-P-grid` and :ref:`eq-P-prod`,
+we have a Markovian model of the overall system. The
+state vector :math:`x=(E_{sto}, \Omega, A)` is of dimension 3 which is
+just small enough to apply the Stochastic Dynamic Programming method.
+
+.. _s-opt-sto-ctrl:
+
+Optimal storage control with Dynamic Programming
+================================================
+
+blabla
 
 .. figure:: P_grid_law.png
 
@@ -178,6 +435,20 @@ the most suitable choice.
     Standard deviation compared to the heuristic linear control case
     is reduced by about 20 %.
 
+.. footnotes
+
+.. [1]
+   In the special case of a linear dynamics and a quadratic cost (“LQ
+   control” ), the optimal feedback is actually a *linear* function.
+   Because of the state constraint
+   :math:`0 \leq E_{sto} \leq E_{rated}`, the storage control problem
+   falls outside this classical case.
+
+.. [2]
+   Instead of using the exact optimization cost (average quadratic power
+   in MW\ :sup:`2`), we actually compute the standard deviation (in MW).
+   It is mathematically related to the quadratic power and we find more
+   readable.
 
 References
 ==========
