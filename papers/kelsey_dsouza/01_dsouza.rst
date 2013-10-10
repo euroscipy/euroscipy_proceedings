@@ -3,22 +3,13 @@
 :institution: Senior at Westwood High School
 
 
-------------------------------------------------------
-PySTEMM: Executable Concept Modeling for K-12 Learning
-------------------------------------------------------
+-----------------------------------------------------------
+PySTEMM: Executable Concept Modeling for K-12 STEM Learning
+-----------------------------------------------------------
 
 .. class:: abstract
 
-    Although models are central to the STEM disciplines, they are not taught
-    much in K-12 education in the US. In this paper I describe modeling STEM
-    concepts using executable concept models based on objects and pure
-    functions in Python. The approach applies to all STEM areas and supports
-    learning with pictures, narrative, animation, graph plots, and both
-    exploratory and top-down modeling. Models can extend other models,
-    making it easy to get started. Incidental complexity and code debugging
-    are reduced by using objects and pure functions. I describe a
-    proof-of-concept tool called PySTEMM and sample models covering topics
-    in math, physics, chemistry, and engineering.
+    Although models are central to the STEM disciplines, they are not taught much in K-12 education in the US. In this paper I describe modeling STEM concepts using executable concept models based on objects and pure functions in Python. The approach applies to all STEM areas and supports learning with pictures, narrative, animation, graph plots, and both exploratory and top-down modeling. Models can extend other models, making it easy to get started. Incidental complexity and code debugging are reduced by using objects and pure functions. I describe a proof-of-concept tool called PySTEMM and sample models covering topics in math, physics, chemistry, and engineering.
 
 .. class:: keywords
 
@@ -27,78 +18,38 @@ PySTEMM: Executable Concept Modeling for K-12 Learning
 Introduction
 ============
 
-A model is a simplified representation of part of some world, focusing
-on selected aspects while ignoring others. A model underlies every
-scientific theory, and models are central to all STEM areas — math,
-science, technology, and engineering — helping us conceptualize,
-understand, explain, and predict phenomena in an objective way. As part
-of childhood learning and exploration, we intuitively form mental
-models, and create physical models in childhood play. Computational
-modeling has revolutionized science and engineering. Previous research
-has shown significant learning benefits when model-building and
-exploring is included in STEM education.
+A model is a simplified representation of part of some world, focusing on selected aspects while ignoring others. A model underlies every scientific theory, and models are central to all STEM areas — math, science, technology, and engineering — helping us conceptualize, understand, explain, and predict phenomena in an objective way. As part of childhood learning and exploration, we intuitively form mental models, and create physical models in childhood play. Computational modeling has revolutionized science and engineering. Previous research has shown significant learning benefits when model-building and exploring is included in STEM education.
 
-Unfortunately, STEM Education through middle and high school teaches
-very little about modeling, and students do not create or explore
-models. Students should learn to explore, create, refute, and validate
-models, and use models to better understand the deep connections across
-subject areas. In this paper I demonstrate that executable concept
-models, based on using objects and pure functions in Python:
+Unfortunately, STEM Education through middle and high school teaches very little about modeling, and students do not create or explore models. Students should learn to explore, create, refute, and validate models, and use models to better understand the deep connections across subject areas. In this paper I demonstrate that executable concept models, based on using objects and pure functions in Python:
 
 -  apply across multiple STEM areas and learning modes,
 -  are more feasible and approachable than previously thought,
--  invite bottom-up exploration and assembly, yet build deep
-   understanding.
+-  invite bottom-up exploration and assembly
+-  build deep understanding.
 
 
 Executable Concept Models
 -------------------------
 
-A Concept Model describes things in some “world”, capturing relevant
-concepts, attributes, and rules about those attributes. A *concept
-instance* is a specific individual of a *concept type* e.g. NO2 is a
-concept instance of the general concept type Molecule.
+A Concept Model describes things in some “world”, capturing relevant concepts, attributes, and rules about those attributes. A *concept instance* is a specific individual of a *concept type* e.g. NO2 is a concept instance of the general concept type Molecule.
 
-You choose concepts and attributes based on the things you want to focus
-on. For example, one concept model of a molecule, focused just on its
-formula, simply needs to list what kinds of atoms, and how many of each,
-are in that molecule. This could be modeled with the *concept type*
-Molecule having a *formula* attribute, listing the kind and quantity of
-each atom. The *concept instance* NO2 has 1 Nitrogen atom and 2 Oxygen
-atoms.
+You choose concepts and attributes based on the things you want to focus on. For example, one concept model of a molecule, focused just on its formula, simply needs to list what kinds of atoms, and how many of each, are in that molecule. This could be modeled with the *concept type* Molecule having a *formula* attribute, listing the kind and quantity of each atom. The *concept instance* NO2 has 1 Nitrogen atom and 2 Oxygen atoms.
 
-An Executable Concept Model is represented on a computer, which can
-check concept instances against concept types, increasing confidence in
-the model. But “executable” typically implies programming language
-complexity, debugging headaches, and distractions from the the actual
-concepts under study. By using only objects and pure functions in our
-models, and providing useful visualizations, we reduce debugging issues
-and needless complexity.
+An Executable Concept Model is represented on a computer, which can check concept instances against concept types, increasing confidence in the model. But “executable” typically implies programming language complexity, debugging headaches, and distractions from the the actual concepts under study. By using only objects and pure functions in our models, and providing useful visualizations, we reduce debugging issues and needless complexity.
 
-The next several sections will present a series of models covering math,
-chemistry, physics, and engineering. They will introduce PySTEMM
-features as they go, showing the Python model source code as well as the
-resulting artifacts generated by PySTEMM. The last section will outline
-some key points of the implementation of PySTEMM.
+The next several sections will present a series of models covering math, chemistry, physics, and engineering. They will introduce PySTEMM features as they go, showing the Python model source code as well as the resulting artifacts generated by PySTEMM. The last section will outline some key points of the implementation of PySTEMM.
 
 
 Mathematics
 ===========
 
-We want to use a pure “functional” approach to our models, and expect
-(functional) concept models to generate (functional) math models. So we
-start with model of math functions:
+We want to use a pure “functional” approach to our models, and expect (functional) concept models to generate (functional) math models. So we start with model of math functions:
 
 
 Basic Numeric Functions
 -----------------------
 
-We model the domain of a function as a list of integers, and the
-evaluation of a function as a method *eval(int)*. We model two kinds of
-functions: RuleFunctions are functions whose value is defined by a
-Python expression, and TableFunctions are functions whose value is
-defined by a list of x-y pairs. The model in Python defining the
-*concept types* is:
+We model the domain of a function as a list of integers, and the evaluation of a function as a method *eval(int)*. We model two kinds of functions: RuleFunctions are functions whose value is defined by a Python expression, and TableFunctions are functions whose value is defined by a list of x-y pairs. The model in Python defining the *concept types* is:
 
 .. code-block:: python
 
@@ -129,17 +80,13 @@ defined by a list of x-y pairs. The model in Python defining the
 
     class_template = {K.gradient_color: 'Yellow'}
 
-The *class\_template* is a dictionary of visualization properties, some
-of whose values can be *functions* of the object being visualized.
-PySTEMM generates the following visualization of these concept types,
-including the English narrative description:
+The *class\_template* is a dictionary of visualization properties, some of whose values can be *functions* of the object being visualized. PySTEMM generates the following visualization of these concept types, including the English narrative description:
 
 .. figure:: func1_types.png
 
     Three Function Concept Types.
 
-We extend this model to explore some concept instances, with the
-following Python code and corresponding PySTEMM visualization:
+We extend this model to explore some concept instances, with the following Python code and corresponding PySTEMM visualization:
 
 .. code-block:: python
 
@@ -154,26 +101,15 @@ following Python code and corresponding PySTEMM visualization:
 
     Concept Instance of TableFunction.
 
-Note that *tf*, the instance of TableFunction, is shown in the same
-color as the TableFunction class. It’s domain was calculated from its
-list of points, its value at x=1 evaluates to 10, and the logic for its
-eval() is shown in the context of the instance, so it is quite easy to
-understand.
+Note that *tf*, the instance of TableFunction, is shown in the same color as the TableFunction class. It’s domain was calculated from its list of points, its value at x=1 evaluates to 10, and the logic for its eval() is shown in the context of the instance, so it is quite easy to understand.
 
-In subsequent sections, I will usually elide the original Python code,
-and show what the PySTEMM tool generates.
+In subsequent sections, I will usually elide the original Python code, and show what the PySTEMM tool generates.
 
 
 Inverse Functions
 -----------------
 
-An InverseFunction inverts some other function. InverseFunction is a
-*high-order function*, since it receives a function to invert, and
-results in a new function. It has its own rule for *eval()*, which
-effectively flips the *x,y* pairs of the function that it inverts. It’s
-domain is computed as the set of *y* values of the function it inverts.
-The model below was generated by extending the previous model, adding
-the InverseFunction class and one instance of an inverse function.
+An InverseFunction inverts some other function. InverseFunction is a *high-order function*, since it receives a function to invert, and results in a new function. It has its own rule for *eval()*, which effectively flips the *x,y* pairs of the function that it inverts. It’s domain is computed as the set of *y* values of the function it inverts. The model below was generated by extending the previous model, adding the InverseFunction class and one instance of an inverse function.
 
 .. code-block:: python
 
@@ -183,8 +119,7 @@ the InverseFunction class and one instance of an inverse function.
     M.addInstances(inv)
     M.showEval(inv, 'eval',[15])
 
-The instance visualization generated by PySTEMM shows the inverse
-function in blue, with the correct *domain* and *eval(10)*.
+The instance visualization generated by PySTEMM shows the inverse function in blue, with the correct *domain* and *eval(10)*.
 
 .. figure:: func_inverse.png
 
@@ -194,23 +129,14 @@ function in blue, with the correct *domain* and *eval(10)*.
 Function Transforms as High-Order Functions
 -------------------------------------------
 
-Functions become very useful when we understand *high-order* functions
-like *inverse*. The graph-transforms commonly taught in middle school —
-translation, scaling, even rotation — can all be defined as functions
-that operate on other functions, resulting in a transformed function. In
-the example below, PySTEMM generates a graph plot of the original
-function, a shifted version of that function, and a “bumped” version of
-the shifted function.
+Functions become very useful when we understand *high-order* functions like *inverse*. The graph-transforms commonly taught in middle school — translation, scaling, even rotation — can all be defined as functions that operate on other functions, resulting in a transformed function. In the example below, PySTEMM generates a graph plot of the original
+function, a shifted version of that function, and a “bumped” version of the shifted function.
 
 .. figure:: func_bump.png
 
     Function Tranforms: Bump of Shift of f.
 
-The *limit* of a function is itself a high-order function: it operates
-on another function and a target point, and evaluates to a single
-numeric value (if the limit exists). More advanced concepts, such as
-*differentiation* and *integration*, can also be modeled as high-order
-functions: they operate on a given function, and result in a new
+The *limit* of a function is itself a high-order function: it operates on another function and a target point, and evaluates to a single numeric value (if the limit exists). More advanced concepts, such as *differentiation* and *integration*, can also be modeled as high-order functions: they operate on a given function, and result in a new
 function.
 
 
@@ -218,14 +144,7 @@ function.
 Chemistry: Reaction
 ===================
 
-An Atom is modeled as just a name, since our model will not focused on
-things like electron or nuclear structure. We use a very simple model of
-a Molecule: a formula with a list of pairs of types of atom & a number
-indicating how many of that atom. A Reaction has reactants and products,
-each being some quantity of a certain kind of molecule. Here is the
-model of the *concept types* in Python, and visualized by PySTEMM. Note
-that convenient Python constructs, like *lists* of *tuples*, are
-visualized in a correspondingly convenient manner.
+An Atom is modeled as just a name, since our model will not focused on things like electron or nuclear structure. We use a very simple model of a Molecule: a formula with a list of pairs of types of atom & a number indicating how many of that atom. A Reaction has reactants and products, each being some quantity of a certain kind of molecule. Here is the model of the *concept types* in Python, and visualized by PySTEMM. Note that convenient Python constructs, like *lists* of *tuples*, are visualized in a correspondingly convenient manner.
 
 .. code-block:: python
 
@@ -246,9 +165,7 @@ Here is an instance of a molecule:
 
     An Instance of a Molecule.
 
-And here is an instance of a reaction, where the visualization stops at
-the molecules and displays a computed label for the reaction and for the
-molecules, but elides the detailed structure within molecules.
+And here is an instance of a reaction, where the visualization stops at the molecules and displays a computed label for the reaction and for the molecules, but elides the detailed structure within molecules.
 
 .. figure:: reaction_instance.png
 
@@ -258,27 +175,12 @@ molecules, but elides the detailed structure within molecules.
 Chemistry: Reaction Balancing
 -----------------------------
 
-Our next model will do the complex computation of reaction balancing for
-basic chemical reactions. We start with a model of an unbalanced
-reaction: it just has a list of input molecules, and a list of output
-molecules, without any coefficients.
+Our next model will compute reaction balancing for basic chemical reactions. We start with a model of an unbalanced reaction: it just has a list of input molecules, and a list of output molecules, without any coefficients.
 
-We formulate the reaction-balancing problem as an *integer-linear
-programming* problem, which we want to solve for the molecule
-coefficients, and use the *pylpsolve* module to do the solving. The
-input and output molecules impose a set of constraints on the
-coefficients: the number of atoms of every element has to cancel out
-between inputs and outputs. We write a function *elem\_balance\_matrix*
-to compute a matrix of *molecule* vs. *element*, showing the number of
-atoms of each element in each molecule, with *+* for reactants and *-*
-for products. This matrix, when multiplied by the vector of solution
-coefficients, must be *0*. Additionally, all coefficients have to be
-positive integers, and the *objective\_function* specifies finding the
-smallest coefficients that satisfy these constraints.
+We formulate the reaction-balancing problem as an *integer-linear programming* problem, which we want to solve for the molecule coefficients, and use the *pylpsolve* module to do the solving. The input and output molecules impose a set of constraints on the coefficients: the number of atoms of every element has to cancel out between inputs and outputs. We write a function *elem\_balance\_matrix* to compute a matrix of *molecule* vs. *element*, showing the number of
+atoms of each element in each molecule, with *+* for reactants and *-* for products. This matrix, when multiplied by the vector of solution coefficients, must be *0*. Additionally, all coefficients have to be positive integers, and the *objective\_function* specifies finding the smallest coefficients that satisfy these constraints.
 
-PySTEMM generates this visualization, showing the balancing coefficients
-for an initially unbalanced reaction, and also displaying the values of
-the *elem\_balance\_matrix* and other intermediate variables.
+PySTEMM generates this visualization, showing the balancing coefficients for an initially unbalanced reaction, and also displaying the values of the *elem\_balance\_matrix* and other intermediate variables.
 
 .. figure:: reaction_balance.png
 
@@ -288,26 +190,16 @@ the *elem\_balance\_matrix* and other intermediate variables.
 Chemistry: Layered Models
 -------------------------
 
-The previous example illustrates an important advantage of PySTEMM
-concept modeling. We do not directly jump in and try to model the
-mathematics of reaction balancing. Instead, the focus is on the
-structure of the concept instances e.g. What is the model structure for
-molecules? For reactions?
+The previous example illustrates an important advantage of PySTEMM concept modeling. We do not directly jump in and try to model the mathematics of reaction balancing. Instead, the focus is on the structure of the concept instances e.g. What is the model structure for molecules? For reactions?
 
-Once we have a this represented, we decide what the mathematics should
-be, based on that structure. The math version of a molecule is simply a
-single column of numbers. The math for a reaction collates these columns
-into a matrix. It is a relatively simple task to write functions that
-traverse the concept instances and their attributes, and build up the
+Once we have a this represented, we decide what the mathematics should be, based on that structure. The math version of a molecule is simply a single column of numbers. The math for a reaction collates these columns into a matrix. It is a relatively simple task to write functions that traverse the concept instances and their attributes, and build up the
 corresponding math models (matrices of numbers, in this example).
 
 .. figure:: concept_to_math.png
 
     Layered concept models and generated Math
 
-Below is the initial model for a reaction network, in Python code, and
-as visualized by PySTEMM including *instance-level* English narrative.
-This model does not include any network-level math models.
+Below is the initial model for a reaction network, in Python code, and as visualized by PySTEMM including *instance-level* English narrative. This model does not include any network-level math models.
 
 .. code-block:: python
 
@@ -331,19 +223,9 @@ This model does not include any network-level math models.
 Physics
 =======
 
-We model the motion of a ball in 2-dimensions under forces. The ball has
-vector-valued attributes for initial position, velocity, and forces. It
-also has functions *acceleration*, *velocity*, and *position*, as pure
-functions of time, using *numpy* for numerical integration. PySTEMM
-generates visualizations that include graphing of the time-varying
-functions, and animating the position and velocity (vectors) of the ball
-over time (Figure :ref:`phyfig`).
+We model the motion of a ball in 2-dimensions under forces. The ball has vector-valued attributes for initial position, velocity, and forces. It also has functions *acceleration*, *velocity*, and *position*, as pure functions of time, using *numpy* for numerical integration. PySTEMM generates visualizations that include graphing of the time-varying functions, and animating the position and velocity (vectors) of the ball over time (Figure :ref:`phyfig`).
 
-Like all the other visualizations, the animation is specified by a
-*template*: a dictionary of visual properties, except that these
-property values can now be *functions* of both the *object* being
-animated, and the *time* at which its attributes values should be
-computed, to determine the visual property values.
+Like all the other visualizations, the animation is specified by a *template*: a dictionary of visual properties, except that these property values can now be *functions* of both the *object* being animated, and the *time* at which its attributes values should be computed, to determine the visual property values.
 
 .. code-block:: python
 
@@ -380,18 +262,7 @@ computed, to determine the visual property values.
 Engineering
 ===========
 
-In summer 2012 I attended the Ocean Engineering Experience program at
-MIT, where we designed and built a marine remote-operated vehicle (ROV),
-constructed primarily out of sealed PVC pipes. In spring 2013, I used
-PySTEMM to re-do some of the 3-D modeling, and generate some engineering
-calculations and 3-D visualizations from the model. Here too the models
-were defined in a pure functional style e.g. to create a number of pipes
-positioned and sized relatively to each other, the model uses pure
-functions like *shift* and *rotate* that take a *PVCPipe* and some
-geometry transform, and return a new *PVCPipe* with transformed
-geometry. This makes it simple to do parametric modeling and construct
-and try out different *ROV* structures. The models shown here are
-incomplete, as they do not include the motors and the micro-controller
+In summer 2012 I attended the Ocean Engineering Experience program at MIT, where we designed and built a marine remote-operated vehicle (ROV), constructed primarily out of sealed PVC pipes. In spring 2013, I used PySTEMM to re-do some of the 3-D modeling, and generate some engineering calculations and 3-D visualizations from the model. Here too the models were defined in a pure functional style e.g. to create a number of pipes positioned and sized relatively to each other, the model uses pure functions like *shift* and *rotate* that take a *PVCPipe* and some geometry transform, and return a new *PVCPipe* with transformed geometry. This makes it simple to do parametric modeling and construct and try out different *ROV* structures. The models shown here are incomplete, as they do not include the motors and the micro-controller
 assembly.
 
 .. code-block:: python
@@ -414,8 +285,7 @@ assembly.
     c1, c2 = p1.rotate((0,0,90))...
     rov = ROV(body=p1, p2, c1, c2)
 
-The 3-D visualization, including some of the computed engineering
-attributes.
+The 3-D visualization, including some of the computed engineering attributes.
 
 .. figure:: PastedGraphic.pdf
 
@@ -426,17 +296,14 @@ attributes.
 Implementation
 ==============
 
-The overall architecture of PySTEMM is illustrated in Figure :ref:`archfig`, and consists
-of two main parts: the *tool*, and the *model library*. The tool is
-implemented with 3 primary classes:
+The overall architecture of PySTEMM is illustrated in Figure :ref:`archfig`, and consists of two main parts: the *tool*, and the *model library*. The tool is implemented with 3 primary classes:
 
 - Concept: a superclass that triggers special handling of the concept class being defined by the *traits* module.
 - Model: a collection of concepts classes and concept instances.
 - View: an interface to a desktop scriptable drawing application (via AppleScript).
 
 
-The diagram below explains the operation of PySTEMM in some more detail,
-and lists external modules that were used for specific purposes.
+The diagram below explains the operation of PySTEMM in some more detail, and lists external modules that were used for specific purposes.
 
 .. figure:: architecture.png
     :align: center
@@ -446,15 +313,11 @@ and lists external modules that were used for specific purposes.
     Architecture of PySTEMM. :label:`archfig`
 
 
-By requiring all models to be built consistently with objects and pure
-functions, we gain several benefits:
+By requiring all models to be built consistently with objects and pure functions, we gain several benefits:
 
--  The user models can be manipulated by the tool more easily, to
-   provide tool capabilities like animation and graph-plotting.
--  The values of intermediate values and other computed attributes can
-   be as easily displayed as any stored attributes.
--  Debugging becomes less of an issue, as the models are very close to
-   the math taught in schools for physics, chemistry, etc.
+-  The user models can be manipulated by the tool more easily, to provide tool capabilities like animation and graph-plotting.
+-  The values of intermediate values and other computed attributes can be as easily displayed as any stored attributes.
+-  Debugging becomes less of an issue, as the models are very close to the math taught in schools for physics, chemistry, etc.
 
 
 Templates
@@ -471,9 +334,7 @@ All visualization is defined by *templates*, such as the one below:
               ...
               K.gradient_color: "Snow"}
 
-The primary operation on a template is to *apply* it to some modeling
-object, typically a concept class, or a concept instance. The
-*apply\_template* method is:
+The primary operation on a template is to *apply* it to some modeling object, typically a concept class, or a concept instance. The *apply\_template* method is:
 
 .. code-block:: python
 
@@ -491,27 +352,18 @@ object, typically a concept class, or a concept instance. The
             return t(obj)
         return t
 
-Animation Templates have some special case handling (not shown here)
-since their functions take 2 parameters: the *instance* to be rendered,
-and the value of *time* at which to render it’s attributes.
+Animation Templates have some special case handling (not shown here) since their functions take 2 parameters: the *instance* to be rendered, and the value of *time* at which to render it’s attributes.
 
 
 
 Summary
 =======
 
-I have described PySTEMM, a tool and model library for building
-executable concept models for a variety of STEM subjects. Potential
-extensions include:
+I have described PySTEMM, a tool and model library for building executable concept models for a variety of STEM subjects. Potential extensions include:
 
--  Making the models more directly interactive: the main challenge here
-   is that rendering is done via scripting of a desktop application,
-   making such interaction difficult.
--  Publication and sharing of models via the web: since the models are
-   defined as Python code, this would depend on Python’s ability to
-   import over the web
--  Making more generic concept models of systems that involve
-   differential equations.
+-  Making the models more directly interactive: the main challenge here is that rendering is done via scripting of a desktop application, making such interaction difficult.
+-  Publication and sharing of models via the web: since the models are defined as Python code, this would depend on Python’s ability to import over the web
+-  Making more generic concept models of systems that involve differential equations.
 
 
 
