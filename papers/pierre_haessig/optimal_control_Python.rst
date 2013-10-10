@@ -340,16 +340,18 @@ is the sum of the squared acf differences over a range of lag times
 which can be chosen. We name this approach the “multi-lags acf fitting”
 method. Minimization is conducted with ``fmin`` from ``scipy.optimize``.
 
-.. 
-    table commented out ! (generates LaTex compilation error) :label:`tab-ar2-fit`
-    caption: AR(2) fitting results from the two methods (along with standard error when available)
-    +---------------+------------------------+------------------------+--------------------------------------+
-    | method        | :math:`\hat{\phi}_1`   | :math:`\hat{\phi}_2`   | :math:`\hat{\sigma}_{\varepsilon}`   |
-    +===============+========================+========================+======================================+
-    | CMLE          | 1.9883 (.0007)         | -0.9975 (.0007)        | 0.00172                              |
-    +---------------+------------------------+------------------------+--------------------------------------+
-    | fit on 15 s   | 1.9799                 | -0.9879                | 0.00347                              |
-    +---------------+------------------------+------------------------+--------------------------------------+
+
+.. table:: AR(2) fitting results from the two methods (along with standard error when available).
+  :label:`tab-ar2-fit`
+
+  +---------------+------------------------+------------------------+--------------------------------------+
+  | method        | :math:`\hat{\phi}_1`   | :math:`\hat{\phi}_2`   | :math:`\hat{\sigma}_{\varepsilon}`   |
+  +---------------+------------------------+------------------------+--------------------------------------+
+  | CMLE          | 1.9883 (.0007)         | -0.9975 (.0007)        | 0.00172                              |
+  +---------------+------------------------+------------------------+--------------------------------------+
+  | fit on 15 s   | 1.9799                 | -0.9879                | 0.00347                              |
+  +---------------+------------------------+------------------------+--------------------------------------+
+
 
 The result of this acf fitting over lag times up to 15 s (i.e. 150 lags)
 is shown on figure :ref:`fig-speed-acf-AR2` while
