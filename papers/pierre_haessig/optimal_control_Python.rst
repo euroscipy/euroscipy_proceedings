@@ -95,7 +95,7 @@ is irregular.
 .. figure:: power_smoothing_linear.pdf
 
     Smoothing the Ocean Power injected to the grid using an Energy Storage
-    controlled by the simple linear law.
+    controlled by the simple linear law (:ref:`eq-feedback-lin`).
     The storage buffers the difference between the two powers.
     :label:`smooth-lin`
 
@@ -143,7 +143,8 @@ the most suitable choice.
 Finding an Optimal Smoothing Policy
 -----------------------------------
 
-Control law is an example of heuristic choice of policy and we now try
+Control law (:ref:`eq-feedback-lin`) is an example of heuristic choice
+of policy and we now try
 to go further by finding an *optimal* policy.
 
 Optimality will be measured against a *cost function* :math:`J` that
@@ -167,7 +168,7 @@ Expectation :math:`\mathbb{E}` is needed because the production
 This minimization problem falls in the class of *stochastic dynamic
 optimization*. It is *dynamic* because decisions at each time-step
 cannot be taken independently due coupling along time introduced by
-evolution of the stored energy . To describe the dynamics of the system,
+evolution of the stored energy (:ref:`eq-E-sto`). To describe the dynamics of the system,
 we use the generic notation
 
 .. math::
@@ -178,8 +179,8 @@ we use the generic notation
 where :math:`x, u, \varepsilon` are respectively *state* variables,
 *control* variables and *perturbations*. State variables are the
 “memory” of the system. The stored energy :math:`E_{sto}` is here the
-only state variable, but more will appear in section
-[ss:ss:sub:`m`\ odel]. Control variables, which is here the injected
+only state variable, but more will appear in section :ref:`ss-ss-model`.
+Control variables, which is here the injected
 power :math:`P_{grid}` are the one which value be chosen to optimize the
 cost :math:`J`.
 
@@ -196,8 +197,9 @@ where the control is chosen as *a function of the state:*
      P_{grid}(t) = \mu(x(t))
 
 The goal is then to find the *optimal* feedback function :math:`\mu`.
-Since :math:`E_{sto}` is a state variable, policy is in fact a special
-case of . Since :math:`\mu` has no special structure in the general
+Since :math:`E_{sto}` is a state variable, policy (:ref:`eq-feedback-lin`)
+is in fact a special case of (:ref:`eq-feedback-opt`).
+Since :math:`\mu` has no special structure in the general
 case [1]_, it will be *numerically computed on a grid* over the state
 space. We cover the algorithm for this computation in
 section :ref:`s-opt-sto-ctrl`.
@@ -265,7 +267,7 @@ model for the speed is:
     \Omega(k) = \phi_1 \Omega(k-1) + \dots +  \phi_p \Omega(k-p) +  \varepsilon(k)
 
 where :math:`p` is the order of the model and :math:`\varepsilon(k)` is
-a series independent random variables. Equation indeed yields a
+a series independent random variables. Equation (:ref:`eq-ar-p`) indeed yields a
 Markovian process, using the lagged observations of the speed
 :math:`\Omega(k-1), \dots, \Omega(k-p)` as state variables.
 
@@ -357,7 +359,7 @@ With the model obtained from this multi-lags method, we can simulate
 speed and power trajectories and check that they have a “realistic
 behavior”. We can thus infer that the dynamic optimization algorithm
 should make appropriate control decisions out of it. This will be
-discussed in section [ss:results:sub:`s`\ earev\ :sub:`s`\ mooth].
+discussed in section :ref:`ss-results-searev-smooth`.
 
 .. _ss-ss-model:
 
@@ -400,8 +402,8 @@ following state-space model:
    \end{split}
 
 We now have a stochastic Markovian model for the power production of the SEAREV.
-Taken together with state equation of the storage :ref:`eq-E-sto`
-and algebraic relations :ref:`eq-P-grid` and :ref:`eq-P-prod`,
+Taken together with state equation of the storage (:ref:`eq-E-sto`)
+and algebraic relations (:ref:`eq-P-grid`) and (:ref:`eq-P-prod`),
 we have a Markovian model of the overall system. The
 state vector :math:`x=(E_{sto}, \Omega, A)` is of dimension 3 which is
 just small enough to apply the Stochastic Dynamic Programming method.
@@ -457,8 +459,8 @@ The simplest way to solve eq. (:ref:`eq-dp-avg-equil`) is to iterate the right-h
 starting with a zero value function. This is called *value iteration*.
 
 A more efficient approach is *policy iteration*. It starts with an
-initial policy (like the heuristic linear ) and gradually improves it
-with a two steps procedure:
+initial policy (like the heuristic linear (:ref:`eq-feedback-lin`))
+and gradually improves it with a two steps procedure:
 
 #. **policy evaluation:** the current policy is evaluated, which
    includes computing the average cost (:ref:`eq-cost`) and the so-called
@@ -536,8 +538,8 @@ SysDescription
 
 holds the description of the discrete-time dynamic optimization problem.
 Typically, a user writes its dynamics function (the Python
-implementation of :math:`f` in ) and handles it to a ``SysDescription``
-instance:
+implementation of :math:`f` in (:ref:`eq-state-dyn`))
+and handles it to a ``SysDescription`` instance:
 
 .. code-block:: python
 
@@ -757,7 +759,7 @@ Observations of the result are in agreement with what can be expected
 from a reasonable storage control:
 
 -  the more energy there is in the storage, the more power should be
-   injected to the grid (similar to the heuristic control ).
+   injected to the grid (similar to the heuristic control (:ref:`eq-feedback-lin`)).
 
 -  the speed and acceleration of the SEAREV also modulates the injected power,
    but to a lesser extent. We may view speed and acceleration as
@@ -881,8 +883,9 @@ https://github.com/pierre-haessig.
    falls outside this classical case.
 
 .. [2]
-   Instead of using the exact optimization cost (average quadratic power
-   in MW\ :sup:`2`), we actually compute the standard deviation (in MW).
+   Instead of using the exact optimization cost (:ref:`eq-cost`)
+   (average quadratic power in MW\ :sup:`2`),
+   we actually compute the standard deviation (in MW).
    It is mathematically related to the quadratic power and we find more
    readable.
 
