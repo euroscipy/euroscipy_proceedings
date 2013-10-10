@@ -64,23 +64,78 @@ schematic of the system considered in this article is given on figure
 
 .. figure:: searev_storage.pdf
    :figclass: t
-   
-   Power smoothing with an Energy Storage: an example of an Optimal Control problem. :label:`smoothing-diagram`
+
+   Power smoothing with an Energy Storage: an example of an Optimal Control problem.
+   :label:`smoothing-diagram`
 
 
-Full article
-============
+Smoothing with an Energy Storage
+--------------------------------
 
-Due to manuscript conversion issues, only the introduction of the manuscript
-is available here, along with all figures.
-The full article may be found on http://publications.pierreh.eu as a PDF file.
+Electricity generation from *ocean waves* (with machines called Wave
+Energy Converters) is an example where the output power can be *strongly
+fluctuating*. This is illustrated on figure :ref:`smooth-lin`
+where the output power :math:`P_{prod}(t)` from a particular wave energy
+converter called is represented along 100 seconds.
 
+We just mention that this production time series comes not from
+measurements but from an hydro-mechanical simulation from colleagues
+since the is a big 1 MW - 30 meters long machine which is yet to be
+built [Ruellan-2010]_.
+
+The oscillations of :math:`P_{prod}(t)` at a period of about 1.5 s comes
+from the construction of the : in short, it is floating
+*double-pendulum* that oscillates with the waves. Also, because *ocean
+waves have a stochastic behavior*, the amplitude of these oscillations
+is irregular.
 
 .. figure:: power_smoothing_linear.pdf
-    
+
     Smoothing the Ocean Power injected to the grid using an Energy Storage
     controlled by the simple linear law.
     The storage buffers the difference between the two powers.
+    :label:`smooth-lin`
+
+Therefore an energy storage absorbing a power :math:`P_{sto}` can be
+used to smooth out the power :math:`P_{grid}` injected to the
+electricity network:
+
+.. math::
+
+   \label{eq:P_grid}
+     P_{grid}(t) = P_{prod}(t) - P_{sto}(t)
+
+The energy of the storage then evolves as:
+
+.. math::
+
+   \label{eq:E_sto}
+     E_{sto}(k+1) = E_{sto}(k) + P_{sto}(k)\Delta t
+
+expressed here in discrete time (:math:`\Delta t = 0.1 \text{ s}`
+throughout this article), without accounting for losses. The storage
+energy is bounded: :math:`0 \leq E_{sto} \leq E_{rated}`, where
+:math:`E_{rated}` denotes the storage capacity which is set to 10 MJ in
+this article (i.e. about 10 seconds of reserve at full power)
+
+It is a control problem to choose a power smoothing law. We present the
+example of a linear feedback control:
+
+.. math::
+
+   \label{eq:feedback_lin}
+     P_{grid}(t) = \frac{P_{max}}{E_{rated}} E_{sto}(t)
+
+where :math:`P_{max}` is the rated power of the (1.1 MW). This law gives
+“good enough” smoothing results as it can be seen on figure
+:ref:`smooth-lin`.
+
+The performance of the smoothing is greatly influenced by the *storage
+sizing* (i.e. the choice of the capacity :math:`E_{rated}`). This
+question is not addressed in this article but was discussed by
+colleagues [Aubry-2010]_. We also don’t discuss the choice of the
+storage *technology*, but it is believed that super-capacitors would be
+the most suitable choice.
 
 
 .. figure:: speed_acf_AR2.pdf
@@ -93,32 +148,64 @@ The full article may be found on http://publications.pierreh.eu as a PDF file.
 .. figure:: speed_power_Em1.pdf
     :figclass: w
     :scale: 70%
-    
+
     Speed & Power time series from a 1000 seconds SEAREV simulation (sample Em_1.txt).
     The gray rectangle time interval is enlarged in the middle panel.
     Distribution histogram on the right.
 
 .. figure:: P_grid_law.png
 
-
-   Storage control policy: Power injected to the grid as
-   a function of speed and acceleration,
-   for 7 levels of stored energy between empty and full.
+    Storage control policy: Power injected to the grid as
+    a function of speed and acceleration,
+    for 7 levels of stored energy between empty and full.
 
 
 .. figure:: storage_policy_comparison_annot.pdf
     :figclass: w
     :scale: 70%
-    
+
     Comparison of the power smoothing behavior between
     the *heuristic* (dark blue) and *optimized* (light blue)
     storage management policies (storage capacity of 10 MJ).
     Stored energy on the bottom panel.
-    
+
+
 .. figure:: control_benefits.pdf
     :scale: 60%
-    
+
     Effect of optimizing the storage control on three SEAREV
     production time series.
     Standard deviation compared to the heuristic linear control case
     is reduced by about 20 %.
+
+
+References
+==========
+
+.. [Aubry-2010] J. Aubry, P. Bydlowski, B. Multon, H. Ben Ahmed, and B. Borgarino.
+                *Energy Storage System Sizing for Smoothing Power Generation of Direct Wave Energy Converters*,
+                3rd International Conference on Ocean Energy, 2010.
+
+.. [Bertsekas-2005] D. P. Bertsekas,
+                    *Dynamic Programming and Optimal Control*,
+                    Athena Scientific, 2005.
+
+.. [Brockwell-1991] P. J. Brockwell, and R. A. Davis.
+                    *Time Series: Theory and Methods*, Springer Series in Statistics,
+                    Springer, 1991.
+
+.. [Kovaltchouk-2013] T. Kovaltchouk, B. Multon, H. Ben Ahmed, F. Rongère, J. Aubry, and A. Glumineau.
+                      *Influence of control strategy on the global efficiency of a Direct Wave Energy Converter with electric Power Take-Off*,
+                      EVER 2013 conference, 2013.
+
+.. [McElroy-2013] T. McElroy, and M. Wildi.
+                  *Multi-step-ahead estimation of time series models*,
+                  International Journal of Forecasting, 29: 378–394, 2013.
+
+.. [Ruellan-2010] M. Ruellan, H. Ben Ahmed, B. Multon, C. Josset, A. Babarit, and A. Clément.
+                  *Design Methodology for a SEAREV Wave Energy Converter*,
+                  IEEE Trans. Energy Convers, 25: 760–767, 2010.
+
+.. [Winant-2010] P. Winant.
+                 *Dolo, a python library to solve global economic models*,
+                 http://albop.github.io/dolo, 2010.
