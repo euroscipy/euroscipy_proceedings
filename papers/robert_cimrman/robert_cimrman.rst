@@ -37,6 +37,18 @@ In this paper we focus on illustrating the former use by using a particular
 example. All examples presented below were tested to work with the version
 2013.3 of SfePy.
 
+Development
+-----------
+
+The SfePy project uses Git for source code management and GitHub web site for
+the source code hosting and developer interaction, similarly to many other
+scientific python tools. The version 2013.3 has been released in
+September 18. 2013, and its git-controlled sources contained 761 total files,
+138191 total lines (725935 added, 587744 removed) and 3857 commits done by 15
+authors. However, about 90% of all commits were done by the main developer as
+most authors contributed only a few commits. The project seeks and encourages
+more regular contributors, see http://sfepy.org/doc-devel/development.html.
+
 Short Description
 -----------------
 
