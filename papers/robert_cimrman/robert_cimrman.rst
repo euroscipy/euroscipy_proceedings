@@ -73,10 +73,44 @@ The key notion in SfePy is a *term*, which is the smallest unit that can be
 used to build *equations*. It corresponds to a weak formulation integral and
 takes usually several arguments: (optional) material parameters, a single
 virtual (or test) function variable and zero or more state (or unknown)
-variables. The available terms are listed at our web site
+variables. The available terms (currently 105) are listed at our web site
 (http://sfepy.org/doc-devel/terms_overview.html). The already existing terms
 allow to solve problems from many scientific domains, see Figure
-:ref:`gallery`.
+:ref:`gallery`. Those terms cover many common PDEs in continuum mechanics,
+poromechanics, biomechanics etc. with a notable exception of electromagnetism
+(work in progress, see below).
+
+Currently the code supports the 2D area (triangle, rectangle) and 3D volume
+(tetrahedron, hexahedron) elements. Structural elements like shells, plates,
+membranes or beams are not supported with a single exception of a hyperelastic
+Mooney-Rivlin membrane.
+
+Several kinds of basis or shape functions can be used for the finite element
+approximation of the physical fields:
+
+- the classical nodal (Lagrange) basis can be used with all element types;
+- the hierarchical (Lobatto) basis can be used with tensor-product elements
+  (rectangle, hexahedron).
+
+Although the code can provide the basis function polynomials of a high order
+(10 or more), orders greater than 4 are not practically usable, especially in
+3D. This is caused by the way the code assembles the element contributions into
+the global matrix - it relies on NumPy vectorization and evaluates the element
+matrices all at once and then adds to the global matrix - this allows fast term
+evaluation and assembling but its drawback is a very high memory consumption
+for high polynomial orders. Related to polynomial orders, tables with
+quadrature points for numerical integration are available or can be generated
+as needed.
+
+We are now working on implementing Nédélec and Raviart-Thomas vector bases in
+order to support other kinds of PDEs, such as the Maxwell equations of
+electromagnetism.
+
+Once the equations are assembled, a number solvers can be used to solve the
+problem. SfePy provides a unified interface to many standard codes, for example
+UMFPACK, PETSc, Pysparse as well as the solvers available in SciPy. Various
+solver classes are supported: linear, nonlinear, eigenvalue, optimization, and
+time stepping.
 
 Thermoelasticity Example: Code
 ------------------------------
