@@ -61,7 +61,7 @@ solvers and algorithms, Matplotlib for 2D plots, Mayavi for 3D plots and simple
 postprocessing GUI, IPython for a customized shell, SymPy for symbolic
 operations/code generation etc.
 
-The basic structure of the code allows flexible definition of various
+The basic structure of the code allows a flexible definition of various
 problems. The problems are defined using components directly corresponding to
 mathematical counterparts present in a weak formulation of a problem in the
 finite element setting: a solution domain and its sub-domains (regions),
@@ -98,9 +98,10 @@ Although the code can provide the basis function polynomials of a high order
 the global matrix - it relies on NumPy vectorization and evaluates the element
 matrices all at once and then adds to the global matrix - this allows fast term
 evaluation and assembling but its drawback is a very high memory consumption
-for high polynomial orders. Related to polynomial orders, tables with
-quadrature points for numerical integration are available or can be generated
-as needed.
+for high polynomial orders. Also, the polynomial order has to be uniform over
+the whole (sub)domain where a field is defined. Related to polynomial orders,
+tables with quadrature points for numerical integration are available or can be
+generated as needed.
 
 We are now working on implementing Nédélec and Raviart-Thomas vector bases in
 order to support other kinds of PDEs, such as the Maxwell equations of
