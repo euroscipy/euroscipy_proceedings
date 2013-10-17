@@ -57,7 +57,7 @@ split the dataset into individual blocks. It can then operate on each
 block using a different thread which effectively leads to a
 multithreaded compressor.  The block size is chosen such that it
 either fits into a typical L1 cache (for compression levels up to 6)
-or L2 cache (for compression levels larger than 6) In modern CPUs L1
+or L2 cache (for compression levels larger than 6). In modern CPUs L1
 and L2 are typically non-shared between other cores, and so this
 choice of block size leads to an optimal performance during
 multi-thread operation.
@@ -139,7 +139,7 @@ NPY
 *NPY* [NPY]_ is a simple plain serialization format for numpy. It is considered
 somewhat of a gold standard for the serialization. One of its advantages is
 that it is very, very lightweight. The format specification is simple and can
-easily be digested withing an hour. In essence it simply contains the ndarray
+easily be digested within an hour. In essence it simply contains the ndarray
 metadata and the serialized data block. The metadata amounts to the ``dtype``, the
 ``order`` and the ``shape`` or the array. The main drawback is that it is a
 plain serialization format and does not support compression.
@@ -151,7 +151,7 @@ NPZ
 a Zip file it may be optionally compressed, however the main uses case is to
 store multiple ndarrays in a single file. Zip is an implementation of the
 DEFLATE [DEFLATE]_ algorithm. Unlike the other evaluated compressed formats,
-NPY does not support a compression level setting.
+NPZ does not support a compression level setting.
 
 ZFile
 .....
