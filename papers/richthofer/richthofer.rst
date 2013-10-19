@@ -149,7 +149,7 @@ The function families ``PyArg_ParseTuple`` and ``Py_BuildValue`` are also suppor
 Implementation
 --------------
 
-To create JyNI we took the source code of CPython 2.7 and stripped away all functionality that can be provided by Jython and is not needed for mirroring objects (see below). We kept the interface unchanged and reimplemented it to delegate calls to Jython via JNI and vice versa.
+To create JyNI we took the source code of CPython 2.7 and stripped away all functionality that can be provided by Jython and is not needed for mirroring objects (see below). We kept the interface unchanged and implemented it to delegate calls to Jython via JNI and vice versa.
 The most difficult thing is to present JNI-``jobject``'s from Jython to extensions such that they look like ``PyObject*`` from Python (C-API). For this task, we use the three different approaches explained below, depending on the way a native type is implemented.
 
 In this section, we assume that the reader is familiar with the Python [C-API]_ and has some knowledge about the C programming language, especially about the meaning of pointers and memory allocation.
@@ -163,9 +163,9 @@ delegates all its calls to Jython (figure :ref:`pwj`). This is only possible, if
 suitable counterpart of the ``PyObject`` (i.e. some subclass of ``org.python.core.PyObject``
 with similar name, methods and functionality).
 
-Further, there may not exist macros
+Further, there must not exist macros
 in the official C-API that directly access the ``PyObject``'s memory. Consequently, one
-can not use ``tp_dictoffset`` to obtain the object's dictionary or ``offset`` from
+cannot use ``tp_dictoffset`` to obtain the object's dictionary or ``offset`` from
 ``PyMemberDef`` to access the object's members.
 
 Since members are usually only accessed via generic
