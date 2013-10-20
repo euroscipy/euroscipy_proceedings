@@ -76,20 +76,9 @@ method.
     emission, respectively. :label:`epifluorescence-microscope`
 
 A camera like the Andor Neo sCMOS features a sensor of resolution :math:`2560 \times 2160\,\text{px}`
-and a surface of :math:`416 \times 351\,\text{um}`. So to cover
+and a surface of :math:`416 \times 351\,\text{um}`. Thus to cover
 the whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times
 51` (2193 tiles) using an automated stagger.
-
-The Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
-another stage with a combination of two amplifier-DACs to achieve a 16-bit resolution for high
-dynamic image. Thus image pixels must be encoded using an unsigned 16-bit integer data type. It
-means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weights
-:math:`23\,\text{GB}` per colour.
-
-Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
-of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
-data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
-shuffling, so as to group the zeros together and form long zero sequences in the byte stream.
 
 .. on the mosaic which depends of the step positioning error
 
@@ -120,6 +109,17 @@ cover slip and an image registration algorithm.
 The third dimension of a specimen can be observed using the vertical focus axis of the microscope
 so as to perform a so called *z-stack* of images that enlarge the depth of field virtually and thus
 improve the focus accuracy.
+
+The Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
+another stage with a combination of two amplifier-DACs to achieve a 16-bit resolution for high
+dynamic image. Thus image pixels must be encoded using an unsigned 16-bit integer data type. It
+means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weights
+:math:`23\,\text{GB}` per colour.
+
+Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
+of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
+data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
+shuffling, so as to group the zeros together and form long zero sequences in the byte stream.
 
 Virtual Slide Format and Storage
 --------------------------------
