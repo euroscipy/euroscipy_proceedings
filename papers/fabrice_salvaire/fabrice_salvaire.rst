@@ -127,13 +127,10 @@ Virtual Slide Format and Storage
 
 We can now define the data structure of an acquisition so called later a *virtual slide*.  A virtual
 slide is made of a mosaic of fields of view and a set of attributes that constitute the so called
-*slide header*. Examples of attributes are a slide identifier, a date of acquisition or an assay
-type.
+*slide header*. Examples of attributes are a slide identifier, a date of acquisition or a type of assay.
 
 The mosaic is a set of colour fields of view made of a mosaic index :math:`(r,c)`, a stagger
 position :math:`(x,y,z)`, a colour index :math:`w` and an image array of unsigned 16-bit integers.
-To store images in memory, the Numpy [Numpy]_ library is well appropriate since it maps efficiently
-a C linear array data structure on Python.
 
 From this mosaic of field of views, we can imagine to reconstruct the slide image once and for all
 and produce a giant image, where we could use for this purpose the BigTIFF [BigTIFF]_ extension to
@@ -155,8 +152,9 @@ system provides the same flexibility than a real file system similar to a UNIX l
 
    HDF5 Virtual File System. Attributes can be attached to each node. :label:`hdf5-file-system`
 
-The h5py module provides a Pythonic API and map Numpy arrays to datasets and reciprocally, the following code
-snippet gives an overview of its usage:
+The h5py module provides a Pythonic API and map Numpy [Numpy]_ arrays to datasets and reciprocally.
+The Numpy library is well appropriate to store images in memory since it maps efficiently a C linear
+array data structure on Python. The following code snippet gives an overview of its usage:
 
 .. code-block:: python
 
@@ -173,7 +171,7 @@ snippet gives an overview of its usage:
   image_dataset[n:2*n,n:2*n] = data
 
 As usual when large data sets are involved, the HDF5 library implements a data blocking concept so
-called *chunk* which is an application of the divide-conquer paradigm. Indeed the data compression
+called *chunk* which is an application of the divide-and-conquer paradigm. Indeed the data compression
 as well the efficiency of the data transfer requires datasets to be splitted in chunks. This feature
 is a cornerstone that open the way to many things. It permits to only read and write a subset of the
 dataset so called an *hyperslab*, which provides a way to Python to map concepts such view and
@@ -198,15 +196,17 @@ want to get the fields of view as a planar image then we should use the same sha
 i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:`(N_w\,H,W)` where
 :math:`N_w` is the number of colour planes. Like this we can map directly the data from storage to
 memory. The planar format is usually more suited for analysis purpose, but if we want to privilege
-the display then we can choose an interleaved format instead. However we cannot use an interleaved
-format if we consider there is an offset between the colour fields of view.
+the display then we should choose an interleaved format. However  we cannot use an interleaved
+format in practice if we consider there is an offset between the colour fields of view.
 
-To store the mosaic we can use a dataset per field of view or pack everything in only one dataset
-thanks to the data blocking to make this efficient and transparent. For example if the mosaic shape
-is :math:`(R,C)` then we can create a dataset of shape :math:`(R\,N_w\,H,C\,W)` with a chunk size
-of :math:`(h,w)` where :math:`(H, W) = (n\,h, n\,w)` and :math:`n \in \mathbb{Z}^{*+}`. Figure
-:ref:`mosaic-dataset` shows an example of a packed mosaic. The induced overhead will be smoothed by
-the fact the images are stored in chunks.
+To store the mosaic we can use a dataset per field of view or pack everything in only one
+dataset. This second approach would be the natural choice if we had reconstructed the slide image.
+For example if the mosaic shape is :math:`(R,C)` then we can create a dataset of shape
+:math:`(R\,N_w\,H,C\,W)` with a chunk size of :math:`(h,w)` where :math:`(H, W) = (n\,h, n\,w)` and
+:math:`n \in \mathbb{Z}^{*+}`. Figure :ref:`mosaic-dataset` shows an example of a packed mosaic. The
+induced overhead will be smoothed by the fact the images are stored on disk as chunks.
+
+.. thanks to the data blocking to make this efficient and transparent
 
 .. figure:: figure-dataset.pdf
    :scale: 50%
@@ -236,7 +236,7 @@ And to get from here the wth colour plane of the ith field of view, the code wou
   row_offset = i * field_of_view_step + w * H
   colour_image = memory[row_offset:row_offset +H,:]
 
-If the mosaic is sparse we can pack the mosaic and use a bisection algorithm to perform a binary
+If the mosaic is sparse we can still pack the mosaic and use a bisection algorithm to perform a binary
 search to get the corresponding linear index used for the storage.
 
 .. figure:: figure-linear-dataset.pdf
@@ -248,12 +248,13 @@ search to get the corresponding linear index used for the storage.
 
 One can argue this approach is not natural, but if we encapsulate the slice computation in a virtual
 slide API then we have an efficient way to store and retrieve our data. A better approach would be
-to have a direct access to the chunks, but the HDF5 API does not give such facility. Thus if we
-do not want to rewrite the library, the hyperslab mechanism is a solution. However if we dislike this
-packing method, we can still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk
-layout :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test
-several dataset layouts and measure the I/O performance. The tools *h5perf* is made available for
-this purpose.  More details about chunking can be found in the reference [HDF5-Chunking]_.
+to have a direct access to the chunks, but actually the HDF5 API does not give such facility (it
+only provides direct chunk write up to now). Thus if we do not want to rewrite or extend the
+library, the hyperslab mechanism is a solution. However if we dislike this packing method, we can
+still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk layout
+:math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test several
+dataset layouts and measure the I/O performance. The tools *h5perf* is made available for this
+purpose. More details about chunking can be found in the reference [HDF5-Chunking]_.
 
 This storage method can be easily extended to a more complicated acquisition scheme having
 z-stacks or a time dimension.
@@ -269,7 +270,7 @@ effects on an IT infrastructure, for example the need to setup an authentication
 security. Moreover we cannot build a complex network topology made of a virtual slide broadcast
 server and clients.
 
-We will now introduce the concept of remote virtual slides so as to add a real client-server feature
+We will now introduce the concept of remote virtual slide so as to add a real client-server feature
 to our framework. We have two types of data to send over the network, the slide header and the
 images. Since images are a flow of bytes, it is easy to send them over the network and use the Blosc
 [Blosc]_ real-time compression algorithm to reduce the payload. For the slide header, we can
@@ -284,7 +285,7 @@ multi-threading. Indeed the connection patterns and the message queues offer a s
 exchange data between processes and synchronise them. This library is notably used by the IPython
 [IPython]_ for messaging.
 
-The remote virtual slide framework uses the request-reply pattern to provide a client-server
+The remote virtual slide framework is build on the request-reply pattern to provide a client-server
 model. This pattern can be used to build a complex network topology with data dealer, router and
 consumer.
 
