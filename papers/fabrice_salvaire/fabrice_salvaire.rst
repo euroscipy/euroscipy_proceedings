@@ -78,7 +78,8 @@ method.
 A camera like the Andor Neo sCMOS features a sensor of resolution :math:`2560 \times 2160\,\text{px}`
 and a surface of :math:`416 \times 351\,\text{um}`. Thus to cover
 the whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times
-51` (2193 tiles) using an automated stagger.
+51` (2193 tiles) using an automated stagger. In the followings we will also refer the fields of view as
+*tiles* or *images* according to the context.
 
 .. on the mosaic which depends of the step positioning error
 
@@ -132,8 +133,7 @@ type.
 The mosaic is a set of colour fields of view made of a mosaic index :math:`(r,c)`, a stagger
 position :math:`(x,y,z)`, a colour index :math:`w` and an image array of unsigned 16-bit integers.
 To store images in memory, the Numpy [Numpy]_ library is well appropriate since it maps efficiently
-a C linear array data structure on Python. In the followings we will refer the fields of view as
-*tiles* or *images* according to the context.
+a C linear array data structure on Python.
 
 From this mosaic of field of views, we can imagine to reconstruct the slide image once and for all
 and produce a giant image, where we could use for this purpose the BigTIFF [BigTIFF]_ extension to
