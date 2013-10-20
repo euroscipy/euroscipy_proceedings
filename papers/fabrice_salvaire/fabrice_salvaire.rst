@@ -13,7 +13,7 @@ High-Content Digital Microscopy with Python
   High-Content Digital Microscopy open the way for new researches and medical diagnostics due to the
   enhancement on user comfort, data storage and throughput. A digital microscopy platform has for
   aim to capture an image of a cover slip, to store the information on a file server and a database,
-  to visualise the image and to perform analysis. We will discuss how the Python ecosystem could
+  to visualise the image and to perform analysis. We will discuss how the Python ecosystem can
   provide such software platform efficiently.
  
 .. class:: keywords
@@ -37,7 +37,7 @@ cryptography. The third enhancement concerns high-content application where the 
 considerable scale-up of the data processing throughput and thus open the way to new researches and
 medical diagnostics.
 
-We will discuss in this paper how the Python ecosystem could provide efficiently a software platform
+We will discuss in this paper how the Python ecosystem can provide efficiently a software platform
 for the digital microscopy. Our discussion will first present the data acquisition method, and then
 we will describe the data storage and finally the image viewer.
 
@@ -87,7 +87,7 @@ means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weig
 
 Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
 of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
-data could be efficiently reduced using a lossless compression algorithm in conjunction with a bit
+data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
 shuffling, so as to group the zeros together and form long zero sequences in the byte stream.
 
 When the specimen is observed with several colours, we have two strategies to acquire the mosaic,
@@ -111,10 +111,10 @@ since it only displaces systematically the fields of view in the mosaic frame.
    Field of View Mosaic showing a sheared effect due to the camera misalignment. The tiles are
    rotated in the stagger frame but not in the mosaic frame. :label:`sheared-mosaic`
 
-All these uncertainties could be studied using fluorescent beads with an appropriate density on the
+All these uncertainties can be studied using fluorescent beads with an appropriate density on the
 cover slip and an image registration algorithm.
 
-The third dimension of a specimen could be observed using the vertical focus axis of the microscope
+The third dimension of a specimen can be observed using the vertical focus axis of the microscope
 so as to perform a so called *z-stack* of images that enlarge the depth of field virtually and thus
 improve the focus accuracy.
 
@@ -142,7 +142,7 @@ The HDF5 [HDF5]_ library and its h5py [h5py]_ Python binding is perfectly suited
 purpose. The content of an HDF5 file is self-defined and the library is open source which guaranty a
 long term access to the data. The structure of an HDF5 file is similar to a file system having
 folder objects so called *groups* and N-dimensional array objects so called *dataset* that
-corresponds here to files. Each of these objects could have attached attributes.  This virtual file
+corresponds here to files. Each of these objects can have attached attributes.  This virtual file
 system provides the same flexibility than a real file system similar to a UNIX loop device. Figure
 :ref:`hdf5-file-system` shows an example.
 
@@ -150,7 +150,7 @@ system provides the same flexibility than a real file system similar to a UNIX l
    :scale: 60%
    :figclass: bht
 
-   HDF5 Virtual File System. Attributes could be attached to each node. :label:`hdf5-file-system`
+   HDF5 Virtual File System. Attributes can be attached to each node. :label:`hdf5-file-system`
 
 The h5py module provides a Pythonic API and map Numpy arrays to datasets and reciprocally, the following code
 snippet gives an overview of its usage:
@@ -181,7 +181,7 @@ Another cornerstone of the HDF5 library is to implement a modular and powerful d
 pipeline shown on figure :ref:`hdf5-pipeline` whose aim is to decompress the data from chunks stored
 on disk, scatter-gather the data and transform them, for example to apply a scale-offset filter. The
 h5py module provides the classic GZIP compression as well its faster counterpart LZF [LZF]_ and
-other compression algorithms could be added easily as plugins.
+other compression algorithms can be added easily as plugins.
 
 .. figure:: figure-hdf5-pipeline.pdf
    :scale: 60%
@@ -195,12 +195,12 @@ want to get the fields of view as a planar image then we should use the same sha
 i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:`(N_w\,H,W)` where
 :math:`N_w` is the number of colour planes. Like this we can map directly the data from storage to
 memory. The planar format is usually more suited for analysis purpose, but if we want to privilege
-the display then we could choose an interleaved format instead. However we cannot use an interleaved
+the display then we can choose an interleaved format instead. However we cannot use an interleaved
 format if we consider there is an offset between the colour fields of view.
 
-To store the mosaic we could use a dataset per field of view or pack everything in only one dataset
+To store the mosaic we can use a dataset per field of view or pack everything in only one dataset
 thanks to the data blocking to make this efficient and transparent. For example if the mosaic shape
-is :math:`(R,C)` then we could create a dataset of shape :math:`(R\,N_w\,H,C\,W)` with a chunk size
+is :math:`(R,C)` then we can create a dataset of shape :math:`(R\,N_w\,H,C\,W)` with a chunk size
 of :math:`(h,w)` where :math:`(H, W) = (n\,h, n\,w)` and :math:`n \in \mathbb{Z}^{*+}`. Figure
 :ref:`mosaic-dataset` shows an example of a packed mosaic. The induced overhead will be smoothed by
 the fact the images are stored in chunks.
@@ -212,7 +212,7 @@ the fact the images are stored in chunks.
    A dataset for a :math:`2 \times 2` mosaic, chunks are represented by dotted
    squares. :label:`mosaic-dataset`
 
-However if we want to load at the same time a set of consecutive tiles, then we could use this
+However if we want to load at the same time a set of consecutive tiles, then we can use this
 linear dataset shape :math:`(R\,C\,N_w\,H,W)` and index the image using the linearised index
 :math:`r\,C + c`. Figure :ref:`linear-dataset` shows an example of a linearised mosaic. For example
 the code to get the fields of view in the slice :math:`[10,20:30]` would be:
@@ -250,9 +250,9 @@ do not want to rewrite the library, the hyperslab mechanism is a solution. Howev
 packing method, we can still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk
 layout :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test
 several dataset layouts and measure the I/O performance. The tools *h5perf* is made available for
-this purpose.  More details about chunking could be found in the reference [HDF5-Chunking]_.
+this purpose.  More details about chunking can be found in the reference [HDF5-Chunking]_.
 
-This storage method could be easily extended to a more complicated acquisition scheme having
+This storage method can be easily extended to a more complicated acquisition scheme having
 z-stacks or a time dimension.
  
 Remote Virtual Slide
@@ -269,7 +269,7 @@ server and clients.
 We will now introduce the concept of remote virtual slides so as to add a real client-server feature
 to our framework. We have two types of data to send over the network, the slide header and the
 images. Since images are a flow of bytes, it is easy to send them over the network and use the Blosc
-[Blosc]_ real-time compression algorithm to reduce the payload. For the slide header, we could
+[Blosc]_ real-time compression algorithm to reduce the payload. For the slide header, we can
 serialise the set of attributes to a JSON [JSON]_ string, since the attributes data types are
 numbers, strings and tuples of them.
 
@@ -282,7 +282,7 @@ exchange data between processes and synchronise them. This library is notably us
 [IPython]_ for messaging.
 
 The remote virtual slide framework uses the request-reply pattern to provide a client-server
-model. This pattern could be used to build a complex network topology with data dealer, router and
+model. This pattern can be used to build a complex network topology with data dealer, router and
 consumer.
 
 Microscope Interconnection
@@ -298,12 +298,12 @@ same time maximise the data compression which is a time consuming task. Thus the
 contradiction in our requirements. Moreover the GIL prevents real time multi-threading. Thus we have
 to add a FIFO buffer between the producer and the consumer so as to handle the speed difference
 between them. This FIFO is called *slide proxy* and act as an image cache. The second constrain is
-due to the fact that the slide writer could complete its job after the end of scan. It means the
+due to the fact that the slide writer can complete its job after the end of scan. It means the
 slide writer will not be ready to process another slide immediately, which is a drawback if we want
 to scan a batch of slides. Thus we need a third process called *slide manager* whose aim is to fork
 a slide writer for each scan that will itself fork the slide proxy. Due to the fork mechanism, these
 three processes, slide manager, slide writer and slide proxy must run on same host so called *slide
-server*. For the other component, all the configurations could be envisaged.
+server*. For the other component, all the configurations can be envisaged.
 
 The last component of this framework is the slide database whose aim is to store the path of the
 HDF5 file on the slide server so as to retrieve the virtual slide easily.
@@ -320,7 +320,7 @@ Slide Viewer Graphic Engine
 The slide viewer graphic engine works as Google Map using image tiles and follows our concept to
 reconstruct the slide image online. We can imagine several strategies to reconstruct the slide
 image. The first one would be to perform all the computation on CPU. But nowadays we have GPU that
-offer a higher level of parallelism for such a task. GPU could be accessed using several API like
+offer a higher level of parallelism for such a task. GPU can be accessed using several API like
 CUDA, OpenCL and OpenGL [OpenGL]_. The first ones are more suited for an exact computation and the
 last one for image rendering. In the followings we are talking about modern OpenGL where the fixed
 pipeline is deprecated in favour of a programmable pipeline.
@@ -349,7 +349,7 @@ perform an image processing and to manage the zoom level using a texture sampler
    line represents the sampling of the triangle defined by the vertexes (1, 2, 3) using a scanline
    algorithm. Pixels out of the viewport are discarded. :label:`opengl-viewport`
 
-A texture could have from one to four colour components (RGBA), which make easy to render a slide
+A texture can have from one to four colour components (RGBA), which make easy to render a slide
 acquisition with up to four colours. To render more colours, we just need more than one texture by
 tile and a more complicated fragment shader. If the tiles are stored in a planar format then we have
 to convert them to an interleaved format, we call this task texture preparation. However we can also
@@ -365,19 +365,19 @@ data for the corresponding textures and load them to OpenGL. The time consuming 
 three ones. In order to accelerate the rendering, it would be judicious to perform these tasks in
 parallel, which is not simple using Python.
 
-For the tile loading, we could build on our remote virtual slide framework in order to perform an
+For the tile loading, we can build on our remote virtual slide framework in order to perform an
 intelligent read-ahead and to eventually prepare the data for the texture.
 
 The parallelisation of the texture loading is the most difficult part and it depends of the OpenGL
 implementation. Modern OpenGL Extension to the X Window server (GLX) supports texture loading within
-a thread, but this approach could not be used efficiently in Python due to the GIL. Moreover we
+a thread, but this approach cannot be used efficiently in Python due to the GIL. Moreover we
 cannot use a separate process to do that since it requires processes could share an OpenGL context,
-which is only available for indirect rendering (glXImportContextExt). Also we could not be sure the
+which is only available for indirect rendering (glXImportContextExt). Also we cannot be sure the
 multi-threading would be efficient in our case due to the fact we are rendering a subset of the
 mosaic at a time and thus textures have a short life time. And the added complexity could prove to
 be a drawback.
 
-Since our mosaic could be irregular, we cannot found by a simple computation which tiles are in the
+Since our mosaic can be irregular, we cannot found by a simple computation which tiles are in the
 viewport. Instead we use an R-tree for this purpose. All the tiles boundaries are filled in the
 R-tree. And to get the list of tiles within the viewport, we perform an intersection query of the
 R-tree with the viewport boundary.
@@ -392,12 +392,12 @@ Slide Viewer Architecture
    Slide Viewer Architecture. :label:`slide-viewer-architecture`
 
 Figure :ref:`slide-viewer-architecture` shows the architecture of our slide viewer. The virtual
-slide API could access the data through the file or the remote driver. HDF5 files are stored on a
-file server that could provide a network file system to access files remotely. The remote virtual
-slide could be used in two different ways. The process that corresponds to the server side is called
-*tile dealer*. If this process runs on the same host as the slide viewer, then we could use it to
+slide API can access the data through the file or the remote driver. HDF5 files are stored on a
+file server that can provide a network file system to access files remotely. The remote virtual
+slide can be used in two different ways. The process that corresponds to the server side is called
+*tile dealer*. If this process runs on the same host as the slide viewer, then we can use it to
 implement our read-ahead mechanism to parallelise the tile loading. And if it runs on the file
-server, then we could use it at an alternative to the network file system in a similar way as a
+server, then we can use it at an alternative to the network file system in a similar way as a
 virtual slide broadcast service. This second example demonstrates the remote virtual slide is a
 fundamental software component in our framework that open the way to many things.
 
@@ -408,7 +408,7 @@ RAID bandwidth.
 
 The slide viewer implements two Least Recently Used caches to store the tiles and the
 textures. These caches are a cornerstone for the fluidity of the navigation within the slide, since
-it helps to reduce the viewer latency. Nowadays we could have on a workstation with
+it helps to reduce the viewer latency. Nowadays we can have on a workstation with
 :math:`64\,\text{GB}` of RAM for a decent cost, which open the way to a large in memory cache in
 complement to a PCI-e SSD cache. In this way we can build a 3-tier system made of a file server to
 store tera bytes of data, a PCI-e SSD cache to store temporally slides and an in memory cache to
@@ -461,7 +461,7 @@ formula:
    % _\text{normalised
    \hat{l} = \frac{l - I_{inf}}{I_{sup} - I_{inf}}
 
-where :math:`0 <= I_{inf} < I_{sup} < 2^{16}`. This normalisation could be used to perform an image
+where :math:`0 <= I_{inf} < I_{sup} < 2^{16}`. This normalisation can be used to perform an image
 contrast by adjusting the values of :math:`I_{inf}` and :math:`I_{sup}`.
 
 The fact OpenGL supports the unsigned 16-bit data type for texture permits to load the raw data
@@ -469,13 +469,13 @@ directly in the fragment shader without information loss. According to the confi
 the RAMDAC of the video adapter will convert the normalised floats to an unsigned 8-bit intensity
 for a standard monitor or to 10-bit for high resolution monitor like DICOM compliant models.
 
-As soon as we have converted our pixel intensities to float, we could apply some image processing
+As soon as we have converted our pixel intensities to float, we can apply some image processing
 treatments like a gamma correction for example.
 
-In the previous paragraphs, we told we could load in a texture up to four colour components using
+In the previous paragraphs, we told we can load in a texture up to four colour components using
 RGBA textures. Since monitors can only render three colour components (RGB), we have to transform a
 four components colour space to a three components colour space using a *mixer matrix*. This
-computation could be easily extended to any number of colours using more than one texture. The mixer
+computation can be easily extended to any number of colours using more than one texture. The mixer
 matrix coefficients should be choose so as to respect the normalised float range.
 
 Another important feature of the slide viewer is to permit to the user to select which colours will
@@ -523,7 +523,7 @@ Zoom Layer
 When the texture must be magnified, it is important to enlarge the pixel without interpolation. In
 OpenGL it is achieved by using the *GL_NEAREST* mode for the texture magnification filter.
 
-Despite GPU are very powerful, there is a maximal number of tiles in the viewport that could be
+Despite GPU are very powerful, there is a maximal number of tiles in the viewport that can be
 reasonably processed. The amount of memory of the GPU is an indicator of this limitation. If we
 consider a GPU with :math:`2048\,MB`, then we can load 66 textures having a layout of :math:`2560
 \times 2160\,\text{px}` and a 16-bit RGB format. It means we can display a mosaic of :math:`8 \times
@@ -531,8 +531,8 @@ consider a GPU with :math:`2048\,MB`, then we can load 66 textures having a layo
 called *mipmaps* which is a pyramidal collection of mignified textures. Usually we perform a
 geometric series that corresponds to divide by two the size of the texture recursively. Due to the
 power of the GPU, it is not necessary to compute the entire pyramid, but just some levels. In our
-case we could compute the levels 8 and 16. For higher levels according to the size of the mosaic, it
-could be more efficient to compute a reconstructed image. These mignified textures could be computed
+case we can compute the levels 8 and 16. For higher levels according to the size of the mosaic, it
+could be more efficient to compute a reconstructed image. These mignified textures can be computed
 online using CUDA or stored in the HDF5 files.
 
 Our slide viewer implements a zoom manager in order to control according to the current zoom which
@@ -566,7 +566,7 @@ viewport, then for each tile, it looks if the OpenGL LRU cache has a texture for
 tile and image processing pipeline, if the texture does not exists yet then it cascades the request
 to the tile LRU cache and finally it will asks the image processing pipeline to generate the
 image. The tile loading from the virtual slide corresponds to the so called raw image pipeline and
-each zoom layer owns its image pipeline. Moreover each pipeline could have its own fragment shader
+each zoom layer owns its image pipeline. Moreover each pipeline can have its own fragment shader
 to customise the rendering.
 
 Benchmark
@@ -582,7 +582,7 @@ local SATA hard disk. The required time to load a tile form the HDF5 file is aro
 Conclusion
 ----------
 
-This paper gives an overview how the Python ecosystem could be used to build a software platform for
+This paper gives an overview how the Python ecosystem can be used to build a software platform for
 high-content digital microscopy. Our achievement demonstrates Python is well suited to build a
 framework for big data. Despite Python is a high level language, we can handle a large amount of
 data efficiently by using powerful C libraries and GPU.
