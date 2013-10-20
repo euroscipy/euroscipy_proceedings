@@ -11,25 +11,26 @@ High-Content Digital Microscopy with Python
 .. class:: abstract
 
   High-Content Digital Microscopy open the way for new researches and medical diagnostics due to the
-  enhancement on user comfort, data storage and throughput. A digital microscopy platform has for
-  aim to capture an image of a cover slip, to store the information on a file server and a database,
-  to visualise the image and to perform analysis. We will discuss how the Python ecosystem can
-  provide such software platform efficiently.
+  enhancement on user comfort, data storage and analysis throughput. A digital microscopy platform
+  has for aim to capture an image of a cover slip, to store information on a file server and a
+  database, to visualise the image and to perform analysis. We will discuss how the Python ecosystem
+  can provide such software framework efficiently. Moreover this paper will gives an illustration of the data
+  chunking approach to manage the huge amount of data.
  
 .. class:: keywords
 
   high-content microscopy, digital microscopy, high-throughput scanner, virtual slide, slide viewer,
-  multi-processing, HDF5, ZeroMQ, OpenGL
+  multi-processing, HDF5, ZeroMQ, OpenGL, data chunking
 
 Introduction
 ------------
 
-Since early times optical microscopy play an important role in biology research and medical
+Since early times optical microscopy plays an important role in biology research and medical
 diagnostic. Nowadays digital microscopy is a natural evolution of the technology that provides many
-enhancements on user comfort, data storage and throughput. In comparison to binocular microscopy,
-monitor display improves considerably the comfort of the staff. Indeed binocular microscopes cause
-severe stress to eyes due to the low light intensity of the specimens.  The second kind of
-enhancement is the benefit of the digitisation of the specimens to freeze and store the information
+enhancements on user comfort, data storage and analysis throughput. In comparison to binocular microscopy,
+a monitor display improves considerably the comfort of the user since the low light emission intensity
+of the specimens cause severe stress to eyes. The second kind of
+enhancement is the benefit of the digitisation of the specimen to freeze and store information
 for short to long term storage. Most of the specimens need to be stored at low temperature and in
 the dark for a maximal duration. In comparison digital storage is able to compress and duplicate
 easily the information, to protect the data integrity by checksum and data confidentiality by
@@ -37,8 +38,8 @@ cryptography. The third enhancement concerns high-content application where the 
 considerable scale-up of the data processing throughput and thus open the way to new researches and
 medical diagnostics.
 
-We will discuss in this paper how the Python ecosystem can provide efficiently a software platform
-for the digital microscopy. Our discussion will first present the data acquisition method, and then
+We will discuss in this paper how the Python ecosystem can provide efficiently a software framework
+for the digital microscopy. Our discussion will first present the data acquisition method, then
 we will describe the data storage and finally the image viewer.
 
 Data Acquisition
@@ -60,7 +61,7 @@ well-known Google Map.
 For scientific application, we use preferably monochrome camera so as to avoid the interpolation of
 a Bayer mosaic. Instead to capture the entire colour spectrum at the same time, colours are captured
 sequentially where a filter with the corresponding wave length transmission is placed in front of
-the camera. These shots are called *colour fields of view*. Figure :ref:`epifluorescence-microscope`
+the camera. These shots are called *colour fields of view* here. Figure :ref:`epifluorescence-microscope`
 shows the schematic of an epifluorescence microscope which is an application of this acquisition
 method.
 
@@ -69,26 +70,28 @@ method.
     :figclass: bht
 
     Schematic of an epifluorescence microscope where specimens are labelled with fluorescent
-    molecules so called *fluorophores*. In this example we are capturing an image for a fluorophore
+    molecules so called fluorophores. In this example we are capturing an image for a fluorophore
     having an excitation wave length in the blue and an emission wave length in the green. The
     filters are used to restrict the excitation and filter the
-    emission. :label:`epifluorescence-microscope`
+    emission, respectively. :label:`epifluorescence-microscope`
 
-A camera like the Andor Neo sCMOS features a sensor of dimension :math:`2560 \times 2160\,\text{px}`
-that corresponds to a surface of :math:`416 \times 351\,\text{um}` at magnification one. So to cover
+A camera like the Andor Neo sCMOS features a sensor of resolution :math:`2560 \times 2160\,\text{px}`
+and a surface of :math:`416 \times 351\,\text{um}`. So to cover
 the whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times
 51` (2193 tiles) using an automated stagger.
 
-The sCMOS Andor Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
+The Neo camera features a standard amplifier-DAC stage with a 12-bit resolution and
 another stage with a combination of two amplifier-DACs to achieve a 16-bit resolution for high
 dynamic image. Thus image pixels must be encoded using an unsigned 16-bit integer data type. It
 means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weights
-:math:`23\,\text{GB}` for one colour.
+:math:`23\,\text{GB}` per colour.
 
 Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
 of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
 data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
 shuffling, so as to group the zeros together and form long zero sequences in the byte stream.
+
+.. on the mosaic which depends of the step positioning error
 
 When the specimen is observed with several colours, we have two strategies to acquire the mosaic,
 the first one is to acquire a mosaic per colour and the second one is to acquire several colours per
@@ -96,10 +99,10 @@ field of view. Both methods have advantages and disadvantages. One of the differ
 uncertainty that occurs on the registration of the colour fields of view. When we capture several
 colours per field of view at the same staging position, the relative positioning error is due to the
 optical path. While when we capture a mosaic per colour, the error is also due to the
-reproducibility of the stagger. The accuracy of the tile positions on the mosaic which depends of
-the step positioning error is always due to the stagger precision. So as to perform a field of view
+reproducibility of the stagger. On the other hand the accuracy of the tile positions is always due
+to the stagger precision. So as to perform a field of view
 registration without black zone in the reconstructed image, we drive the stagger with a sufficient
-overlapping zone on both directions. Another irregularity on the field of view mosaic is due to the
+overlapping zone on both directions. Another irregularity on the mosaic is due to the
 camera alignment error according to the stagger axes that draw a sheared mosaic pattern as you can
 see in figure :ref:`sheared-mosaic`. The shearing has any serious effect on the reconstructed image
 since it only displaces systematically the fields of view in the mosaic frame.
