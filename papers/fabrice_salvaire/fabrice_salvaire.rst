@@ -196,7 +196,7 @@ want to get the fields of view as a planar image then we should use the same sha
 i.e. if the image shape is :math:`(H,W)` then the dataset shape should be :math:`(N_w\,H,W)` where
 :math:`N_w` is the number of colour planes. Like this we can map directly the data from storage to
 memory. The planar format is usually more suited for analysis purpose, but if we want to privilege
-the display then we should choose an interleaved format. However  we cannot use an interleaved
+the display then we should choose an interleaved format. However we cannot use an interleaved
 format in practice if we consider there is an offset between the colour fields of view.
 
 To store the mosaic we can use a dataset per field of view or pack everything in only one
@@ -294,18 +294,18 @@ Microscope Interconnection
 
 As a first illustration of the remote virtual slide concept, we will look at the data flow between
 the automated microscope so called *scanner* and the software component, so called *slide writer*,
-that write the HDF5 file on the file server. This client-server or producer-consumer framework is
+whose aim is to write the HDF5 file on the file server. This client-server or producer-consumer framework is
 shown on figure :ref:`slide-writer-architecture`. To understand the design of this framework, we
 have to consider these constrains. The first one is due to the fact that the producer does not run
 at the same speed than the consumer. Indeed we want to maximise the scanner throughput and at the
 same time maximise the data compression which is a time consuming task. Thus there is a
-contradiction in our requirements. Moreover the GIL prevents real time multi-threading. Thus we have
-to add a FIFO buffer between the producer and the consumer so as to handle the speed difference
+contradiction in our requirements. Moreover the GIL prevents real time multi-threading. Thus we must
+add a FIFO buffer between the producer and the consumer so as to handle the speed difference
 between them. This FIFO is called *slide proxy* and act as an image cache. The second constrain is
 due to the fact that the slide writer can complete its job after the end of scan. It means the
 slide writer will not be ready to process another slide immediately, which is a drawback if we want
 to scan a batch of slides. Thus we need a third process called *slide manager* whose aim is to fork
-a slide writer for each scan that will itself fork the slide proxy. Due to the fork mechanism, these
+a slide writer for each scan that will itself fork the slide proxy. Due to this fork mechanism, these
 three processes, slide manager, slide writer and slide proxy must run on same host so called *slide
 server*. For the other component, all the configurations can be envisaged.
 
@@ -324,13 +324,13 @@ Slide Viewer Graphic Engine
 The slide viewer graphic engine works as Google Map using image tiles and follows our concept to
 reconstruct the slide image online. We can imagine several strategies to reconstruct the slide
 image. The first one would be to perform all the computation on CPU. But nowadays we have GPU that
-offer a higher level of parallelism for such a task. GPU can be accessed using several API like
+offer a higher level of parallelism for such a task. GPUs can be programmed using several API like
 CUDA, OpenCL and OpenGL [OpenGL]_. The first ones are more suited for an exact computation and the
 last one for image rendering. In the followings we are talking about modern OpenGL where the fixed
 pipeline is deprecated in favour of a programmable pipeline.
 
 The main features of the slide viewer are to manage the viewport, the zoom level and to provide an
-image processing to render a patchwork of 16-bit images. All these requirements are provided by
+image processing to render a patchwork of 16-bit images. All these requirements are fulfilled by
 OpenGL. The API provides a way to perform a mapping of a 2D texture to a triangle and by extension
 to a quadrilateral which is a particular form of a triangle strip. This feature is perfectly suited
 to render a tile patchwork.
@@ -372,7 +372,7 @@ parallel, which is not simple using Python.
 For the tile loading, we can build on our remote virtual slide framework in order to perform an
 intelligent read-ahead and to eventually prepare the data for the texture.
 
-The parallelisation of the texture loading is the most difficult part and it depends of the OpenGL
+The parallelisation of the texture loading is the most difficult part and it relies of the OpenGL
 implementation. Modern OpenGL Extension to the X Window server (GLX) supports texture loading within
 a thread, but this approach cannot be used efficiently in Python due to the GIL. Moreover we
 cannot use a separate process to do that since it requires processes could share an OpenGL context,
@@ -395,24 +395,25 @@ Slide Viewer Architecture
 
    Slide Viewer Architecture. :label:`slide-viewer-architecture`
 
-Figure :ref:`slide-viewer-architecture` shows the architecture of our slide viewer. The virtual
-slide API can access the data through the file or the remote driver. HDF5 files are stored on a
-file server that can provide a network file system to access files remotely. The remote virtual
-slide can be used in two different ways. The process that corresponds to the server side is called
-*tile dealer*. If this process runs on the same host as the slide viewer, then we can use it to
-implement our read-ahead mechanism to parallelise the tile loading. And if it runs on the file
-server, then we can use it at an alternative to the network file system in a similar way as a
-virtual slide broadcast service. This second example demonstrates the remote virtual slide is a
-fundamental software component in our framework that open the way to many things.
+Figure :ref:`slide-viewer-architecture` shows the architecture of our slide viewer where the virtual
+slide API can access the data through the HDF5 file or the remote framework. In our IT infrastructure, HDF5
+files are stored on a file server that can provide a network file system to access files
+remotely. The remote virtual slide can be used in two different ways according to the machine where
+the process of the server side, called *tile dealer*, is executed. If this process runs on the
+same host as the slide viewer, then we can use it to implement a read-ahead mechanism to
+parallelise the tile loading. And if it runs on the file server, then we can use it as an
+alternative to the network file system in a similar way as a virtual slide broadcast service. This
+second example demonstrates the remote virtual slide is a fundamental software component in our
+framework that open the way to many things.
 
 Another way to access efficiently the data, it to use a local cache to store temporally the virtual
 slide. Nowadays we can build on a very fast locale cache using a PCI-e SSD card, which commonly
 reach a read/write bandwidth of :math:`1000\,\text{MB/s}` and thus outperforms most of the hardware
-RAID bandwidth.
+RAID.
 
 The slide viewer implements two Least Recently Used caches to store the tiles and the
 textures. These caches are a cornerstone for the fluidity of the navigation within the slide, since
-it helps to reduce the viewer latency. Nowadays we can have on a workstation with
+it helps to reduce the viewer latency. Nowadays we can have on a workstation
 :math:`64\,\text{GB}` of RAM for a decent cost, which open the way to a large in memory cache in
 complement to a PCI-e SSD cache. In this way we can build a 3-tier system made of a file server to
 store tera bytes of data, a PCI-e SSD cache to store temporally slides and an in memory cache to
@@ -465,13 +466,13 @@ formula:
    % _\text{normalised
    \hat{l} = \frac{l - I_{inf}}{I_{sup} - I_{inf}}
 
-where :math:`0 <= I_{inf} < I_{sup} < 2^{16}`. This normalisation can be used to perform an image
+where :math:`0 \leq I_{inf} < I_{sup} < 2^{16}`. This normalisation can be used to perform an image
 contrast by adjusting the values of :math:`I_{inf}` and :math:`I_{sup}`.
 
 The fact OpenGL supports the unsigned 16-bit data type for texture permits to load the raw data
 directly in the fragment shader without information loss. According to the configuration of OpenGL,
 the RAMDAC of the video adapter will convert the normalised floats to an unsigned 8-bit intensity
-for a standard monitor or to 10-bit for high resolution monitor like DICOM compliant models.
+for a standard monitor or to 10-bit for high-end monitor like DICOM compliant models.
 
 As soon as we have converted our pixel intensities to float, we can apply some image processing
 treatments like a gamma correction for example.
@@ -529,7 +530,7 @@ OpenGL it is achieved by using the *GL_NEAREST* mode for the texture magnificati
 
 Despite GPU are very powerful, there is a maximal number of tiles in the viewport that can be
 reasonably processed. The amount of memory of the GPU is an indicator of this limitation. If we
-consider a GPU with :math:`2048\,MB`, then we can load 66 textures having a layout of :math:`2560
+consider a GPU with :math:`2048\,\text{MB}`, then we can load 66 textures having a layout of :math:`2560
 \times 2160\,\text{px}` and a 16-bit RGB format. It means we can display a mosaic of :math:`8 \times
 8` at the same time. If we want to display more tiles at the same time, then we have to compute a so
 called *mipmaps* which is a pyramidal collection of mignified textures. Usually we perform a
@@ -540,7 +541,7 @@ could be more efficient to compute a reconstructed image. These mignified textur
 online using CUDA or stored in the HDF5 files.
 
 Our slide viewer implements a zoom manager in order to control according to the current zoom which
-zoom layer is active and to limit the zoom amplitude to an authorised range. Moreover we can
+zoom layer is active and to limit the zoom amplitude to an appropriate range. Moreover we can
 implement some excluded zoom ranges and force the zoom to the nearest authorised zoom according to
 the zoom direction.
 
@@ -579,7 +580,7 @@ Benchmark
 Figure :ref:`slide-viewer-image` show a reconstructed image made of 418 tiles. For a tile dimension
 of :math:`1392 \times 1040\,\text{px}` and a four colours acquisition, our slide viewer needs around
 :math:`2\,\text{s}` to render the zoom layer 16 and :math:`6\,\text{s}` for the layer 8 (100 raw
-tiles) on a workstation with a CPU Xeon E5-1620, a GPU GeForce GTX-660 and the HDF5 file stored on a
+tiles) on a workstation with a Xeon E5-1620 CPU, a GeForce GTX-660 GPU and the HDF5 file stored on a
 local SATA hard disk. The required time to load a tile form the HDF5 file is around
 :math:`50\,\text{ms}`, thus the tile loading account for :math:`80\,\%` of the full rendering time.
 
@@ -589,7 +590,7 @@ Conclusion
 This paper gives an overview how the Python ecosystem can be used to build a software platform for
 high-content digital microscopy. Our achievement demonstrates Python is well suited to build a
 framework for big data. Despite Python is a high level language, we can handle a large amount of
-data efficiently by using powerful C libraries and GPU.
+data efficiently by using powerful C libraries and GPU processing.
 
 First we gave an overview how to store and handle virtual slides using Python, Numpy and the HDF5
 library. Different methods to store the images of the fields of view within a dataset was
@@ -604,7 +605,7 @@ scanner interconnection with the slide writer and the tile dealer. Also we shown
 architecture solve the GIL problem and enhance the performance.
  
 Finally we described our slide viewer architecture based on the OpenGL programmable pipeline and a
-texture patchwork. We gave an overview on the vertex and the fragment shader. Thanks to the power of
+texture patchwork rendering. We gave an overview on the vertex and the fragment shader. Thanks to the power of
 GPU, this method can render more than three colours in quasi real time. Moreover we explained how to
 manage the zoom level efficiently so as to overcome the limited amount of RAM of the GPU.
 
