@@ -31,26 +31,21 @@ Since early times optical microscopy plays an important role in biology
 research and medical diagnostic. Nowadays digital microscopy is a natural
 evolution of the technology that provides many enhancements on user comfort,
 data storage and analysis throughput. First, in comparison to binocular
-microscopy, where the low light emission intensity of the specimens causes
-sever stress to the eyes, the monitor display of the digital microscopy offers
-greater comfort to the users. Second, the digitization allows to freeze and
-store information for short to long term storage, to compress the data, and to
-easily duplicate it, to protect its integrity (by checksum) and its
-confidentiality (by cryptography). On the other hand, optical microscopy
-implies conservation of the specimens directly at low temperature and in the
-dark. The second kind of enhancement is the benefit of the digitisation of the
-specimen to freeze and store information for short to long term storage. Most
-of the specimens need to be stored at low temperature and in the dark for a
-maximal duration. In comparison digital storage is able to compress and
-duplicate easily the information, to protect the data integrity by checksum
-and data confidentiality by cryptography. Last, the automation of a high
-content application provides a considerable scale-up of the data processing
-throughput, thus paving the way to new researches and medical diagnostics.
+microscopy where the low light emission intensity of the specimens causes
+sever stress to the eyes, the digital microscopy monitor display offers
+greater comfort to the users. Second, the digitization of the output allows to
+freeze and store information for short to long term storage, to compress the
+data, and to easily duplicate it, to protect its integrity (by checksum) and
+its confidentiality (by cryptography). On the other hand, optical microscopy
+implies conservation of the specimens themselves at low temperature and in the
+dark. Last, the automation of a high content application provides a
+considerable scale-up of the data processing throughput, thus paving the way
+to new researches and medical diagnostics.
 
-
-We will discuss in this paper how the Python ecosystem can provide efficiently a software framework
-for the digital microscopy. Our discussion will first present the data acquisition method, then
-we will describe the data storage and finally the image viewer.
+We will discuss in this paper how the Python ecosystem can provide efficiently
+a software framework for the digital microscopy. Our discussion will first
+present the data acquisition method, then we will describe the data storage
+and finally the image viewer.
 
 Data Acquisition
 ----------------
