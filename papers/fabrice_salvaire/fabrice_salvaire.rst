@@ -147,8 +147,8 @@ the TIFF format. But if we want to keep raw data without information loss we hav
 to store the original fields of view and process them on-line. This case is particularly important
 when the registration matters for the interpretation of the reconstructed image.
 
-The HDF5 [HDF5]_ library and its h5py [h5py]_ Python binding is perfectly suited for this
-purpose. The content of an HDF5 file is self-defined and the library is open source which guaranty a
+The HDF5 [HDF5]_ library and its h5py [h5py]_ Python binding are perfectly suited for this
+purpose. The content of an HDF5 file is self-defined and the library is open source which guaranties a
 long term access to the data. The structure of an HDF5 file is similar to a file system having
 folder objects so called *groups* and N-dimensional array objects so called *dataset* that
 corresponds here to files. Each of these objects can have attached attributes.  This virtual file
@@ -181,13 +181,13 @@ array data structure on Python. The following code snippet gives an overview of 
 
 As usual when large data sets are involved, the HDF5 library implements a data blocking concept so
 called *chunk* which is an application of the divide-and-conquer paradigm. Indeed the data compression
-as well the efficiency of the data transfer requires datasets to be splitted in chunks. This feature
-is a cornerstone that open the way to many things. It permits to only read and write a subset of the
-dataset so called an *hyperslab*, which provides a way to Python to map concepts such view and
+as well as the efficiency of the data transfer requires datasets to be splitted in chunks. This feature
+is a cornerstone for many features. It permits to read and write only a subset of the
+dataset (a *hyperslab*), providing means for Python to map concepts such view and
 broadcasting. Moreover it permits to implement a read-ahead and cache mechanism to speed up the data
 transfer from storage to memory.
 
-Another cornerstone of the HDF5 library is to implement a modular and powerful data transfer
+Another cornerstone of the HDF5 library is the implementation of a modular and powerful data transfer
 pipeline shown on figure :ref:`hdf5-pipeline` whose aim is to decompress the data from chunks stored
 on disk, scatter-gather the data and transform them, for example to apply a scale-offset filter. The
 h5py module provides the classic GZIP compression as well its faster counterpart LZF [LZF]_ and
@@ -255,15 +255,15 @@ search to get the corresponding linear index used for the storage.
    A linear dataset for an acquisition having 3 colours where the pointer to a tile and a plane are
    shown. :label:`linear-dataset`
 
-One can argue this approach is not natural, but if we encapsulate the slice computation in a virtual
-slide API then we have an efficient way to store and retrieve our data. A better approach would be
-to have a direct access to the chunks, but actually the HDF5 API does not give such facility (it
+One can argue this approach is not natural, but encapsulating the slice computation in a virtual
+slide API allows for efficient ways to store and retrieve the data. A better approach would be
+to have a direct access to the chunks, but actually the HDF5 API does not provide such facility (it
 only provides direct chunk write up to now). Thus if we do not want to rewrite or extend the
-library, the hyperslab mechanism is a solution. However if we dislike this packing method, we can
+library, the hyperslab mechanism is a nice alternative. However if we dislike this packing method, we can
 still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk layout
 :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test several
-dataset layouts and measure the I/O performance. The tools *h5perf* is made available for this
-purpose. More details about chunking can be found in the reference [HDF5-Chunking]_.
+dataset layouts and measure the I/O performance, using a publicly available tool such as *h5perf*.
+More details about chunking can be found in the reference [HDF5-Chunking]_.
 
 This storage method can be easily extended to a more complicated acquisition scheme having
 z-stacks or a time dimension.
@@ -288,10 +288,10 @@ numbers, strings and tuples of them.
 
 For the networking layer, we use the ZeroMQ [ZMQ]_ library and its Python binding PyZMQ
 [PyZMQ]_. ZeroMQ is a socket library that acts as a concurrency framework, carries message across
-several types of socket and provide several connection patterns. ZeroMQ is also an elegant solution
+several types of socket and provides several connection patterns. ZeroMQ is also an elegant solution
 to the global interpreter lock [GIL]_ of the CPython interpreter that prevent real
 multi-threading. Indeed the connection patterns and the message queues offer a simple way to
-exchange data between processes and synchronise them. This library is notably used by the IPython
+exchange data between processes and synchronise them. This library is notably used by IPython
 [IPython]_ for messaging.
 
 The remote virtual slide framework is build on the request-reply pattern to provide a client-server
@@ -310,7 +310,7 @@ at the same speed than the consumer. Indeed we want to maximise the scanner thro
 same time maximise the data compression which is a time consuming task. Thus there is a
 contradiction in our requirements. Moreover the GIL prevents real time multi-threading. Thus we must
 add a FIFO buffer between the producer and the consumer so as to handle the speed difference
-between them. This FIFO is called *slide proxy* and act as an image cache. The second constrain is
+between them. This FIFO is called *slide proxy* and acts as an image cache. The second constraint is
 due to the fact that the slide writer can complete its job after the end of scan. It means the
 slide writer will not be ready to process another slide immediately, which is a drawback if we want
 to scan a batch of slides. Thus we need a third process called *slide manager* whose aim is to fork
