@@ -10,12 +10,14 @@ High-Content Digital Microscopy with Python
 
 .. class:: abstract
 
-  High-Content Digital Microscopy open the way for new researches and medical diagnostics due to the
-  enhancement on user comfort, data storage and analysis throughput. A digital microscopy platform
-  has for aim to capture an image of a cover slip, to store information on a file server and a
-  database, to visualise the image and to perform analysis. We will discuss how the Python ecosystem
-  can provide such software framework efficiently. Moreover this paper will gives an illustration of the data
-  chunking approach to manage the huge amount of data.
+  High-Content Digital Microscopy enhances user comfort, data storage and
+  analysis throughput, paving the way to new researches and medical
+  diagnostics. A digital microscopy platform aims at capturing a
+  image of a cover slip, at storing information on a file server and a database,
+  at visualising the image and analysing its content. We will discuss how the
+  Python ecosystem can provide such software framework efficiently. Moreover
+  this paper will give an illustration of the data chunking approach to
+  manage the huge amount of data.
  
 .. class:: keywords
 
@@ -25,18 +27,26 @@ High-Content Digital Microscopy with Python
 Introduction
 ------------
 
-Since early times optical microscopy plays an important role in biology research and medical
-diagnostic. Nowadays digital microscopy is a natural evolution of the technology that provides many
-enhancements on user comfort, data storage and analysis throughput. In comparison to binocular microscopy,
-a monitor display improves considerably the comfort of the user since the low light emission intensity
-of the specimens cause severe stress to eyes. The second kind of
-enhancement is the benefit of the digitisation of the specimen to freeze and store information
-for short to long term storage. Most of the specimens need to be stored at low temperature and in
-the dark for a maximal duration. In comparison digital storage is able to compress and duplicate
-easily the information, to protect the data integrity by checksum and data confidentiality by
-cryptography. The third enhancement concerns high-content application where the automation provide a
-considerable scale-up of the data processing throughput and thus open the way to new researches and
-medical diagnostics.
+Since early times optical microscopy plays an important role in biology
+research and medical diagnostic. Nowadays digital microscopy is a natural
+evolution of the technology that provides many enhancements on user comfort,
+data storage and analysis throughput. First, in comparison to binocular
+microscopy, where the low light emission intensity of the specimens causes
+sever stress to the eyes, the monitor display of the digital microscopy offers
+greater comfort to the users. Second, the digitization allows to freeze and
+store information for short to long term storage, to compress the data, and to
+easily duplicate it, to protect its integrity (by checksum) and its
+confidentiality (by cryptography). On the other hand, optical microscopy
+implies conservation of the specimens directly at low temperature and in the
+dark. The second kind of enhancement is the benefit of the digitisation of the
+specimen to freeze and store information for short to long term storage. Most
+of the specimens need to be stored at low temperature and in the dark for a
+maximal duration. In comparison digital storage is able to compress and
+duplicate easily the information, to protect the data integrity by checksum
+and data confidentiality by cryptography. Last, the automation of a high
+content application provides a considerable scale-up of the data processing
+throughput, thus paving the way to new researches and medical diagnostics.
+
 
 We will discuss in this paper how the Python ecosystem can provide efficiently a software framework
 for the digital microscopy. Our discussion will first present the data acquisition method, then
