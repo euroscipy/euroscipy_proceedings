@@ -50,31 +50,35 @@ and finally the image viewer.
 Data Acquisition
 ----------------
 
-We will first evaluate how big the data are and understand why? To reach the required resolution to
-see specimen details, optical microscopes use objectives having a magnification up to the
+The first challenge of digital microscopy is the quantity of data. Let us
+first evaluate how large the data is, and enlighten our reader of the reasons
+of such quantity of data.
+To reach the required resolution to
+see the details of a specimen, optical microscopes use objectives magnifying up to the
 diffraction limit which is about :math:`100\times`. Nowadays the pixel size for a CCD and sCMOS
-camera is about :math:`6.5\,\text{um}`, thus at magnification :math:`40\times` we reach a resolution
-of :math:`162.5\,\text{nm}`. To continue our reasoning, we will consider a specimen put on a cover
-slip which is a glass square surface of 18 mm wide. Later we will relate the support and the
-specimen by the more generic word *slide*, which corresponds to a larger glass surface. Consequently
-to cover this surface at this magnification we have to acquire an area larger than :math:`100\,000`
-px wide, thus of the order of 10 billion of pixels which is roughly 300 times larger than the actual
+camera is about :math:`6.5\,\text{um}`, thus we reach a resolution
+of :math:`162.5\,\text{nm}` at a magnification of :math:`40\times`.
+Now consider a specimen put on a cover
+slip: a glass square surface of 18 mm wide (we will later relate the support and the
+specimen by the more generic word *slide*, which corresponds to a larger glass surface). Consequently
+to cover this surface at such magnification we have to acquire an area larger than :math:`100\,000`
+px wide, thus of the order of 10 billion of pixels. This is roughly 300 times larger than the actual
 largest professional digital camera (:math:`36\,\text{Mpx}`). In light of foregoing digital
 microscopy are big data similar to spatial images and involve a software framework similar to the
 well-known Google Map.
 
-For scientific application, we use preferably monochrome camera so as to avoid the interpolation of
-a Bayer mosaic. Instead to capture the entire colour spectrum at the same time, colours are captured
-sequentially where a filter with the corresponding wave length transmission is placed in front of
+For scientific application, we preferably use monochrome camera so as to avoid the interpolation of
+a Bayer mosaic. Instead, to capture the entire colour spectrum at the same time, colours are captured
+sequentially by placing a filter of the colour's corresponding wave length transmission in front of
 the camera. These shots are called *colour fields of view* here. Figure :ref:`epifluorescence-microscope`
-shows the schematic of an epifluorescence microscope which is an application of this acquisition
-method.
+shows the schematic of an application of this acquisition method called an
+epifluorescence microscope.
 
 .. figure:: figure-microscope.pdf
     :scale: 50%
     :figclass: bht
 
-    Schematic of an epifluorescence microscope where specimens are labelled with fluorescent
+    Schematic of an epifluorescence microscope. Sspecimens are labelled with fluorescent
     molecules so called fluorophores. In this example we are capturing an image for a fluorophore
     having an excitation wave length in the blue and an emission wave length in the green. The
     filters are used to restrict the excitation and filter the
@@ -83,23 +87,23 @@ method.
 A camera like the Andor Neo sCMOS features a sensor of resolution :math:`2560 \times 2160\,\text{px}`
 and a surface of :math:`416 \times 351\,\text{um}`. Thus to cover
 the whole specimen surface we have to capture a mosaic of fields of view of size :math:`43 \times
-51` (2193 tiles) using an automated stagger. In the followings we will also refer the fields of view as
+51` (2193 tiles) using an automated stagger. We will also refer to the fields of view as
 *tiles* or *images* according to the context.
 
 .. on the mosaic which depends of the step positioning error
 
-When the specimen is observed with several colours, we have two strategies to acquire the mosaic,
-the first one is to acquire a mosaic per colour and the second one is to acquire several colours per
-field of view. Both methods have advantages and disadvantages. One of the differences is the
-uncertainty that occurs on the registration of the colour fields of view. When we capture several
+To observe the specimen in several colours, two strategies can be used to
+acquire the mosaic: one is to acquire a mosaic per colour and the other is to acquire several colours per
+field of view. Both methods have advantages and drawbacks. One of the differences is the
+uncertainty that occurs on the registration of the colour fields of view. When capturing several
 colours per field of view at the same staging position, the relative positioning error is due to the
-optical path. While when we capture a mosaic per colour, the error is also due to the
+optical path. When capturing a mosaic per colour, the error is also due to the
 reproducibility of the stagger. On the other hand the accuracy of the tile positions is always due
 to the stagger precision. So as to perform a field of view
 registration without black zone in the reconstructed image, we drive the stagger with a sufficient
 overlapping zone on both directions. Another irregularity on the mosaic is due to the
-camera alignment error according to the stagger axes that draw a sheared mosaic pattern as you can
-see in figure :ref:`sheared-mosaic`. The shearing has any serious effect on the reconstructed image
+camera alignment error according to the stagger axes that draw a sheared mosaic pattern 
+(figure :ref:`sheared-mosaic`). The shearing doesn't have any serious effect on the reconstructed image
 since it only displaces systematically the fields of view in the mosaic frame.
 
 .. figure:: figure-sheared-mosaic.pdf
@@ -123,9 +127,9 @@ means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weig
 :math:`23\,\text{GB}` per colour.
 
 Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
-of the pixels will have a lot of zeros on the most significant bits. For this reason the amount of
+of the pixels can have many zeros on the most significant bits. Therefore, the amount of
 data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
-shuffling, so as to group the zeros together and form long zero sequences in the byte stream.
+shuffling to groupto group the zeros together and form long zero sequences in the byte stream.
 
 Virtual Slide Format and Storage
 --------------------------------
