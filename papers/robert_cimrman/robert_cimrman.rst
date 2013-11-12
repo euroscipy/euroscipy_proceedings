@@ -409,4 +409,4 @@ Support
 ```````
 
 Work on SfePy is partially supported by the Grant Agency of the Czech Republic,
-project P108/11/0853.
+projects P108/11/0853 and 101/09/1630.
