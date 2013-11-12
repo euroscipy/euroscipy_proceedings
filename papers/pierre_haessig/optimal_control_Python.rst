@@ -60,7 +60,7 @@ Therefore, the production-consumption equilibrium can be maintained.
 
 However, there are cases where fluctuations may be considered too strong
 to be fed directly to the grid so that an *energy storage system*,
-acting a *buffer*, may be required to smooth out the production. The
+acting as a *buffer*, may be required to smooth out the production. The
 schematic of the system considered in this article is given on figure
 :ref:`smoothing-diagram`.
 
@@ -79,15 +79,15 @@ Electricity generation from *ocean waves* (with machines called Wave
 Energy Converters) is an example where the output power can be *strongly
 fluctuating*. This is illustrated on figure :ref:`smooth-lin`
 where the output power :math:`P_{prod}(t)` from a particular wave energy
-converter called SEAREV is represented along 100 seconds.
+converter called SEAREV is represented during 100 seconds.
 
-We just mention that this production time series comes not from
+We just mention that this production time series does not come from
 measurements but from an hydro-mechanical simulation from colleagues
 since the SEAREV is a big 1 MW - 30 meters long machine which is yet to be
 built [Ruellan-2010]_.
 
 The oscillations of :math:`P_{prod}(t)` at a period of about 1.5 s comes
-from the construction of the SEAREV: in short, it is floating
+from the construction of the SEAREV: in short, it is a floating
 *double-pendulum* that oscillates with the waves. Also, because *ocean
 waves have a stochastic behavior*, the amplitude of these oscillations
 is irregular.
@@ -167,7 +167,7 @@ Expectation :math:`\mathbb{E}` is needed because the production
 
 This minimization problem falls in the class of *stochastic dynamic
 optimization*. It is *dynamic* because decisions at each time-step
-cannot be taken independently due coupling along time introduced by
+cannot be taken independently due to the coupling along time introduced by the
 evolution of the stored energy (:ref:`eq-E-sto`). To describe the dynamics of the system,
 we use the generic notation
 
@@ -181,7 +181,7 @@ where :math:`x, u, \varepsilon` are respectively *state* variables,
 “memory” of the system. The stored energy :math:`E_{sto}` is here the
 only state variable, but more will appear in section :ref:`ss-ss-model`.
 Control variables, which is here the injected
-power :math:`P_{grid}` are the one which value be chosen to optimize the
+power :math:`P_{grid}` are the ones which values must be chosen to optimize the
 cost :math:`J`.
 
 Dynamic optimization (also called *optimal control*) is addressed by the
@@ -278,7 +278,7 @@ well as the unknown variance of :math:`\varepsilon` which we denote
 
 .. figure:: speed_acf_AR2.pdf
 
-    Autocorrelation (acf) of the speed data,
+    Autocorrelation function (acf) of the speed data,
     compared with the acf from two AR(2) models,
     fitted with two different methods.
     :label:`fig-speed-acf-AR2`
@@ -314,7 +314,7 @@ equation.
 Parameter estimation:
 ^^^^^^^^^^^^^^^^^^^^^
 
-once the order is selected, we have to estimate coefficients
+Once the order is selected, we have to estimate coefficients
 :math:`\phi_1`, :math:`\phi_2` and :math:`\sigma_{\varepsilon}^2`.
 “Classical” fitting methodology [Brockwell-1991]_ is based on
 Conditional Maximum Likelihood Estimators (CMLE). This method is readily
@@ -353,7 +353,7 @@ method. Minimization is conducted with ``fmin`` from ``scipy.optimize``.
   +---------------+------------------------+------------------------+--------------------------------------+
 
 
-The result of this acf fitting over lag times up to 15 s (i.e. 150 lags)
+The result of this acf fitting over time lags up to 15 s (i.e. 150 lags)
 is shown on figure :ref:`fig-speed-acf-AR2` while
 numerical estimation results are given in table :ref:`tab-ar2-fit`.
 
