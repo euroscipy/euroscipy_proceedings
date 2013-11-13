@@ -500,10 +500,12 @@ discussed.
 StoDynProg library description
 ------------------------------
 
-We’ve created a small library to *describe*
-and *solve* optimal control problems (in discrete time) using Stochastic
+We have created a small library to *describe*
+and *solve* optimal control problems (in discrete time) using the Stochastic
 Dynamic Programming (SDP) method. It implements the value iteration and
 policy iteration algorithms introduced above.
+Source code is available on GitHub https://github.com/pierre-haessig/stodynprog
+under a BSD 2-Clause license.
 
 Rationale for a library, benefits of Python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -512,7 +514,7 @@ Because the SDP algorithms are in fact quite simple (they can be written
 with one set of nested for loops) we were once told that they should be
 written from scratch for each new problem. However we face in our
 research in energy management several optimization problems with slight
-structural differences in each so that code duplication would be
+structural differences so that code duplication would be
 unacceptably high. Thus the motivation to write a unified code that can
 handle all our use cases, and hopefully some others’.
 
@@ -548,7 +550,7 @@ and handles it to a ``SysDescription`` instance:
     from stodynprog import SysDescription
     # SysDescription object with proper dimensions
     # of state (2), control (1) and perturbation (1)
-    mysys = SysDescription((2,1,1))
+    mysys = SysDescription((2, 1, 1))
 
     def my_dyn(x1, x2, u, w):
         'dummy dynamics'
@@ -586,8 +588,8 @@ of the solver instance attached to the previous system:
     # state discretization
     x1_min, x1_max, N1 = (0, 2.5, 100)
     x2_min, x2_max, N2 = (-15, 15, 100)
-    x_grid = dpsolv.discretize_state(x1_min,x1_max,N1,
-                                     x2_min,x1_max,N2)
+    x_grid = dpsolv.discretize_state(x1_min, x1_max, N1,
+                                     x2_min, x1_max, N2)
 
 
 Once the problem is fully described, the optimization can be launched by
@@ -618,8 +620,9 @@ Requirements and Algorithm Selection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 No “fancy” interpolation method is required so linear interpolation is a
-good candidate. Speed is very important because it called many times.
-Also, it should accept vectorized inputs, that is interpolate many
+good candidate. Speed is very important because it is called many times.
+Also, it should accept vectorized inputs, so that interpolation of
+multiple points can be done efficiently in one call.
 points at the same time. We assert that the functions will be stored on
 a *rectangular grid* which should simplify interpolation computations.
 The most stringent requirement is *multidimensionality* (for
@@ -780,7 +783,7 @@ was initialized with.
 Qualitative analysis of the trajectory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To evaluate the storage control policy, we simulate it’s effect on the
+To evaluate the storage control policy, we simulate its effect on the
 sample SEAREV data we have (instead of using the state space model used for the
 optimization). The only adaptation required for this trajectory
 simulation is to transform the *policy array* (:math:`\mu` known on the
@@ -858,7 +861,7 @@ With the use of standard Python modules for scientific computing, we
 have created StoDynProg, a small library to solve Dynamic Optimization
 problems using Stochastic Dynamic Programming.
 
-We’ve describe the mathematical and coding steps required to apply the
+We have describe the mathematical and coding steps required to apply the
 SDP method on an example problem of realistic complexity, the smoothing
 of the output power of the SEAREV Wave Energy Converter. With its generic
 interface, StoDynProg should be applicable to other Optimal Control
@@ -868,9 +871,7 @@ structure (Markovian model), with the “Curse of Dimensionality”
 requiring a state space of low dimension.
 
 Further improvements on this library should include a better source tree
-organization, an improved test coverage and most importantly an open
-source availability. It should be coming on GitHub at
-https://github.com/pierre-haessig.
+organization and an improved test coverage.
 
 
 
@@ -888,7 +889,7 @@ https://github.com/pierre-haessig.
    Instead of using the exact optimization cost (:ref:`eq-cost`)
    (average quadratic power in MW\ :sup:`2`),
    we actually compute the standard deviation (in MW).
-   It is mathematically related to the quadratic power and we find more
+   It is mathematically related to the quadratic power and we find it more
    readable.
 
 References
