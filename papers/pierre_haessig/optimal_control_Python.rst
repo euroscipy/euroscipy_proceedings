@@ -861,9 +861,9 @@ With the use of standard Python modules for scientific computing, we
 have created StoDynProg, a small library to solve Dynamic Optimization
 problems using Stochastic Dynamic Programming.
 
-We have describe the mathematical and coding steps required to apply the
-SDP method on an example problem of realistic complexity, the smoothing
-of the output power of the SEAREV Wave Energy Converter. With its generic
+We have described the mathematical and coding steps required to apply the
+SDP method on an example problem of realistic complexity: smoothing
+the output power of the SEAREV Wave Energy Converter. With its generic
 interface, StoDynProg should be applicable to other Optimal Control
 problems arising in Electrical Engineering, Mechanical Engineering or
 even Life Sciences. The only requirement is an appropriate mathematical
@@ -871,7 +871,7 @@ structure (Markovian model), with the “Curse of Dimensionality”
 requiring a state space of low dimension.
 
 Further improvements on this library should include a better source tree
-organization and an improved test coverage.
+organization (make a proper package) and an improved test coverage.
 
 
 
