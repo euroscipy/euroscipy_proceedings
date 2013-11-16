@@ -12,7 +12,7 @@ High-Content Digital Microscopy with Python
 
   High-Content Digital Microscopy enhances user comfort, data storage and
   analysis throughput, paving the way to new researches and medical
-  diagnostics. A digital microscopy platform aims at capturing a
+  diagnostics. A digital microscopy platform aims at capturing an
   image of a cover slip, at storing information on a file server and a database,
   at visualising the image and analysing its content. We will discuss how the
   Python ecosystem can provide such software framework efficiently. Moreover
@@ -50,7 +50,7 @@ and finally the image viewer.
 Data Acquisition
 ----------------
 
-The first challenge of digital microscopy is the quantity of data. Let us
+The first challenge of high-content digital microscopy is the quantity of data. Let us
 first evaluate how large the data is, and enlighten our reader of the reasons
 of such quantity of data.
 To reach the required resolution to
@@ -78,7 +78,7 @@ epifluorescence microscope.
     :scale: 50%
     :figclass: bht
 
-    Schematic of an epifluorescence microscope. Sspecimens are labelled with fluorescent
+    Schematic of an epifluorescence microscope. Specimens are labelled with fluorescent
     molecules so called fluorophores. In this example we are capturing an image for a fluorophore
     having an excitation wave length in the blue and an emission wave length in the green. The
     filters are used to restrict the excitation and filter the
@@ -129,7 +129,7 @@ means a colour field of view weights :math:`10.5\,\text{MB}` and our mosaic weig
 Depending of the intensity dynamic of the specimen and the zero-padding arising from the DAC, most
 of the pixels can have many zeros on the most significant bits. Therefore, the amount of
 data can be efficiently reduced using a lossless compression algorithm in conjunction with a bit
-shuffling to groupto group the zeros together and form long zero sequences in the byte stream.
+shuffling to group the zeros together and form long zero sequences in the byte stream.
 
 Virtual Slide Format and Storage
 --------------------------------
@@ -262,7 +262,7 @@ only provides direct chunk write up to now). Thus if we do not want to rewrite o
 library, the hyperslab mechanism is a nice alternative. However if we dislike this packing method, we can
 still use the following dataset layout :math:`(R,C,N_w,H,W)` with this chunk layout
 :math:`(1,1,1,H,W)`, where the slicing is more natural. Anyway the right approach is to test several
-dataset layouts and measure the I/O performance, using a publicly available tool such as *h5perf*.
+dataset layouts and measure the I/O performance, using the tool *h5perf* provided with the HDF5 SDK.
 More details about chunking can be found in the reference [HDF5-Chunking]_.
 
 This storage method can be easily extended to a more complicated acquisition scheme having
