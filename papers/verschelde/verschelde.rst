@@ -37,7 +37,7 @@ The Python interface to PHCpack got a first start when Kathy Piret met
 William Stein at the software for algebraic geometry workshop at the
 Institute for Mathematics and its Applications in Minneapolis in the
 Fall of 2006. The first version of this interface is described in [Pir08]_.
-Sage [S+10]_  offers the interface phc.py,
+Sage [S+13]_  offers the interface phc.py,
 developed by William Stein, Marshall Hampton and Alex Jokela.
 Version 0.0.1 of phcpy originated at lecture 40 of the author
 in the graduate course MCS 507 in the Fall of 2012, 
@@ -62,7 +62,7 @@ PHoM [GKK+04]_, and pss3.0.5 [Mal]_.
 As polynomial homotopy continuation methods
 involve many algorithms from various fields of computing, every software
 has its unique strengths and the statement “*no one package provides all
-such capabilities*” quoted from  remains true today.
+such capabilities*” quoted from [BHSW08]_ remains true today.
 
 Polynomial Homotopy Continuation
 --------------------------------
@@ -136,7 +136,7 @@ system with those random linear equations as the degree of the
 this representation is called a witness set.
 
 For sparse polynomial systems with very few monomials appearing with
-nonzero coefficients (in an extreme case, we consider binomial systems
+nonzero coefficient (in an extreme case, we consider binomial systems
 that have exactly two monomials with nonzero coefficient in each
 equation), we can represent positive dimensional solution sets by
 monomial maps. For example, the two equations :math:`x^2 y - zx = 0`,
@@ -219,7 +219,7 @@ over the order of execution. If desired, the tolerances and the step
 size can be adjusted as needed in an application that plots solution
 trajectories.
 
-Another (future) application of phcpy is a web interface, such at
+Another (future) application of phcpy is a web interface, such as at
 https://kepler.math.uic.edu (beta version) presented by Xiangcheng Yu at
 the SIAM AG 2013 conference in the first week of August 2013.
 
@@ -235,7 +235,10 @@ which contain the solutions of the system.
 .. code-block:: python
 
    >>> from phcpy.solver import solve
+   >>> from phcpy.phcpy2c import py2c_set_seed
    >>> f = ["x**2*y**2 + x + y;","x*y + x + y + 1;"]
+   >>> py2c_set_seed(21320)
+   0
    >>> s = solve(f,silent=True)
    >>> len(s)
    4
@@ -245,8 +248,13 @@ which contain the solutions of the system.
    the solution for t :
    x : -1.00000000000000E+00 0.00000000000000E+00
    y : -1.61803398874989E+00 0.00000000000000E+00
-   == err : 9.930E-17 = rco : 4.775E-02 = res : 2.220E-16 =
+   == err : 2.143E-101 = rco : 4.775E-02 = res : 2.220E-16 =
 
+With py2c_set_seed() we fix the seed of the random number generator
+for the coefficients of the start system in the homotopy, which makes
+for predictable runs.  Otherwise, the solve() each time generates
+different coefficients in the homotopies and the order of the solutions
+on return may differ.
 For each solution, the triplet (err,rco,res) indicates the quality of
 the solution:
 
@@ -356,7 +364,9 @@ The prototype of the corresponding C function is
 With use\_c2phc we obtain one uniform streamlined design of the
 interface: the C programmer calls one single Ada function
 \_ada\_use\_c2phc. What use\_c2phc executes depends on the job number.
-The (a,b,c) parameters are flexible enough to pass strings.
+The (a,b,c) parameters are flexible enough to pass strings
+and still provide some form of type checking (which would not
+be possible had we wiped out all types with void*).
 
 To make \_ada\_use\_c2phc usable, we have written a number of C
 wrappers, responsible for parsing the arguments of the C functions to be
@@ -371,8 +381,9 @@ C++ programmers.
 Obtaining, Installing, and Contributing
 ---------------------------------------
 
-PHCpack and phcpy are distributed under the GNU GPL license.
-Recently a new repository PHCpack was added github 
+PHCpack and phcpy are distributed under the GNU GPL license
+(version 2 or any later version).
+Recently a new repository PHCpack was added on github 
 with the source code of version 2.3.84 of PHCpack,
 which contains version 0.1.4 of phcpy.
 Executable versions for Linux, Mac, and Windows are
@@ -543,9 +554,9 @@ References
             *MPI - The Complete Reference Volume 1, The MPI Core*,
             Massachusetts Institute of Technology, second edition, 1998.
 
-.. [S+10] W.A. Stein et al.
-          *Sage Mathematics Software (Version 4.5.2).*
-          The Sage Development Team, 2010.  http://www.sagemath.org.
+.. [S+13] W.A. Stein et al.
+          *Sage Mathematics Software (Version 5.12).*
+          The Sage Development Team, 2013.  http://www.sagemath.org.
 
 .. [SVW03] A.J. Sommese, J. Verschelde, and C.W. Wampler.
            *Numerical irreducible decomposition using PHCpack*,
