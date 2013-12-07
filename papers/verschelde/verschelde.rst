@@ -42,8 +42,9 @@ developed by William Stein, Marshall Hampton and Alex Jokela.
 Version 0.0.1 of phcpy originated at lecture 40 of the author
 in the graduate course MCS 507 in the Fall of 2012, 
 as an illustration of Sphinx [Bra]_.
-Version 0.1.0 was prepared for presentation at EuroSciPy 2013 (August 2013).
-The current version of phcpy is 0.1.4.
+Version 0.1.0 was prepared for presentation at EuroSciPy 2013 (August 2013),
+version 0.1.4 corresponds to the first version of this paper.
+The current version of phcpy is 0.1.5.
 
 We first outline in the next section the application of numerical
 homotopy continuation methods to compute all isolated solutions and all
@@ -212,12 +213,12 @@ a generator for the path trackers. After initialization of the homotopy
 (with target, start system, and one start solution), the user can call a
 “next” function to compute the next point at the solution path that
 originates at the start solution given at initialization. This “next”
-function (available for standard double, double double, and quad double
-precision) allows a detailed investigation of the properties of a
-particular solution path. In addition, it gives the user a fine control
-over the order of execution. If desired, the tolerances and the step
-size can be adjusted as needed in an application that plots solution
-trajectories.
+function (available for standard double, double double, quad double
+precision, and arbitrary multiprecision) allows a detailed investigation 
+of the properties of a particular solution path. 
+In addition, it gives the user a fine control over the order of execution.
+If desired, the tolerances and the step size can be adjusted as needed in
+an application that plots solution trajectories.
 
 Another (future) application of phcpy is a web interface, such as at
 https://kepler.math.uic.edu (beta version) presented by Xiangcheng Yu at
@@ -277,7 +278,7 @@ To predict the number of isolated solutions with the mixed volume:
    >>> mixed_volume(f)
    4
 
-Version 0.1.4 of phcpy contains the following modules:
+Version 0.1.5 of phcpy contains the following modules:
 
 -  solver: a blackbox solver, mixed-volume calculator, linear-product
    root count and start system, path trackers, deflation for isolated
@@ -384,8 +385,8 @@ Obtaining, Installing, and Contributing
 PHCpack and phcpy are distributed under the GNU GPL license
 (version 2 or any later version).
 Recently a new repository PHCpack was added on github 
-with the source code of version 2.3.84 of PHCpack,
-which contains version 0.1.4 of phcpy.
+with the source code of version 2.3.85 of PHCpack,
+which contains version 0.1.5 of phcpy.
 Executable versions for Linux, Mac, and Windows are
 available via the homepage of the author.
 
