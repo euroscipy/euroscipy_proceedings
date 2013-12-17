@@ -180,9 +180,9 @@ where :math:`x, u, \varepsilon` are respectively *state* variables,
 *control* variables and *perturbations*. State variables are the
 “memory” of the system. The stored energy :math:`E_{sto}` is here the
 only state variable, but more will appear in section :ref:`ss-ss-model`.
-Control variables, which is here the injected
-power :math:`P_{grid}` are the ones which values must be chosen to optimize the
-cost :math:`J`.
+Control variables are the ones which values must be chosen at each instant
+to optimize the cost :math:`J`.
+The injected power :math:`P_{grid}` is here the single control variable.
 
 Dynamic optimization (also called *optimal control*) is addressed by the
 Dynamic Programming method [Bertsekas-2005]_ which yields a theoretical
@@ -207,7 +207,7 @@ section :ref:`s-opt-sto-ctrl`.
 Prerequisite
 ^^^^^^^^^^^^
 
-Dynamic Programming do require that stochastic perturbations are
+Dynamic Programming does require that stochastic perturbations are
 *independent* random variables (i.e. the overall dynamical model must be
 Markovian) and this is not true for the :math:`P_{prod}(k)` time series.
 Therefore we devote section :ref:`s-stoch-model` to the problem of
@@ -238,7 +238,7 @@ pendulum with respect to the hull, we know that the output power is:
      P_{prod} = T_{PTO}(\Omega).\Omega
 
 where :math:`T_{PTO}` is the torque applied to the pendulum by the
-electric machine which harvest the energy (PTO stands for “Power Take
+electric machine which harvests the energy (PTO stands for “Power Take
 Off”). Finding the best :math:`T_{PTO}` command is actually another
 optimal control problem which is still an active area of research in the
 Wave Energy Conversion community [Kovaltchouk-2013]_. We use here a
@@ -257,8 +257,8 @@ regular behavior which can be captured by an ARMA process.
 Autoregressive Model of the Speed
 ---------------------------------
 
-Withing the ARMA family, we restrict ourselves to the autoregressive
-(AR) processes because we need a Markovian model. Equation of an AR(p)
+Within the ARMA family, we restrict ourselves to the autoregressive
+(AR) processes because we need a Markovian model. The equation of an AR(p)
 model for the speed is:
 
 .. math::
@@ -331,7 +331,7 @@ a low order model which implies that the AR(2) process can only be an
 *approximation of the true process*. Statistically speaking, our model
 is *misspecified*, whereas CMLE is efficient for correctly specified
 models only. This problem has been discussed in the literature
-[McElroy-2013]_ and has yield the “Multi-step ahead fitting procedure”.
+[McElroy-2013]_ and has yielded the “Multi-step ahead fitting procedure”.
 
 Being unfamiliar with the latter approach, we compute instead
 :math:`\phi_1, \phi_2` estimates which *minimize the difference* between
@@ -613,7 +613,7 @@ value function :math:`\tilde{J}` and feedback policy :math:`\mu`. Thus,
 functions are stored as :math:`n`-d arrays, where :math:`n` is the
 dimension of the state vector (:math:`n=3` for ocean power smoothing
 example). In the course of the algorithm, the value function needs to be
-evaluated between grid point, thus the need for interpolation.
+evaluated between grid points, thus the need for interpolation.
 
 
 Requirements and Algorithm Selection
@@ -623,7 +623,7 @@ No “fancy” interpolation method is required so linear interpolation is a
 good candidate. Speed is very important because it is called many times.
 Also, it should accept vectorized inputs, so that interpolation of
 multiple points can be done efficiently in one call.
-points at the same time. We assert that the functions will be stored on
+We assert that the functions will be stored on
 a *rectangular grid* which should simplify interpolation computations.
 The most stringent requirement is *multidimensionality* (for
 :math:`0 \leq n \leq 4`) which rules out most available tools.
