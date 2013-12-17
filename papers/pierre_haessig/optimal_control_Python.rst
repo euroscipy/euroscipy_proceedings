@@ -139,6 +139,9 @@ question is not addressed in this article but was discussed by
 colleagues [Aubry-2010]_. We also don’t discuss the choice of the
 storage *technology*, but it is believed that super-capacitors would be
 the most suitable choice.
+Because energy storage is very expensive (~20 k€/kWh or ~5 k€/MJ for supercaps),
+there is an interest in studying how to make the best use of a
+given capacity to avoid a costly over-sizing.
 
 Finding an Optimal Smoothing Policy
 -----------------------------------
@@ -852,6 +855,17 @@ Dynamic Programming.
     Standard deviation compared to the heuristic linear control case
     is reduced by about 20 %.
     :label:`fig-policy-assess`
+
+Because the RMS deviation criterion used in this article is not directly limited
+or penalized in current grid codes, there is no financial criterion
+to decide whether the observed deviations are acceptable or not.
+Therefore we cannot conclude if the ~20% reduction of the variability brought
+by optimal control is valuable.
+Nevertheless, there exists criterions like the "flicker" which are used
+in grid codes to set standards of power quality.
+Flicker, which is way more complicated to than an additive criterion like
+(:ref:`eq-cost`) could be used to put an economic value on a control strategy.
+This is the subject of ongoing research.
 
 
 Conclusion
