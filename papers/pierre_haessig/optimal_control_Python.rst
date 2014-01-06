@@ -301,11 +301,15 @@ Order selection
 
 is generally done using *information criterions* such as AIC or
 BIC [Brockwell-1991]_, but for this modeling problem, we
-restrict ourselves to the smallest order which can give a “good-enough”
-fit of the autocorrelation structure. Autocorrelation (acf) of the speed
+restrict ourselves to the smallest order which can reproduce the
+*decaying oscillations* of the autocorrelation function.
+Autocorrelation (acf) of the speed
 is plotted on figure :ref:`fig-speed-acf-AR2` where we can
 see that a model of order :math:`p=2` can indeed reproduce the
-autocorrelation up to about 15 s of time lags.
+autocorrelation up to about 15 s of time lags
+(a 1\ :sup:`st` order model would only yield an exponential decay without oscillations).
+15 s is thought to be the time horizon of interest when using a 10 MJ/1.1 MW
+energy storage.
 
 Keeping the model order low is required to maintain the dimension of the
 overall state vector under 3 or 4. The underlying issue of an
@@ -314,8 +318,8 @@ exponentially growing complexity will appear in section
 equation.
 
 
-Parameter estimation:
-^^^^^^^^^^^^^^^^^^^^^
+Parameter estimation
+^^^^^^^^^^^^^^^^^^^^
 
 Once the order is selected, we have to estimate coefficients
 :math:`\phi_1`, :math:`\phi_2` and :math:`\sigma_{\varepsilon}^2`.
@@ -365,6 +369,10 @@ speed and power trajectories and check that they have a “realistic
 behavior”. We can thus infer that the dynamic optimization algorithm
 should make appropriate control decisions out of it. This will be
 discussed in section :ref:`ss-results-searev-smooth`.
+Going further, it would be interesting to study the influence of the AR parameters
+(including order :math:`p`)
+on the dynamic optimization to see if the “multi-lags acf fitting” indeed brings
+an improvement of the final cost function :math:`J`.
 
 .. _ss-ss-model:
 
