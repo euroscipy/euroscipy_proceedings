@@ -1,0 +1,82 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,shapes,shadows,arrows,external}
+\tikzexternalize % activate! & run "pdflatex -shell-escape test.tex"
+\usepackage{pgffor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzsetnextfilename{figure-microscope}
+\def\CoverslipRadius{3}
+\def\CoverslipThickness{.1}
+\def\FilterRadius{2}
+\def\DichroicRadius{\FilterRadius}
+\def\FilterThickness{.05}
+\def\ObjectiveRadius{.6*\FilterRadius}
+\def\ObjectiveSmallRadius{.5*\ObjectiveRadius}
+\def\ObjectiveHeight{3}
+\def\ObjectiveSmallHeight{.3*\ObjectiveHeight}
+\def\LightSourceRadius{.6*\FilterRadius}
+\def\LightSourceHeight{4}
+\def\LightSourceX{3cm}
+\def\LightY{6cm}
+\def\LightYStep{.2cm}
+\def\ExcitationFilterX{2.25cm}
+\def\CameraRadius{\FilterRadius}
+\def\CameraHeight{4}
+\def\CameraY{9cm}
+\def\EmissionFilterY{8cm}
+\begin{tikzpicture}
+%\draw[help lines] (-4,0) grid (15,10);
+\draw (-\CoverslipRadius,-\CoverslipThickness) rectangle (\CoverslipRadius,\CoverslipThickness);
+\draw (0,-\CoverslipThickness) node[anchor=north] {specimen on cover slip};
+\begin{scope}[yshift=1cm]
+\draw (\ObjectiveSmallRadius,0) -- (\ObjectiveRadius,\ObjectiveSmallHeight) -- (\ObjectiveRadius,\ObjectiveHeight)
+  -- (-\ObjectiveRadius,\ObjectiveHeight) -- (-\ObjectiveRadius,\ObjectiveSmallHeight) -- (-\ObjectiveSmallRadius,0)
+  -- cycle;
+\draw (1.2*\ObjectiveRadius,.5*\ObjectiveHeight) node[anchor=west] {objective};
+\end{scope}
+\begin{scope}[yshift=\LightY]
+  \draw (-.3,0) node[anchor=east] {dichroic mirror};
+  \begin{scope}[rotate=45]
+  \draw (-\DichroicRadius,-\FilterThickness) rectangle (\DichroicRadius,\FilterThickness);
+  \end{scope}
+  \begin{scope}[xshift=\ExcitationFilterX]
+  \draw (-\FilterThickness,-\FilterRadius) rectangle (\FilterThickness,\FilterRadius);
+  \draw (1.1*\FilterThickness,.8*\FilterRadius) node[anchor=west] {excitation filter};
+  \end{scope}
+  \begin{scope}[xshift=\LightSourceX]
+  \draw (0,-\LightSourceRadius) rectangle (\LightSourceHeight,\LightSourceRadius);
+  \draw (.5*\LightSourceHeight,0) node {light source};
+  \end{scope}
+  \draw[ultra thick,color=red,<-] (\ExcitationFilterX,-\LightYStep) -- (3,-\LightYStep);
+  \draw[ultra thick,color=green,<-] (\ExcitationFilterX,0) -- (3,0);
+  \draw[ultra thick,color=blue,<-] (\ExcitationFilterX,\LightYStep) -- (3,\LightYStep);
+\end{scope}
+\begin{scope}[yshift=\EmissionFilterY]
+\draw (-\FilterRadius,-\FilterThickness) rectangle (\FilterRadius,\FilterThickness);
+\draw (-1.1*\FilterRadius,0) node[anchor=east] {emission filter};
+\end{scope}
+\begin{scope}[yshift=\CameraY]
+\draw (-\CameraRadius,0) rectangle (\CameraRadius,\CameraHeight);
+\draw (0,.5*\CameraHeight) node {camera};
+\end{scope}
+\draw[ultra thick,color=blue,->] (\ExcitationFilterX,\LightY+\LightYStep) -- (\LightYStep,\LightY+\LightYStep)
+  -- (\LightYStep,0);
+\draw[ultra thick,color=green,->] (-\LightYStep,0) -- ++(0,\CameraY);
+\end{tikzpicture}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
