@@ -45,6 +45,8 @@ class Translator(LaTeXTranslator):
         self.figure_alignment = 'left'
         self.table_type = 'table'
 
+        self.d_class.sections.insert(0, 'title')
+
     def visit_docinfo(self, node):
         pass
 
