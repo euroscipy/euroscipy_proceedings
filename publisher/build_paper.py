@@ -68,6 +68,8 @@ def rst2tex(in_path, out_path):
                 'latex_preamble': preamble,
                 'documentoptions': 'letterpaper,compsoc,twoside',
                 'halt_level': 3,  # 2: warn; 3: error; 4: severe
+                'sectnum_xform': False,
+                'sectnum_depth': 3,
                 }
 
     try:
