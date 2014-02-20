@@ -1,15 +1,15 @@
 :author: Pierre Haessig
-:email: pierre.haessig@bretagne.ens-cachan.fr
-:institution: SATIE laboratory - ENS Cachan Bretagne, Bruz, France
+:email: pierre.haessig@ens-rennes.fr
+:institution: SATIE CNRS laboratory - ENS Rennes, Bruz, France
 
 :author: Thibaut Kovaltchouk
-:institution: SATIE laboratory - ENS Cachan Bretagne, Bruz, France
+:institution: SATIE CNRS laboratory - ENS Rennes, Bruz, France
 
 :author: Bernard Multon
-:institution: SATIE laboratory - ENS Cachan Bretagne, Bruz, France
+:institution: SATIE CNRS laboratory - ENS Rennes, Bruz, France
 
 :author: Hamid Ben Ahmed
-:institution: SATIE laboratory - ENS Cachan Bretagne, Bruz, France
+:institution: SATIE CNRS laboratory - ENS Rennes, Bruz, France
 
 :author: Stéphane Lascaud
 :institution: LME department - EDF R&D, Écuelles, France
