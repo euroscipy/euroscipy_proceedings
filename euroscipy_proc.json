@@ -99,11 +99,45 @@
 		{"name": "Mike Müller",
 		 "org": "Python Academy"},
 		{"name": "Didrik Pinte",
-		 "org": "Enthought Europe"},
+		 "org": "Enthought"},
 		{"name": "Gaël Varoquaux",
 		 "org": "INRIA Parietal"},
 		{"name": "Nelle Varoquaux",
 		 "org": "Mines ParisTech"}
+		]
+	},
+
+      {
+            "name": "Proceedings reviewers",
+            "members": [
+		{"name": "Francesc Alted",
+		 "org": "."},
+		{"name": "Daniel J. Bates",
+		 "org": "Colorado State University"},
+		{"name": "Ondřej Čertík",
+		 "org": "Los Alamos National Laboratory"},
+		{"name": "David Cournapeau",
+		 "org": "Enthought"},
+		{"name": "Alexandre Gramfort",
+		 "org": "."},
+		{"name": "Valentin Haenel",
+		 "org": "."},
+		{"name": "Konrad Hinsen",
+		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
+		{"name": "Robert Kern",
+		 "org": "Enthought"},
+		{"name": "Mike Müller",
+		 "org": "Python Academy"},
+		{"name": "C. Titus Brown",
+		 "org":  "Michigan State University"},
+		{"name": "Jake Vanderplas",
+		 "org": "University of Washington"},
+		{"name": "Gaël Varoquaux",
+		 "org": "INRIA Parietal"},
+		{"name": "Paul Zimmermann",
+		 "org": "INRIA"},
+                {"name": "Tiziano Zito",
+                 "org": "Humboldt-Universität zu Berlin"}
 		]
 	}
 
