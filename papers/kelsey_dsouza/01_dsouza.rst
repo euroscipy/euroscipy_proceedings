@@ -21,10 +21,16 @@ PySTEMM: Executable Concept Modeling for K-12 STEM Learning
 .. TODO: the "bottom-up and top-down" is not explained in the paper
 
 
+.. class:: keywords
+
+   STEM education, STEM models, immutable objects, pure functions
+
+
+
 Introduction
 ============
 
-A *model* is a simplified representation of part of some world, focused on selected aspects. A model underlies every scientific theory, and models are central to all STEM areas — science, technology, engineering, and mathematics — helping us conceptualize, understand, explain, and predict phenomena objectively. Children form mental models and physical models during play to understand their world. Scientists use bio-engineered tissue as a model of human organs. Computational modeling is revolutionizing science and engineering, recognized by the 2013 Nobel Price in Chemistry going for computational modeling of biochemical systems. 
+A *model* is a simplified representation of part of some world, focused on selected aspects. A model underlies every scientific theory, and models are central to all STEM areas — science, technology, engineering, and mathematics — helping us conceptualize, understand, explain, and predict phenomena objectively. Children form mental models and physical models during play to understand their world. Scientists use bio-engineered tissue as a model of human organs. Computational modeling is revolutionizing science and engineering, as recognized by the 2013 Nobel Price in Chemistry going for computational modeling of biochemical systems. 
 
 .. TODO: reasons to model
 
@@ -41,7 +47,7 @@ Previous research [Whi93]_, [Orn08]_ has shown significant learning benefits fro
 Executable Concept Models
 -------------------------
 
-A *concept model* describes something by capturing relevant concepts, attributes, and rules. A *concept instance* is a specific individual of a *concept type* e.g. ``NO2`` is a concept instance of the general concept type ``Molecule``. The concept type ``Molecule`` might define a ``formula`` attribute for any molecule instance to list how many atoms of each element it contains. The concept instance ``NO2`` has one ``Nitrogen`` and two ``Oxygen`` atoms. 
+A *concept model* describes something by capturing relevant concepts, attributes, and rules. A *concept instance* is a specific individual of a *concept type* e.g. ``NO2`` is a concept instance of the general concept type ``Molecule``. The concept type ``Molecule`` might define a ``formula`` attribute for any molecule instance to list how many atoms of each element it contains. The concept instance ``NO2`` has one ``Nitrogen`` and two ``Oxygen`` atoms. This is similar to the idea from object-oriented programming of an object that is an instance of a class.
 
 Concepts and attributes are chosen to suit a purpose. A different model of ``Molecule`` might describe atoms, functional groups, bonds, sites at which other molecules can interact, site geometry, and forces that govern geometry and interactions.
 
@@ -237,7 +243,7 @@ Chemistry: Reaction
       products = List(Tuple(Int, Molecule))
       reactants = List(Tuple(Int, Molecule))
 
-An Element is modeled as just a name, since we ignore electron and nuclear structure. A ``Molecule`` has an attribute ``formula`` with a list of pairs of element with a number indicating the number of atoms of that element. A ``Reaction`` has ``reactants`` and ``products``, each some quantity of a certain molecule. This Python model is visualized by PySTEMM in Figure :ref:`reactiontypes`. 
+An ``Element`` is modeled as just a name, since we ignore electron and nuclear structure. A ``Molecule`` has an attribute ``formula`` with a list of pairs of element with a number indicating the number of atoms of that element. A ``Reaction`` has ``reactants`` and ``products``, each some quantity of a certain molecule. This Python model is visualized by PySTEMM in Figure :ref:`reactiontypes`. 
 
 Note that convenient Python constructs, like *lists* of *tuples*, are visualized in a similarly convenient manner. Also, the ``instance_template`` for molecule (lines 6-7), specifying the visualization properties for a molecule instance, contains a *function* which takes a molecule instance and computes its label. Visualization templates are parameterized by the objects they will be applied to.
 
@@ -413,7 +419,7 @@ The overall architecture of PySTEMM, illustrated in Figure :ref:`archfig`, has t
 - ``Model``: a collection of concepts classes and concept instances, configured with some visualization.
 - ``View``: an interface to a drawing application scripted via AppleScript.
 
-The *model library* includes the models presented in this paper and any additional models any PySTEMM user would create. Figure :ref:`archfig` explains the architecture in more detail, and lists external modules that were used for specific purposes.
+The *model library* includes the models presented in this paper and any additional models any PySTEMM user would create. Figure :ref:`archfig` explains the architecture in more detail, and lists external modules that were used for specific purposes. Attribute type definitions and initialization use the Traits module [Tra14]_.
 
 .. TODO: remove "Loose & Hybrid Model"
 
@@ -430,6 +436,9 @@ We gain several benefits by building models with immutable objects and pure func
 -  The *user models* can be manipulated by the *tool* more easily to provide tool capabilities like animation and graph-plotting, based on evaluating pure functions at different points in time.
 -  The values of computed attributes and other intermediate values can be visualized as easily and unambiguously as any stored attributes.
 -  Debugging becomes much less of an issue since values do not change while executing a model, and the definitions parallel the math taught in school science.
+
+The source code for PySTEMM is available at github.com/kdz/pystemm.
+
 
 .. TODO: Choice of Python & Why
 
@@ -498,23 +507,19 @@ I have described PySTEMM as a tool, model library, and approach for building exe
 References
 ==========
 
-.. [Whi93] White, Barbara Y. *ThinkerTools: Causal Models, Conceptual Change, and Science Education*,
-        Cognition and Instruction, Vol. 10. Berkeley: Taylor & Francis, 1993. Print. Cognition and Instruction.
+.. [Whi93] White, Barbara Y. “ThinkerTools: Causal Models, Conceptual Change, and Science Education”, Cognition and Instruction, Vol. 10, No. 1.
 
-.. [Orn08] Ornek, Funda. *Models in Science Education: Applications of Models in Learning and Teaching Science*,
-        International Journal of Environmental & Science Education, 2008.
+.. [Orn08] Ornek, Funda. “Models in Science Education: Applications of Models in Learning and Teaching Science”, International Journal of Environmental & Science Education, 2008.
 
-.. [Edw04] Edwards, Jonathan. *Example Centric Programming*,
-        The College of Information Sciences and Technology. The Pennsylvania State University, 2004.
+.. [Edw04] Edwards, Jonathan. “Example Centric Programming”, The College of Information Sciences and Technology (Pennsylvania State University: 2004), http://www.subtext-lang.org/OOPSLA04.pdf
 
-.. [Fun13] "9.8. Functools — Higher-order Functions and Operations on Callable Objects.",
-        2013. http://docs.python.org/2/library/functools.html.
+.. [Fun13] "9.8. Functools — Higher-order Functions and Operations on Callable Objects.",  Python Software Foundation, 2013. http://docs.python.org/2/library/functools.html.
 
-.. [Bla07] Blais, Martin. *True Lieberman-style Delegation in Python*, 
-        (Python Recipe)." Active State Code. Active State Software Inc, 14 May 2007.
+.. [Bla07] Blais, Martin. “True Lieberman-style Delegation in Python." Active State Software, 2007, http://code.activestate.com/recipes/519639-true-lieberman-style-delegation-in-python/.
 
-.. [Sen06] Sen, S. K., Hans Agarwal, and Sagar Sen. *Chemical Equation Balancing: An Integer Programming Approach*, 
-        Journal of Mathematical and Computer Modeling, 44, Elsevier, 2006.
+.. [Sen06] Sen, S. K., Hans Agarwal, and Sagar Sen. “Chemical Equation Balancing: An Integer Programming Approach”, Mathematical and Computer Modeling, Vol. 44, No.7-8, 2006.
+
+.. [Tra14] Enthought Traits Library, http://code.enthought.com/projects/traits/
 
 
 .. TODO: add concord.org, euroscipy
