@@ -170,7 +170,7 @@ failover recovery, the members of the replica set run a daemon that replicates t
 The primary member receives all the write/insert connections while secondaries replicate from the primary asynchronously
 with a delay of milliseconds and can receive read orders. Even that data replication
 uses much more space that the one really needed, it ensures high availability and increases read capacity. Apart from that,
-a good practice, is to configure one of the secondary computers of each replica
+a good practice is to configure one of the secondary computers of each replica
 set with a predefined replication delay time and use it as backup. The standard
 MongoDB configuration hides the backup computer from clients so that it can not
 be used for searches to prevent searching in a non up to date data set.
@@ -324,7 +324,8 @@ search and manipulation easier we use the tweet id as one of the indices of the
 database and it is necessary to have it in the highest level of the document.
 
 Deleted tweets have a different structure than regular ones. In particular they are identified by the key, *deleted*,
-in the highest document level. The only contain information on the user and the tweetID of the erased tweet. We also store these tweets.
+in the highest document level. They only contain information on the user and the
+tweetID of the erased tweet. We also store these tweets.
 
 
 
@@ -334,7 +335,8 @@ Users selection
 We identify the users which have tweets geolocated in the metropolitan areas
 under study. Since we are interested in people that moves, we first disregard
 all the users whose tweets come always from the same location. This also
-filters out most of adversing tweets send by companies, since they have a fixed
+filters out most of advertising tweets send by companies, since they have a
+fixed
 location. Then we sort users to be checked by number of geolocated tweets already
 collected in order to prioritize the most active ones.
 
@@ -369,7 +371,7 @@ there is a limit in the number of queries per access token and per method on a t
 window  [limit]_. For the queries regarding user_timelime the limit is set to 180
 requests every fifteen minutes, [timeline]_
 
-Some users have their tweets protected. This implies that while this tweets are
+Some users have their tweets protected. This implies that while these tweets are
 freely distributed via streaming, it is not possible to retrieve them via the
 *REST API*. Therefore when we detect that a user protects its tweets, we remove
 him/her from the list of selected users.
@@ -492,7 +494,7 @@ volume of data to be stored, it implies a search for each new tweet on the user
 index of the database to find out if the user is already there. Similarly we also
 use ForeignKey for place, coordinates and entities keys and therefore it is
 necessary to do a search on the corresponding index of the database for each new
-tweet. 
+tweet.
 
 Finally, for every JSON document, a parsing function is needed to store the data into
 the database. A sample of the parsing function is:
