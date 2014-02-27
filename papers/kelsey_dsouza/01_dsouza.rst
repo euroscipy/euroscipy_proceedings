@@ -413,13 +413,13 @@ Implementation
 Architecture
 ------------
 
-The overall architecture of PySTEMM, illustrated in Figure :ref:`archfig`, has two main parts: *Tool* and *Model Library*. The *tool* manipulates *models*, traversing them at the type and instance level and generating visualizations. The *tool* is implemented with 3 classes:
+The overall architecture of PySTEMM, illustrated in Figure :ref:`archfig`, has two main parts: *Tool* and *Model Library*. The *tool* manipulates *models*, traversing them at the type and instance level and generating visualizations. The *model library* includes the models presented in this paper and any additional models any PySTEMM user would create. The *tool* is implemented with 3 classes:
 
 - ``Concept``: a superclass that triggers special handling of the concept type to process attribute-type definitions.
 - ``Model``: a collection of concepts classes and concept instances, configured with some visualization.
 - ``View``: an interface to a drawing application scripted via AppleScript.
 
-The *model library* includes the models presented in this paper and any additional models any PySTEMM user would create. Figure :ref:`archfig` explains the architecture in more detail, and lists external modules that were used for specific purposes. Attribute type definitions and initialization use the Traits module [Tra14]_.
+Figure :ref:`archfig` explains the architecture in more detail, and lists external modules that were used for specific purposes. PySTEMM uses the Enthought ``traits`` module [Tra14]_ to define attribute types for a concept. Traits provides a class ``HasTraits`` with a custom meta-class, and pre-defined traits such as ``List``, ``Tuple``, ``String``, and ``Int``. The ``Concept`` class derives from ``HasTraits``, which triggers ``traits`` to capture concept attribute type definitions and generate constructor and attribute logic for checked attribute assignment.
 
 .. TODO: remove "Loose & Hybrid Model"
 
@@ -437,7 +437,7 @@ We gain several benefits by building models with immutable objects and pure func
 -  The values of computed attributes and other intermediate values can be visualized as easily and unambiguously as any stored attributes.
 -  Debugging becomes much less of an issue since values do not change while executing a model, and the definitions parallel the math taught in school science.
 
-The source code for PySTEMM is available at github.com/kdz/pystemm.
+The source code for PySTEMM is available at https://github.com/kdz/pystemm.
 
 
 .. TODO: Choice of Python & Why
