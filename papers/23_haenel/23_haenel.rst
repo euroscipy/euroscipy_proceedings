@@ -684,6 +684,6 @@ References
 .. [FastLZ] FastLZ `http://fastlz.org/  <http://fastlz.org/>`_
 .. [Snappy] Snappy  `http://code.google.com/p/snappy/ <http://code.google.com/p/snappy/>`_
 .. [LZ4] LZ4 `http://code.google.com/p/lz4/ <http://code.google.com/p/lz4/>`_
-.. [Blosc] Blosc `http://blosc.pytables.org/trac <http://blosc.pytables.org/trac>`_
-.. [Bloscpack] Bloscpack https://github.com/esc/bloscpack
+.. [Blosc] Blosc `http://blosc.org <http://blosc.org>`_
+.. [Bloscpack] Bloscpack https://github.com/Blosc/bloscpack
 .. [CPU] `Intel® Core™ i7-3667U Processor <http://ark.intel.com/products/64898>`_
