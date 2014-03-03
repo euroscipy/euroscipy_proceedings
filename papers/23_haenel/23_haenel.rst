@@ -479,13 +479,13 @@ night, certain IO intensive cronjobs might contaminate the benchmarks.
 Secondly, the Laptop Mode Tools were disable via a setting in
 ``/etc/laptop-mode/laptop-mode.conf``.  These tools will regulate certain
 resource settings, in particular disk write-back latency and CPU frequency
-scaling governor, when certain system aspects -- e.g. the connectivity to AC
-power -- change and again this might contaminate the benchmarks.
+scaling governor, when certain system aspects |---| e.g. the connectivity to AC
+power |---| change and again this might contaminate the benchmarks.
 
 Versions Used
 -------------
 
-The following versions and git-hashes -- where available -- were used to acquire
+The following versions and git-hashes |---| where available |---| were used to acquire
 the data reported in this article:
 
 * benchmark-script: NA / 7562c6d
