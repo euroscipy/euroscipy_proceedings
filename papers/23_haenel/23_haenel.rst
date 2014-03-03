@@ -473,10 +473,10 @@ and investigating possible causes. While there may be other operating system
 effects, the precautions listed next were found to have observably detrimental
 effects and disabling them lead to increased reliability of the results.
 
-First, the daily cronjobs were disable by commenting out the corresponding line
+First, the daily cronjobs were disabled by commenting out the corresponding line
 in ``/etc/crontab``. This is important because when running the benchmarks over
 night, certain IO intensive cronjobs might contaminate the benchmarks.
-Secondly, the Laptop Mode Tools were disable via a setting in
+Secondly, the Laptop Mode Tools were disabled via a setting in
 ``/etc/laptop-mode/laptop-mode.conf``.  These tools will regulate certain
 resource settings, in particular disk write-back latency and CPU frequency
 scaling governor, when certain system aspects |---| e.g. the connectivity to AC
