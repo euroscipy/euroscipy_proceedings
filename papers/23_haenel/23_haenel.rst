@@ -91,7 +91,7 @@ Blosc was initially developed to support in-memory compression in order to
 mitigate the effects of the memory hierarchy [Jacob2009]_. More specifically,
 to mitigate the effects of memory latency, i.e. the ever growing divide between
 the CPU speed and the memory access speed |--| which is also known as the problem of
-the starving CPUs [Alted2009]_.
+the *starving CPUs* [Alted2009]_.
 
 The goal of in-memory compression techniques is to have a numerical container
 which keeps all data as in-memory compressed blocks. If the data needs to be
