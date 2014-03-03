@@ -74,18 +74,19 @@ introduce its own codec is mainly the desire for simplicity (blosclz
 is a highly streamlined version of FastLZ), as well as providing a
 better interaction with Blosc infrastructure.
 
-Moreover, Blosc is designed to be extensible, and allows other codecs
-than blosclz to be used in it. In other words, one can consider Blosc
-as a meta-compressor, in that it handles the splitting of the data
-into blocks, optionally applying the shuffle filter (or other future
-filters), while being responsible of coordinating the individual
-threads during operation. Blosc then relies on a "real" codec to
-perform that actual compression of the data blocks. As such, one can
-think of Blosc as a way to parallelize existing codecs, while allowing
-to apply filters (also called pre-conditioners) and, in fact, at the
-time of writing there exists a proof-of-concept implementation in the
-Blosc Git repository which integrates the well known Snappy codec
-[Snappy]_ as well as LZ4 into the Blosc framework [Snappy_LZ4_Blosc]_.
+Moreover, Blosc is designed to be extensible, and allows other codecs than
+blosclz to be used in it. In other words, one can consider Blosc as a
+meta-compressor, in that it handles the splitting of the data into blocks,
+optionally applying the shuffle filter (or other future filters), while being
+responsible of coordinating the individual threads during operation. Blosc then
+relies on a "real" codec to perform that actual compression of the data blocks.
+As such, one can think of Blosc as a way to parallelize existing codecs, while
+allowing to apply filters (also called pre-conditioners). In fact, at the time
+when the research presented in this paper was conducted (Summer 2013),
+a proof-of-concept implementation existed to integrate
+the well known Snappy codec [Snappy]_ as well as LZ4 [LZ4]_ into the Blosc framework.
+As of January 2014 this proof of concept has matured and as of version 1.3.0
+Blosc comes equipped with support for Snappy [Snappy]_, LZ4 [LZ4]_ and even Zlib [zlib_].
 
 Blosc was initially developed to support in-memory compression in order to
 mitigate the effects of the memory hierarchy [Jacob2009]_. More specifically,
@@ -682,7 +683,7 @@ References
 .. [Numpy] Numpy `http://www.numpy.org/ <http://www.numpy.org/>`_
 .. [FastLZ] FastLZ `http://fastlz.org/  <http://fastlz.org/>`_
 .. [Snappy] Snappy  `http://code.google.com/p/snappy/ <http://code.google.com/p/snappy/>`_
-.. [Snappy_LZ4_Blosc] Support for Snappy and LZ4 in Blosc `https://github.com/FrancescAlted/blosc/tree/new_compressors <https://github.com/FrancescAlted/blosc/tree/new_compressors>`
+.. [LZ4] LZ4 `http://code.google.com/p/lz4/ <http://code.google.com/p/lz4/>`_
 .. [Blosc] Blosc `http://blosc.pytables.org/trac <http://blosc.pytables.org/trac>`_
 .. [Bloscpack] Bloscpack https://github.com/esc/bloscpack
 .. [CPU] `Intel® Core™ i7-3667U Processor <http://ark.intel.com/products/64898>`_
