@@ -68,7 +68,7 @@ significance. The net result for series of numerical elements with
 little difference between elements that are close, is that similar
 bytes are placed closer together and can thus be better compressed
 (this is specially true on time series datasets). Internally, Blosc
-uses its own codec, blosclz, which is a derivative of FastLZ [FastLZ]_
+uses its own codec, *blosclz*, which is a derivative of FastLZ [FastLZ]_
 and implements the LZ77 [LZ77]_ scheme.  The reason for Blosc to
 introduce its own codec is mainly the desire for simplicity (blosclz
 is a highly streamlined version of FastLZ), as well as providing a
