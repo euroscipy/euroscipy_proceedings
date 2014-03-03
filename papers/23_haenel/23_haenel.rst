@@ -230,7 +230,7 @@ Initially, Bloscpack was conceived as a command-line compression tool. At the
 time of writing, a Python API is in development and, in fact, the command-line
 interface is being used to drive and dog-food the Python API. Contrary to
 existing tools such as ``gzip`` [gzip]_, ``bloscpack`` doesn't use command-line
-options to control its mode of operation, but instead uses the a subcommand
+options to control its mode of operation, but instead uses the *subcommand*
 style. Here is a simple example:
 
 .. code-block:: console
