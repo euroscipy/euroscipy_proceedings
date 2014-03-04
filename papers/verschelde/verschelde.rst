@@ -19,7 +19,7 @@ Introduction
 ------------
 
 Our mathematical problem is to solve a system of polynomial equations in
-several variables. The discrete part of the output data consists of the
+several variables. The discrete part of the output data includes the
 number of solutions and degrees of positive dimensional solution sets.
 When the input is exact or if the coefficients of the polynomial can be
 given with any accuracy, the isolated solutions can be then approximated
@@ -47,7 +47,8 @@ version 0.1.4 corresponds to the first version of this paper.
 The current version of phcpy is 0.1.5.
 
 We first outline in the next section the application of numerical
-homotopy continuation methods to compute all isolated solutions and all
+homotopy continuation methods to compute, over the complex numbers,
+all isolated solutions and all
 positive dimensional irreducible solution sets of a polynomial system.
 Then we describe how phcpy relates to other interfaces to PHCpack. The
 functionality of phcpy is then summarized briefly as the online Sphinx
@@ -98,16 +99,6 @@ then use
 
 to solve a specific instance
 :math:`f({\mbox{\boldmath $\lambda$}}_1,{\bf x}) = {\bf 0}`.
-A variation to the homotopy above is the
-natural parameter homotopy 
-
-.. math::
-
-   h({\bf x},t) = f((1-t) {\mbox{\boldmath $\lambda$}}_0
-   + t {\mbox{\boldmath $\lambda$}}_1,{\bf x}) = {\bf 0},
-
-where the path of systems in the homotopy runs entirely through
-the space where the parameters live.
 
 The schematic in Figure :ref:`figcomplexparcon` illustrates that singular
 solutions along the paths are avoided by a generic choice of the
@@ -122,7 +113,9 @@ Solving a system that has solution sets of positive dimension, e.g.: a
 curve or surface, means to compute its dimension and its degree. For a
 solution set of dimension \ :math:`d`, we add to the system :math:`d`
 linear equations with random coefficients to reduce the problem to
-computing isolated solutions. Because the coefficients of the linear
+computing isolated solutions.  If the dimension is not known in advance,
+then it can be computed in a cascade of homotopies [SV00]_.
+Because the coefficients of the linear
 equation are random, the solutions of the system that satisfy the random
 linear equations will be isolated. If the solution set has multiplicity
 one, the solutions of the augmented system will be isolated points of
@@ -559,6 +552,10 @@ References
           *Sage Mathematics Software (Version 5.12).*
           The Sage Development Team, 2013.  http://www.sagemath.org.
 
+.. [SV00] A.J. Sommese and J. Verschelde.
+          *Numerical homotopies to compute generic points on positive
+          dimensional algebraic sets.* J. of Complexity, 16(3):572-602, 2000.
+
 .. [SVW03] A.J. Sommese, J. Verschelde, and C.W. Wampler.
            *Numerical irreducible decomposition using PHCpack*,
            in M. Joswig and N. Takayama, editors, Algebra, Geometry, and
@@ -601,7 +598,7 @@ References
 
 .. [VW04a] J. Verschelde and Y. Wang.
            *Computing dynamic output feedback laws*,
-           IEEE Transactions on Automatic Control, 49(8):1393--1397, 2004.
+           IEEE Transactions on Automatic Control, 49(8):1393-1397, 2004.
 
 .. [VW04b] J. Verschelde and Y. Wang.
            *Computing feedback laws for linear systems with a parallel Pieri
