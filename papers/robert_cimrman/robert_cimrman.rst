@@ -114,6 +114,39 @@ UMFPACK [R9]_, PETSc [R10]_, Pysparse [R11]_ as well as the solvers available
 in SciPy. Various solver classes are supported: linear, nonlinear, eigenvalue,
 optimization, and time stepping.
 
+Besides the external solvers mentioned above, several solvers are implemented
+directly in SfePy.
+
+Nonlinear/optimization solvers:
+
+- The Newton solver with a backtracking line-search is the default solver for
+  all problems. For simplicity we use a unified approach to solve both the
+  linear and non-linear problems - former (should) converge in a single
+  nonlinear solver iteration.
+- The steepest descent optimization solver with a backtracking line-search can
+  be used as a fallback optimization solver when more sophisticated solvers
+  fail.
+
+Time-stepping-related solvers:
+
+- The stationary solver is used to solve time-independent problems.
+- The equation sequence solver is a stationary solver that analyzes the
+  dependencies among equations and solves smaller blocks first. An example
+  would be the thermoelasticity problem described below, where the elasticity
+  equation depends on the load given by temperature distribution, but the
+  temperature distribution (Poisson equation) does not depend on
+  deformation. Then the temperature distribution can be found first, followed
+  by the elasticity problem with the already known temperature load. This
+  greatly reduces memory usage and improves speed of solution.
+- The simple implicit time stepping solver is used for (quasistatic)
+  time-dependent problems, using a fixed time step.
+- The adaptive implicit time stepping solver can change the time step according
+  to a user provided function. The default function ``adapt_time_step()``
+  decreases the step in case of bad Newton convergence and increases the step
+  (up to a limit) when the convergence is fast. It is convenient for large
+  deformation (hyperelasticity) problems.
+- The explicit time stepping solver can be used for dynamic problems.
+
 Thermoelasticity Example: Code
 ------------------------------
 
