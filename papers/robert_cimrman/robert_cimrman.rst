@@ -71,15 +71,15 @@ of terms (weak form integrals), various kinds of boundary conditions,
 material/constitutive parameters etc.
 
 The key notion in SfePy is a *term*, which is the smallest unit that can be
-used to build *equations*. It corresponds to a weak formulation integral and
-takes usually several arguments: (optional) material parameters, a single
-virtual (or test) function variable and zero or more state (or unknown)
-variables. The available terms (currently 105) are listed at our web site
-(http://sfepy.org/doc-devel/terms_overview.html). The already existing terms
-allow to solve problems from many scientific domains, see Figure
-:ref:`gallery`. Those terms cover many common PDEs in continuum mechanics,
-poromechanics, biomechanics etc. with a notable exception of electromagnetism
-(work in progress, see below).
+used to build *equations* (linear combinations of terms). It corresponds to a
+weak formulation integral and takes usually several arguments: (optional)
+material parameters, a single virtual (or test) function variable and zero or
+more state (or unknown) variables. The available terms (currently 105) are
+listed at our web site (http://sfepy.org/doc-devel/terms_overview.html). The
+already existing terms allow to solve problems from many scientific domains,
+see Figure :ref:`gallery`. Those terms cover many common PDEs in continuum
+mechanics, poromechanics, biomechanics etc. with a notable exception of
+electromagnetism (work in progress, see below).
 
 Currently the code supports the 2D area (triangle, rectangle) and 3D volume
 (tetrahedron, hexahedron) elements. Structural elements like shells, plates,
