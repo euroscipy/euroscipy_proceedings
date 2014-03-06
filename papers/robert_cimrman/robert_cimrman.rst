@@ -25,13 +25,20 @@ Introduction
 SfePy (Simple Finite Elements in Python) is a multi-platform (Linux, Mac OS X,
 Windows) software released under the New BSD license, see http://sfepy.org. It
 implements one of the standard ways of discretizing partial differential
-equations (PDEs) which is the finite element method (FEM) [R1]_. The software
-can be used as a
+equations (PDEs) which is the finite element method (FEM) [R1]_.
 
-- collection of modules (a library) for building custom or domain-specific
+So far, SfePy has been employed for modelling in materials science, including,
+for example, multiscale biomechanical modelling (bone, muscle tissue with blood
+perfusion) [R2]_, [R3]_, [R4]_, [R5]_, [R6]_, [R7]_, computation of acoustic
+transmission coefficients across an interface of arbitrary microstructure
+geometry [R8]_, computation of phononic band gaps [R9]_, [R10]_, finite element
+formulation of Schroedinger equation [R11]_, and other applications, see also
+Figure :ref:`gallery`. The software can be used as
+
+- a collection of modules (a library) for building custom or domain-specific
   applications,
-- highly configurable "black box" PDE solver with problem description files in
-  Python.
+- a highly configurable "black box" PDE solver with problem description files
+  in Python.
 
 In this paper we focus on illustrating the former use by using a particular
 example. All examples presented below were tested to work with the version
@@ -53,14 +60,14 @@ Short Description
 -----------------
 
 The code is written mostly in Python. For speed in general, it relies on fast
-vectorized operations provided by NumPy [R2]_ arrays, with heavy use of
-advanced broadcasting and "index tricks" features. C and Cython [R3]_ are used
+vectorized operations provided by NumPy [R12]_ arrays, with heavy use of
+advanced broadcasting and "index tricks" features. C and Cython [R13]_ are used
 in places where vectorization is not possible, or is too
 difficult/unreadable. Other components of the scientific Python software stack
-are used as well, among others: SciPy [R4]_ solvers and algorithms, Matplotlib
-[R5]_ for 2D plots, Mayavi [R6]_ for 3D plots and simple postprocessing GUI,
-IPython [R7]_ for a customized shell, SymPy [R8]_ for symbolic operations/code
-generation etc.
+are used as well, among others: SciPy [R14]_ solvers and algorithms, Matplotlib
+[R15]_ for 2D plots, Mayavi [R16]_ for 3D plots and simple postprocessing GUI,
+IPython [R17]_ for a customized shell, SymPy [R18]_ for symbolic
+operations/code generation etc.
 
 The basic structure of the code allows a flexible definition of various
 problems. The problems are defined using components directly corresponding to
@@ -110,7 +117,7 @@ electromagnetism.
 
 Once the equations are assembled, a number solvers can be used to solve the
 problem. SfePy provides a unified interface to many standard codes, for example
-UMFPACK [R9]_, PETSc [R10]_, Pysparse [R11]_ as well as the solvers available
+UMFPACK [R19]_, PETSc [R20]_, Pysparse [R21]_ as well as the solvers available
 in SciPy. Various solver classes are supported: linear, nonlinear, eigenvalue,
 optimization, and time stepping.
 
@@ -493,35 +500,80 @@ projects P108/11/0853 and 101/09/1630.
 .. [R1] Thomas J. R. Hughes, The Finite Element Method: Linear Static and
         Dynamic Finite Element Analysis, Dover Publications, 2000.
 
-.. [R2] T. E. Oliphant. Python for scientific computing. *Computing in Science &
-        Engineering*, 9(3):10-20, 2007. http://www.numpy.org.
+.. [R2] R.~Cimrman and E.~Rohan. Two-scale modeling of tissue perfusion problem
+        using homogenization of dual porous media. *International Journal for
+        Multiscale Computational Engineering*, 8(1):81--102, 2010.
 
-.. [R3] R. Bradshaw, S. Behnel, D. S. Seljebotn, G. Ewing, et al. The Cython
-        compiler. http://cython.org.
+.. [R3] E.~Rohan, R.~Cimrman, S.~Naili, and T.~Lemaire. Multiscale modelling of
+        compact bone based on homogenization of double porous medium. In
+        *Computational Plasticity X - Fundamentals and Applications*,
+        2009.
 
-.. [R4] E. Jones, T. E. Oliphant, P. Peterson, et al.  SciPy: Open source
-        scientific tools for Python, 2001-.  http://www.scipy.org.
+.. [R4] E.~Rohan and R.~Cimrman. Multiscale fe simulation of
+        diffusion-deformation processes in homogenized dual-porous media.
+        *Mathematics and Computers in Simulation*, 82(10):1744--1772, 2012.
 
-.. [R5] J. D. Hunter. Matplotlib: A 2d graphics environment. *Computing in
-        Science & Engineering*, 9(3):90-95, 2007. http://matplotlib.org/.
+.. [R5] R.~Cimrman and E.~Rohan. On modelling the parallel diffusion flow in
+        deforming porous media. *Mathematics and Computers in Simulation*,
+        76(1-3):34--43, 2007.
 
-.. [R6] P. Ramachandran and G. Varoquaux. Mayavi: 3d visualization of scientific
-        data. *IEEE Computing in Science & Engineering*, 13(2):40-51, 2011.
+.. [R6] E.~Rohan and R.~Cimrman. Multiscale fe simulation of
+        diffusion-deformation processes in homogenized dual-porous
+        media. *Mathematics and Computers in Simulation*,
+        82(10):1744--1772, 2012.
 
-.. [R7] F. Pérez and B. E. Granger. IPython: A system for interactive
-        scientific computing. *Computing in Science & Engineering*,
-        9(3):21-29, 2007. http://ipython.org/.
+.. [R7] E.~Rohan, S.~Naili, R.~Cimrman, and T.~Lemaire. Hierarchical
+        homogenization of fluid saturated porous solid with multiple porosity
+        scales. *Comptes Rendus - Mecanique*, 340(10):688--694, 2012.
 
-.. [R8] SymPy Development Team. Sympy: Python library for symbolic
-        mathematics, 2013. http://www.sympy.org.
+.. [R8] E.~Rohan and V.~Lukeš. Homogenization of the acoustic transmission
+        through a perforated layer. *Journal of Computational and Applied
+        Mathematics*, 234(6):1876--1885, 2010.
 
-.. [R9] T. A. Davis. Algorithm 832: UMFPACK, an unsymmetric-pattern
-        multifrontal method. *ACM Transactions on Mathematical Software*,
-        30(2):196--199, 2004.
+.. [R9] E.~Rohan, B.~Miara, and F.~Seifrt. Numerical simulation of acoustic
+        band gaps in homogenized elastic composites. *International Journal of
+        Engineering Science*, 47(4):573--594, 2009.
 
-.. [R10] S. Balay, J. Brown, K. Buschelman, W. D. Gropp, D. Kaushik,
+.. [R10] E.~Rohan and B.~Miara. Band gaps and vibration of strongly
+         heterogeneous reissner-mindlin elastic plates. *Comptes Rendus
+         Mathematique*, 349(13-14):777--781, 2011.
+
+.. [R11] R.~Cimrman, J.~Vackář, M.~Novák, O.~Čertík, E.~Rohan, and
+         M.~Tůma. Finite element code in python as a universal and modular tool
+         applied to kohn-sham equations. In *ECCOMAS 2012 - European Congress
+         on Computational Methods in Applied Sciences and Engineering, e-Book
+         Full Papers*, pages 5212--5221, 2012.
+
+.. [R12] T. E. Oliphant. Python for scientific computing. *Computing in Science
+         & Engineering*, 9(3):10-20, 2007. http://www.numpy.org.
+
+.. [R13] R. Bradshaw, S. Behnel, D. S. Seljebotn, G. Ewing, et al. The Cython
+         compiler. http://cython.org.
+
+.. [R14] E. Jones, T. E. Oliphant, P. Peterson, et al.  SciPy: Open source
+         scientific tools for Python, 2001-.  http://www.scipy.org.
+
+.. [R15] J. D. Hunter. Matplotlib: A 2d graphics environment. *Computing in
+         Science & Engineering*, 9(3):90-95, 2007. http://matplotlib.org/.
+
+.. [R16] P. Ramachandran and G. Varoquaux. Mayavi: 3d visualization of
+         scientific data. *IEEE Computing in Science & Engineering*,
+         13(2):40-51, 2011.
+
+.. [R17] F. Pérez and B. E. Granger. IPython: A system for interactive
+         scientific computing. *Computing in Science & Engineering*,
+         9(3):21-29, 2007. http://ipython.org/.
+
+.. [R18] SymPy Development Team. Sympy: Python library for symbolic
+         mathematics, 2013. http://www.sympy.org.
+
+.. [R19] T. A. Davis. Algorithm 832: UMFPACK, an unsymmetric-pattern
+         multifrontal method. *ACM Transactions on Mathematical Software*,
+         30(2):196--199, 2004.
+
+.. [R20] S. Balay, J. Brown, K. Buschelman, W. D. Gropp, D. Kaushik,
          M. G. Knepley, L. C. McInnes, B. F. Smith, and H. Zhang. PETSc Web
          page, 2013. http://www.mcs.anl.gov/petsc.
 
-.. [R11] R. Geus, D. Wheeler, and D. Orban. Pysparse
+.. [R21] R. Geus, D. Wheeler, and D. Orban. Pysparse
          documentation. http://pysparse.sourceforge.net.
