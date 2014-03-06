@@ -25,8 +25,8 @@ Introduction
 SfePy (Simple Finite Elements in Python) is a multi-platform (Linux, Mac OS X,
 Windows) software released under the New BSD license, see http://sfepy.org. It
 implements one of the standard ways of discretizing partial differential
-equations (PDEs) which is the finite element method (FEM). The software can be
-used as a
+equations (PDEs) which is the finite element method (FEM) [R1]_. The software
+can be used as a
 
 - collection of modules (a library) for building custom or domain-specific
   applications,
@@ -53,13 +53,14 @@ Short Description
 -----------------
 
 The code is written mostly in Python. For speed in general, it relies on fast
-vectorized operations provided by NumPy arrays, with heavy use of advanced
-broadcasting and "index tricks" features. C and Cython are used in places where
-vectorization is not possible, or is too difficult/unreadable. Other components
-of the scientific Python software stack are used as well, among others: SciPy
-solvers and algorithms, Matplotlib for 2D plots, Mayavi for 3D plots and simple
-postprocessing GUI, IPython for a customized shell, SymPy for symbolic
-operations/code generation etc.
+vectorized operations provided by NumPy [R2]_ arrays, with heavy use of
+advanced broadcasting and "index tricks" features. C and Cython [R3]_ are used
+in places where vectorization is not possible, or is too
+difficult/unreadable. Other components of the scientific Python software stack
+are used as well, among others: SciPy [R4]_ solvers and algorithms, Matplotlib
+[R5]_ for 2D plots, Mayavi [R6]_ for 3D plots and simple postprocessing GUI,
+IPython [R7]_ for a customized shell, SymPy [R8]_ for symbolic operations/code
+generation etc.
 
 The basic structure of the code allows a flexible definition of various
 problems. The problems are defined using components directly corresponding to
@@ -109,9 +110,9 @@ electromagnetism.
 
 Once the equations are assembled, a number solvers can be used to solve the
 problem. SfePy provides a unified interface to many standard codes, for example
-UMFPACK, PETSc, Pysparse as well as the solvers available in SciPy. Various
-solver classes are supported: linear, nonlinear, eigenvalue, optimization, and
-time stepping.
+UMFPACK [R9]_, PETSc [R10]_, Pysparse [R11]_ as well as the solvers available
+in SciPy. Various solver classes are supported: linear, nonlinear, eigenvalue,
+optimization, and time stepping.
 
 Thermoelasticity Example: Code
 ------------------------------
@@ -410,3 +411,39 @@ Support
 
 Work on SfePy is partially supported by the Grant Agency of the Czech Republic,
 projects P108/11/0853 and 101/09/1630.
+
+.. [R1] Thomas J. R. Hughes, The Finite Element Method: Linear Static and
+        Dynamic Finite Element Analysis, Dover Publications, 2000.
+
+.. [R2] T. E. Oliphant. Python for scientific computing. *Computing in Science &
+        Engineering*, 9(3):10-20, 2007. http://www.numpy.org.
+
+.. [R3] R. Bradshaw, S. Behnel, D. S. Seljebotn, G. Ewing, et al. The Cython
+        compiler. http://cython.org.
+
+.. [R4] E. Jones, T. E. Oliphant, P. Peterson, et al.  SciPy: Open source
+        scientific tools for Python, 2001-.  http://www.scipy.org.
+
+.. [R5] J. D. Hunter. Matplotlib: A 2d graphics environment. *Computing in
+        Science & Engineering*, 9(3):90-95, 2007. http://matplotlib.org/.
+
+.. [R6] P. Ramachandran and G. Varoquaux. Mayavi: 3d visualization of scientific
+        data. *IEEE Computing in Science & Engineering*, 13(2):40-51, 2011.
+
+.. [R7] F. Pérez and B. E. Granger. IPython: A system for interactive
+        scientific computing. *Computing in Science & Engineering*,
+        9(3):21-29, 2007. http://ipython.org/.
+
+.. [R8] SymPy Development Team. Sympy: Python library for symbolic
+        mathematics, 2013. http://www.sympy.org.
+
+.. [R9] T. A. Davis. Algorithm 832: UMFPACK, an unsymmetric-pattern
+        multifrontal method. *ACM Transactions on Mathematical Software*,
+        30(2):196--199, 2004.
+
+.. [R10] S. Balay, J. Brown, K. Buschelman, W. D. Gropp, D. Kaushik,
+         M. G. Knepley, L. C. McInnes, B. F. Smith, and H. Zhang. PETSc Web
+         page, 2013. http://www.mcs.anl.gov/petsc.
+
+.. [R11] R. Geus, D. Wheeler, and D. Orban. Pysparse
+         documentation. http://pysparse.sourceforge.net.
