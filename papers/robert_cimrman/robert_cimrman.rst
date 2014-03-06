@@ -88,10 +88,12 @@ see Figure :ref:`gallery`. Those terms cover many common PDEs in continuum
 mechanics, poromechanics, biomechanics etc. with a notable exception of
 electromagnetism (work in progress, see below).
 
-Currently the code supports the 2D area (triangle, rectangle) and 3D volume
-(tetrahedron, hexahedron) elements. Structural elements like shells, plates,
-membranes or beams are not supported with a single exception of a hyperelastic
-Mooney-Rivlin membrane.
+SfePy discretizes PDEs using a continuous Galerkin approximation with finite
+elements as defined in [R1]_. Discontinuous element-wise constant approximation
+is also possible. Currently the code supports the 2D area (triangle, rectangle)
+and 3D volume (tetrahedron, hexahedron) elements. Structural elements like
+shells, plates, membranes or beams are not supported with a single exception of
+a hyperelastic Mooney-Rivlin membrane.
 
 Several kinds of basis or shape functions can be used for the finite element
 approximation of the physical fields:
