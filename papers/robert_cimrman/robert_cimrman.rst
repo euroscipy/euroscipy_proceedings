@@ -147,16 +147,26 @@ Time-stepping-related solvers:
   deformation (hyperelasticity) problems.
 - The explicit time stepping solver can be used for dynamic problems.
 
-Thermoelasticity Example: Code
-------------------------------
+Thermoelasticity Example
+------------------------
 
 This example involves calculating a **temperature distribution** in an object
 followed by an **elastic deformation analysis** of the object loaded by the
 thermal expansion and boundary displacement constraints. It shows how to use
-SfePy in a script/interactively. The code is explained in the next Section.
+SfePy in a script/interactively. The actual equations (weak form) are described
+below. The entire script consists of the following steps:
+
+Import modules. The SfePy package is organized into several sub-packages. The
+example uses:
+
+- ``sfepy.fem``: the finite element method (FEM) modules
+- ``sfepy.terms``: the weak formulation terms - equations building
+  blocks
+- ``sfepy.solvers``: interfaces to various solvers (SciPy, PETSc, ...)
+- ``sfepy.postprocess``: post-processing \& visualization based on
+  Mayavi
 
 .. code-block:: python
-   :linenos:
 
     import numpy as np
 
@@ -171,8 +181,16 @@ SfePy in a script/interactively. The code is explained in the next Section.
     from sfepy.solvers.nls import Newton
     from sfepy.postprocess import Viewer
 
+Load a mesh file defining the object geometry.
+
+.. code-block:: python
+
     mesh = Mesh.from_file('meshes/2d/square_tri2.mesh')
     domain = Domain('domain', mesh)
+
+Define solution and boundary conditions domains, called regions.
+
+.. code-block:: python
 
     omega = domain.create_region('Omega', 'all')
     left = domain.create_region('Left',
@@ -188,7 +206,16 @@ SfePy in a script/interactively. The code is explained in the next Section.
                                'vertices in y > 0.999',
                                'facet')
 
+Save regions for visualization.
+
+.. code-block:: python
+
     domain.save_regions_as_groups('regions.vtk')
+
+Use a quadratic approximation for temperature field, define unknown :math:`T`
+and test :math:`s` variables.
+
+.. code-block:: python
 
     field_t = Field.from_args('temperature', np.float64,
                               'scalar', omega, 2)
@@ -196,33 +223,76 @@ SfePy in a script/interactively. The code is explained in the next Section.
     s = FieldVariable('s', 'test', field_t, 1,
                       primary_var_name='t')
 
+Define numerical quadrature for the approximate integration rule.
+
+.. code-block:: python
+
     integral = Integral('i', order=2)
+
+Define the Laplace equation governing the temperature distribution:
+
+.. math::
+
+   \int_{\Omega} \nabla s \cdot \nabla T = 0 \;, \quad \forall s \;.
+
+.. code-block:: python
 
     term = Term.new('dw_laplace(s, t)', integral, omega,
                     s=s, t=t)
     eq = Equation('temperature', term)
     eqs = Equations([eq])
 
+Set boundary conditions for the temperature: :math:`T = 10 \mbox{ on }
+\Gamma_{\rm left}`, :math:`T = 30 \mbox{ on } \Gamma_{\rm right}`.
+
+.. code-block:: python
+
     t_left = EssentialBC('t_left',
                          left, {'t.0' : 10.0})
     t_right = EssentialBC('t_right',
                           right, {'t.0' : 30.0})
 
+Create linear (ScipyDirect) and nonlinear solvers (Newton).
+
+.. code-block:: python
+
     ls = ScipyDirect({})
     nls = Newton({}, lin_solver=ls)
+
+Combine the equations, boundary conditions and solvers to form a full problem
+definition.
+
+.. code-block:: python
 
     pb = ProblemDefinition('temperature', equations=eqs,
                            nls=nls, ls=ls)
     pb.time_update(ebcs=Conditions([t_left, t_right]))
 
+Solve the temperature distribution problem to get :math:`T`.
+
+.. code-block:: python
+
     temperature = pb.solve()
     out = temperature.create_output_dict()
+
+Use a linear approximation for displacement field, define unknown
+:math:`\underline{u}` and test :math:`\underline{v}` variables. The variables
+are vectors with two components in any point, as we are solving on a 2D domain.
+
+.. code-block:: python
 
     field_u = Field.from_args('displacement', np.float64,
                               'vector', omega, 1)
     u = FieldVariable('u', 'unknown', field_u, mesh.dim)
     v = FieldVariable('v', 'test', field_u, mesh.dim,
                       primary_var_name='u')
+
+Set Lamé parameters of elasticity :math:`\lambda`, :math:`\mu`, thermal
+expansion coefficient :math:`\alpha_{ij}` and background temperature
+:math:`T_0`. Constant values are used here. In general, material parameters can
+be given as functions of space and time.
+
+.. code-block:: python
 
     lam = 10.0 # Lame parameters.
     mu = 5.0
@@ -233,9 +303,29 @@ SfePy in a script/interactively. The code is explained in the next Section.
     m = Material('m', lam=lam, mu=mu,
                  alpha=te * eye_sym)
 
+Define and set the temperature load variable to :math:`T - T_0`.
+
+.. code-block:: python
+
     t2 = FieldVariable('t', 'parameter', field_t, 1,
                        primary_var_name='(set-to-None)')
     t2.set_data(t() - T0)
+
+Define the thermoelasticity equation governing structure deformation:
+
+.. math::
+
+   \int_{\Omega} D_{ijkl}\ e_{ij}(\underline{v}) e_{kl}(\underline{u}) -
+   \int_{\Omega} (T - T_0)\ \alpha_{ij} e_{ij}(\underline{v}) = 0 \;, \quad
+   \forall \underline{v} \;,
+
+where :math:`D_{ijkl} = \mu (\delta_{ik} \delta_{jl}+\delta_{il} \delta_{jk}) +
+\lambda \ \delta_{ij} \delta_{kl}` is the homogeneous isotropic elasticity
+tensor and :math:`e_{ij}(\underline{u}) = \frac{1}{2}(\frac{\partial
+u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i})` is the small strain
+tensor. The equations can be built as linear combinations of terms.
+
+.. code-block:: python
 
     term1 = Term.new('dw_lin_elastic_iso(m.lam, m.mu, v, u)',
                      integral, omega, m=m, v=v, u=u)
@@ -244,18 +334,41 @@ SfePy in a script/interactively. The code is explained in the next Section.
     eq = Equation('temperature', term1 - term2)
     eqs = Equations([eq])
 
+Set boundary conditions for the displacements: :math:`\underline{u} = 0 \mbox{
+on } \Gamma_{\rm bottom}`, :math:`u_1 = 0.0 \mbox{ on } \Gamma_{\rm top}`
+(:math:`x` -component).
+
+.. code-block:: python
+
     u_bottom = EssentialBC('u_bottom',
                            bottom, {'u.all' : 0.0})
     u_top = EssentialBC('u_top',
                         top, {'u.[0]' : 0.0})
 
+Set the thermoelasticity equations and boundary conditions to the problem
+definition.
+
+.. code-block:: python
+
     pb.set_equations_instance(eqs, keep_solvers=True)
     pb.time_update(ebcs=Conditions([u_bottom, u_top]))
+
+Solve the thermoelasticity problem to get :math:`\underline{u}`.
+
+.. code-block:: python
 
     displacement = pb.solve()
     out.update(displacement.create_output_dict())
 
+Save the solution of both problems into a single VTK file.
+
+.. code-block:: python
+
     pb.save_state('thermoelasticity.vtk', out=out)
+
+Display the solution using Mayavi.
+
+.. code-block:: python
 
     view = Viewer('thermoelasticity.vtk')
     view(vector_mode='warp_norm',
@@ -282,74 +395,6 @@ displays the results using Mayavi. The results are shown in Figures
    :figclass: h
 
    The deformed mesh showing displacements. :label:`displacement`
-
-Thermoelasticity Example: Description
--------------------------------------
-
-The bold numbers in parentheses refer to the line numbers above.
-
-#. **(1-12)** Import modules. The SfePy package is organized
-   into several sub-packages. The example uses:
-
-   - ``sfepy.fem``: the finite element method (FEM) modules
-   - ``sfepy.terms``: the weak formulation terms - equations building
-     blocks
-   - ``sfepy.solvers``: interfaces to various solvers (SciPy, PETSc, ...)
-   - ``sfepy.postprocess``: post-processing \& visualization based on
-     Mayavi
-
-#. **(14-15)** Load a mesh file defining the object geometry.
-#. **(17-29)** Define solution and boundary conditions domains, called regions.
-#. **(31)** Save regions for visualization.
-#. **(33-37)** Use a quadratic approximation for temperature field, define
-   unknown :math:`T` and test :math:`s` variables.
-#. **(39)** Define numerical quadrature for the approximate integration rule.
-#. **(41-44)** Define the Laplace equation governing the temperature
-   distribution:
-
-   .. math::
-
-      \int_{\Omega} \nabla s \cdot \nabla T = 0 \;, \quad \forall s \;.
-
-#. **(46-49)** Set boundary conditions for the temperature: :math:`T = 10
-   \mbox{ on } \Gamma_{\rm left}`, :math:`T = 30 \mbox{ on } \Gamma_{\rm
-   right}`.
-#. **(51-52)** Create linear (ScipyDirect) and nonlinear solvers (Newton).
-#. **(54-56)** Combine the equations, boundary conditions and solvers to form a
-   full problem definition.
-#. **(58-59)** Solve the temperature distribution problem to get :math:`T`.
-#. **(61-65)** Use a linear approximation for displacement field, define
-   unknown :math:`\underline{u}` and test :math:`\underline{v}` variables. The
-   variables are vectors with two components in any point, as we are solving on
-   a 2D domain.
-#. **(67-74)** Set Lamé parameters of elasticity :math:`\lambda`, :math:`\mu`,
-   thermal expansion coefficient :math:`\alpha_{ij}` and background temperature
-   :math:`T_0`. Constant values are used here. In general, material parameters
-   can be given as functions of space and time.
-#. **(76-78)** Define and set the temperature load variable to :math:`T - T_0`.
-#. **(80-85)** Define the thermoelasticity equation governing structure
-   deformation:
-
-   .. math::
-
-      \int_{\Omega} D_{ijkl}\ e_{ij}(\underline{v}) e_{kl}(\underline{u}) -
-      \int_{\Omega} (T - T_0)\ \alpha_{ij} e_{ij}(\underline{v}) = 0 \;, \quad
-      \forall \underline{v} \;,
-
-   where :math:`D_{ijkl} = \mu (\delta_{ik} \delta_{jl}+\delta_{il}
-   \delta_{jk}) + \lambda \ \delta_{ij} \delta_{kl}` is the homogeneous
-   isotropic elasticity tensor and :math:`e_{ij}(\underline{u}) =
-   \frac{1}{2}(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial
-   x_i})` is the small strain tensor. The equations can be built as linear
-   combinations of terms.
-#. **(87-90)** Set boundary conditions for the displacements:
-   :math:`\underline{u} = 0 \mbox{ on } \Gamma_{\rm bottom}`, :math:`u_1 = 0.0
-   \mbox{ on } \Gamma_{\rm top}` (:math:`x` -component).
-#. **(92-93)** Set the thermoelasticity equations and boundary conditions to
-   the problem definition.
-#. **(95-96)** Solve the thermoelasticity problem to get :math:`\underline{u}`.
-#. **(98)** Save the solution of both problems into a single VTK file.
-#. **(100-104)** Display the solution using Mayavi.
 
 Alternative Way: Problem Description Files
 ------------------------------------------
