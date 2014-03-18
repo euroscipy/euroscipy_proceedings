@@ -17,7 +17,7 @@
      "number": 1,
      "isbn": "value",
      "location": "Brussels, Belgium",
-     "dates": "21 August - 25 August",
+     "dates": "21-25 August 2013",
      "copyright": {
        "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
        "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors",
