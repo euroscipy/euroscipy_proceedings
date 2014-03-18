@@ -746,7 +746,7 @@ would takes much longer than *policy iteration*. Indeed, it needs 1000
 iterations, just like policy evaluation (since it is dictated by the
 system’s “decorrelation time”) but each iteration involves a costly
 optimization of the policy so that it takes 20 s. This makes altogether
-30 minutes of execution time, i.e. 10 times more than policy iteration!
+5 hours of execution time, i.e. 100 times more than policy iteration!
 
 As possible paths to improve the execution time, we see, at the *code
 level*, the use of more/different vectorization patterns although
