@@ -72,11 +72,12 @@ Another interesting work is NumPy4J [NP4J]_, which provides Java interfaces for 
 It features automatic conversion to Java-suitable types and thus allows easy integration with other Java frameworks.
 A more general approach is Jepp [JEPP]_, which also works via embedding the CPython interpreter.
 It also includes conversion methods between basic Python- and Java-types, but is not specifically NumPy-aware.
-However, none of these approaches aims for integration
-with Jython. In contrast to that, JyNI is entirely based on Jython. Though large parts are derived from CPython, the main
-Python runtime is provided by Jython and JyNI delegates most C-API calls to Jython directly or indirectly.
-Indirect delegation happens, if objects must be mirrored due to occurrence of direct access macros in the official C-API.
-We give more details on this in the implementation-section.
+
+However, none of these approaches aims for integration with Jython. In contrast to that, JyNI is entirely based on Jython. 
+Though large parts are derived from CPython, the main Python runtime is provided by Jython and JyNI delegates most C-API calls 
+to Jython directly or indirectly.
+
+.. Indirect delegation happens, if objects must be mirrored due to occurrence of direct access macros in the official C-API. We give more details on this in the implementation-section.
 
 
 Usage
@@ -137,10 +138,12 @@ The following built-in types are already supported:
 * Number types ``PyInt``, ``PyLong``, ``PyFloat``, ``PyComplex``
 * Sequence types ``PyTuple``, ``PyList``, ``PySlice``, ``PyString``, ``PyUnicode``
 * Data structure types ``PyDict``, ``PySet``, ``PyFrozenSet``
-* Operational types ``PyModule``, ``PyClass``, ``PyInstance``, ``PyMethod``
-* Singleton types ``PyBool``, ``PyNone``, ``PyNotImplemented``, ``PyEllipsis``
-* Natively defined types (you cannot subclass them (yet) in Jython)
+* Operational types ``PyModule``, ``PyClass``, ``PyMethod``, ``PyInstance``, ``PyFunction``, ``PyCode``, ``PyCell``
+* Singleton types ``PyBool``, ``PyNone``, ``PyEllipsis``, ``PyNotImplemented``
+* Native types ``PyCFunction``, ``PyCapsule``, ``PyCObject``
+* Natively defined custom-types
 * Exception types
+* ``PyType`` as static type or heap type
 
 The function families ``PyArg_ParseTuple`` and ``Py_BuildValue`` are also supported.
 
@@ -149,7 +152,7 @@ Implementation
 --------------
 
 To create JyNI we took the source code of CPython 2.7 and stripped away all functionality that can be provided by Jython and is not needed for mirroring objects (see below). We kept the interface unchanged and implemented it to delegate calls to Jython via JNI and vice versa.
-The most difficult thing is to present JNI-``jobject``'s from Jython to extensions such that they look like ``PyObject*`` from Python (C-API). For this task, we use the three different approaches explained below, depending on the way a native type is implemented.
+The most difficult thing is to present JNI-``jobject`` s from Jython to extensions such that they look like ``PyObject*`` from Python (C-API). For this task, we use the three different approaches explained below, depending on the way a native type is implemented.
 
 In this section, we assume that the reader is familiar with the Python [C-API]_ and has some knowledge about the C programming language, especially about the meaning of pointers and memory allocation.
 
@@ -180,9 +183,9 @@ rewrite to versions that get the dictionary from Jython.
 Examples for this method are
 ``PyDict``, ``PySlice`` and ``PyModule``.
 
-The only cases where this approach fails are thus
+The cases where this approach fails are thus
 
-* if Jython has no corresponding type
+* if Jython features no corresponding type
 * if the Python C-API features macros to access the Object's memory directly
 
 We deal with these cases in the following.
@@ -260,7 +263,7 @@ In the source, this additional header is called ``JyObject`` and defined as foll
 ``jy`` is the corresponding ``jobject``, ``flags`` indicates which of the above mentioned approaches is used, whether a ``PyGC_Head`` is present, initialization-state and synchronization behavior. 
 ``attr`` is a linked list containing ``void``-pointers for various purpose. However, it
 is intended for rare use, so a linked list is a sufficient data-structure with minimal overhead. A ``JyObject`` can use it to save pointers to data that must be deallocated along with the ``JyObject``. Such pointers typically arise when formats from Jython must be converted to a version that the original
-``PyObject`` would have contained anyway.
+``PyObject`` would have contained natively.
 
 To reserve the additional memory, allocation is adjusted wherever it occurs, e.g. when allocations inline as is the case for number types. The adjustment also occurs in ``PyObject_Malloc``. Though this method might not only be used for ``PyObject``-allocation, we always prepend space for a ``JyObject``. We regard this slight overhead in non-``PyObject`` cases as preferable over potential segmentation-fault if a ``PyObject`` is created via ``PyObject_NEW`` or ``PyObject_NEW_VAR``.
 For these adjustments to apply, an extension must be compiled with the ``WITH_PYMALLOC``-flag activated.
@@ -268,7 +271,7 @@ Otherwise several macros would direct to the raw C-methods ``malloc``, ``free``,
 extra memory would not be reserved. So an active ``WITH_PYMALLOC`` flag is crucial for JyNI to work.
 However, it should be not much effort to recompile affected extensions with an appropriate ``WITH_PYMALLOC``-flag value.
 
-``PyType``-objects are treated as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup-table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java-reflection if converting the other way.
+Statically defined ``PyType``-objects are treated as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup-table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java-reflection if converting the other way. ``PyType``-objects dynamically allocated on the heap are of course not subject of this special case and are treated like usual ``PyObject`` s (the ``Py_TPFLAGS_HEAPTYPE``-flag indicates this case).
 
 The macros ``AS_JY(o)`` and ``FROM_JY(o)``, defined in ``JyNI.h``, perform the necessary pointer arithmetics to get the ``JyObject``-header from a ``PyObject*`` and vice versa. They are not intended for direct use, but are used internally by the high-level conversion-functions described below, as these also consider special cases like singletons or ``PyType``-objects.
 
@@ -286,14 +289,67 @@ The high-level conversion-functions
 take care of all this, do a lookup and automatically perform initialization if the lookup fails.
 Of course the ``jobject`` mentioned in these declarations must not be an arbitrary ``jobject``, but one that extends ``org.python.core.PyObject``.
 Singleton cases are also tested and processed appropriately. ``NULL`` converts to ``NULL``.
-Though we currently see no use-case for it, one can use the declarations in ``JyNI.h`` as JyNI C-API. With the conversion methods one could write hybrid extensions that do C-,
-JNI- and Python-calls natively.
+Though we currently see no use-case for it, one can use the declarations in ``JyNI.h`` as JyNI C-API. With the conversion methods one could write hybrid extensions that do C-, JNI- and Python-calls natively.
 
-A real-world example: The ``datetime``-module
+
+A real-world example: Tkinter
+---------------------------------
+
+To present a non-trivial example, we refere to Tkinter, the most popular GUI toolkit for Python.
+There has already been an approach to make Tkinter available in Jython, namely jTkinter – see [JTK]_. However the last
+update to the project was in 2000, so it is rather outdated by now and must be considered dead.
+
+Since release alpha2.1, JyNI has been tested successfully on basic Tkinter-code.
+We load Tkinter from the place where it is usually installed on Linux:
+
+.. code-block:: python
+
+	import sys
+
+	#Include native Tkinter:
+	sys.path.append('/usr/lib/python2.7/lib-dynload')
+	sys.path.append('/usr/lib/python2.7/lib-tk')
+
+	from Tkinter import *
+
+	def printTest():
+		print "test"
+	
+	def printTimeStamp():
+		from java.lang import System
+		print "System.currentTimeMillis: "
+			+str(System.currentTimeMillis())
+
+	root = Tk()
+	Label(root,
+		text="Welcome to JyNI Tkinter-Demo!").pack()
+	Button(root, text="print \"test\"",
+		command=printTest).pack()
+	Button(root, text="print timestamp",
+		command=printTimeStamp).pack()
+	Button(root, text="Quit",
+		command=root.destroy).pack()
+
+	root.mainloop()
+
+.. figure:: TkinterDemo2.png
+   :scale: 40%
+
+   Tkinter demonstration (the Fontconfig warning is no JyNI issue; we did not edit it away to keep authenticity). :label:`tkDemo`
+
+Note that the demonstration also runs with CPython in principle. To make this
+possible, we perform ``from java.lang import System`` inside the method body
+of ``printTimeStamp`` rather than at the beginning of the file. Thus, only the
+button “print timestamp” would produce an error, since it performs Java-calls.
+In a Jython/JyNI environment, the button prints the current output of
+``java.lang.System.currentTimeMillis()`` to the console (see figure :ref:`tkDemo`).
+
+
+Another example: The ``datetime``-module
 ---------------------------------------------
 
-To present a non-trivial example, we refere to the ``datetime``-module. Jython features a Java-based version of that module, so this does not yet pay off in new functionality.
-However, supporting the original native ``datetime``-module is a step towards NumPy,
+As a second example, we refere to the ``datetime``-module. Jython features a Java-based version of that module, so this does not yet pay off in new functionality.
+However, supporting the original native ``datetime``-module is a step toward NumPy,
 because it features a public C-API that is needed by NumPy. The following code demonstrates how JyNI can load the original ``datetime``-module. Note that we load it
 from the place where it is usually installed on Linux. To overwrite the Jython-version,
 we put the new path to the beginning of the list in ``sys.path``:
@@ -315,7 +371,7 @@ we put the new path to the beginning of the list in ``sys.path``:
 	print type(now)
 
 To verify that the original module is loaded, we print out the ``__doc__``-string. It must read "Fast implementation of the datetime type.". If JyNI works as excpected, the
-output should be::
+output is::
 
 	Fast implementation of the datetime type.
 	----------------------
@@ -336,14 +392,29 @@ Among these are ctypes and datetime (see previous section). In order to support 
 Garbage Collection
 ..................
 
-To provide garbage collection for native extensions, we will adopt the original CPython garbage collector source and
-use it in parallel with the Java garbage collector.
-This is not really a lightweight solution, but the only way to provide CPython behavior for native extensions in a most
-familiar fashion. The CPython garbage collector will be responsible to collect mirrored objects, native stubs and objects
-created by native extensions. While in mirror case, the corresponding objects can be collected independently,
-in wrapper case we will ensure that the stub keeps the corresponding object alive by maintaining a non-weak reference.
-After the stub has been garbage collected by either collector, the reference that keeps the backend alive vanishes and
-the backend can be collected by the other collector.
+Our first idea to provide garbage collection for native extensions, was to adopt the original CPython garbage collector source and use it in parallel with the Java garbage collector.
+The CPython garbage collector would be responsible to collect mirrored objects, native stubs and objects created by native extensions. The stubs would keep the corresponding objects alive by maintaining a non-weak reference. However, this approach does not offer a clean way to trace reference cycles through Java/Jython-code (even pure Java Jython objects can be part of reference cycles keeping native objects alive forever).
+
+To obtain a cleaner solution, we plan to setup an architecture that makes the native objects subject to Java's garbage collector. The difficulty here is that Java's mark and sweep algorithm only traces Java objects. When a Jython object is collected, we can use its finalizer to clean up the corresponding C-``PyObject`` (mirrored or stub), if any. To deal with native ``PyObject`` s that don't have a corresponding Java object, we utilize ``JyGCHead`` s (some minimalistic Java objects) to track them and clean them up on finalization. We use the visitproc mechanism of original CPython's garbage collection to obtain the reference connectivity graph of all relevant native ``PyObject`` s. We mirror this connectivity in the corresponding ``JyGCHead`` s, so that the Java garbage collector marks and sweeps them according to native connectivity.
+
+A lot of care must be taken in the implementation details of this idea. For instance, it is not obvious, when to update the connectivity graph. So a design goal of the implementation is to make sure that an outdated connectivity graph can never lead to the deletion of still referenced objects. Instead, it would only delay the deletion of unreachable objects. Another issue is that the use of Java finalizers is discouraged for various reasons. An alternative to finalizers are the classes from the package ``java.lang.ref``. We would have ``JyGCHead`` extend ``PhantomReference`` and register all of them to a ``ReferenceQueue``. A deamon thread would be used to poll references from the queue as soon as the garbage collector enques them. For more details on Java reference classes see [JREF]_.
+
+
+.. Old text:
+	To provide garbage collection for native extensions, we will adopt
+	the original CPython garbage collector source and use it in
+	parallel with the Java garbage collector. This is not really a
+	lightweight solution, but the only way to provide CPython behavior
+	for native extensions in a most familiar fashion. The CPython
+	garbage collector will be responsible to collect mirrored objects,
+	native stubs and objects created by native extensions. While in
+	mirror case, the corresponding objects can be collected
+	independently, in wrapper case we will ensure that the stub keeps
+	the corresponding object alive by maintaining a non-weak reference.
+	After the stub has been garbage collected by either collector, the
+	reference that keeps the backend alive vanishes and the backend can
+	be collected by the other collector.
+
 
 Cross-Platform support
 ......................
@@ -389,20 +460,25 @@ Further you would have to allow "reverse engineering (of your program and the li
 
 References
 ----------
-.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 29 Sep. 2013, Web. 29 Sep. 2013
+.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 16 Mar. 2014, Web. 19 Mar. 2014
 
-.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, Sep. 2013, Web. 29 Sep. 2013
+.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, Mar. 2014, Web. 19 Mar. 2014
 
-.. [IRONCLAD] Resolver Systems, Ironclad, http://code.google.com/p/ironclad, 26 Aug. 2010, Web. 29 Sep. 2013
+.. [IRONCLAD] Resolver Systems, Ironclad, http://code.google.com/p/ironclad, 26 Aug. 2010, Web. 19 Mar. 2014
 
-.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 29 Sep. 2013
+.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 19 Mar. 2014
 
-.. [NP4J] Joseph Cottam, NumPy4J, https://github.com/JosephCottam/Numpy4J, 02. Sep. 2013, Web. 29 Sep. 2013
+.. [NP4J] Joseph Cottam, NumPy4J, https://github.com/JosephCottam/Numpy4J, 11. Dec. 2013, Web. 19 Mar. 2014
 
-.. [JEPP] Mike Johnson, Java embedded Python (JEPP), http://jepp.sourceforge.net/, 14 May 2013, Web. 29 Sep. 2013
+.. [JEPP] Mike Johnson, Java embedded Python (JEPP), http://jepp.sourceforge.net/, 14 May 2013, Web. 19 Mar. 2014
 
-.. [GPL_EXC] Wikipedia, GPL linking exception, http://en.wikipedia.org/wiki/GPL_linking_exception#The_classpath_exception, 23 May 2013, Web. 29 Sep. 2013
+.. [JTK] Finn Bock, jTkinter, http://jtkinter.sourceforge.net, 30 Jan. 2000, Web. 19 Mar. 2014
 
-.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 29 Sep. 2013
+.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 19 Mar. 2014
 
-.. [GPL] Free Software Foundation, GNU General Public License v3, http://www.gnu.org/licenses/gpl.html, 29 June 2007, Web. 29 Sep. 2013
+.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 1 Oct. 2002, Web. 19. Mar. 2014
+
+.. [GPL] Free Software Foundation, GNU General Public License v3, http://www.gnu.org/licenses/gpl.html, 29 June 2007, Web. 19 Mar. 2014
+
+.. [GPL_EXC] Wikipedia, GPL linking exception, http://en.wikipedia.org/wiki/GPL_linking_exception#The_classpath_exception, 23 May 2013, Web. 19 Mar. 2014
+
