@@ -292,6 +292,13 @@ Singleton cases are also tested and processed appropriately. ``NULL`` converts t
 Though we currently see no use-case for it, one can use the declarations in ``JyNI.h`` as JyNI C-API. With the conversion methods one could write hybrid extensions that do C-, JNI- and Python-calls natively.
 
 
+Global interpreter lock (GIL)
+.............................
+The global interpreter lock is a construction in CPython that prevents multiple threads from running Python code in the same process. It is usually acquired when the execution of a Python script begins and released when it ends. However, a native extension and some parts of native CPython code can release and re-acquire it by inserting the ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` macros. This way, an extension can deal with multiple threads and related things like input events (f.i. Tkinter needs this).
+
+In contrast to that, Jython does not have a GIL and allows multiple threads at any time, using Java's threading architecture. Since native extensions where usually developed for CPython, some of them might rely on the existence of a GIL and might produce strange behaviour if it was missing. So JyNI features a GIL to provide most familiar behaviour to loaded extensions. To keep the Java-parts of Jython GIL-free and have no regression to existing multithreading features, the JyNI GIL is only acquired when a thread enters native code and released when it enters Java-code again – either by returning from the native call or by performing a Java call to Jython code. Additionally, it is not really global (thus calling it “GIL” is a bit misleading), since it only affects threads in native code. While there can always be multiple threads in Java, there can only be one thread in native code at the same time (unless the above mentioned macros are used).
+
+
 A real-world example: Tkinter
 ---------------------------------
 
@@ -393,11 +400,11 @@ Garbage Collection
 ..................
 
 Our first idea to provide garbage collection for native extensions, was to adopt the original CPython garbage collector source and use it in parallel with the Java garbage collector.
-The CPython garbage collector would be responsible to collect mirrored objects, native stubs and objects created by native extensions. The stubs would keep the corresponding objects alive by maintaining a non-weak reference. However, this approach does not offer a clean way to trace reference cycles through Java/Jython-code (even pure Java Jython objects can be part of reference cycles keeping native objects alive forever).
+The CPython garbage collector would be responsible to collect mirrored objects, native stubs and objects created by native extensions. The stubs would keep the corresponding objects alive by maintaining a global reference. However, this approach does not offer a clean way to trace reference cycles through Java/Jython-code (even pure Java Jython objects can be part of reference cycles keeping native objects alive forever).
 
 To obtain a cleaner solution, we plan to setup an architecture that makes the native objects subject to Java's garbage collector. The difficulty here is that Java's mark and sweep algorithm only traces Java objects. When a Jython object is collected, we can use its finalizer to clean up the corresponding C-``PyObject`` (mirrored or stub), if any. To deal with native ``PyObject`` s that don't have a corresponding Java object, we utilize ``JyGCHead`` s (some minimalistic Java objects) to track them and clean them up on finalization. We use the visitproc mechanism of original CPython's garbage collection to obtain the reference connectivity graph of all relevant native ``PyObject`` s. We mirror this connectivity in the corresponding ``JyGCHead`` s, so that the Java garbage collector marks and sweeps them according to native connectivity.
 
-A lot of care must be taken in the implementation details of this idea. For instance, it is not obvious, when to update the connectivity graph. So a design goal of the implementation is to make sure that an outdated connectivity graph can never lead to the deletion of still referenced objects. Instead, it would only delay the deletion of unreachable objects. Another issue is that the use of Java finalizers is discouraged for various reasons. An alternative to finalizers are the classes from the package ``java.lang.ref``. We would have ``JyGCHead`` extend ``PhantomReference`` and register all of them to a ``ReferenceQueue``. A deamon thread would be used to poll references from the queue as soon as the garbage collector enques them. For more details on Java reference classes see [JREF]_.
+A lot of care must be taken in the implementation details of this idea. For instance, it is not obvious, when to update the connectivity graph. So a design goal of the implementation is to make sure that an outdated connectivity graph can never lead to the deletion of still referenced objects. Instead, it would only delay the deletion of unreachable objects. Another issue is that the use of Java finalizers is discouraged for various reasons. An alternative to finalizers are the classes from the package ``java.lang.ref``. We would have ``JyGCHead`` extend ``PhantomReference`` and register all of them to a ``ReferenceQueue``. A deamon thread would be used to poll references from the queue as soon as the garbage collector enqueues them. For more details on Java reference classes see [JREF]_.
 
 
 .. Old text:
@@ -410,7 +417,7 @@ A lot of care must be taken in the implementation details of this idea. For inst
 	native stubs and objects created by native extensions. While in
 	mirror case, the corresponding objects can be collected
 	independently, in wrapper case we will ensure that the stub keeps
-	the corresponding object alive by maintaining a non-weak reference.
+	the corresponding object alive by maintaining a global reference.
 	After the stub has been garbage collected by either collector, the
 	reference that keeps the backend alive vanishes and the backend can
 	be collected by the other collector.
