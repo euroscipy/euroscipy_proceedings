@@ -332,10 +332,10 @@ We load Tkinter from the place where it is usually installed on Linux:
 
 	root.mainloop()
 
-.. figure:: TkinterDemo2.png
+.. figure:: TkinterDemo.png
    :scale: 40%
 
-   Tkinter demonstration (the Fontconfig warning is no JyNI issue; we did not edit it away to keep authenticity). :label:`tkDemo`
+   Tkinter demonstration :label:`tkDemo`
 
 Note that the demonstration also runs with CPython in principle. To make this
 possible, we perform ``from java.lang import System`` inside the method body
