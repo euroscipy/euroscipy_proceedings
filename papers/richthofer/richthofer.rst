@@ -302,9 +302,9 @@ In contrast to that, Jython does not have a GIL and allows multiple threads at a
 A real-world example: Tkinter
 ---------------------------------
 
-To present a non-trivial example, we refere to Tkinter, the most popular GUI toolkit for Python.
+To present a non-trivial example, we refere to Tkinter, one of the most popular GUI frameworks for Python.
 There has already been an approach to make Tkinter available in Jython, namely jTkinter – see [JTK]_. However the last
-update to the project was in 2000, so it is rather outdated by now and must be considered dead.
+update to the project was in 2000, so it is rather outdated by now and must be considered inactive.
 
 Since release alpha2.1, JyNI has been tested successfully on basic Tkinter-code.
 We load Tkinter from the place where it is usually installed on Linux:
@@ -312,30 +312,33 @@ We load Tkinter from the place where it is usually installed on Linux:
 .. code-block:: python
 
 	import sys
-
 	#Include native Tkinter:
 	sys.path.append('/usr/lib/python2.7/lib-dynload')
 	sys.path.append('/usr/lib/python2.7/lib-tk')
 
 	from Tkinter import *
 
-	def printTest():
-		print "test"
-	
-	def printTimeStamp():
-		from java.lang import System
-		print "System.currentTimeMillis: "
-			+str(System.currentTimeMillis())
-
 	root = Tk()
-	Label(root,
-		text="Welcome to JyNI Tkinter-Demo!").pack()
-	Button(root, text="print \"test\"",
-		command=printTest).pack()
-	Button(root, text="print timestamp",
-		command=printTimeStamp).pack()
-	Button(root, text="Quit",
-		command=root.destroy).pack()
+	txt = StringVar()
+	txt.set("Hello World!")
+
+	def printText():
+	    print txt.get()
+
+	def printTimeStamp():
+	    from java.lang import System
+	    print "System.currentTimeMillis: "
+	    	+str(System.currentTimeMillis())
+
+	Label(root, text =
+		"Welcome to JyNI Tkinter-Demo!").pack()
+	Entry(root, textvariable = txt).pack()
+	Button(root, text = "print text",
+		command = printText).pack()
+	Button(root, text = "print timestamp",
+		command = printTimeStamp).pack()
+	Button(root, text = "Quit",
+		command = root.destroy).pack()
 
 	root.mainloop()
 
