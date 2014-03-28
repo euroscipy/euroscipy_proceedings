@@ -213,7 +213,8 @@ The CPU time data prompt a few observations:
    is drawn on a logarithmic scale!
    :label:`mem-all`
 
-.. table:: Amount of RAM (MBs) consumed by each Python runtime. :label:`table-cpu`
+.. table:: Amount of RAM (MBs) consumed by each Python runtime.
+   :label:`table-mem`
    :class: w
 
   +-----+----------+--------------+--------------------------+---------------+---------------+
