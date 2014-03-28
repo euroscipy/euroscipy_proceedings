@@ -24,7 +24,7 @@ Performance of Python runtimes on a non-numeric scientific code
   compatibility with the language as implemented in CPython 2.7, and
   performance speedup.
 
-  This paper compares the results and experiences gotten by running
+  This paper compares the results and experiences from running
   FatGHol with different Python runtimes: CPython 2.7.5, PyPy 2.1,
   Cython 0.19, Numba 0.11, Nuitka 0.4.4 and Falcon.
 
@@ -80,7 +80,7 @@ FatGHoL involves a large number of graph isomorphism computations:
 especially during fatgraph generation, each candidate fatgraph needs
 to be compared to all fatgraphs already discovered, in order to avoid
 duplicates. In later stages, the isomorphism computations are cached
-in memory, but in step 2.  additional data is created for each graph,
+in memory, but in step 2 additional data is created for each graph,
 in order to pass from fatgraphs to simplices.
 
 It is worth noting that the FatGHoL code exercises many of Python's
@@ -121,9 +121,9 @@ section):
 
 Except for Cython in "pure Python mode" and Numba, all runtimes run
 the unmodified Python code of FatGHoL.  Cython in "pure Python mode"
-require the addition of decorators to the Python code that specify the
+requires the addition of decorators to the Python code that specify the
 types of function arguments and local variables to increase speedup of
-selected portions of the code.  Similarly, Numba uses decorators
+selected portions of the code.  Similarly, Numba uses the decorators
 ``@jit`` or ``@autojit`` to mark functions that should be compiled to
 native code (the `difference between the two decorators`__ is that
 that ``@autojit`` infers types at runtime, whereas ``@jit``
@@ -407,7 +407,7 @@ already:
   create[s] the most efficient native code from this. This
   means to be fast with the basic Python object handling.
 
-Results of this experiment seem not to corroborate this claim.
+Results of this experiment do not seem to corroborate this claim.
 
 
 `PyPy 2.1 <http://pypy.org/>`
