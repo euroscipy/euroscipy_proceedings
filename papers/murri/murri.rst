@@ -357,9 +357,10 @@ properly mark all functions and variables is quite substantial.
 Falcon is a Python extension module that hacks into a CPython
 interpreter and changes the execution loop, implementing several
 optimizations (for instance, using a register-based VM instead of a
-stack-based one) that the Falcon authors think should
-upstream. However, Falcon is still in early stages of development and
-crashes on FatGHoL code with a segmentation fault.
+stack-based one) that the Falcon authors think should be used in the
+upstream CPython interpreter too. However, Falcon is still in early
+stages of development and crashes on FatGHoL code with a segmentation
+fault.
 
 
 `Numba <http://numba.pydata.org/>`
