@@ -233,7 +233,7 @@ The large memory consumption from PyPy and Nuitka stands out in the
 memory data of :ref:`table-mem`.  On the other hand, there is no
 significant increase in memory usage between CPython and Cython.
 
-The large memory usage of Nuitka can be explained by the fact that the
+The large memory usage of PyPy can be explained by the fact that the
 JIT infrastructure must keep in memory the profile and traces for all
 the code paths taken.  In any long-running program, the memory should
 eventually reach a steady state and not increase any further; it
