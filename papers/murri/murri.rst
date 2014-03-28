@@ -16,7 +16,7 @@ Performance of Python runtimes on a non-numeric scientific code
   and computing their isomorphisms (a triple of Python lists; again a
   nested data structure). These operations are repeated many times
   over: for example, the spaces `M_{0,6}`:math: and `M_{1,4}`:math:
-  are triangulated by 4'583'322 and 747'664 "fatgraphs", respectively.
+  are triangulated by 4'583'322 and 747'664 graphs, respectively.
 
   This is an opportunity for every Python runtime to prove its
   strength in optimization. The purpose of this experiment was to
