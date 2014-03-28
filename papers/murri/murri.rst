@@ -88,26 +88,24 @@ advanced data manipulation features, like list and dictionary
 comprehensions, slicing, etc. but does not use any kind of tight
 nested loops of the kind normally featured in numeric codes.
 
-Profile data show more precisely how much work is done at the Python
-level in the simpler case `M_{0,4}`:math: ::
+Profiling data show more precisely how much work is done at the Python
+level in the simpler case `M_{0,4}`:math:.  The following listing
+shows profiling data extracted from a complete run of FatGHoL on
+CPython 2.7.5; 15787953 function calls (15728052 primitive calls) were
+effected in 39.572 seconds; the top 10 most called functions, ordered
+by call count are::
 
-           15787953 function calls (15728052 primitive calls) in 39.572 seconds
-
-     Ordered by: call count
-
-     ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-    2216088    2.175    0.000    2.175    0.000 rg.py:227(<genexpr>)
-     966575    0.819    0.000    0.819    0.000 rg.py:143(is_loop)
-     775362    0.839    0.000    0.839    0.000 cyclicseq.py:88(__getitem__)
-     775362    0.634    0.000    0.634    0.000 rg.py:170(other_end)
-     722308    3.438    0.000    5.760    0.000 combinatorics.py:368(__init__)
-     539039    1.689    0.000    1.689    0.000 cyclicseq.py:112(__getslice__)
-  506075/447917    0.745    0.000    1.840    0.000 cache.py:181(wrapper)
-     476134    1.122    0.000    1.122    0.000 combinatorics.py:441(rearranged)
-     385725    0.355    0.000    0.355    0.000 rg.py:137(__init__)
-     345740    0.849    0.000    0.849    0.000 rg.py:568(_first_unused_corner)
-     ...
-
+     ncalls   tottime  filename:lineno(function)
+    2216088     2.175  rg.py:227(<genexpr>)
+     966575     0.819  rg.py:143(is_loop)
+     775362     0.839  cyclicseq.py:88(__getitem__)
+     775362     0.634  rg.py:170(other_end)
+     722308     3.438  combinatorics.py:368(__init__)
+     539039     1.689  cyclicseq.py:112(__getslice__)
+  506075/447917 0.745  cache.py:181(wrapper)
+     476134     1.122  combinatorics.py:441(rearranged)
+     385725     0.355  rg.py:137(__init__)
+     345740     0.849  rg.py:568(_first_unused_corner)
 
 The FatGHoL code was run with seven different alternative Python
 runtimes (a detailed description of each of these is given in a later
