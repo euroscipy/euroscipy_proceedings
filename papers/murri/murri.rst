@@ -127,11 +127,13 @@ require the addition of decorators to the Python code that specify the
 types of function arguments and local variables to increase speedup of
 selected portions of the code.  Similarly, Numba uses decorators
 ``@jit`` or ``@autojit`` to mark functions that should be compiled to
-native code (the difference between the two decorators seems to be
-that ``@autojit`` infers the types at runtime, whereas ``@jit``
+native code (the `difference between the two decorators`__ is that
+that ``@autojit`` infers types at runtime, whereas ``@jit``
 requires the programmer to specify them); we only used the
 ``@autojit`` decorator to mark the same functions that were marked as
 optimization candidates in the Cython experiment.
+
+.. __: http://nbviewer.ipython.org/gist/Juanlu001/3914904
 
 Each Python runtime was run on 4 test cases: computing the homology of
 the `M_{0,4}`:math:, `M_{0,5}`:math:, `M_{1,3}`:math:, and
