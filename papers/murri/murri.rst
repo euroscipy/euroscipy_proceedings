@@ -1,6 +1,6 @@
 :author: Riccardo Murri
 :email: riccardo.murri@gmail.com
-:institution: Grid Computing Competence Center, University of Zurich
+:institution: University of Zurich, Grid Computing Competence Center
 
 
 ---------------------------------------------------------------
