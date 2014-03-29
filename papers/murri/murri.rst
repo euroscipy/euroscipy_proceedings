@@ -148,9 +148,8 @@ Falcon and Numba could not run the code (see details in a later
 section) and thus do not appear in the report below.
 
 For each runtime, the total used CPU time and memory were measured:
-results are given in Tables :ref:`table-cpu` and :ref:`table-mem`; a
-summary graph is given in Figures :ref:`cpu-all` and :ref:`mem-all`.
-Detailed comparisons are given in the other figures.
+results and summary graphs are given in Figures :ref:`cpu-all` and
+:ref:`mem-all`.  Detailed comparisons are given in the other figures.
 
 .. figure:: CPU_time_of_Python_runtimes_synopsis.pdf
    :figclass: wtb
@@ -164,22 +163,6 @@ Detailed comparisons are given in the other figures.
    values in seconds (smaller is better). Note that the `y`:math:-axis
    is drawn on a logarithmic scale!
    :label:`cpu-all`
-
-.. table:: CPU time (in seconds) consumed by each Python runtime.
-   :label:`table-cpu`
-   :class: w
-
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{g,n}`:math: | PyPy 2.1 | Nuitka 0.4.4 | Cython 0.19.1 (w/ hints) | Cython 0.19.1 | CPython 2.7.5 |
-  +=================+==========+==============+==========================+===============+===============+
-  | `M_{0,4}`:math: |     0.52 |         0.15 |                      0.13|          0.14 |          0.17 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{0,5}`:math: |    10.65 |        22.25 |                     13.88|         14.54 |         20.14 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{1,3}`:math: |    34.27 |       135.48 |                     92.55|         93.25 |        126.27 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{2,1}`:math: |     5.25 |         6.47 |                      3.68|          3.68 |          5.12 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
 
 The CPU time data prompt a few observations:
 
@@ -216,24 +199,8 @@ The CPU time data prompt a few observations:
    is drawn on a logarithmic scale!
    :label:`mem-all`
 
-.. table:: Amount of RAM (MBs) consumed by each Python runtime.
-   :label:`table-mem`
-   :class: w
-
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{g,n}`:math: | PyPy 2.1 | Nuitka 0.4.4 | Cython 0.19.1 (w/ hints) | Cython 0.19.1 | CPython 2.7.5 |
-  +=================+==========+==============+==========================+===============+===============+
-  | `M_{0,4}`:math: |   217.75 |        57.81 |        44.82             |         45.21 |         39.03 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{0,5}`:math: |   709.54 |       573.87 |       196.67             |        196.54 |        191.89 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{1,3}`:math: |  1632.53 |      2445.68 |       264.67             |        265.09 |        261.15 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-  | `M_{2,1}`:math: |   412.73 |       229.02 |        60.79             |         61.21 |        55.515 |
-  +-----------------+----------+--------------+--------------------------+---------------+---------------+
-
 The large memory consumption from PyPy and Nuitka stands out in the
-memory data of :ref:`table-mem`.  On the other hand, there is no
+memory data of :ref:`mem-all`.  On the other hand, there is no
 significant increase in memory usage between CPython and Cython.
 
 The large memory usage of PyPy can be explained by the fact that the
