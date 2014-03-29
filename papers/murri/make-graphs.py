@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 
-show=True
+show=False
 format='pdf'
 
 from collections import defaultdict
@@ -9,13 +9,15 @@ import csv
 import os
 import sys
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors
-from matplotlib.ticker import MaxNLocator
 
 import numpy as np # for np.arange()
 
 import pylab
+
+import texttable as tt
 
 
 ## metadata
@@ -24,7 +26,7 @@ pretty_python_names = {
     'py27':               'CPython 2.7.5',
     'pypy':               'PyPy 2.1',
     'cython-bare':        'Cython 0.19.1',
-    'cython-purepython':  'Cython 0.19.1 (w/ hints)',
+    'cython-purepython':  'Cython 0.19.1\n(w/ hints)',
     'cython-pxd':         'Cython 0.19.1 (w/ PXD hints)',
     'nuitka':             'Nuitka 0.4.4',
     'numba':              'Numba @autojit',
@@ -39,6 +41,13 @@ pretty_field_names = {
     'MAXMEM(KB)':     'Max used memory',
     'MINFLT':         'Minor page faults',
     'WCTIME':         'Wall-clock time',
+}
+
+pretty_mgn_names = {
+    'M04': '$M_{0,4}$',
+    'M21': '$M_{2,1}$',
+    'M05': '$M_{0,5}$',
+    'M13': '$M_{1,3}$',
 }
 
 units = {
@@ -132,6 +141,9 @@ plot_field_names = [ pretty_field_names[field] for field in plot_fields ]
 
 ## plot!
 
+# enlarge default font size
+plt.rc('font', size=16.)
+
 def show_or_save(title):
     if show:
         plt.show()
@@ -143,63 +155,85 @@ def show_or_save(title):
             fig.savefig(output, format=format, dpi=600)
 
 
+# text tables with numeric results
 for field in plot_fields:
+    table = tt.Texttable()
     head = ['Mgn'] + [ pretty_python_names[py] for py in pythons ]
     hdlens = [ len(hd) for hd in head ]
     fmt = str.join('  ', [("%%%ds" % l) for l in hdlens])
     assert len(head) == fmt.count('%')
-    print (fmt % tuple(head))
-    print (fmt % tuple(('=' * l) for l in hdlens))
+    table.header(head)
     for mgn in sorted(mgns):
-        print (fmt % tuple([mgn] + [ usage[mgn][field][py] for py in pythons ]))
-    print
+        table.add_row(tuple([mgn] + [ usage[mgn][field][py] for py in pythons ]))
+    print table.draw()
 
-sys.exit(0)
 
+# figures 1 and 2
+n = len(mgns)
+m = len(pythons)
 for field in plot_fields:
-
     title = ('%s of Python runtimes (synopsis)' % (pretty_field_names[field],))
 
-    fig, ax1 = plt.subplots(figsize=(19,6))
+    fig, ax = plt.subplots(figsize=(19,6))
     plt.subplots_adjust(left=0.115, right=0.88)
 
-    ax1.set_title(title)
-    ax1.set_yscale('log')
+    ax.set_title(title)
 
     keys = list(sorted(mgns, key=(lambda m: usage[m][field]['py27'])))
-    n = len(keys)
-    for py, color in zip(pythons, palette):
-        vals = [ usage[mgn][field][py] for mgn in keys ]
-        plt.plot(range(n), vals, color=color, label=pretty_python_names[py])
-
     pos = np.arange(n) + 0.0
-    plt.xticks(pos, keys)
+    barwidth = fig.get_figwidth() / (n * (1 + m)) / 5
+    for i, (py, color) in enumerate(zip(pythons, palette)):
+        vals = np.array([ usage[mgn][field][py] for mgn in keys ])
+        rects = ax.bar((pos + i*barwidth), (np.log(vals + 1) / np.log(10)), barwidth,
+                       color=color, label=pretty_python_names[py])
 
-    plt.legend(loc='upper left')
+        # display actual value over bar
+        min_y, max_y = ax.get_ylim()
+        for j, rect in enumerate(rects):
+            h = rect.get_height()
+            x = rect.get_x()+rect.get_width()/2.
+            y = h - .04*max_y
+            ha = 'left'
+            va = 'top'
+            if y < .10 * max_y:
+                # too far up, place right over bar
+                y = h + .04*max_y
+                va = 'bottom'
+            ax.text(x, y, ('%.2f%s' % (vals[j], units[field])),
+                    ha=ha, va=va, rotation=-90)
+
+    plt.xticks(pos + (n*barwidth/2),
+               [ pretty_mgn_names[k] for k in keys ])
+    plt.yticks(ax.get_yticks(),
+               [ ("%d%s" % ((10**y if y != 0 else 0), units[field]))
+                 for y in ax.get_yticks() ])
+
+    if field != 'MAXMEM(KB)':
+        plt.legend(loc='upper left')
 
     show_or_save(title)
 
 
+# remaining figures
 for mgn in mgns:
 
     for field in plot_fields:
-
         title = ('%s of Python runtimes (%s)' % (pretty_field_names[field], mgn))
 
         rankings = [ usage[mgn][field][py] for py in pythons ]
         sorted_rankings = list(sorted(rankings))
 
-        fig, ax1 = plt.subplots(figsize=(19,6))
+        fig, ax = plt.subplots(figsize=(19,6))
         plt.subplots_adjust(left=0.115, right=0.88)
 
         pos = np.arange(npy)+0.5  # center bars on the Y-axis ticks
-        rects = ax1.barh(pos, rankings, align='center', height=0.5, color=palette)
+        rects = ax.barh(pos, rankings, align='center', height=0.5, color=palette)
 
         pylab.yticks(pos, python_names)
-        ax1.set_title(title)
+        ax.set_title(title)
 
         # display actual value next to bar
-        min_x, max_x = ax1.get_xlim() #max(rankings)*1.10
+        min_x, max_x = ax.get_xlim() #max(rankings)*1.10
         for n, rect in enumerate(rects):
             rank = rankings[n]
             width = rect.get_width()
@@ -214,7 +248,7 @@ for mgn in mgns:
                 y = rect.get_y() + rect.get_height() * 1.05
                 ha = 'right'
                 va = 'bottom'
-            ax1.text(x, y, ('%g%s' % (conv[field](rank), units[field])), ha=ha, va=va)
+            ax.text(x, y, ('%g%s' % (conv[field](rank), units[field])), ha=ha, va=va)
 
             # Lastly, write in the ranking inside each bar to aid in interpretation
             grade = 1 + sorted_rankings.index(rank)
@@ -238,7 +272,7 @@ for mgn in mgns:
                 clr = 'black'
                 align = 'right'
             yloc = rect.get_y()+rect.get_height()/2.0 #Center the text vertically in the bar
-            ax1.text(xloc, yloc, grade_str,
+            ax.text(xloc, yloc, grade_str,
                      ha=align, va='center',
                      color=clr, weight='bold')
 
