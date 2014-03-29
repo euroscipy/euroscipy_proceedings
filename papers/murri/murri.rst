@@ -154,7 +154,9 @@ Detailed comparisons are given in the other figures.
 
 .. figure:: CPU_time_of_Python_runtimes_synopsis.pdf
    :figclass: wtb
-   :align: center
+   :figwidth: 100%
+   :scale:    45%
+   :align:    center
 
    Comparison of the total CPU time used by each runtime on the
    different test cases.  The `x`:math:-axis is sorted so that the
@@ -203,6 +205,8 @@ The CPU time data prompt a few observations:
 
 .. figure:: Max_used_memory_of_Python_runtimes_synopsis.pdf
    :figclass: wtb
+   :figwidth: 100%
+   :scale:    45%
    :align: center
 
    Comparison of the total RAM used by each runtime on the
@@ -243,7 +247,9 @@ We have no explanation for the large memory consumption of Nuitka.
 
 
 .. figure:: CPU_time_of_Python_runtimes_M04.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
@@ -252,7 +258,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`cpu-M04`
 
 .. figure:: CPU_time_of_Python_runtimes_M05.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
@@ -261,7 +269,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`cpu-M05`
 
 .. figure:: CPU_time_of_Python_runtimes_M13.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
@@ -270,7 +280,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`cpu-M13`
 
 .. figure:: CPU_time_of_Python_runtimes_M21.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
@@ -280,7 +292,9 @@ We have no explanation for the large memory consumption of Nuitka.
 
 
 .. figure:: Max_used_memory_of_Python_runtimes_M04.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
@@ -289,7 +303,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`mem-M04`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M05.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
@@ -298,7 +314,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`mem-M05`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M13.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
@@ -307,7 +325,9 @@ We have no explanation for the large memory consumption of Nuitka.
    :label:`mem-M13`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M21.pdf
-   :figclass: tbp
+   :figclass: wtbp
+   :figwidth: 100%
+   :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
