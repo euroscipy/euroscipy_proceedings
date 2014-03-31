@@ -65,11 +65,25 @@ Experiment setup
 The `FatGHoL <http://fatghol.googlecode.com/>` [FatGHoL]_ program was
 used as a test code.  FatGHoL computes homology of the moduli spaces
 of Riemann surfaces `M_{g,n}`:math: via Penner-Kontsevich' fatgraph
-simplicial complex [Penner1988]_ [Kontsevich1992]_.  The program runs
-in three stages:
+simplicial complex [Penner1988]_ [Kontsevich1992]_.  Homology is one
+of the most important invariants of topological spaces.  There are
+several homology theories but they all share this computational
+procedure outline: given a vector space of (generalized) *simplex
+chains* and a *boundary operator*, which is by definition a linear
+operator `D`:math: such that `D^2=0`:math:, the homology space is by
+definition `Ker D / Im D`:math:.  In graph homology, however, it's the
+computation of these simplices and boundary that takes up the largest
+fraction of compute time: the simplex chains are defined as formal
+linear combinations of graphs, and the boundary operator maps a graph
+into a linear combination of graphs gotten by contracting its edges.
+Thus, explicit construction of the simplices requires enumerating all
+distinct isomorphism classes of fatgraphs, and then computing their
+mutual relationships upon contraction of edges.
+
+The FatGHoL program runs in three stages:
 
 1. generate fatgraphs,
-2. make the simplicial homology complex explicit, and
+2. explicitly compute the boundary operator in matrix form,
 3. actually solve the homology linear system.
 
 The last step has been disabled in the test code as it is implemented
