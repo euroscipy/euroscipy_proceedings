@@ -122,8 +122,7 @@ by call count are::
      345740     0.849  rg.py:568(_first_unused_corner)
 
 The FatGHoL code was run with seven different alternative Python
-runtimes (a detailed description of each of these is given in a later
-section):
+runtimes:
 
 * CPython 2.7.5;
 * Cython 0.19.1;
@@ -132,6 +131,58 @@ section):
 * Nuitka 0.4.4;
 * PyPy 2.1;
 * Numba 0.10.0 and 0.11.0 with ``@autojit``.
+
+A detailed description of each of these is given in a later
+section; Table :ref:`tab-effort` provides an overview of the
+installation and usage features of the different runtimes.
+The code used to install the software and run the experiments is
+available on GitHub at
+`<https://github.com/riccardomurri/python-runtimes-shootout>`_.
+
+.. list-table:: :label:`tab-effort` Comparison of installation features of the Python runtimes
+   :class: w
+
+   * - Runtime
+     - *Cython 0.19.1*
+     - *Falcon 0.05*
+     - *Nuitka 0.4.4*
+     - *Numba 0.11.0*
+     - *PyPy 2.1*
+   * - *Installed size* (MB)
+     - 30 [#plus-cpython]_
+     - 14 [#plus-cpython]_
+     - 25 [#plus-cpython]_
+     - 97 [#plus-cpython]_ (+ 518MB of LLVM 3.2)
+     - 162 [#no-cpython]_
+   * - *Install script length* (SLOC)
+     - 6
+     - 8
+     - 10
+     - 24
+     - 19
+   * - *Usage documentation*
+     - extensive
+     - minimal
+     - short how-to to explain the different compilation options available
+     - minimal, mostly examples
+     - none
+   * - *Porting/optimization documentation*
+     - extensive
+     - none
+     - list of optimizations that the runtime does (or will) support
+     - none
+     - provides only a list of compatibility issues; I could find no
+       list of *Do*-s and *Don't*-s for better speed in PyPy
+   * - *Porting/optimization effort*
+     - none ("Pure Python" mode) to very heavy (``.pxd`` hinting)
+     - none: runs unmodified Python code
+     - none: runs unmodified Python code
+     - light (w/ ``@autojit``) to heavy (``@jit`` with types)
+     - none: runs unmodified Python code
+
+.. [#plus-cpython] Plus 123MB for the CPython interpreter, which is anyway needed.
+
+.. [#no-cpython] Does not need the CPython interpreter in addition, as all others do.
 
 Except for Cython in "pure Python mode" and Numba, all runtimes run
 the unmodified Python code of FatGHoL.  Cython in "pure Python mode"
@@ -158,10 +209,6 @@ the `M_{0,4}`:math:, `M_{0,5}`:math:, `M_{1,3}`:math:, and
 than 2 minutes of runtime with CPython 2.7.  Each test case was run 10
 times and the best time and lowest RAM occupation are reported in the
 summary tables below.
-
-The code used to install the software and run the experiments is
-available on GitHub at
-`<https://github.com/riccardomurri/python-runtimes-shootout>`_.
 
 
 Results
