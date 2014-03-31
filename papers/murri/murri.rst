@@ -154,6 +154,10 @@ than 2 minutes of runtime with CPython 2.7.  Each test case was run 10
 times and the best time and lowest RAM occupation are reported in the
 summary tables below.
 
+The code used to install the software and run the experiments is
+available on GitHub at
+`<https://github.com/riccardomurri/python-runtimes-shootout>`_.
+
 
 Results
 -------
