@@ -135,15 +135,20 @@ section):
 
 Except for Cython in "pure Python mode" and Numba, all runtimes run
 the unmodified Python code of FatGHoL.  Cython in "pure Python mode"
-requires the addition of decorators to the Python code that specify the
-types of function arguments and local variables to increase speedup of
-selected portions of the code.  Similarly, Numba uses the decorators
-``@jit`` or ``@autojit`` to mark functions that should be compiled to
-native code (the `difference between the two decorators`__ is that
-that ``@autojit`` infers types at runtime, whereas ``@jit``
-requires the programmer to specify them); we only used the
-``@autojit`` decorator to mark the same functions that were marked as
-optimization candidates in the Cython experiment.
+requires the addition of decorators to the Python code that specify
+the types of function arguments and local variables to increase
+speedup of selected portions of the code.  Similarly, Numba uses the
+decorators ``@jit`` or ``@autojit`` to mark functions that should be
+compiled to native code (the `difference between the two decorators`__
+is that that ``@autojit`` infers types at runtime, whereas ``@jit``
+requires the programmer to specify them [#no-more-autojit]_); we only
+used the ``@autojit`` decorator to mark the same functions that were
+marked as optimization candidates in the Cython experiment.
+
+.. [#no-more-autojit] Note that in more recent versions of Numba, the
+                      two decorators have been fused into one:
+                      ``@jit`` uses the supplied types, or infers them
+                      if none are given.
 
 .. __: http://nbviewer.ipython.org/gist/Juanlu001/3914904
 
