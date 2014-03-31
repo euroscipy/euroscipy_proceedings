@@ -483,14 +483,16 @@ Acknowledgements
 ----------------
 
 The author acknowledges support of the Informatik Dienste of the
-University of Zurich, particularly for the usage of the new SGI UV
+University of Zurich, particularly for the usage of the new SGI UV 2000
 machine for running the tests.  I would also like to thank Kay Hayen,
 Marc Florisson, Russel Power and Alex Rubynstein for their readiness
 to discuss and fix the bugs I reported on Nuitka, Numba, and Falcon.
 Finally, I would like to express my gratitude to all those who made
 remarks and inquiries at the EuroSciPy poster session, and
 particularly Ronan Lamy and Denis Engemann for their insightful
-comments.
+comments.  Finally, I would like to thank Mike Mueller and Pierre
+de Buyl for reviewing the initial draft paper and making many useful
+suggestions for improving it.
 
 
 References
