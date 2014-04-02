@@ -3,8 +3,8 @@
 :institution: KU Leuven
 
 :author: Nelle Varoquaux
-:email: nelle.varoquaux@gmail.com
-:institution: Mines ParisTech
+:email: nelle.varoquaux@ensmp.com
+:institution: Mines ParisTech, Institut Curie, Inserm
 
 -------
 Preface
@@ -56,7 +56,7 @@ To help the reader, a note has been added below each abstract that states the
 availability of the code.
 
 We hope that these proceedings will find a good place in the SciPy literature
-and we would like to address our gratitute to the referees that made their
+and we would like to address our gratitude to the referees that made their
 publication possible.
 
 References
