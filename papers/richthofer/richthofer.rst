@@ -270,7 +270,7 @@ Otherwise several macros would direct to the raw C methods ``malloc``, ``free``,
 extra memory would not be reserved. So an active ``WITH_PYMALLOC`` flag is crucial for JyNI to work.
 However, it should be not much effort to recompile affected extensions with an appropriate ``WITH_PYMALLOC`` flag value.
 
-Statically defined ``PyType`` objects are treated as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java reflection if converting the other way. ``PyType`` objects dynamically allocated on the heap are of course not subject of this special case and are treated like usual ``PyObject``s (the ``Py_TPFLAGS_HEAPTYPE`` flag indicates this case).
+Statically defined ``PyType`` objects are treated as a special case, as their memory is not dynamically allocated. We resolve them simply via a lookup table when converting from ``jobject`` to ``PyObject*`` and via a name lookup by Java reflection if converting the other way. ``PyType`` objects dynamically allocated on the heap are of course not subject of this special case and are treated like usual ``PyObject`` s (the ``Py_TPFLAGS_HEAPTYPE`` flag indicates this case).
 
 The macros ``AS_JY(o)`` and ``FROM_JY(o)``, defined in ``JyNI.h``, perform the necessary pointer arithmetics to get the ``JyObject`` header from a ``PyObject*`` and vice versa. They are not intended for direct use, but are used internally by the high-level conversion functions described below, as these also consider special cases like singletons or ``PyType`` objects.
 
@@ -295,7 +295,7 @@ Global interpreter lock (GIL)
 .............................
 The global interpreter lock is a construction in CPython that prevents multiple threads from running Python code in the same process. It is usually acquired when the execution of a Python script begins and released when it ends. However, a native extension and some parts of native CPython code can release and re-acquire it by inserting the ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` macros. This way, an extension can deal with multiple threads and related things like input events (f.i. Tkinter needs this).
 
-In contrast to that, Jython does not have a GIL and allows multiple threads at any time, using Java's threading architecture. Since native extensions were usually developed for CPython, some of them might rely on the existence of a GIL and might produce strange behaviour if it was missing. So JyNI features a GIL to provide most familiar behaviour to loaded extensions. To keep the Java parts of Jython GIL-free and have no regression to existing multithreading features, the JyNI GIL is only acquired when a thread enters native code and released when it enters Java code again – either by returning from the native call or by performing a Java call to Jython code. Additionally, it is not really global (thus calling it “GIL” is a bit misleading), since it only affects threads in native code. While there can always be multiple threads in Java, there can only be one thread in native code at the same time (unless the above mentioned macros are used).
+In contrast to that, Jython does not have a GIL and allows multiple threads at any time, using Java's threading architecture. Since native extensions were usually developed for CPython, some of them might rely on the existence of a GIL and might produce strange behaviour if it was missing. So JyNI features a GIL to provide most familiar behaviour to loaded extensions. To keep the Java parts of Jython GIL-free and have no regression to existing multithreading features, the JyNI GIL is only acquired when a thread enters native code and released when it enters Java code again – either by returning from the native call or by performing a Java call to Jython code. Strictly speaking, it is not really global (thus calling it “GIL” is a bit misleading), since it only affects threads in native code. While there can always be multiple threads in Java, there can only be one thread in native code at the same time (unless the above mentioned macros are used).
 
 
 A real-world example: Tkinter
@@ -305,7 +305,7 @@ To present a non-trivial example, we refere to Tkinter, one of the most popular 
 There has already been an approach to make Tkinter available in Jython, namely jTkinter – see [JTK]_. However the last
 update to the project was in 2000, so it is rather outdated by now and must be considered inactive.
 
-Since release alpha2.1, JyNI has been tested successfully on basic Tkinter code.
+Since release alpha.2.1, JyNI has been tested successfully on basic Tkinter code.
 We load Tkinter from the place where it is usually installed on Linux:
 
 .. code-block:: python
