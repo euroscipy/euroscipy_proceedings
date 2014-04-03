@@ -3,6 +3,8 @@
 
 show=False
 format='pdf'
+figsize=(8.9,3)
+synopsis_figsize=(14, 4)
 
 from collections import defaultdict
 import csv
@@ -12,12 +14,14 @@ import sys
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors
+plt.rcParams['figure.figsize'] = figsize
+plt.rcParams['legend.fontsize'] = 12
 
 import numpy as np # for np.arange()
 
 import pylab
 
-import texttable as tt
+#import texttable as tt
 
 
 ## metadata
@@ -144,19 +148,20 @@ plot_field_names = [ pretty_field_names[field] for field in plot_fields ]
 # enlarge default font size
 plt.rc('font', size=16.)
 
-def show_or_save(title):
+def show_or_save(title, figsize=figsize):
     if show:
         plt.show()
     else:
         filename = title.replace(' ', '_').replace('(', '').replace(')', '') + '.' + format
         with open(filename, 'w') as output:
             fig = plt.gcf()
-            fig.set_size_inches(19., 6.)
+            fig.set_size_inches(figsize[0],figsize[1])
             fig.savefig(output, format=format, dpi=600)
 
 
 # text tables with numeric results
-for field in plot_fields:
+# for field in plot_fields:
+if False:
     table = tt.Texttable()
     head = ['Mgn'] + [ pretty_python_names[py] for py in pythons ]
     hdlens = [ len(hd) for hd in head ]
@@ -174,7 +179,7 @@ m = len(pythons)
 for field in plot_fields:
     title = ('%s of Python runtimes (synopsis)' % (pretty_field_names[field],))
 
-    fig, ax = plt.subplots(figsize=(19,6))
+    fig, ax = plt.subplots(figsize=synopsis_figsize)
     plt.subplots_adjust(left=0.115, right=0.88)
 
     ax.set_title(title)
@@ -191,7 +196,7 @@ for field in plot_fields:
         min_y, max_y = ax.get_ylim()
         for j, rect in enumerate(rects):
             h = rect.get_height()
-            x = rect.get_x()+rect.get_width()/2.
+            x = rect.get_x()+rect.get_width()/10.
             y = h - .04*max_y
             ha = 'left'
             va = 'top'
@@ -211,7 +216,7 @@ for field in plot_fields:
     if field != 'MAXMEM(KB)':
         plt.legend(loc='upper left')
 
-    show_or_save(title)
+    show_or_save(title, synopsis_figsize)
 
 
 # remaining figures
@@ -223,8 +228,8 @@ for mgn in mgns:
         rankings = [ usage[mgn][field][py] for py in pythons ]
         sorted_rankings = list(sorted(rankings))
 
-        fig, ax = plt.subplots(figsize=(19,6))
-        plt.subplots_adjust(left=0.115, right=0.88)
+        fig, ax = plt.subplots(figsize=figsize)
+        plt.subplots_adjust(left=0.190, right=0.92)
 
         pos = np.arange(npy)+0.5  # center bars on the Y-axis ticks
         rects = ax.barh(pos, rankings, align='center', height=0.5, color=palette)
@@ -233,6 +238,11 @@ for mgn in mgns:
         ax.set_title(title)
 
         # display actual value next to bar
+        min_x, max_x = ax.get_xlim() #max(rankings)*1.10
+        if mgn=='M13':
+            ax.set_xlim(min_x, max_x*1.2)
+        else:
+            ax.set_xlim(min_x, max_x*1.1)
         min_x, max_x = ax.get_xlim() #max(rankings)*1.10
         for n, rect in enumerate(rects):
             rank = rankings[n]
