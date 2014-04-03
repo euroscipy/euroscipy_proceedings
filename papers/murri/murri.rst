@@ -71,7 +71,7 @@ several homology theories but they all share this computational
 procedure outline: given a vector space of (generalized) *simplex
 chains* and a *boundary operator*, which is by definition a linear
 operator `D`:math: such that `D^2=0`:math:, the homology space is by
-definition `Ker D / Im D`:math:.  In graph homology, however, it is the
+definition `\textrm{Ker } D / \textrm{Im } D`:math:.  In graph homology, however, it is the
 computation of these simplices and boundary that takes up the largest
 fraction of compute time: the simplex chains are defined as formal
 linear combinations of graphs, and the boundary operator maps a graph
