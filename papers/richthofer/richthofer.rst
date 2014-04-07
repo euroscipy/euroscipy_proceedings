@@ -74,7 +74,7 @@ It also includes conversion methods between basic Python and Java types, but is 
 
 However, none of these approaches aims for integration with Jython. In contrast to that, JyNI is entirely based on Jython.
 Though large parts are derived from CPython, the main Python runtime is provided by Jython and JyNI delegates most C-API calls
-to Jython directly or indirectly.
+to Jython directly or indirectly (i.e. some objects are mirrored natively, so calls to these can be processed entirely on native side, syncing the results with Jython afterwards; see implementation section for details).
 
 .. Indirect delegation happens, if objects must be mirrored due to occurrence of direct access macros in the official C-API. We give more details on this in the implementation section.
 
@@ -125,7 +125,22 @@ Jython should now be able to run ``JyNIDemo.py`` via ::
    java -cp "[...]:JyNI.jar:[JyNI binaries folder]:
       jython.jar" org.python.util.jython JyNIDemo.py
 
-Be sure to use Jython 2.7 (beta) or newer.
+Be sure to use Jython 2.7 (beta) or newer. If you are not using the Jython stand-alone version, make sure
+that Jython's ``Lib``-folder is on the Python path.
+
+Versioning note
+...............
+
+JyNI's version consists of two parts. The first part (currently 2.7) indicates the targeted API version. Your Jython
+should meet this version if you intend to use it with JyNI. For extensions, the API version means that
+a production release of JyNI would be able to load any native extension that a CPython distribution of the
+same version (and platform) can load.
+Of course, this is an idealistic goal - there will always remain some edgy, maybe exotic API-aspects JyNI won't be
+able to support.
+
+The second part of the JyNI version (currently alpha.2.1) indicates the development status. As long as it contains
+“alpha” or “beta”, one can't expect that the targeted API version is already met. Once out of beta, we will maintain
+this version part as a third index of the targeted API version (i.e. JyNI 2.7.x).
 
 
 Capabilities
