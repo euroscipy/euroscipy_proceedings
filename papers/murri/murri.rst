@@ -37,7 +37,7 @@ Introduction
 ------------
 
 The moduli space `M_{g,n}`:math: of smooth Riemann surfaces is a
-topological space, which has been subject of much research both in
+topological space which has been subject of much research both in
 algebraic geometry and in string theory. It is known since the '90s
 that this space has a triangulation indexed by a special kind of
 graphs [Penner1988]_ [Kontsevich1992]_ [ConantVogtmann2003]_,
@@ -49,7 +49,7 @@ approach to the problem of computing topological invariants of
 compute their graph homology have been devised in [Murri2012]_ and
 implemented in Python.
 
-The purpose of this experiment was to assess the maturity of
+We propose an experiment whose purpose is to assess the maturity of
 alternative Python runtimes, in terms of:
 
 (a) compatibility with the language as implemented in CPython 2.7, and
@@ -64,18 +64,18 @@ Experiment setup
 
 The `FatGHoL <http://fatghol.googlecode.com/>` [FatGHoL]_ program was
 used as a test code.  FatGHoL computes homology of the moduli spaces
-of Riemann surfaces `M_{g,n}`:math: via Penner-Kontsevich' fatgraph
+of Riemann surfaces `M_{g,n}`:math: via Penner-Kontsevich's fatgraph
 simplicial complex [Penner1988]_ [Kontsevich1992]_.  Homology is one
 of the most important invariants of topological spaces.  There are
 several homology theories but they all share this computational
 procedure outline: given a vector space of (generalized) *simplex
 chains* and a *boundary operator*, which is by definition a linear
 operator `D`:math: such that `D^2=0`:math:, the homology space is by
-definition `Ker D / Im D`:math:.  In graph homology, however, it's the
+definition `\mathop{\textrm{Ker }} D / \mathop{\textrm{Im }} D`:math:.  In graph homology, however, it is the
 computation of these simplices and boundary that takes up the largest
 fraction of compute time: the simplex chains are defined as formal
 linear combinations of graphs, and the boundary operator maps a graph
-into a linear combination of graphs gotten by contracting its edges.
+into a linear combination of graphs obtained by contracting its edges.
 Thus, explicit construction of the simplices requires enumerating all
 distinct isomorphism classes of fatgraphs, and then computing their
 mutual relationships upon contraction of edges.
@@ -103,7 +103,7 @@ comprehensions, slicing, etc. but does not use any kind of tight
 nested loops of the kind normally featured in numeric codes.
 
 Profiling data show more precisely how much work is done at the Python
-level in the simpler case `M_{0,4}`:math:.  The following listing
+level in the simplest case `M_{0,4}`:math:.  The following listing
 shows profiling data extracted from a complete run of FatGHoL on
 CPython 2.7.5; 15787953 function calls (15728052 primitive calls) were
 effected in 39.572 seconds; the top 10 most called functions, ordered
@@ -218,7 +218,7 @@ Falcon and Numba could not run the code (see details in a later
 section) and thus do not appear in the report below.
 
 For each runtime, the total used CPU time and memory were measured:
-results and summary graphs are given in Figures :ref:`cpu-all` and
+results and summary graphs are given in figures :ref:`cpu-all` and
 :ref:`mem-all`.  Detailed comparisons are given in the other figures.
 
 .. figure:: CPU_time_of_Python_runtimes_synopsis.pdf
@@ -237,7 +237,7 @@ results and summary graphs are given in Figures :ref:`cpu-all` and
 The CPU time data prompt a few observations:
 
 - PyPy gives the best results, provided the code runs long enough to
-  discount for the startup time of the JIT compiler.  However, given
+  discount for the startup time of the JIT compiler. Given
   enough time, the JIT compiler gives extremely good results, with
   speedups of 100% to 400% relative to CPython in the `M_{0,5}`:math:
   and `M_{1,3}`:math: cases.  In other words, for the JIT approach to
@@ -270,7 +270,7 @@ The CPU time data prompt a few observations:
    :label:`mem-all`
 
 The large memory consumption from PyPy and Nuitka stands out in the
-memory data of :ref:`mem-all`.  On the other hand, there is no
+memory data of figure :ref:`mem-all`.  On the other hand, there is no
 significant increase in memory usage between CPython and Cython.
 
 The large memory usage of PyPy can be explained by the fact that the
@@ -284,91 +284,91 @@ We have no explanation for the large memory consumption of Nuitka.
 
 
 .. figure:: CPU_time_of_Python_runtimes_M04.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
-   `M_{0,4}`:math: test case.  The `y`:math:-axis shows
+   `M_{0,4}`:math: test case.  The `x`:math:-axis shows
    values in seconds.
    :label:`cpu-M04`
 
 .. figure:: CPU_time_of_Python_runtimes_M05.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
-   `M_{0,5}`:math: test case.  The `y`:math:-axis shows
+   `M_{0,5}`:math: test case.  The `x`:math:-axis shows
    values in seconds.
    :label:`cpu-M05`
 
 .. figure:: CPU_time_of_Python_runtimes_M13.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
-   `M_{1,3}`:math: test case.  The `y`:math:-axis shows
+   `M_{1,3}`:math: test case.  The `x`:math:-axis shows
    values in seconds.
    :label:`cpu-M13`
 
 .. figure:: CPU_time_of_Python_runtimes_M21.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total CPU time used by each runtime on the
-   `M_{2,1}`:math: test case.  The `y`:math:-axis shows
+   `M_{2,1}`:math: test case.  The `x`:math:-axis shows
    values in seconds.
    :label:`cpu-M21`
 
 
 .. figure:: Max_used_memory_of_Python_runtimes_M04.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
-   `M_{0,4}`:math: test case.  The `y`:math:-axis shows
+   `M_{0,4}`:math: test case.  The `x`:math:-axis shows
    values in MBs.
    :label:`mem-M04`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M05.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
-   `M_{0,5}`:math: test case.  The `y`:math:-axis shows
+   `M_{0,5}`:math: test case.  The `x`:math:-axis shows
    values in MBs.
    :label:`mem-M05`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M13.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
-   `M_{1,3}`:math: test case.  The `y`:math:-axis shows
+   `M_{1,3}`:math: test case.  The `x`:math:-axis shows
    values in MBs.
    :label:`mem-M13`
 
 .. figure:: Max_used_memory_of_Python_runtimes_M21.pdf
-   :figclass: wtbp
+   :figclass: tbp
    :figwidth: 100%
    :scale:    40%
    :align: left
 
    Comparison of the total RAM usage by each runtime on the
-   `M_{2,1}`:math: test case.  The `y`:math:-axis shows
+   `M_{2,1}`:math: test case.  The `x`:math:-axis shows
    values in MBs.
    :label:`mem-M21`
 
