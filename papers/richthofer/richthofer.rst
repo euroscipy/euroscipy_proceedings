@@ -84,7 +84,7 @@ Usage
 
 Thanks to Jython's hooking capabilities, it is sufficient to place ``JyNI.jar`` on the classpath (and some native libraries on the library path) when Jython is launched.
 Then Jython should “magically” be able to load native extensions, as far as the needed Python C-API is already implemented by JyNI.
-No recompilation, no forking – it just works with original Jython and original extensions.
+No recompilation, no forking – it just works with original Jython and original extensions (up to version compatibility; see the versioning notes at the end of this section).
 
 Note that  the naive way does not actually set the classpath for Jython::
 
@@ -135,7 +135,7 @@ JyNI's version consists of two parts. The first part (currently 2.7) indicates t
 should meet this version if you intend to use it with JyNI. For extensions, the API version means that
 a production release of JyNI would be able to load any native extension that a CPython distribution of the
 same version (and platform) can load.
-Of course, this is an idealistic goal - there will always remain some edgy, maybe exotic API-aspects JyNI won't be
+Of course, this is an idealistic goal – there will always remain some edgy, maybe exotic API-aspects JyNI won't be
 able to support.
 
 The second part of the JyNI version (currently alpha.2.1) indicates the development status. As long as it contains
