@@ -317,8 +317,8 @@ A real-world example: Tkinter
 ---------------------------------
 
 To present a non-trivial example, we refere to Tkinter, one of the most popular GUI frameworks for Python.
-There has already been an approach to make Tkinter available in Jython, namely jTkinter – see [JTK]_. However the last
-update to the project was in 2000, so it is rather outdated by now and must be considered inactive.
+There has already been an approach to make Tkinter available in Jython, namely jTkinter – see [JTK]_. However,
+the last update to the project was in 2000, so it is rather outdated by now and must be considered inactive.
 
 Since release alpha.2.1, JyNI has been tested successfully on basic Tkinter code.
 We load Tkinter from the place where it is usually installed on Linux:
@@ -484,25 +484,25 @@ Further you would have to allow "reverse engineering (of your program and the li
 
 References
 ----------
-.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 16 Mar. 2014, Web. 19 Mar. 2014
+.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 6 Apr. 2014, Web. 7 Apr. 2014
 
-.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, Mar. 2014, Web. 19 Mar. 2014
+.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, Mar. 2014, Web. 7 Apr. 2014
 
-.. [IRONCLAD] Resolver Systems, Ironclad, http://code.google.com/p/ironclad, 26 Aug. 2010, Web. 19 Mar. 2014
+.. [IRONCLAD] Resolver Systems, Ironclad, http://code.google.com/p/ironclad, 26 Aug. 2010, Web. 7 Apr. 2014
 
-.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 19 Mar. 2014
+.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 7 Apr. 2014
 
-.. [NP4J] Joseph Cottam, NumPy4J, https://github.com/JosephCottam/Numpy4J, 11. Dec. 2013, Web. 19 Mar. 2014
+.. [NP4J] Joseph Cottam, NumPy4J, https://github.com/JosephCottam/Numpy4J, 11. Dec. 2013, Web. 7 Apr. 2014
 
-.. [JEPP] Mike Johnson, Java embedded Python (JEPP), http://jepp.sourceforge.net/, 14 May 2013, Web. 19 Mar. 2014
+.. [JEPP] Mike Johnson, Java embedded Python (JEPP), http://jepp.sourceforge.net, 14 May 2013, Web. 7 Apr. 2014
 
-.. [JTK] Finn Bock, jTkinter, http://jtkinter.sourceforge.net, 30 Jan. 2000, Web. 19 Mar. 2014
+.. [JTK] Finn Bock, jTkinter, http://jtkinter.sourceforge.net, 30 Jan. 2000, Web. 7 Apr. 2014
 
-.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 19 Mar. 2014
+.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 7 Apr. 2014
 
-.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 1 Oct. 2002, Web. 19. Mar. 2014
+.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 1 Oct. 2002, Web. 7 Apr. 2014
 
-.. [GPL] Free Software Foundation, GNU General Public License v3, http://www.gnu.org/licenses/gpl.html, 29 June 2007, Web. 19 Mar. 2014
+.. [GPL] Free Software Foundation, GNU General Public License v3, http://www.gnu.org/licenses/gpl.html, 29 June 2007, Web. 7 Apr. 2014
 
-.. [GPL_EXC] Wikipedia, GPL linking exception, http://en.wikipedia.org/wiki/GPL_linking_exception#The_classpath_exception, 23 May 2013, Web. 19 Mar. 2014
+.. [GPL_EXC] Wikipedia, GPL linking exception, http://en.wikipedia.org/wiki/GPL_linking_exception#The_classpath_exception, 5 Mar 2014, Web. 7 Apr. 2014
 
