@@ -139,7 +139,10 @@ The code used to install the software and run the experiments is
 available on GitHub at
 `<https://github.com/riccardomurri/python-runtimes-shootout>`_.
 
-.. list-table:: :label:`tab-effort` Comparison of installation features of the Python runtimes
+.. list-table:: :label:`tab-effort` Comparison of installation features of the
+                Python runtimes. `^a`:math: Plus 123MB for the CPython
+                interpreter, which is anyway needed. `^b`:math: Does not need
+                the CPython interpreter in addition, as all others do.
    :class: w
 
    * - Runtime
@@ -149,11 +152,11 @@ available on GitHub at
      - *Numba 0.11.0*
      - *PyPy 2.1*
    * - *Installed size* (MB)
-     - 30 [#plus-cpython]_
-     - 14 [#plus-cpython]_
-     - 25 [#plus-cpython]_
-     - 97 [#plus-cpython]_ (+ 518MB of LLVM 3.2)
-     - 162 [#no-cpython]_
+     - 30 `^a`:math:
+     - 14 `^a`:math:
+     - 25 `^a`:math:
+     - 97 `^a`:math: (+ 518MB of LLVM 3.2)
+     - 162 `^b`:math:
    * - *Install script length* (SLOC)
      - 6
      - 8
@@ -179,10 +182,6 @@ available on GitHub at
      - none: runs unmodified Python code
      - light (w/ ``@autojit``) to heavy (``@jit`` with types)
      - none: runs unmodified Python code
-
-.. [#plus-cpython] Plus 123MB for the CPython interpreter, which is anyway needed.
-
-.. [#no-cpython] Does not need the CPython interpreter in addition, as all others do.
 
 Except for Cython in "pure Python mode" and Numba, all runtimes run
 the unmodified Python code of FatGHoL.  Cython in "pure Python mode"
