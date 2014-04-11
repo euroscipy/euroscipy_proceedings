@@ -8,7 +8,8 @@
        "short": "PROC. OF THE 6th EUR. CONF ON PYTHON IN SCIENCE. (EUROSCIPY 2013)",
        "full": "Proceedings of the 6th European Conference on Python in Science"
      },
-     "year": "2014",
+     "year": "2013",
+     "copyright_year": "2014",
      "editor": [
         "Pierre de Buyl",
         "Nelle Varoquaux"
