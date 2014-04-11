@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>{{proceedings['title']['full']}}</title>
+</head>
+<body>
+<h1>{{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}})</h1>
+
+<p>Editors: {{', '.join(proceedings['editor'])}}<br />
+{{proceedings['location']}}, {{proceedings['dates']}}
+</p>
+
+<h2>Articles</h2>
+
+{{for line in toc}}
+<!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}} -->
+LIST:arXiv:YYYY.NNNN
+Page: {{html_quote(line['page']['start']) | html}} <br />
+{{endfor}}
+
+<p>
+Copyright &copy; {{ proceedings['year']}}.
+{{for line in proceedings['copyright']['proceedings']}}
+{{line}}
+{{endfor}}
+</p>
+
+<h2>Organizers of the conference</h2>
+
+{{for committee in organization}}
+
+  <h3>{{html_quote(committee['name']) | html}}</h3>
+
+  <ul>
+    {{for member in committee['members'] }}
+      <li>{{html_quote(member['name']) | html}} ({{html_quote(member['org']) | html}})</li>
+    {{endfor}}
+  </ul>
+
+{{endfor}}
+
+</body>
+</html>
