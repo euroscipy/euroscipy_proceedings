@@ -9,11 +9,12 @@ from conf import bib_dir, build_dir, template_dir, html_dir, arxiv_dir
 from options import get_config
 
 def arxiv_html(config):
-    dest_fn = os.path.join(arxiv_dir, 'arxiv_index.html')
-    template = tempita.HTMLTemplate(open(os.path.join(template_dir, 'arxiv_index.html.tmpl'), 'r').read())
-    content = template.substitute(config)
-    with open(dest_fn, mode='w') as f:
-        f.write(content)
+    for name in ['index', 'submissions']:
+        dest_fn = os.path.join(arxiv_dir, 'arxiv_%s.html' % name)
+        template = tempita.HTMLTemplate(open(os.path.join(template_dir, 'arxiv_%s.html.tmpl' % name), 'r').read())
+        content = template.substitute(config)
+        with open(dest_fn, mode='w') as f:
+            f.write(content)
 
 if __name__ == "__main__":
 
