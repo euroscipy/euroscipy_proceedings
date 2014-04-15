@@ -86,6 +86,12 @@ def rst2tex(in_path, out_path):
     stats_file = os.path.join(out_path, 'paper_stats.json')
     d = options.cfg2dict(stats_file)
     d.update(writer.document.stats)
+    arxiv_path = os.path.join(in_path, 'arxiv.json')
+    if os.path.exists(arxiv_path):
+        arxiv = options.cfg2dict(arxiv_path)
+    else:
+        arxiv = {'arxiv_identifier': None}
+    d.update(arxiv)
     options.dict2cfg(d, stats_file)
 
     tex_file = os.path.join(out_path, 'paper.tex')

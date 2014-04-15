@@ -17,6 +17,7 @@
      "volume": 6,
      "number": 1,
      "isbn": "value",
+     "arxiv_identifier": "YYYY.NNNN",
      "location": "Brussels, Belgium",
      "dates": "21-25 August 2013",
      "copyright": {
