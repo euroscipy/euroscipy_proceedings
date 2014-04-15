@@ -36,7 +36,7 @@ The proceedings
 ---------------
 
 2013 marks the first edition of the proceedings for the European Conference on
-Scientific Python.
+Python in Science.
 Apart from bringing an added value to the conference contributors, a motivation
 to edit these proceedings is to provide an academic venue for scientists that
 use Python for computing, whereas *traditional publishing* fails to adapt to
