@@ -20,13 +20,20 @@
 {{html_quote(abstract_item) | html}}
 {{endfor}}
 </li>
-<li>in {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}),
+<li>Part of the {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}),
 {{if len(proceedings['editor'])>1}}
 {{', '.join(proceedings['editor'][:-1])}} and {{proceedings['editor'][-1]}} editors,
 {{else}}
 proceedings['editor'] editor,
 {{endif}}
-p.{{html_quote(line['page']['start']) | html}} ({{proceedings['copyright_year']}})</li>
+({{proceedings['copyright_year']}}). arXiv:{{proceedings['arxiv_identifier']}}</li>
+<li>{{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}),
+{{if len(proceedings['editor'])>1}}
+{{', '.join(proceedings['editor'][:-1])}} and {{proceedings['editor'][-1]}} editors,
+{{else}}
+proceedings['editor'] editor,
+{{endif}}
+p.{{html_quote(line['page']['start']) | html}} ({{proceedings['copyright_year']}}). arXiv:{{line['arxiv_identifier']}}</li>
 </ul>
 {{endfor}}
 

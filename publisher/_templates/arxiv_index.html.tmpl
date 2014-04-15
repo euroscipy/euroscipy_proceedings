@@ -13,7 +13,7 @@
 
 {{for line in toc}}
 <!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}} -->
-LIST:arXiv:YYYY.NNNN
+LIST:arXiv:{{line['arxiv_identifier']}}
 Page: {{html_quote(line['page']['start']) | html}} <br />
 {{endfor}}
 
