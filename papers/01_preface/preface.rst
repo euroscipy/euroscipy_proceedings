@@ -13,7 +13,7 @@ Preface
 The conference
 --------------
 
-EuroSciPy, the *European Conference for Scientists using Python*, reached in
+EuroSciPy, the *European Conference on Python in Science*, reached in
 2013 its 6th edition. The 7th is under preparation in Cambridge, UK.
 The conference gathers about 200 scientists from all over Europe and combines
 tutorials and scientific presentations.
