@@ -153,7 +153,7 @@ class Translator(LaTeXTranslator):
           Copyright\,\copyright\,%(year)s %(copyright_holder)s %(copyright)s%%
         ''' % \
         {'email': self.author_emails[0],
-         'year': options['proceedings']['year'],
+         'year': options['proceedings']['copyright_year'],
          'copyright_holder': copyright_holder,
          'copyright': options['proceedings']['copyright']['article']}
 
