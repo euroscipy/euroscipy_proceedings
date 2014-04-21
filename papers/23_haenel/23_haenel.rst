@@ -578,7 +578,7 @@ actually be decompressed.  For the high entropy case, Bloscpack is mostly
 slightly slower than NPY. For the large dataset the results are simply a scaled
 version of the medium dataset size results and yield no additional insights.
 
-Fig. 2 shows the comparison between Bloscpack, NPY and ZFile on the SSD storage
+Fig. 2 shows the comparison between Bloscpack, NPZ and ZFile on the SSD storage
 type. In this comparison, the speed of the Blosc compressor really shines. For
 every combination of dataset size and entropy the is a compression level for
 Bloscpack that can compress faster than any of the competitors. In the extreme
