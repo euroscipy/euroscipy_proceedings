@@ -22,6 +22,7 @@ header = r'''
   \InputIfFileExists{page_numbers.tex}{}{}
   \newcommand*{\docutilsroleref}{\ref}
   \newcommand*{\docutilsrolelabel}{\label}
+  \AtEndDocument{\cleardoublepage}
 
 .. |---| unicode:: U+2014  .. em dash, trimming surrounding whitespace
    :trim:
