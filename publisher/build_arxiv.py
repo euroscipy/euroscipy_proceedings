@@ -6,9 +6,10 @@ import shlex, subprocess
 
 import tempita
 from conf import bib_dir, build_dir, template_dir, html_dir, arxiv_dir
-from options import get_config
+from options import get_config, mkdir_p
 
 def arxiv_html(config):
+    mkdir_p(arxiv_dir)
     for name in ['index', 'submissions']:
         dest_fn = os.path.join(arxiv_dir, 'arxiv_%s.html' % name)
         template = tempita.HTMLTemplate(open(os.path.join(template_dir, 'arxiv_%s.html.tmpl' % name), 'r').read())
