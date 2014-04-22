@@ -44,6 +44,7 @@ this fact [ORC]_.
 
 The reviewing model for EuroSciPy follows the one of the US-based SciPy
 conference [SPprocs]_.
+A fork has been created [ESPprocs]_ to host the contributions to this volume.
 Contributors prepare their manuscript as reStructuredText and submit it, as a
 `Pull Request` (PR), via the online code hosting provider GitHub.
 Reviewers then discuss the manuscripts openly on the PR page until it is ready
