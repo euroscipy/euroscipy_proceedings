@@ -49,15 +49,15 @@ Contributors prepare their manuscript as reStructuredText and submit it, as a
 Reviewers then discuss the manuscripts openly on the PR page until it is ready
 for acceptance.
 
-The main reference for these proceedings is hosted on the arXiv.org preprint
+The main reference for this volume is hosted on the arXiv.org preprint
 server [arXiv]_ and the arXiv identifier [arXivID]_ is considered a part of the
 citation record for the proceedings.
 
 While the publication of associated open-source software is not mandatory for
-the participation in the proceedings, it is encouraged by the program committee
-and most contributions provide at least a publicly accessible source code.
-To help the reader, a note has been added below each abstract that states the
-availability of the code.
+the participation in the proceedings, it is encouraged by the program committee.
+During the reviewing process, several authors decided to release their code
+online with an open-source license and revision control.
+These releases represent a welcome side effect of this volume.
 
 We hope that these proceedings will find a good place in the SciPy literature
 and we would like to address our gratitude to the referees that made their
