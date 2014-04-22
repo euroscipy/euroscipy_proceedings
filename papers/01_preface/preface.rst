@@ -49,6 +49,10 @@ Contributors prepare their manuscript as reStructuredText and submit it, as a
 Reviewers then discuss the manuscripts openly on the PR page until it is ready
 for acceptance.
 
+The main reference for these proceedings is hosted on the arXiv.org preprint
+server [arXiv]_ and the arXiv identifier [arXivID]_ is considered a part of the
+citation record for the proceedings.
+
 While the publication of associated open-source software is not mandatory for
 the participation in the proceedings, it is encouraged by the program committee
 and most contributions provide at least a publicly accessible source code.
@@ -78,3 +82,8 @@ References
          A. Smith, G. Varoquaux and E. Willighagen, *Changing computational
          research. The challenges ahead*, Source Code for Biology and Medicine
          **7**, 2 (2012) http://dx.doi.org/10.1186/1751-0473-7-2
+
+.. [arXiv] arXiv.org e-Print archive http://arxiv.org/
+
+.. [arXivID] Understanding the arXiv identifier
+             http://arxiv.org/help/arxiv_identifier
