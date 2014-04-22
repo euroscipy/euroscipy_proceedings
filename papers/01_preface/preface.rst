@@ -22,8 +22,9 @@ The tutorials were held in two parallel sessions, allowing the newcomers to get
 acquainted with the basic but powerful components of the *SciPy stack*
 [SPstack]_ and experienced users to master advanced techniques or tools.
 
-The topics for the talks and posters were very diverse: pure mathematics,
-analysis of social networks, earth sciences, etc.
+The participants contributed talks and posters in various scientific fields
+(pure mathematics, analysis of social networks, earth sciences, etc.) and on
+programming topics of interest to scientists.
 
 We had for 2013 two very unusual contributions that, in our mind, reflect the
 conference's connection to a lively and evolving community: Ian Ozsvald's *How
