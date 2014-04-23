@@ -11,10 +11,12 @@
 
 <h2>Articles</h2>
 
+
 {{for line in toc}}
-<!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}} -->
+<!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}}, p. {{html_quote(line['page']['start']) | html}} -->
 LIST:arXiv:{{line['arxiv_identifier']}}
-Page: {{html_quote(line['page']['start']) | html}} <br />
+
+
 {{endfor}}
 
 <p>
