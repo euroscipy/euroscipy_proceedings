@@ -7,9 +7,10 @@ import re
 import tempfile
 import glob
 import shutil
+import tarfile
 
 from writer import writer
-from conf import papers_dir, output_dir
+from conf import papers_dir, output_dir, arxiv_dir
 import options
 
 header = r'''
@@ -44,7 +45,8 @@ def rst2tex(in_path, out_path):
     shutil.copy(scipy_status, out_path)
     scipy_style = os.path.join(base_dir, '_static/scipy.sty')
     shutil.copy(scipy_style, out_path)
-    preamble = r'''\usepackage{scipy}'''
+    preamble = r'''\pdfoutput=1
+\usepackage{scipy}'''
 
     # Add the LaTeX commands required by Pygments to do syntax highlighting
 
@@ -159,6 +161,10 @@ def page_count(pdflatex_stdout, paper_dir):
 
     options.dict2cfg(d, cfgname)
 
+def include_for_arxiv(filename):
+    return not (filename.endswith(('.eps', '.log', '.aux', '.out', '.json', '.rst')) or
+                (filename.startswith('figures-') and filename.endswith('.tex')) or
+                os.path.basename(filename) in ['paper.pdf', 'IEEEtran.cls'])
 
 def build_paper(paper_id):
     out_path = os.path.join(output_dir, paper_id)
@@ -168,6 +174,14 @@ def build_paper(paper_id):
     rst2tex(in_path, out_path)
     pdflatex_stdout = tex2pdf(out_path)
     page_count(pdflatex_stdout, out_path)
+    options.mkdir_p(arxiv_dir)
+    archive = tarfile.TarFile(os.path.join(arxiv_dir,paper_id+'.tar'), 'w')
+    for filename in filter(include_for_arxiv, os.listdir(out_path)):
+        if filename.endswith('-eps-converted-to.pdf'):
+            archive.add(os.path.join(out_path, filename), arcname=filename[:-21]+'.pdf')
+        else:
+            archive.add(os.path.join(out_path, filename), arcname=filename)
+    archive.close()
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
