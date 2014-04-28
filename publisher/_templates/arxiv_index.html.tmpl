@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>{{proceedings['title']['full']}}</title>
 </head>
 <body>
@@ -11,13 +12,29 @@
 
 <h2>Articles</h2>
 
+{{if preface}}
+<dl>
+<dt> <span class="list-identifier"><a href="#preface">Preface</a></span></dt>
+<dd>
+<div class="meta">
+<div class="list-authors">
+<span class="descriptor">Authors:</span> {{', '.join(proceedings['editor'])}}
+</div></div>
+</dd>
+</dl>
+{{endif}}
 
 {{for line in toc}}
+{{if not 'preface' in line['paper_id']}}
 <!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}}, p. {{html_quote(line['page']['start']) | html}} -->
 LIST:arXiv:{{line['arxiv_identifier']}}
-
+{{endif}}
 
 {{endfor}}
+
+{{if preface}}
+{{preface}}
+{{endif}}
 
 <p>
 Copyright &copy; {{ proceedings['copyright_year']}}.
