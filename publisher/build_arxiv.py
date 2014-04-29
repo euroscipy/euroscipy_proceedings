@@ -28,7 +28,6 @@ def rst2html(in_path):
     }
 
     html_parts = dc.publish_parts(source=content, writer=Writer(), settings_overrides=settings)
-    print html_parts['docinfo']
 
     return tempita.html(html_parts['html_body'].encode('utf-8'))
 
