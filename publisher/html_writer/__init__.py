@@ -89,7 +89,7 @@ class Writer(writers.Writer):
          ('Specify the initial header level.  Default is 1 for "<h1>".  '
           'Does not affect document title & subtitle (see --no-doc-title).',
           ['--initial-header-level'],
-          {'choices': '1 2 3 4 5 6'.split(), 'default': '3',
+          {'choices': '1 2 3 4 5 6'.split(), 'default': '2',
            'metavar': '<level>'}),
          ('Specify the maximum width (in characters) for one-column field '
           'names.  Longer field names will span an entire row of the table '
@@ -159,7 +159,7 @@ class Writer(writers.Writer):
         'body_pre_docinfo', 'docinfo', 'body', 'body_suffix',
         'title', 'subtitle', 'header', 'footer', 'meta', 'fragment',
         'html_prolog', 'html_head', 'html_title', 'html_subtitle',
-        'html_body')
+        'html_body', 'authors')
 
     def get_transforms(self):
         return writers.Writer.get_transforms(self) + [writer_aux.Admonitions]
@@ -291,6 +291,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         # document title, subtitle display
         self.body_pre_docinfo = []
         # author, date, etc.
+        self.authors = []
         self.docinfo = []
         self.body = []
         self.fragment = []
@@ -324,6 +325,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.in_mailto = False
         self.author_in_authors = False
         self.math_header = []
+        self.current_field = None
 
     def astext(self):
         return ''.join(self.head_prefix + self.head
@@ -526,11 +528,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(self.context.pop() + '</p>\n')
 
     def visit_author(self, node):
-        if isinstance(node.parent, nodes.authors):
-            if True or self.author_in_authors:
-                self.body.append('\n<br />')
-        else:
-            self.visit_docinfo_item(node, 'author')
+        self.authors.append(self.encode(node.astext()))
+        raise nodes.SkipNode
 
     def depart_author(self, node):
         if isinstance(node.parent, nodes.authors):
@@ -726,16 +725,12 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_docinfo(self, node):
         self.context.append(len(self.body))
-        self.body.append(self.starttag(node, 'table',
-                                       CLASS='docinfo',
-                                       frame="void", rules="none"))
-        self.body.append('<col class="docinfo-name" />\n'
-                         '<col class="docinfo-content" />\n'
-                         '<tbody valign="top">\n')
+        self.body.append(self.starttag(node, 'div',
+                                       CLASS='docinfo'))
         self.in_docinfo = True
 
     def depart_docinfo(self, node):
-        self.body.append('</tbody>\n</table>\n')
+        self.body.append('</div>\n')
         self.in_docinfo = False
         start = self.context.pop()
         self.docinfo = self.body[start:]
@@ -746,8 +741,7 @@ class HTMLTranslator(nodes.NodeVisitor):
             meta_tag = '<meta name="%s" content="%s" />\n' \
                        % (name, self.attval(node.astext()))
             self.add_meta(meta_tag)
-        self.body.append(self.starttag(node, 'tr', ''))
-        self.body.append('<th class="docinfo-name">%s:</th>\n<td>'
+        self.body.append('<span>%s:</span>\n'
                          % self.language.labels[name])
         if len(node):
             if isinstance(node[0], nodes.Element):
@@ -756,7 +750,7 @@ class HTMLTranslator(nodes.NodeVisitor):
                 node[-1]['classes'].append('last')
 
     def depart_docinfo_item(self):
-        self.body.append('</td></tr>\n')
+        self.body.append(' ')
 
     def visit_doctest_block(self, node):
         self.body.append(self.starttag(node, 'pre', CLASS='doctest-block'))
@@ -780,10 +774,10 @@ class HTMLTranslator(nodes.NodeVisitor):
                 self.head.extend(self.math_header)
             else:
                 self.stylesheet.extend(self.math_header)
+        if len(self.authors)>1 and self.authors[-1]=='), ':
+            self.authors[-1] = ')'
         # skip content-type meta tag with interpolated charset value:
         self.html_head.extend(self.head[1:])
-        #self.body_prefix.append(self.starttag(node, 'div', CLASS='document'))
-        #self.body_suffix.insert(0, '</div>\n')
         self.fragment.extend(self.body) # self.fragment is the "naked" body
         self.html_body.extend(self.body_prefix[1:] + self.body_pre_docinfo
                               + self.docinfo + self.body
@@ -850,15 +844,24 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</ol>\n')
 
     def visit_field(self, node):
-        self.body.append(self.starttag(node, 'tr', '', CLASS='field'))
+        if self.current_field == 'institution':
+            raise nodes.SkipNode
+        elif self.current_field == 'email':
+            raise nodes.SkipNode
 
     def depart_field(self, node):
-        self.body.append('</tr>\n')
+        if self.current_field == 'institution':
+            self.authors.append('), ')
+        self.current_field = None
 
     def visit_field_body(self, node):
-        self.body.append(self.starttag(node, 'td', '', CLASS='field-body'))
         self.set_class_on_child(node, 'first', 0)
         field = node.parent
+        if self.current_field == 'institution':
+            self.authors.append(' (')
+            self.authors.append(node.astext())
+        elif self.current_field == 'email':
+            raise nodes.SkipNode
         if (self.compact_field_list or
             isinstance(field.parent, nodes.docinfo) or
             field.parent.index(field) == len(field.parent) - 1):
@@ -866,11 +869,14 @@ class HTMLTranslator(nodes.NodeVisitor):
             # the last field of the field list, do not add vertical
             # space after last element.
             self.set_class_on_child(node, 'last', -1)
+        raise nodes.SkipNode
 
     def depart_field_body(self, node):
-        self.body.append('</td>\n')
+        self.authors.append(node.astext())
+        self.body.append(' ')
 
     def visit_field_list(self, node):
+        self.authors.append('\n')
         self.context.append((self.compact_field_list, self.compact_p))
         self.compact_p = None
         if 'compact' in node['classes']:
@@ -902,6 +908,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.compact_field_list, self.compact_p = self.context.pop()
 
     def visit_field_name(self, node):
+        self.current_field = node.astext()
+        raise nodes.SkipNode
         atts = {}
         if self.in_docinfo:
             atts['class'] = 'docinfo-name'
@@ -909,18 +917,14 @@ class HTMLTranslator(nodes.NodeVisitor):
             atts['class'] = 'field-name'
         if ( self.settings.field_name_limit
              and len(node.astext()) > self.settings.field_name_limit):
-            atts['colspan'] = 2
-            self.context.append('</tr>\n'
-                                + self.starttag(node.parent, 'tr', '', 
-                                                CLASS='field')
-                                + '<td>&nbsp;</td>')
+            pass
         else:
             self.context.append('')
-        self.body.append(self.starttag(node, 'th', '', **atts))
 
     def depart_field_name(self, node):
-        self.body.append(':</th>')
+        self.body.append(' ')
         self.body.append(self.context.pop())
+        self.current_field = None
 
     def visit_figure(self, node):
         atts = {'class': 'figure'}
@@ -1629,6 +1633,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         """Only 6 section levels are supported by HTML."""
         check_id = 0  # TODO: is this a bool (False) or a counter?
         close_tag = '</p>\n'
+        print node.astext()
         if isinstance(node.parent, nodes.topic):
             self.body.append(
                   self.starttag(node, 'p', '', CLASS='topic-title first'))
