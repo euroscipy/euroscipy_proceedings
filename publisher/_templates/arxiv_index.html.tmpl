@@ -27,7 +27,7 @@
 
 {{for line in toc}}
 {{if not 'preface' in line['paper_id']}}
-<!-- {{html_quote(line['authors']) | html}} -- {{html_quote(line['title']) | html}}, p. {{html_quote(line['page']['start']) | html}} -->
+<!-- {{html_quote(line['authors']) | html}} - {{html_quote(line['title']) | html}}, p. {{html_quote(line['page']['start']) | html}} -->
 LIST:arXiv:{{line['arxiv_identifier']}}
 {{endif}}
 
