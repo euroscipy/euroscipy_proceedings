@@ -780,7 +780,9 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.html_head.extend(self.head[1:])
         self.fragment.extend(self.body) # self.fragment is the "naked" body
         self.html_body.extend(self.body_prefix[1:] + self.body_pre_docinfo
-                              + self.docinfo + self.body
+                              + ['<h2>%s</h2>\n' % ''.join(self.title)]
+                              + [''.join(self.authors)]
+                              + self.body
                               + self.body_suffix[:-1])
         assert not self.context, 'len(context) = %s' % len(self.context)
 
@@ -1633,7 +1635,6 @@ class HTMLTranslator(nodes.NodeVisitor):
         """Only 6 section levels are supported by HTML."""
         check_id = 0  # TODO: is this a bool (False) or a counter?
         close_tag = '</p>\n'
-        print node.astext()
         if isinstance(node.parent, nodes.topic):
             self.body.append(
                   self.starttag(node, 'p', '', CLASS='topic-title first'))
@@ -1654,6 +1655,9 @@ class HTMLTranslator(nodes.NodeVisitor):
         else:
             assert isinstance(node.parent, nodes.section)
             h_level = self.section_level + self.initial_header_level - 1
+            if h_level==self.initial_header_level:
+                self.title.append(node.astext())
+                raise nodes.SkipNode
             atts = {}
             if (len(node.parent) >= 2 and
                 isinstance(node.parent[1], nodes.subtitle)):
