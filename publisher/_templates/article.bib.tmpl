@@ -5,5 +5,9 @@
   booktitle = { {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}) },
   pages     = { {{' - '.join([str(article['page']['start']), str(article['page']['stop'])])}} },
   year      = { {{proceedings['copyright_year']}} },
-  editor    = { {{' and '.join(proceedings['editor'])}} }
+  editor    = { {{' and '.join(proceedings['editor'])}} },
+{{if article['arxiv_identifier']}}
+  archivePrefix = "arXiv",
+  eprint    = { {{article['arxiv_identifier']}} },
+{{endif}}
 }
