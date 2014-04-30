@@ -292,6 +292,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body_pre_docinfo = []
         # author, date, etc.
         self.authors = []
+        self.in_first_section = None
         self.docinfo = []
         self.body = []
         self.fragment = []
@@ -780,9 +781,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.html_head.extend(self.head[1:])
         self.fragment.extend(self.body) # self.fragment is the "naked" body
         self.html_body.extend(self.body_prefix[1:] + self.body_pre_docinfo
-                              + ['<h2>%s</h2>\n' % ''.join(self.title)]
-                              + [''.join(self.authors)]
-                              + self.body
+                              + self.body[:self.in_first_section]
+                              + self.title
+                              + [''.join(self.authors)] + ['\n']
+                              + self.body[self.in_first_section:]
                               + self.body_suffix[:-1])
         assert not self.context, 'len(context) = %s' % len(self.context)
 
@@ -1471,6 +1473,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.section_level += 1
         self.body.append(
             self.starttag(node, 'div', CLASS='section'))
+        if self.in_first_section is None:
+            self.in_first_section = len(self.body)
 
     def depart_section(self, node):
         self.section_level -= 1
@@ -1656,7 +1660,8 @@ class HTMLTranslator(nodes.NodeVisitor):
             assert isinstance(node.parent, nodes.section)
             h_level = self.section_level + self.initial_header_level - 1
             if h_level==self.initial_header_level:
-                self.title.append(node.astext())
+                self.title.append(self.starttag(node, 'h2', node.astext()))
+                self.title.append('</h2>\n')
                 raise nodes.SkipNode
             atts = {}
             if (len(node.parent) >= 2 and
