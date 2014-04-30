@@ -58,6 +58,8 @@ for acceptance.
 The main reference for this volume is hosted on the arXiv.org preprint
 server [arXiv]_ and the arXiv identifier [arXivID]_ is considered a part of the
 citation record for the proceedings.
+For convenience, we have included a full BibTeX listing at the end of this
+document with the complete information.
 
 While the publication of associated open-source software is not mandatory for
 the participation in the proceedings, it is encouraged by the program committee.
