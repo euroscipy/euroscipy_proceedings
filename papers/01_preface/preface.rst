@@ -25,6 +25,10 @@ acquainted with the basic but powerful components of the *SciPy stack*
 The participants contributed talks and posters in various scientific fields
 (pure mathematics, analysis of social networks, earth sciences, etc.) and on
 programming topics of interest to scientists.
+The keynotes were presented by Cameron Neylon *Network ready research: The role
+of open source and open thinking* and Peter Wang *Python and the Future of Data
+Analysis: A Fugue in Three Parts*, in the tradition of alternating non-technical
+and technical perspectives.
 
 We had for 2013 two very unusual contributions that, in our mind, reflect the
 conference's connection to a lively and evolving community: Ian Ozsvald's *How
