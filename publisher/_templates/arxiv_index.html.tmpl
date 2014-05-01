@@ -59,8 +59,8 @@ Copyright &copy; {{ proceedings['copyright_year']}}.
 
 {{endfor}}
 
-<pre>
 {{for article in toc}}
+<pre id="{{article['paper_id']}}">
 @InProceedings{ {{'-'.join([article['paper_id'],
                                   proceedings['citation_key']])}},
   author    = { {{' and '.join(article['author'])}} },
@@ -74,7 +74,7 @@ Copyright &copy; {{ proceedings['copyright_year']}}.
   eprint    = { {{article['arxiv_identifier']}} },
 {{endif}}
 }
-{{endfor}}
 </pre>
+{{endfor}}
 </body>
 </html>
