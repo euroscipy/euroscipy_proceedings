@@ -59,5 +59,22 @@ Copyright &copy; {{ proceedings['copyright_year']}}.
 
 {{endfor}}
 
+<pre>
+{{for article in toc}}
+@InProceedings{ {{'-'.join([article['paper_id'],
+                                  proceedings['citation_key']])}},
+  author    = { {{' and '.join(article['author'])}} },
+  title     = { {{html_quote(article['title'])}} },
+  booktitle = { {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}) },
+  pages     = { {{' - '.join([str(article['page']['start']), str(article['page']['stop'])])}} },
+  year      = { {{proceedings['copyright_year']}} },
+  editor    = { {{' and '.join(proceedings['editor'])}} },
+{{if article['arxiv_identifier']}}
+  archivePrefix = "arXiv",
+  eprint    = { {{article['arxiv_identifier']}} },
+{{endif}}
+}
+{{endfor}}
+</pre>
 </body>
 </html>
