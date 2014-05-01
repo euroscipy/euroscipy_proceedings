@@ -60,6 +60,16 @@ Copyright &copy; {{ proceedings['copyright_year']}}.
 
 {{endfor}}
 
+<h2>BibTex data</h2>
+<h3>Proceedings volume</h3>
+<pre>
+@Proceedings{ {{proceedings['citation_key']}},
+  title     = { {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}) },
+  year      = { {{proceedings['copyright_year']}} },
+  editor    = { {{' and '.join(proceedings['editor'])}} },
+}
+</pre>
+<h3>Individual papers</h3>
 <pre>
 {{for article in toc}}
 @InProceedings{ {{'-'.join([article['paper_id'],
