@@ -20,6 +20,8 @@ paper:
   ``output/firstname_surname/paper.pdf``.
 
 - Once you are ready to submit your paper, file a pull request on GitHub.
+  The pull request title must include the paper title and the name of the
+  first author.
 
 - Please do not modify any files outside of your paper directory.
 
