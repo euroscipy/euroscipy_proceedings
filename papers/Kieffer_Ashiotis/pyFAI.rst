@@ -104,8 +104,8 @@ Using numpy's slicing feature one can extract all pixels which are between r1 an
 
 The slicing operation takes tens of milliseconds and needs to be repreted thousands of times: making each integration last 40 seconds.
 
-Numpy implementation
---------------------
+Numpy histograms
+----------------
 Nevertheless, the naive formulation can be re-written based on histograms: 
 the mean call can be replaced with the ratio of the sum of all values divided by the number of pixel contributing::
    
@@ -118,10 +118,44 @@ The denominator, mask_r12.sum(), can be obtained from the histogram of r values 
        histw = numpy.histogram(radius, npt, weights=data)[0]
        return histw / hist1
 
-This new implementation takes about 900ms which is much faster.
+This new implementation takes about 800ms which is much faster than the loop written in Python 
+but can be optimized by reading only once the radius array.
  
 Cython implementation
 ---------------------
+Histograms were re-implemented using Cython to perform simultaneously the weighted and the un-weighted histogram with a single radius memory read. 
+The better use if the caches decreases the integration time to 150ms on a single core.
+
+OpenMP support in Cython
+........................
+
+To accelerate further the code we decided to parallelize the cython code thanks to OpenMP.
+While the implementation was quick, the result we got were wrong (by a few percent) due to
+write conflicts, not protected by atomic_add operation. Apparently the use of atomic operation is 
+still not yet possible in Cython (summer 2014).
+Multithreaded histogramming was made possible by using as many histograms as threads, which implies to allocate much more memory.    
+     
+.. table:: Execution speed measured on a pair of Xeon E5520 :label:`Cython`
+
+   +----------------+----------------------+
+   | Implementation | Execution speed (ms) |
+   +----------------+----------------------+
+   | Python mean     | 44000 ms              |
+   +------------+----------------+
+   | Numpy histogram |    829 ms          |
+   +------------+----------------+
+   | Cython 1 thread |    149 ms |
+   +------------+----------------+
+   | Cython 2 thread |    81 ms |
+   +------------+----------------+
+   | Cython 4 thread |    59 ms |
+   +------------+----------------+
+   | Cython 8 thread |    41 ms |
+   +------------+----------------+
+   | Cython 16 thread |    48 ms |
+   +------------+----------------+
+
+:math:`\alpha`
 
 Pixel splitting
 ---------------
@@ -139,6 +173,9 @@ Parallelization of algorithms require their decomposition into parallel blocks l
  * Reduction: like a scalar product
  * Scan: like numpy.cumsum
  * Sort
+
+Faster hardware
+---------------
 
 
 
