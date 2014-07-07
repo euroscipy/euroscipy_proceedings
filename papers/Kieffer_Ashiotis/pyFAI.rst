@@ -30,14 +30,14 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
 
 Introduction
 ============
-The Python programming language is widely addopted in the scientific community
-and especially in crystallography, this is why a conviniant azimuthal integration
-routine, one of the basic algorithm, was requested by the synchroton community.
-The avent of pixel-detectors with their very high speed (about 1000 frames per seconds)
-imposed strong contrains in speed that most available programs (FIT2D, SPD),
-while written in Fortran or C could not meet.
+The Python programming language is widely adopted in the scientific community
+and especially in crystallography, this is why a  convenient azimuthal integration
+routine, one of the basic algorithm, was requested by the synchrotron community.
+The advent of pixel-detectors with their very high speed (about 1000 frames per seconds)
+imposed strong constrains in speed that most available programs (FIT2D, SPD),
+while written in FORTRAN or C could not meet.
 
-The pyFAI project started in 2011 and aims at providing a convieniant python interface
+The pyFAI project started in 2011 and aims at providing a convenient Pythonnic interface
 for azimuthal integration, so that any crystallographer can adapt it to the type of experiment
 he is interested in.
 This contribution describes how one of the most fundamental
@@ -49,23 +49,77 @@ Description of the experiment
 
 An X-ray is an electromagnetic wave, like light except that its wavelength is much smaller, of
 the size of an atom, making it a perfect probe to analyse atoms and molecules.
-This X-ray is scattered (re-emmited with the same energy) by the electron cloud surrounding atoms.
-When atoms are arranged periodically (in a crystal), they behave like a gratting for X-ray and reflect light with given angles.
+This X-ray is scattered (re-emmitted with the same energy) by the electron cloud surrounding atoms.
+When atoms are arranged periodically (in a crystal), they behave like grattings for X-ray and reflect light with given angles.
 An X-ray beam crossing a powder sample made of many small crystals is then scattered along multiple concentric cones.
 In a powder diffraction experiment, one aims a measuring the intensity of X-rays as function of opening of the cone, average along each ring.
 This transformation is called "azimuthal integration" as it is an averaging of the signal along the azimuthal angle.
 
 Figure Debye-Scherrer
+http://en.wikipedia.org/wiki/File:HEX-2D-diffraction.png
 
 Azimuthal integration
 =====================
+While pyFAI addresses the needs of single and bi-dimentional integration with various scattering spaces like:
+ 
+ * r = sqrt(x*x+y*y)
+ * 2th = arctan(r/d) 
+ * q = 4 pi sin(2th / 2)/lambda
+ 
+ 
+This contribution focuses on the algorithmic and implementation part, we will 
+limit the description to 1D full azimuthal integration with a planar detector orthogonal the incomming beam,
+in this case the conic drawn on the detector are concentric circles.  
+
+http://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Polar_to_cartesian.svg/250px-Polar_to_cartesian.svg.png
+
+Test case
+---------
+
+As examples, we will work on a gold powder under an X-Ray beam of wavelength = 1.0e-10m. The detector's shape is 2048x2048 pixels, with pixel size 1e-4m. 
+
+Simulated image: rings.png       
+
+Knowing the geometry, one can easily build the radius array::
+   
+   r = pixel_size * sqrt( (x - x_center)**2 + (y - y_center)**2)
+
 
 Naive implementation
 --------------------
 
+Using numpy's slicing feature one can extract all pixels which are between r1 and r2 and average their values::
+
+   def azimint_naive(data, npt, radius):
+       rmax = radius.max()
+       res = numpy.zeros(npt)
+       for i in range(npt):
+           r1 = rmax * i / npt
+           r2 = rmax * (i+1) / npt
+           mask_r12 = numpy.logical_and((r1 <= radius), (radius < r2))
+           values_r12 = data[mask_r12]
+           res[i] = values_r12.mean()
+       return res
+       
+
+The slicing operation takes tens of milliseconds and needs to be repreted thousands of times: making each integration last 40 seconds.
+
 Numpy implementation
 --------------------
+Nevertheless, the naive formulation can be re-written based on histograms: 
+the mean call can be replaced with the ratio of the sum of all values divided by the number of pixel contributing::
+   
+    values_r12.mean() = values_r12.sum() / mask_r12.sum()
+ 
+The denominator, mask_r12.sum(), can be obtained from the histogram of r values and the numerator from the weighted histogram of radius weighted by the intensity in the image::
 
+   def azimint_hist(data, npt, radius):
+       hist1 = numpy.histogram(radius, npt)[0]
+       histw = numpy.histogram(radius, npt, weights=data)[0]
+       return histw / hist1
+
+This new implementation takes about 900ms which is much faster.
+ 
 Cython implementation
 ---------------------
 
@@ -78,9 +132,9 @@ About paralleliztion
 Parallel algorithms
 -------------------
 
-Parallelization of algorithms require their decompostion into parallel blocks like:
+Parallelization of algorithms require their decomposition into parallel blocks like:
  * Map: apply the same function on all element of a vector
- * Scatter: write multiple output from a single input (atomic suport)
+ * Scatter: write multiple output from a single input (needs atomic operation support)
  * Gather: write a single output from multiple inputs
  * Reduction: like a scalar product
  * Scan: like numpy.cumsum
@@ -108,15 +162,16 @@ and to exploit the sparse structure, both index and weight of the pixel have to 
 By making this change we switched from a “linear read / random write” forward algorithm to a
 “random read / linear write” backward algorithm which is more suitable for parallelization.
 
-Optimization of the sparse mtrix multiplication
------------------------------------------------
+Optimization of the sparse matrix multiplication
+------------------------------------------------
 
 The compressed sparse row (CSR) sparse matrix format was introduced to reduce the size of the dat stored in the LUT.
-This algorithm was implemented both in [Cython]-OpenMP and OpenCL.
+This algorithm was implemented both in [Cython]-OpenMP and OpenCL. 
+Our CSR representation contains data, indices and indptr so it is is fully compatible with scipy.sparse.csr.csr_matrix contructor
 The CSR approach has a double benefit: first, it reduces the size of the storage needed compared to the LUT by a factor two to three,
 offering the opportunity of working with larger images on the same hardware.
 Secondly, the CSR implementation in OpenCL is using an algorithm based on multiple parallel reductions
-where many execution threads are collaborating to calculate the content of a single bin.
+where all threads within a workgroup are collaborating to calculate the content of a single bin.
 This makes it very well suited to run on GPUs and accelerators where hundreds to thousands of simultaneous threads are available.
 
 About precision of calculation
@@ -125,10 +180,10 @@ About precision of calculation
 Knowing the tight energy constrains in computing, the future of high performance computing
 depends on the capability of programs to use the right precision for their calculation.
 As out detectors provide a sensitivity of 12 to 20 bits/pixel, performing all calculation
-in double precision (with 52 bits mantissa) looks oversized  and the 24 bits of mantissa
+in double precision (with 52 bits mantissa) looks over-sized  and the 24 bits of mantissa
 of single precision float looks better adapted (with no drop of precision).
 Moreover, GPU devices provide much more computing power in single precision than in double,
-this factor varies from 2 on high-end professionnal GPU like Nvida Tesla to 24 on most consumer grade devices.
+this factor varies from 2 on high-end professional GPU like Nvida Tesla to 24 on most consumer grade devices.
 
 When using OpenCL for the GPU we used a compensated (or Kahan_summation), to reduce the error accumulation in the histogram summation (at the cost of more operations to be done). This allows accurate results to be obtained on cheap hardware that performs calculations in single precision floating-point arithmetic (32 bits) which are available on consumer grade graphic cards. Double precision operations are currently limited to high price and performance computing dedicated GPUs. The additional cost of Kahan summation, 4x more arithmetic operations, is hidden by smaller data types, the higher number of single precision units and that the GPU is usually limited by the memory bandwidth anyway.
 
