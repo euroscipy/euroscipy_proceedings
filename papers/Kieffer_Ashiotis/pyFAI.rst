@@ -186,43 +186,50 @@ More paralleliztion
 
 For faster execution, one solution is to use faster hardware.
 Graphical processing units (GPU) and other
-accelerators like the Xeon-Phi from Intel features up to hundreeds of compute units,
-each of them able to run dozens of threads in parallel.
-OpenCL allows to execute the same code on processors, graphics cards or accelerator.
-In addition OpenCL uses on the fly compilation which, at usage, looks very much like python interpreted code.
+accelerators like the Xeon-Phi from Intel. 
+Those chips allocate more silicon for computing (ALU)
+and less to branch prediction, memory prefetecher and cache coherency, in comparison to CPU.  
 
-OpenCL hardware
----------------
-.. table:: Execution speed measured on a pair of Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
+Typical GPU have tens (to hundreeds) of compute units able to schedule and run dozens of threads simultaneously (in a Single Instruction Multiple Data way).
+OpenCL allows to execute the same code on processors, graphics cards or accelerator but we will highlight the memory access pattern is important in order to best use them.
+Finally, OpenCL uses on the fly compilation which, at usage, looks very much like Python interpreted code when interfaced with PyOpenCL.
+
+.. table:: Few OpenCL devices we have tested our code on. :label:`Devices`
     :class: w
 
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Vendor             | Intel     | AMD       | AMD | Nvidia  | Nvidia        | Intel     |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Model              | 2 E5-2667 | 2 E5-2667 | ?   | K20     | GeForce 750Ti | Phi       |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Type               | CPU       | CPU       | GPU | GPU     | GPU           | ACC       |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Compute Unit       | 12        | 12        | ?   | 13      | 5             | 236       |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Compute Element/CU | 8:AVX256  | 4:SSE     | ?   | 32:Warp | 32:Warp       | 16:AVX512 |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
-    | Core frequency     | 2900 MHz  | 2900 MHz  | ?   | 705 MHz | 1100 MHz      | 1052      |
-    +--------------------+-----------+-----------+-----+---------+---------------+-----------+
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    | Vendor             | Intel     | AMD       | AMD     | Nvidia  | Nvidia        | Intel     |
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    | Model              | 2 E5-2667 | 2 E5-2667 | V7800   | K20     | GeForce 750Ti | Phi       |
+    +--------------------+-----------+-----------+-------- +---------+---------------+-----------+
+    | Type               | CPU       | CPU       | GPU     | GPU     | GPU           | ACC       |
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    | Compute Unit       | 12        | 12        | 5       | 13      | 5             | 4*69      |
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    | Compute Element/CU | 8:AVX256  | 4:SSE     | 288     | 4*8:Warp| 4*8:Warp      | 16:AVX512 |
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz      | 1052      |
+    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+
+
 
 Parallel algorithms
 -------------------
 
 Parallelization of algorithms require their decomposition into parallel blocks like:
 
- * Map: apply the same function on all element of a vector
+ * Map/: apply the same function on all element of a vector
  * Scatter: write multiple output from a single input (needs atomic operation support)
- * Gather: write a single output from multiple inputs
- * Reduction: like a scalar product
+ * Gather/Stencil: write a single output from multiple inputs
+ * Reduction: like a inner product, maximum, minimum
  * Scan: like numpy.cumsum
  * Sort:
+ 
+Those blocks will typically be one (or few) individual kernel as kernel execution synchronizes global memory.  
+Parallel algorithmics is how to then assemble those blocks to make what is needed 
 
-
+Parallel azimuthal integration
+------------------------------
 
 The azimuthal integration, when based on histograms, is a scatter operation.
 As Cython does not (yet) support atomic operation, using the OpenMP support of
