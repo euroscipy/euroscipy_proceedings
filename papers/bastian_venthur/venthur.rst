@@ -13,10 +13,16 @@ Wyrm, A Pythonic Toolbox for Brain-Computer Interfacing
 
 .. class:: abstract
 
-    In this paper we present Wyrm, a toolbox for Brain-Computer Interfacing
-    (BCI) in Python. Wyrm is applicable to a broad range of neuroscientific
-    problems and cabable for running online experiments in real time and
-    off-line data analysis and visualisation.
+    A Brain-Computer Interface (BCI) is a system that measures central nervous
+    system activity and translates the recorded data into an output suitable for
+    a computer to use as an input signal. Such a BCI system consists of three
+    parts, the signal acquisition, the signal processing and the
+    feedback/stimulus presentation.
+
+    In this paper we present Wyrm, a signal processing toolbox for BCI in
+    Python. Wyrm is applicable to a broad range of neuroscientific problems and
+    cabable for running online experiments in real time and off-line data
+    analysis and visualisation.
 
 .. class:: keywords
 
@@ -59,19 +65,22 @@ ECoG, fMRI, or NIRS) and it is suitable for real-time online experiments. In
 Wyrm we implemented dozens of methods, covering a broad range of aspects for
 off-line analysis and online experiments.
 
-IN THE FOLLOWING SECTIONS WE'LL FOO
+In the following sections we will explain Wyrm's fundamental data structure, its
+design principles and give an overview of the available methods of the toolbox.
+We'll show you where to find the documentation as well as some extensive
+examples.
+
 
 
 Design
 ------
 
-All methods in the toolbox revolve around the data structure that is used
+All methods in the toolbox revolve around a data structure that is used
 throughout the toolbox to store various kinds of data. The data structure dubbed
 `Data`, is an object containing an n-dimensional numpy array that represents the
-actual data to be stored, and some meta data.
-
-The meta data describes for each dimension of the numpy array, the name of the
-dimension, the names of the single columns and the unit of the data.
+actual data to be stored and some meta data. The meta data describes for each
+dimension of the numpy array, the name of the dimension, the names of the single
+columns and the unit of the data.
 
 Let's assume we have a record of previously recorded EEG data. The data was
 recorded with 20 channels and consists of 30 samples. The data itself can be
@@ -79,62 +88,68 @@ represented as a 2-dimensional array with the shape (30, 20). The names for the
 dimensions are 'time' and 'channels', the units are 'ms' and '#' (we use '#' as
 a pseudo unit for enumeration of things), and the description of the columns
 would be two arrays: one array of length 30 containing the time stamps for each
-sample and another array of length 20 containing the channels names. This data
+sample and another array of length 20 containing the channel names. This data
 structure can hold all kinds of BCI related data: continuous data, epoched data,
 spectrograms, feature vectors, etc.
 
-The data structure can be extended as needed by adding new attributes
+We purposely kept the meta data at a minimum, as each operation that modifies
+the data also has to check if the meta data is still consistent. While it might
+be desirable to have more meta data, this would also lead to more hosekeeping
+code which makes the code less readable and more error prone. The data
+structure, however, can be extended as needed by adding new attributes
 dynamically at runtime. All toolbox methods are written in a way that they
 ignore unknown attributes and never throw them away.
 
 We tried very hard to to keep the syntax and semantics of the toolbox methods
 consistent. Each method obeys a small set of rules: (1) Methods never modify
 their input arguments. This allows for a functional style of programming which
-is in our opinon wells suited when diving into the data. (2) A Method never
+is in our opinion well suited when diving into the data. (2) A Method never
 modifies attributes of `Data` objects which are unrelated to the functioning of
 that method. Especially does it never remove additional or unknown attributes.
 (3) If a method operates on a specific axis of a `Data` object, it by default
 obeys a convention about the default ordering of the axis but allows for
-changing the index of the axis by means of a default argument.
+changing the index of the axis by means of a default arguments.
 
 
 Toolbox Methods
 ---------------
 
-The list of algorithms includes: channel selection, IIR filters, sub-sampling,
-spectrograms, spectra, baseline removal for signal processing; Common Spatial
-Patterns (CSP), Source Power Co-modulation (SPoC), classwise average, jumping
-means, signed :math:`r^2`-values for feature extraction; Linear Discriminant
-Analyis (LDA) with and without shrinkage for machine learning; various plotting
-methods and many more. It is worth mentioning that with scikit-learn you have a
-wide range of machine learning algorithms readily at your disposal. Our data
-format is very compatible with scikit-learn and one can usually apply the
-algorithms without any data conversion step at all.
-
+The toolbox contains a few data structures (`Data`, `RingBuffer` and
+`BlockBuffer`), I/O-methods for loading and storing data in foreign formats and
+off course the actual toolbox algorithms. The list of algorithms includes:
+channel selection, IIR filters, sub-sampling, spectrograms, spectra, baseline
+removal for signal processing; Common Spatial Patterns (CSP) [Ramoser], Source
+Power Co-modulation (SPoC) [Dähne], classwise average, jumping means, signed
+:math:`r^2`-values for feature extraction; Linear Discriminant Analyis (LDA)
+with and without shrinkage for machine learning [Blankertz], and many more. It
+is worth mentioning that with scikit-learn you have a wide range of machine
+learning algorithms readily at your disposal. Our data format is very compatible
+with scikit-learn and one can usually apply the algorithms without any data
+conversion step at all.
 
 The toolbox also includes plotting facilities that make it easy to quickly
 generate useful plots out of neurophysiological data. Those methods include
-scalp plots (Figure :ref:`scalp`), time courses (Figure :ref:`average`), and
-signed :math:`r^2` plots (Figure :ref:`r2`).
+scalp plots (Figure :ref:`scalp`), time courses (Figure :ref:`average`), signed
+:math:`r^2` plots (Figure :ref:`r2`), and more.
 
 .. figure:: scalp_subj_b.pdf
 
-    Spatial topography of the average voltage distribution for different time
-    intervals. :label:`scalp`
+    Example scalp plots. The plots show the spatial topography of the average
+    voltage distribution for different time intervals and channels.
+    
+    :label:`scalp`
 
 .. figure:: eeg_classwise_average.pdf
 
-    Classwise average time courses for two subjects in an ERP experiment for
-    three selected channels. The averages were calculated on the whole training
-    set, t=0 ms is the onset of the stimulus.
+    Example time course plots for three selected channels.
+
     :label:`average`
 
 .. figure:: eeg_signed_r2.pdf
 
-    Signed r 2 -values for subject A (top row) and subject B (bottom row). The
-    channels are sorted from frontal to occipital and within each row from left
-    to right. The blobs show the time intervals for each channel, which discrim-
-    inate best against the other class.
+    Example signed :math:`r^2`-plots. The channels are sorted from frontal to
+    occipital and within each row from left to right.
+    
     :label:`r2`
 
 
@@ -175,7 +190,7 @@ During the experiment the subject had to perform imagined movements of either
 the left small finger or the tongue. Each trial consisted of either an imagined
 finger- or tongue movement and was recorded for a duration of 3 seconds. The
 recordings in the data set start at 0.5 seconds after the visual cue had ended
-to avoid visual evoked potentials, being reflected by the data [?]. It is worth
+to avoid visual evoked potentials, being reflected by the data. It is worth
 noting that the training- and test data were recorded on the same subject but
 with roughly one week between both recordings. The data set consists of 278
 trials of training data and 100 trials of test data. During the BCI Competition
@@ -187,31 +202,32 @@ compare the accuracy of our results.
 
 The second data set uses Electroencephalography (EEG) recordings, provided by
 the Wadsworth Center, NYS Department of Health, USA. The data were acquired
-using BCI2000’s Matrix Speller paradigm [Schalk et al., 2004], originally
-described in [?]. The subject had to focus on one out of 36 different
-characters, arranged in a 6x6 matrix. The rows and columns were successively and
-randomly intensified. Two out of 12 intensifications contained the desired
-character (i.e., one row and one column). The event-related potential (ERP)
-components evoked by these target stimuli are different from those ERPs evoked
-by stimuli that did not contain the desired character. The ERPs are composed of
-a combination of visual and cognitive components [??]. The subject’s task was to
-focus her/his attention on characters (i.e. one at a time) in a word that was
-prescribed by the investigator. For each character of the word, the 12
-intensifications were repeated 15 times before moving on to the next character.
-Any specific row or column was intensified 15 times per character and there were
-in total 180 intensifications per character. The data was recorded using 64
-channel EEG. The 64 channels covered the whole scalp of the subject and were
-aligned according to the 10-20 system. The collected signals were bandpass
-filtered from 0.1-60Hz and digitized at 240Hz. The data set consists of a
-training set of 85 characters and a test set of 100 characters for each of the
-two subjects. For the trainings sets the labels of the characters were
-available. The task for this data set was to predict the labels of the test sets
-using the training sets and the labels.
+using BCI2000’s Matrix Speller paradigm, originally described in. The subject
+had to focus on one out of 36 different characters, arranged in a 6x6 matrix.
+The rows and columns were successively and randomly intensified. Two out of 12
+intensifications contained the desired character (i.e., one row and one column).
+The event-related potential (ERP) components evoked by these target stimuli are
+different from those ERPs evoked by stimuli that did not contain the desired
+character. The ERPs are composed of a combination of visual and cognitive
+components. The subject’s task was to focus her/his attention on characters
+(i.e. one at a time) in a word that was prescribed by the investigator. For each
+character of the word, the 12 intensifications were repeated 15 times before
+moving on to the next character. Any specific row or column was intensified 15
+times per character and there were in total 180 intensifications per character.
+The data was recorded using 64 channel EEG. The 64 channels covered the whole
+scalp of the subject and were aligned according to the 10-20 system. The
+collected signals were bandpass filtered from 0.1-60Hz and digitized at 240Hz.
+The data set consists of a training set of 85 characters and a test set of 100
+characters for each of the two subjects. For the trainings sets the labels of
+the characters were available. The task for this data set was to predict the
+labels of the test sets using the training sets and the labels.
 
+We also provide an example online experiment where we use the ERP data set with
+an pseudo amplifier that feeds the data in real-time to the toolbox, to show how
+to do the classification task in an online setting.
 
 The data sets from the competition are freely available and one can reproduce
-our results using the scripts and the data. We also provide a simulated online
-BCI experiment using a data set from the same competition.
+our results using the scripts and the data.
 
 
 Python 2 vs Python 3
@@ -228,16 +244,19 @@ Summary and Conclusion
 ----------------------
 
 In this paper we presented Mushu, a free and open source BCI toolbox in Python.
-We showed XXX
+We introduced Mushu's main data structure and explained the design ideas behind
+the current implementation. We gave a short overview of the existing methods in
+the toolbox and showed how we utilized unit testing to make sure the toolbox
+works as specified, where to find the extensive documentation and some detailed
+examples.
+
+Together with Mushu_ [Mushu]_ our signal acquisition library and Pyff [Pyff]_
+our Framework for Feedback and Stimulus Presentation, Wyrm adds the final piece
+to our ongoing effort to provide a complete, free and open source BCI system in
+Python.
 
 Mushu is available under the terms of the MIT license, its repository can be
 found at http://github.com/venthur/mushu.
-
-Together with `Mushu <http://github.com/venthur/mushu>`__ [Mushu]_ our signal
-acquisition library and `Pyff <http://github.com/venthur/pyff>`__ [Pyff]_ our
-Framework for Feedback and Stimulus Presentation, Wyrm adds the final piece to
-our ongoing effort to provide a complete, free and open source BCI system in
-Python.
 
 
 Acknowledgements
@@ -250,16 +269,28 @@ and 609593.
 
 References
 ----------
+.. [Blankertz] Blankertz B, Lemm S, Treder MS, Haufe S, Müller KR (2011)
+               *Single-trial analysis and classification of ERP components – a
+               tutorial*. NeuroImage 56:814– 825,
+               http://dx.doi.org/10.1016/j.neuroimage.2010.06.048
+.. [Dähne] Dähne S, Meinecke FC, Haufe S, Höhne J, Tangermann M, Müller KR,
+           Nikulin VV (2014) *SPoC: a novel framework for relating the amplitude
+           of neuronal oscillations to behaviorally relevant parameters*.
+           NeuroImage 86(0):111–122,
+           http:://dx.doi.org/10.1016/j.neuroimage.2013.07.079
+.. [Mushu] Bastian Venthur and Benjamin Blankertz. *Mushu, a Free and Open
+           Source BCI Signal Acquisition, Written in Python*. Engineering in
+           Medicine and Biology Society (EMBC). doi:
+           http://dx.doi.org/10.1109/EMBC.2012.6346296 San Diego, 2012.
 .. [Pyff] Bastian Venthur, Simon Scholler, John Williamson, Sven Dähne, Matthias
           S Treder, Maria T Kramarek, Klaus-Robert Müller and Benjamin
           Blankertz. *Pyff---A Pythonic Framework for Feedback Applications and
-          Stimulus Presentation in Neuroscience.* Frontiers in Neuroscience.
+          Stimulus Presentation in Neuroscience*. Frontiers in Neuroscience.
           2010. http://dx.doi.org/10.3389/fnins.2010.00179.
-.. [Mushu] Bastian Venthur and Benjamin Blankertz. *Mushu, a Free and Open
-           Source BCI Signal Acquisition, Written in Python.* Engineering in
-           Medicine and Biology Society (EMBC). doi:
-           http://dx.doi.org/10.1109/EMBC.2012.6346296 San Diego, 2012.
-
+.. [Ramoser] Ramoser H, Muller-Gerking J, Pfurtscheller G (2000) *Optimal
+             spatial filtering of single trial eeg during imagined hand
+             movement*. Rehabilitation Engineering, IEEE Transactions on
+             8(4):441–446
 .. [Numpy] http://numpy.org
 .. [SciPy] http://scipy.org
 .. [Matplotlib] http://matplotlib.org
