@@ -21,7 +21,7 @@ Wyrm, A Pythonic Toolbox for Brain-Computer Interfacing
 
     In this paper we present Wyrm, a signal processing toolbox for BCI in
     Python. Wyrm is applicable to a broad range of neuroscientific problems and
-    cabable for running online experiments in real time and off-line data
+    capable for running online experiments in real time and off-line data
     analysis and visualisation.
 
 .. class:: keywords
@@ -94,7 +94,7 @@ spectrograms, feature vectors, etc.
 
 We purposely kept the meta data at a minimum, as each operation that modifies
 the data also has to check if the meta data is still consistent. While it might
-be desirable to have more meta data, this would also lead to more hosekeeping
+be desirable to have more meta data, this would also lead to more housekeeping
 code which makes the code less readable and more error prone. The data
 structure, however, can be extended as needed by adding new attributes
 dynamically at runtime. All toolbox methods are written in a way that they
@@ -184,7 +184,7 @@ analysis scripts, where we demonstrate how to use the toolbox to complete two
 tasks from the BCI Competition III [BCIComp3]_. The first example uses
 Electrocorticography (ECoG) recordings provided by the
 Eberhard-Karls-Universität Tübingen. The time series where picked up by a 8x8
-ECoG platinum grid which was placed on the contraleteral, right motor cortex.
+ECoG platinum grid which was placed on the contralateral, right motor cortex.
 
 During the experiment the subject had to perform imagined movements of either
 the left small finger or the tongue. Each trial consisted of either an imagined
