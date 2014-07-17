@@ -197,10 +197,16 @@ Pixel splitting
 Pixel splitting is what occurs when a pixel of the detector spans over more than one of the bins of the histogram.
 When that happens, the contribution to each of the involved bins is assumed to be proportional to the area of the pixel segment that falls into that bin.
 The goal behind the addition of that extra complexity to the code is that the results obtained this way owe to be less noisy than the case where pixel splitting is ignored.
-This becomes more apparent when dealing with detectors with relatively low resolutions, especially when the required number of bins is large.
+This becomes more apparent when the number of pixels falling into each bin is small like for example on bidimentional integration.
+Figure :ref:`bidimentional` presents such an integration performed using histograms on the left side, hence without pixel splitting which exhibits some high frequency patterns near the beam center.
+The right hand side image was produced using pixel splitting and is unharmed by such defects related to the low statistics.
+Note that for 2D integration this transformation looks like an interpolation, but interpolation never garanties the conservation of the signal :math:`\sum{image} = \sum{ weighted\ histogram }`
+nor the conservation of pixels :math:`\sum{ unweigted\ histogram } = number\ of\  pixels`.
 
-TODO: insert image 2k*2k integrated on 1000 and 4000 bins without pixel splitting
+.. figure:: integrate2d.png
 
+   Bi-dimentional azimuthal integration of the gold diffraction image using (right side) or not pixel splitting  :label:`bidimentional`
+ 
 Bounding Box
 ------------
 
