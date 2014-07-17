@@ -179,92 +179,52 @@ This approach is the one taken by OpenCL where
 Pixel splitting
 ===============
 
-Pixel splitting is what occurs when a pixel of the detector spans over more 
-than one of the bins of the histogram. 
-When that happens, the contribution to each of the involved bins is 
-proportional to the area of the pixel segment that falls into that bin. 
-The goal behind the addition of that extra complexity to the code is that the 
-results obtained this way owe to be less noisy than the case where pixel 
-splitting is ignored. 
-This becomes more apparent when dealing with detectors with relatively low 
-resolutions, especially when the required number of bins is large. 
-(what should I say about the issue with the statistics??)
+Pixel splitting is what occurs when a pixel of the detector spans over more than one of the bins of the histogram. 
+When that happens, the contribution to each of the involved bins is proportional to the area of the pixel segment that falls into that bin. 
+The goal behind the addition of that extra complexity to the code is that the results obtained this way owe to be less noisy than the case where pixel splitting is ignored. 
+This becomes more apparent when dealing with detectors with relatively low resolutions, especially when the required number of bins is large. 
+
+Bounding Box
+------------
 
 The first way pixel splitting was implemented was with a bounding box. 
-In this case we are abstracting the pixel, which is represented by a center 
-point and a span, with an orthogonal box that circumscribes it. 
-Two sides are parallel to the radial axis, and the other sides, are equal to 
-the unit. 
-Now instead of calculating the contribution of each segment of the pixel based 
-on its area, we do that using the area of the bounding box segment instead. 
+In this case we are abstracting the pixel, which is represented by a center point and a span, with an orthogonal box that circumscribes it. 
+Two sides are parallel to the radial axis, and the other sides, are equal to the unit. 
+Now instead of calculating the contribution of each segment of the pixel based on its area, we do that using the area of the bounding box segment instead. 
 This greatly simplifies the algorithm, giving out good performance. 
 
-The first step in this algorithm is to calculate the lower and upper bounds of 
-the pixel in the radial direction. 
-Then we continue and calculate the lower and upper bounds of the whole 
-problem, by finding the minimum lower and maximum upper value of the resulting 
-arrays from the previous step. 
-Using those two values we proceed to calculate the size of each bin, by 
-dividing their difference with the number of requested bins. 
-
-Now everything is set up for the pixel splitting to take place. 
-We start looping over all of the pixels of the detector. 
-If the pixel is masked out we skip it and continue to the next pixel. 
-Taking the difference of the lower and upper bounds of the pixel (after 
-transforming them into "bin space") gives the area of our bounding box, as the 
-other side is of size one. 
-Rounding down those values will also give us the bins that those two points 
-belong to. 
-If those values are the same, we don’t have pixel splitting and the intensity 
-of that pixel is added to that bin of the weighted histogram and the value of 
-one is added to the same bin of the unweighted histogram. 
-
-On the other hand if those two values are different, the pixel spans over more 
-than one bin and we have pixel splitting. 
-In that case our algorithm first calculates the contribution of the two most 
-outward bins (left and right), as their contribution is less one over box 
-area, by calculating the area of the box segment they correspond to and then 
-dividing that by the box area. 
+The algorithm loops over all of the pixels of the detector, adding their contribution to the appropriate bin. 
+When the whole pixel falls into only one bin, we don’t have pixel splitting and the intensity of that pixel is added to that bin of the weighted histogram and the value of one is added to the same bin of the unweighted histogram. 
+On the other hand if the pixel spans over more than one bin, we have pixel splitting. 
+In that case our algorithm first calculates the contribution of the two most outward bins (left and right), as their contribution is less than one over box area, by calculating the area of the box segment they correspond to and then dividing that by the box area. 
 That makes up the contribution to those two bins of the unweighted histogram. 
-Multiplying that with the corresponding weight gives the weighted histogram 
-contribution of those bins. 
-Finally we loop over the remaining "internal" bins (if any) and add a 
-contribution of one over box area to the unweighted histogram and the same 
-value multiplied by the weight corresponding to that pixel to the weighted 
-histogram. 
-After we finish looping over all of the pixels, what remains is to calculate 
-the ratio of the two histograms and return the results.
+Multiplying that with the corresponding weight gives the weighted histogram contribution of those bins. 
+Finally we loop over the remaining “internal” bins (if any) and add a contribution of one over box area to the unweighted histogram and the same value multiplied by the weight corresponding to that pixel to the weighted histogram. 
+After we finish looping over all of the pixels, what remains is to calculate the ratio of the two histograms and return the results.
 
-In an effort to farther improve the results of the azumithal integration, 
-another pixel-splitting scheme was devised. 
-This time, no abstraction takes place and the pixel-splitting is done using 
-the area of the actual pixel segments. 
-This introduces some extra complexity to the calculations, making the process 
-a bit slower. 
+Full Pixel Splitting
+--------------------
 
-As in the case of the bounding box, we transform the coordinates of the 
-pixels, this time defined by the 4 points that make it up, from the radial 
-space to the "bin space". 
-Next we proceed to calculate over which bins the pixel spans. 
-If that is only one bin, we proceed as before and add a unit and the intensity 
-to the corresponding bin of the unweighted and weighted histograms 
-respectively. 
-Otherwise we have to handle the pixel splitting.
+In an effort to farther improve the results of the azumithal integration, another pixel-splitting scheme was devised. 
+This time, no abstraction takes place and the pixel-splitting is done using the area of the actual pixel segments. 
+This introduces some extra complexity to the calculations, making the process a bit slower. 
 
-This is done by firstly defining a function for each of the sides of the pixel 
-in-question. 
+As before, we first have to check if pixel splitting occurs. 
+In the case it does not, the pixel is processed as before. 
+Otherwise we have to handle the pixel splitting. 
+This is done by firstly defining a function for each of the sides of the pixel in-question. 
 That is, calculating the slope and the point of intersection. 
 We’ll also require the area of the pixel. 
-Next we loop over the bins that the pixel spans over and proceed to integrate 
-the four functions we’ve previously defied. 
-Some of those contributions will be positive and some negative. 
-Taking the absolute value of the sum of all those contributions will give us 
-the area of the pixel segment, no matter of the orientation of the polygon 
-that makes up the pixel or of which point of the pixel we start the 
-integration from. 
-The hard part here was to define the limits of each of the integrals in a way 
-that wouldn’t hinder the performance by adding allot of conditionals. 
-The contribution to the histograms is calculated the same way as before.
+Next we loop over the bins that the pixel spans over and proceed to integrate the four functions we’ve previously defied in that interval. 
+Taking the absolute value of the sum of all those contributions will give us the area of the pixel segment. 
+The hard part here was to define the limits of each of the integrals in a way that wouldn’t hinder the performance by adding allot of conditionals. 
+The contribution to the histograms is calculated in a similar fashion as before.
+
+Discussion on the statistics
+----------------------------
+
+Using either of the two pixel splitting algorithms results in some side effects that the user should be aware of. 
+Specifically, the act of having pixels contributing to neighboring bin of the histogram creates cross-correlation between those bins, affecting this way the statistics of the final results in a potentially unwanted manner.
 
 
 More paralleliztion
