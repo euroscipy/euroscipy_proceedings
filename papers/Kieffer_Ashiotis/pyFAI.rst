@@ -29,14 +29,14 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
 Introduction
 ============
 
-The Python programming language is widely adopted in the scientific community
+The [Python]_ programming language is widely adopted in the scientific community
 and especially in crystallography, this is why a  convenient azimuthal integration
 routine, one of the basic algorithm, was requested by the synchrotron community.
 The advent of pixel-detectors with their very high speed (about 1000 frames per seconds)
-imposed strong constrains in speed that most available programs (FIT2D, SPD, ...),
+imposed strong constrains in speed that most available programs ([FIT2D]_, [SPD]_, ...),
 while written in FORTRAN or C, could not meet.
 
-The pyFAI project started in 2011 and aims at providing a convenient Pythonnic interface
+The [pyFAI]_ project started in 2011 and aims at providing a convenient Pythonic interface
 for azimuthal integration, so that any crystallographer can adapt it to the type of experiment
 he is interested in.
 This contribution describes how one of the most fundamental
@@ -46,7 +46,7 @@ and how it was accelerated to reach the performances of today's fastest detector
 After the description of the experiment and the explanation of what is measured and how it must be transformed in paragraph 2,
 the paragraph 3 exposes how the algorithm can be vectorized using numpy and speeded up with cython.
 
-The parallelization of this algorithm beeing not very efficient we seeked for a completely parallel implementation,
+The parallelization of this algorithm being not very efficient we seek for a completely parallel implementation ([pyFAI_ocl]_),
 this time based on OpenCL (and interfaced using PyOpenCL)
 
 Description of the experiment
@@ -62,36 +62,32 @@ This transformation is called "azimuthal integration" as it is an averaging of t
 
 .. figure:: HEX-2D-diffraction.png
 
-   Debye-Scherrer cones obtained from diffraction of a monochromatic X-Ray beam by a powder of crystallized material. (Credits: CC-BY-SA  Klaus-Dieter LisS) :label:`diffraction`
+   Debye-Scherrer cones obtained from diffraction of a monochromatic X-Ray beam by a powder of crystallized material. (Credits: CC-BY-SA  Klaus-Dieter Liss) :label:`diffraction`
 
 
 Azimuthal integration
 =====================
 
 While pyFAI addresses the needs of both single and bi-dimentional integration with various scattering spaces,
-this contribution focuses on the algorithmic and implementation part. The output spaces implemented are :
+this contribution focuses on the algorithmic and implementation part.
+The output spaces implemented in pyFAI are:
 
-* r = sqrt(x*x+y*y)
-* :math:`\chi` = arctan(y/x)
-* :math:`2\theta` = arctan(r/d)
-* q = 4 :math:`\pi` sin(:math:`2 \theta` / 2)/:math:`\lambda`
+* :math:`r = \sqrt{x^2+y^2}`
+* :math:`\chi = tan^{-1}(y/x)`
+* :math:`2\theta = tan^{-1}(r/d)`
+* :math:`q = 4 \pi sin({2 \theta} / 2)/ \lambda`
 
 
 The description made in this paper is limited the description of 1D full azimuthal
 integration with a planar detector orthogonal the incoming beam,
 in this case the conic drawn on the detector are concentric circles.
 
-http://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Polar_to_cartesian.svg/250px-Polar_to_cartesian.svg.png
 
-.. figure:: 250px-Polar_to_cartesian.png
-
-   Conversion for cartesian to polar coordinates. The general case is usually more complicated than that.
-    
 Test case
 ---------
 
 To let the reader have an idea of the scale of the problem and the performances needed, we will work on
-the simulated image of gold powder diffracting an X-Ray beam of wavelength = 1.0e-10m (the intensities of all rings are the same).
+the simulated image of gold powder diffracting an X-rRay beam of wavelength = 1.0e-10m (the intensities of all rings are the same).
 The detector, which has a pixel size of 1e-4m (2048x2048 pixels), is placed at 0.1 m from the sample, orthogonal to the incident beam, and centered.
 The Figure :ref:`rings` represents the input diffraction image on the left sub-plot and the integrated profile along the azimuthal angle on the right side.
 The radial unit in this case is simply the radius calculated from :math:`r=\sqrt{(x - x_c)^2 + (y - y_c)^2}`, while in crystallographers woul have preferred :math:`2\theta` or q.
@@ -165,23 +161,23 @@ Multithreaded histogramming was made possible by using as many histograms as thr
 
 .. table:: Execution speed measured on a pair of Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
 
-   +----------------+--------------------+
-   | Implementation | Execution time (ms)|
-   +----------------+--------------------+
-   | loop + mean    | 44000              |
-   +----------------+--------------------+
-   | np.histogram   | 829                |
-   +----------------+--------------------+
-   | Cython 1_th    | 149                |
-   +----------------+--------------------+
-   | Cython 2_th    |  81                |
-   +----------------+--------------------+
-   | Cython 4_th    |  59                |
-   +----------------+--------------------+
-   | Cython 8_th    |  41                |
-   +----------------+--------------------+
-   | Cython 16_th   |  48                |
-   +----------------+--------------------+
+   +----------------+----------------+
+   | Implement.     | Exec. time (ms)|
+   +----------------+----------------+
+   | loop + mean    |     44000      |
+   +----------------+----------------+
+   | np.histogram   |      829       |
+   +----------------+----------------+
+   | Cython 1_th    |      149       |
+   +----------------+----------------+
+   | Cython 2_th    |        81      |
+   +----------------+----------------+
+   | Cython 4_th    |       59       |
+   +----------------+----------------+
+   | Cython 8_th    |        41      |
+   +----------------+----------------+
+   | Cython 16_th   |        48      |
+   +----------------+----------------+
 
 
 The speed-up measured when going from 4 threads to 8 threads (i.e. from one processor to two)
@@ -210,7 +206,7 @@ nor the conservation of pixels :math:`\sum{ unweigted\ histogram } = number\ of\
 Bounding Box
 ------------
 
-The first way pixel splitting was implemented was with a bounding box like in Fit2D :ref:`FIT2D`.
+The first way pixel splitting was implemented was with a bounding box like in Fit2D [FIT2D]_.
 In this case we are abstracting the pixel, which is represented by a center point and a span, with an orthogonal box that circumscribes it.
 Two sides are parallel to the radial axis, and the other sides, are equal to the unit.
 Now instead of calculating the contribution of each segment of the pixel based on its area, we do that using the area of the bounding box segment instead.
@@ -353,6 +349,14 @@ When using OpenCL for the GPU we used a compensated (or Kahan_summation), to red
 
 The performances of the parallel implementation based on a LUT, stored in CSR format, can reach 750 MPix/s on recent multi-core computer with a mid-range graphics card. On multi-socket server featuring high-end GPUs like Tesla cards, the performances are similar with the additional capability to work on multiple detector simultaneously.
 
+Outlook on parallel programming
+...............................
+
+The calculation of the look-up table which is currently performed in single threaded cython code.
+As we have seen, this scatter operation is a challenge for parallel programming because of
+the dynamic memory allocation needed and of the use of atomic operation in addition
+to some numerial precision issues with single precision floating point numbers.
+
 Benchmarks
 ==========
 
@@ -369,6 +373,20 @@ GPU vs Xeon Phi
 ---------------
 
 
+Project description
+===================
+
+PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
+PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
+In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
+Optional openCL acceleration is provided by pyopencl [pyopencl]_
+Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and PyQt4 [PyQt]_ and
+SciPy [Scipy]_ for image processing.
+A C compilers is needed to build the [Cython]_ code from sources.
+PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
+The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
+
+
 Conclusions
 ===========
 
@@ -379,18 +397,45 @@ Acknoledgments
 ==============
 
 LinkSCEEM
+. Porting pyFAI to
+gpu
+would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
+
+
+
 
 References
 ==========
+.. [pyFAI] todo
+.. [pyFAI_ocl] todo
+.. [FabIO] TODO
+.. [FIT2D] A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
+           High Press. Res., 14:235–248, 1996
+.. [SPD] P. Bösecke P 
+         J. Appl. Cryst., 40:s423–s427, 2007
+
+.. [Python] Van Rossum
+
+.. [matplotlib] todo
+
+.. [PyQt] todo
+
+.. [NumPy] Oliphan
+
+.. [SciPy] ...
+
+.. [Cython] TODO
+
+.. [pyopencl] TODO
+
+.. [openmp] TODO
+
+.. [Atr03] P. Atreides. *How to catch a sandworm*,
+           Transactions on Terraforming, 21(3):261-300, August 2003.
+
+
 
 References can be found in
 https://github.com/kif/pyFAI_publi/blob/master/biblio.bib
 and need to be formated
-
-.. [NumPy] Oliphan
-.. [Cython] TODO
-.. [PyOpenCL] TODO
-.. [Atr03] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
-
 
