@@ -362,30 +362,29 @@ Benchmarks
 
 Reference: splitBBox serial
 
+At this point we present the results from several benchmarks done using the diffetent algorithm options available in PyFAI.
+
 Choice of the algorithm
 -----------------------
+
 
 OpenMP vs OpenCL
 ----------------
 
+Comparing the serial implementation with the ones using the Split Bound Box on the CPU shows that the achieved paralellism depends on the achitecture used, the API chosen, and finaly the size and type of the data.
+The results from an Intel Xeon E-5520, a relatevly old quad-core CPU show that OpenMP implementation generaly out-performs the OpenCL on most input data sizes.
+On top of that, there is a minor difference between the LUT and CSR versions of the algorithms, with the LUT being in the lead.
+Instead on a much newer Intel Xeon E5-2667 6-core CPU, the inverse seems to be true, now with the OpenCL implementation giving the best performance.
+Although, again as before, the LUT version is the one that performse marginaly better.
+(here of at the conclusions) The difference between the benchmarks of the two CPUs might be atributed to the larger SIMD unit of the newer CPU, making OpenCL a batter choise in API for that achitecture.
 
 GPU vs Xeon Phi
 ---------------
 
-
-Project description
-===================
-
-PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
-PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
-In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
-Optional openCL acceleration is provided by pyopencl [pyopencl]_
-Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and PyQt4 [PyQt]_ and
-SciPy [Scipy]_ for image processing.
-A C compilers is needed to build the [Cython]_ code from sources.
-PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
-The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
-
+One surprice that came from the benhcmarks taken on the Inte Xeon Phi, was the performance deferential between it and several GPUs.
+All of the GPUs gave better performance than the Xeon Phi, which fared more similarly to the CPUs.
+But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
+Very close to that came the much more expensive and renown Nvidia Titan, leaving the older Nvidia Tesla K20 trailing behind.
 
 Conclusions
 ===========
@@ -401,6 +400,34 @@ LinkSCEEM
 gpu
 would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
 
+Project description
+===================
+
+PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
+PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
+In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
+Optional openCL acceleration is provided by pyopencl [pyopencl]_
+Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and PyQt4 [PyQt]_ and
+SciPy [Scipy]_ for image processing.
+A C compilers is needed to build the [Cython]_ code from sources.
+PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
+The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
+
+
+
+Conclusions
+===========
+
+TODO
+CPUs are GPUs like others...
+
+Acknoledgments
+==============
+
+LinkSCEEM
+. Porting pyFAI to
+gpu
+would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
 
 
 
