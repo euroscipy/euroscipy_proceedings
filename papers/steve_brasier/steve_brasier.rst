@@ -1,38 +1,107 @@
-:author: Gaius Caesar
-:email: jj@rome.it
-:institution: Senate House, S.P.Q.R.
-
-:author: Mark Anthony
-:email: mark37@rome.it
-:institution: Egyptian Embassy, S.P.Q.R.
-
-:author: Jarrod Millman
-:email: millman@rome.it
-:institution: Egyptian Embassy, S.P.Q.R.
+:author: Steve Brasier
+:email: steve.brasier@aktkinsglobal.com
+:institution: Atkins, 500 Park Avenue, Aztec West, BS32 4RZ 
 
 
-------------------------------------------------
-A Numerical Perspective to Terraforming a Desert
-------------------------------------------------
+
+------------------------------------------------------------
+A Python-based Post-processing Tool-set For Seismic Analyses
+------------------------------------------------------------
 
 .. class:: abstract
 
-   A short version of the long version that is way too long to be written as a
-   short version anyway.  Still, when considering the facts from first
-   principles, we find that the outcomes of this introspective approach is
-   compatible with the guidelines previously established.
+    This talk will discuss the design and implementation of a Python-based
+    tool-set to aid in assessing the response of the UK's Advanced Gas
+    Reactor nuclear power stations to earthquakes. The seismic analyses
+    themselves are carried out with a commercial Finite Element solver, but
+    understanding the raw data this produces requires customised post-processing
+    and visualisation tools. Extending the existing tools had become
+    increasingly difficult and a decision was made to develop a new,
+    Python-based tool-set. This comprises of a post-processing framework
+    ("aftershock") which includes an an embedded Python interpreter, and a
+    plotting package ("afterplot") based on numpy and matplotlib.
 
-   In such an experiment it is then clear that the potential for further
-   development not only depends on previous relationships found but also on
-   connections made during exploitation of this novel new experimental
-   protocol.
+    The new tool-set had to be significantly more flexible and easier to
+    maintain than the existing code-base, while allowing the majority of 
+    development to be carried out by engineers with little training in software 
+    development. The resulting architecture will be described with a focus on 
+    exploring how the design drivers were met and the successes and challenges 
+    arising from the choices made.
 
 .. class:: keywords
 
-   terraforming, desert, numerical perspective
+   python, numpy, matplotlib, seismic analysis, plotting
 
 Introduction
 ------------
+
+The UK has a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These were a second generation reactor design and have a core consisting of layers of interlocking graphite bricks which act to slow neutrons from the fuel to sustain the nuclear reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
+
+A series of computer models have been developed to examine the behaviour of the reactors during an earthquake. These models are regularly upgraded and extended as the cores age to ensure the relevant behaviour can be modelled. The models themselves are analysed using the commercial Finite Element Analysis code LS-DYNA. This calculates predictions for the positions and velocities of the tens of thousands of bricks in the core during the simulated earthquake.
+
+By itself, this raw data is not particularly informative and engineers seek answers to higher-level questions such as:
+
+- Can the control rods enter the distored core?
+- Is the fuel integrity maintained?
+
+To help us answer these questions a complex set of post-processing calculations is carried out to convert the raw data into parameters which describe the sesimic performance of the core, assess these parameters against acceptable limits, and present the results in tabular or graphical form. This paper describes a recent complete re-write of this post-processing toolset and seeks to explore some of the software decisions made and their impact on the engineering users.
+
+Background
+----------
+
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01] in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendability, a number of other features were considered highly desirable for the revised post-processing package, including:
+
+- Signficantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took XX hours.
+- Linux-based post-processing: The LS-DYNA solver ran on a Linux server and moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware.
+- Improved plotting: Excel's plotting capabilites are poor in some respects, particularly contour plots.
+
+A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. However further research convinced us that refactoring the code - a more palatable first step to lowering the technical debt - would not move a significant distance towards achieving the above goals as the Excel/VBA platform was simply too limiting. A feasibility study lead to the architecture described in the next section.
+
+Overall Architecture
+--------------------
+
+The new post-processor was split into three separate parts:
+
+- A C++ programme `aftershock`. This handles the binary file I/O and determines which order to read the various sets of results files in depending on calculation requirements. It contains an embedded Python 2.7 interpreter and provides a Python API to access the results data as built-in Python objects such as lists.
+- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the `numpy` package [Atr02].
+- A custom plotting library based on the `matplotlib` [Atr04] Python package.
+
+This hybrid archtecture was driven by the need for relatively high performance accessing the binary data, together with a requirement for a high-level language for the actual calculations which would be defined and implemented by domain experts who were not software engineers. As is usual the decision partly depended on familiarity with languages and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the `numpy` and `scipy` [Atr03] packages. Further discssion of the C++ `aftershock` programme is outside the scope of this paper.
+
+Once it had been decided to use Python a number of plotting packages were considered, but `matplotlib` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this comes with a price in complexity and API is not particularly intuitive - for example adding markers on the Y-axis of a plot might require::
+    
+    from matplotlib.ticker import AutoMinorLocator
+    <code here>
+    plt.yticks(range(0, 100, 20))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+
+which is clearly less obvious than the GUI provided by Microsoft Excel.
+
+
+
+
+- A relatively small C++ programme called "afterplot" which handles file
+- A suite of Python scripts
+
+
+It was clear that a high-level language was required to describe the actual calculations as these would be defined and implemented by mechanical engineers rather than software engineers. An initial feasibility study suggested a hybrid architecture, with a relatively small C++ core developed by software engineers handling binary I/O and the actual calculations defined in Python. Once this had been decided various plotting packages were investigated but the `matplotlib` [Atr04] package stood out for the quality, variety and flexibility it provided.
+
+{from website}
+
+
+
+
+
+Features
+--------
+
+Difficulties
+------------
+
+
+
+## EVERYTHING BELOW HERE IS FROM THE EXAMPLE ##
+
 
 Twelve hundred years ago  |---| in a galaxy just across the hill...
 
@@ -213,6 +282,10 @@ Perhaps we want to end off with a quote by Lao Tse:
 
 References
 ----------
+.. [Atr01] http://c2.com/doc/oopsla92.html
+.. [Atr02] Numpy
+.. [Atr03] Scipy
+.. [Atr03] matplotlib
 .. [Atr03] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
 
