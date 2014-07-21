@@ -68,8 +68,10 @@ The new post-processor was split into three separate parts:
 
 This hybrid archtecture was driven by the need for relatively high performance accessing the binary data, together with a requirement for a high-level language for the actual calculations which would be defined and implemented by domain experts who were not software engineers. As is usual the decision partly depended on familiarity with languages and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the `numpy` and `scipy` [Atr03] packages. Further discssion of the C++ `aftershock` programme is outside the scope of this paper.
 
-Once it had been decided to use Python a number of plotting packages were considered, but `matplotlib` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this comes with a price in complexity and API is not particularly intuitive - for example adding markers on the Y-axis of a plot might require::
-    
+Once it had been decided to use Python a number of plotting packages were considered, but `matplotlib` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this comes with a price in complexity and API is not particularly intuitive - for example adding markers on the Y-axis of a plot might require:
+
+.. code-block:: python
+
     from matplotlib.ticker import AutoMinorLocator
     <code here>
     plt.yticks(range(0, 100, 20))
