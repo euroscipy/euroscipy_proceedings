@@ -1,5 +1,5 @@
 :author: Steve Brasier
-:email: steve.brasier@aktkinsglobal.com
+:email: steve.brasier@atkinsglobal.com
 :institution: Atkins, 500 Park Avenue, Aztec West, BS32 4RZ 
 
 
@@ -62,13 +62,18 @@ Overall Architecture
 
 The new post-processor was split into three separate parts:
 
-- A C++ programme `aftershock`. This handles the binary file I/O and determines which order to read the various sets of results files in depending on calculation requirements. It contains an embedded Python 2.7 interpreter and provides a Python API to access the results data as built-in Python objects such as lists.
-- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the `numpy` package [Atr02].
-- A custom plotting library based on the `matplotlib` [Atr04] Python package.
+- A C++ programme ``aftershock``. This handles the binary file I/O and determines which order to read the various sets of results files in depending on calculation requirements. It contains an embedded Python 2.7 interpreter and provides a Python API to access the results data as built-in Python objects such as lists.
+- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the ``numpy`` package [Atr02].
+- A custom plotting library based on the ``matplotlib`` [Atr04] Python package.
 
-This hybrid archtecture was driven by the need for relatively high performance accessing the binary data, together with a requirement for a high-level language for the actual calculations which would be defined and implemented by domain experts who were not software engineers. As is usual the decision partly depended on familiarity with languages and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the `numpy` and `scipy` [Atr03] packages. Further discssion of the C++ `aftershock` programme is outside the scope of this paper.
+This hybrid architecture was driven a trade-off between the need for relatively high performance access to the binary data and a need for a high-level language for the actual calculations. These would be defined and implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03] packages.
 
-Once it had been decided to use Python a number of plotting packages were considered, but `matplotlib` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this comes with a price in complexity and API is not particularly intuitive - for example adding markers on the Y-axis of a plot might require:
+The C++ ``aftershock`` programme is not discussed further in this paper.
+
+Plotting Architecture and Features
+----------------------------------
+
+With Python as the calculation scripting language a number of plotting packages immediately became options. However ``matplotlib`` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this versitility comes with a price in complexity and the API is not particularly intuitive. As an example, adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package, might require the user to add:
 
 .. code-block:: python
 
@@ -77,18 +82,17 @@ Once it had been decided to use Python a number of plotting packages were consid
     plt.yticks(range(0, 100, 20))
     ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
-which is clearly less obvious than the GUI provided by Microsoft Excel.
+However consideration of existing and desirable output formats showed that there were only a handful of different types of plots. This made it feasible to provide a domain-specific package which internally used ``matplotlib`` to generate the plots. Each type of plot was represented as an individual class, with the user/engineer developing the calculation creating an instance of the class in order to create a plot. The plotter classes derive most behaviour from a base class, making them indivdually fairly simple.
+
+Both the raw analysis data and post-processed results are inherantly four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing numpy arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example an array of displacements (4-dimensional data) might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show peak values on a horizontal slice through the simulated core. More abstract plots can also use the same interface; for example the WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis. Locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
+
+The use of four-dimensional arrays as the data interface permits each plotter to be fairly general-purpose, defining only how the data is presented, not what is calculated. The user supplies labels for the dimensions to provide meaning to the plot. However defining a specific plotter interface also permitted a significant tightening of control over plot quality as for example the interface can *require* axis labels and titles to be defined or grid-lines to be shown, rather than leaving it to the user or later checks to ensure these have been included.
+
+QA: traceability. Introspection/stack. Imports.
+
+Store/restore
 
 
-
-
-- A relatively small C++ programme called "afterplot" which handles file
-- A suite of Python scripts
-
-
-It was clear that a high-level language was required to describe the actual calculations as these would be defined and implemented by mechanical engineers rather than software engineers. An initial feasibility study suggested a hybrid architecture, with a relatively small C++ core developed by software engineers handling binary I/O and the actual calculations defined in Python. Once this had been decided various plotting packages were investigated but the `matplotlib` [Atr04] package stood out for the quality, variety and flexibility it provided.
-
-{from website}
 
 
 
