@@ -49,7 +49,7 @@ To help us answer these questions a complex set of post-processing calculations 
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01] in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
 
 - Significantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took XX hours.
 - Linux-based post-processing: The LS-DYNA solver ran on a Linux server and moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware.
@@ -63,10 +63,10 @@ Overall Architecture
 The new post-processor was split into three separate parts:
 
 - A C++ programme ``aftershock``. This handles the binary file I/O and determines which order to read the various sets of results files in depending on calculation requirements. It contains an embedded Python 2.7 interpreter and provides a Python API to access the results data as built-in Python objects such as lists.
-- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the ``numpy`` package [Atr02].
-- A custom plotting library based on the ``matplotlib`` [Atr04] Python package.
+- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the ``numpy`` package [Atr02]_.
+- A custom plotting library based on the ``matplotlib`` [Atr04]_ Python package.
 
-This hybrid architecture was driven a trade-off between the need for relatively high performance access to the binary data and a need for a high-level language for the actual calculations. These would be defined and implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03] packages.
+This hybrid architecture was driven a trade-off between the need for relatively high performance access to the binary data and a need for a high-level language for the actual calculations. These would be defined and implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03]_ packages.
 
 The C++ ``aftershock`` programme is not discussed further in this paper.
 
@@ -82,17 +82,23 @@ With Python as the calculation scripting language a number of plotting packages 
     plt.yticks(range(0, 100, 20))
     ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
+ADD SOME STUFF HERE ABOUT WHY THIS ISN'T OBVIOUS
+
 However consideration of existing and desirable output formats showed that there were only a handful of different types of plots. This made it feasible to provide a domain-specific package which internally used ``matplotlib`` to generate the plots. Each type of plot was represented as an individual class, with the user/engineer developing the calculation creating an instance of the class in order to create a plot. The plotter classes derive most behaviour from a base class, making them individually fairly simple.
 
-Both the raw analysis data and post-processed results are inherently four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing numpy arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example an array of displacements (4-dimensional data) might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show peak values on a horizontal slice through the simulated core. More abstract plots can also use the same interface; for example the WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis. Locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
+Both the raw analysis data and post-processed results are inherently four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing ``numpy`` arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example an array of displacements (4-dimensional data) might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show peak values on a horizontal slice through the simulated core. More abstract plots can also use the same interface; for example the WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis. Locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
 
 The use of four-dimensional arrays as the data interface permits each plotter to be fairly general-purpose, defining only how the data is presented, not what is calculated. The user supplies labels for the dimensions to provide meaning to the plot. However defining a specific plotter interface also permitted a significant tightening of control over plot quality as for example the interface can *require* axis labels and titles to be defined or grid-lines to be shown, rather than leaving it to the user or later checks to ensure these have been included.
+
+ADD COLOURBAR EXAMPLES.
 
 QA: traceability. Introspection/stack. Imports.
 
 Store/restore
 
+CHECK "USER"
 
+CHECK CASE
 
 
 
