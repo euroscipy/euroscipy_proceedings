@@ -298,8 +298,7 @@ References
 .. [Atr01] W Cunningham. *The WyCash Portfolio Management System*,
            OOPSLA '92 Addendum to the proceedings on Object-oriented programming
            systems, languages, and applications, pp. 29-30.
-
-http://c2.com/doc/oopsla92.html
+	   http://c2.com/doc/oopsla92.html
 .. [Atr02] Numpy
 .. [Atr03] Scipy
 .. [Atr04] J. D. Hunter. *Matplotlib: A 2D Graphics Environment*,
