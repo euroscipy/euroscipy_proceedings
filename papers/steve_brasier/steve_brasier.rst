@@ -295,11 +295,15 @@ Perhaps we want to end off with a quote by Lao Tse:
 
 References
 ----------
-.. [Atr01] http://c2.com/doc/oopsla92.html
+.. [Atr01] W Cunningham. *The WyCash Portfolio Management System*,
+           OOPSLA '92 Addendum to the proceedings on Object-oriented programming
+           systems, languages, and applications, pp. 29-30.
+
+http://c2.com/doc/oopsla92.html
 .. [Atr02] Numpy
 .. [Atr03] Scipy
 .. [Atr04] J. D. Hunter. *Matplotlib: A 2D Graphics Environment*,
-	   Computing in Science & Engineering, Vol. 9, No. 3. (2007), pp. 90-95
+	   Computing in Science & Engineering, 9(3):90-95, 2007.
 .. [Atr99] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
 
