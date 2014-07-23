@@ -29,7 +29,7 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
 Introduction
 ============
 
-The [Python]_ programming language is widely adopted in the scientific community
+The Python programming language is widely adopted in the scientific community
 and especially in crystallography, this is why a  convenient azimuthal integration
 routine, one of the basic algorithm, was requested by the synchrotron community.
 The advent of pixel-detectors with their very high speed (about 1000 frames per seconds)
@@ -272,9 +272,9 @@ like Python interpreted code when interfaced with PyOpenCL
     +--------------------+-----------+-----------+---------+---------+---------------+-----------+
     | Type               | CPU       | CPU       | GPU     | GPU     | GPU           | ACC       |
     +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Compute Unit       | 12        | 12        | 5       | 13      | 5             | 4*69      |
+    | Compute Unit       | 12        | 12        | 18      | 13      | 5             | 4*69      |
     +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Compute Element/CU | 8:AVX256  | 4:SSE     | 288     | 4*8:Warp| 4*8:Warp      | 16:AVX512 |
+    | Compute Element/CU | 8:AVX256  | 4:SSE     | 80      | 4*8:Warp| 4*8:Warp      | 16:AVX512 |
     +--------------------+-----------+-----------+---------+---------+---------------+-----------+
     | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz      | 1052      |
     +--------------------+-----------+-----------+---------+---------+---------------+-----------+
@@ -345,9 +345,18 @@ of single precision float looks better adapted (with no drop of precision).
 Moreover, GPU devices provide much more computing power in single precision than in double,
 this factor varies from 2 on high-end professional GPU like Nvida Tesla to 24 on most consumer grade devices.
 
-When using OpenCL for the GPU we used a compensated (or Kahan_summation), to reduce the error accumulation in the histogram summation (at the cost of more operations to be done). This allows accurate results to be obtained on cheap hardware that performs calculations in single precision floating-point arithmetic (32 bits) which are available on consumer grade graphic cards. Double precision operations are currently limited to high price and performance computing dedicated GPUs. The additional cost of Kahan summation, 4x more arithmetic operations, is hidden by smaller data types, the higher number of single precision units and that the GPU is usually limited by the memory bandwidth anyway.
+When using OpenCL for the GPU we used a compensated (or Kahan_summation), to
+reduce the error accumulation in the histogram summation (at the cost of more operations to be done).
+This allows accurate results to be obtained on cheap hardware that performs calculations in single
+precision floating-point arithmetic (32 bits) which are available on consumer grade graphic cards.
+Double precision operations are currently limited to high price and performance computing dedicated GPUs.
+The additional cost of Kahan summation, 4x more arithmetic operations, is hidden by smaller data types,
+the higher number of single precision units and that the GPU is usually limited by the memory bandwidth anyway.
 
-The performances of the parallel implementation based on a LUT, stored in CSR format, can reach 750 MPix/s on recent multi-core computer with a mid-range graphics card. On multi-socket server featuring high-end GPUs like Tesla cards, the performances are similar with the additional capability to work on multiple detector simultaneously.
+The performances of the parallel implementation based on a LUT, stored in CSR format, can reach 750 MPix/s
+on recent multi-core computer with a mid-range graphics card.
+On multi-socket server featuring high-end GPUs like Tesla cards, the performances are similar with the
+additional capability to work on multiple detector simultaneously.
 
 Outlook on parallel programming
 ...............................
@@ -366,6 +375,9 @@ At this point we present the results from several benchmarks done using the diff
 
 Choice of the algorithm
 -----------------------
+
+The Look-Up Table contains the index togeather with the coeficient, hence it is am array of struc pattern which is known to make best use of CPU caches.
+On the opposite the CSR  sparse matix representation is a struct of array which
 
 
 OpenMP vs OpenCL
@@ -429,33 +441,53 @@ LinkSCEEM
 gpu
 would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
 
+Drivers used
+============
+
+Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.1
+AMD APP drivers  14.4
+Nvidia CUDA drivers 340.24-2
+
 
 
 References
 ==========
-.. [pyFAI] todo
-.. [pyFAI_ocl] todo
-.. [FabIO] TODO
-.. [FIT2D] A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
-           High Press. Res., 14:235–248, 1996
-.. [SPD] P. Bösecke P 
-         J. Appl. Cryst., 40:s423–s427, 2007
-
-.. [Python] Van Rossum
-
-.. [matplotlib] todo
-
+.. [pyFAI]  J. Kieffer and D. Karkoulis.
+            *PyFAI, a versatile library for azimuthal regrouping*,
+            Journal of Physics: Conference Series, 425:202012, 2013.
+.. [pyFAI_ocl] J. Kieffer and J.P. Wright. 
+               *PyFAI: a Python library for high performance azimuthal integration on GPU*,
+               Powder Diffraction, 28S2:1945-7413, 2013.
+.. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer. 
+            *FabIO: easy access to two-dimensional X-ray detector images in Python*,
+            J. Appl. Cryst., 46:537-539, 2013.
+.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann. 
+            *Two-dimensional detector software*,
+            High Press. Res., 14:235–248, 1996.
+.. [SPD] P. Bösecke. 
+         *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
+         J. Appl. Cryst., 40:s423–s427, 2007.
+.. [matplotlib] J. D. Hunter.
+            *Matplotlib: A 2D Graphics Environment*,
+            Comput. Sci. Eng., 9,3:90-95, 2007.
 .. [PyQt] todo
 
-.. [NumPy] Oliphan
-
-.. [SciPy] ...
-
-.. [Cython] TODO
-
-.. [pyopencl] TODO
-
-.. [openmp] TODO
+.. [NumPy] T. E. Oliphant. 
+         *Python for Scientific Computing*,
+         Comput. Sci. Eng., 9,3:10-20, 2007.
+.. [SciPy] E. Jones, T. E. Oliphant and  P. Peterson,
+           *SciPy: Open source scientific tools for Python*, 2001.
+.. [Cython] S. Behnel, R. Bradshaw, C. Citro, L. Dalcin, D.S. Seljebotn and K. Smith.
+            *Cython: The Best of Both Worlds*
+            Comput. Sci. Eng., 13,2:31-39, 2011.
+.. [pyopencl] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
+            *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
+            Parallel Computing, 38,3:157-174, 2012.
+.. [OpenMP] OpenMP Architecture Review Board.
+            *OpenMP Application Program Interface Version 3.0*, 2008.
+.. [OpenCL] J.E. Stone, D. Gohara and G. Shi.
+            *OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems*,
+            Comput. Sci. Eng., 12,3:66-73, 2010.
 
 .. [Atr03] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
