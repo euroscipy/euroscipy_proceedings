@@ -24,15 +24,15 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
 
 .. class:: keywords
 
-   X-rays, powder diffraction, HPC, parallel algorithms, OpenCL
+   X-rays, powder diffraction, SAXS, HPC, parallel algorithms, OpenCL.
 
 Introduction
 ============
 
 The Python programming language is widely adopted in the scientific community
-and especially in crystallography, this is why a  convenient azimuthal integration
-routine, one of the basic algorithm, was requested by the synchrotron community.
-The advent of pixel-detectors with their very high speed (about 1000 frames per seconds)
+and especially in crystallography, this is why a convenient azimuthal integration
+routine, one of the basic algorithm in crystallography, was requested by the synchrotron community.
+The advent of pixel-detectors with their very high speed (up to 3000 frames per seconds)
 imposed strong constrains in speed that most available programs ([FIT2D]_, [SPD]_, ...),
 while written in FORTRAN or C, could not meet.
 
@@ -44,10 +44,10 @@ algorithm used in crystallography has been implemented in Python
 and how it was accelerated to reach the performances of today's fastest detectors.
 
 After the description of the experiment and the explanation of what is measured and how it must be transformed in paragraph 2,
-the paragraph 3 exposes how the algorithm can be vectorized using numpy and speeded up with cython.
-
-The parallelization of this algorithm being not very efficient we seek for a completely parallel implementation ([pyFAI_ocl]_),
-this time based on OpenCL (and interfaced using PyOpenCL)
+the paragraph 3 exposes how the algorithm can be vectorized using [NumPy]_ and speeded up with [Cython]_.
+The fourth paragraph highlights the precision enhancements recently introduced while the fith paragraph focuses on
+the parallelization of azimuthal integration on manycore systems like Graphical Processing Units (GPU) or on accelerators thanks to [PyOpenCL]_.
+Finally, benchmarks are comparing serial and parallel implementation using [OpenMP]_ and [OpenCL]_ from various vendors and devices.
 
 Description of the experiment
 =============================
@@ -55,7 +55,9 @@ Description of the experiment
 An X-ray is an electromagnetic wave, like light except that its wavelength is much smaller, of
 the size of an atom, making it a perfect probe to analyze atoms and molecules.
 This X-ray is scattered (re-emitted with the same energy) by the electron cloud surrounding atoms.
-When atoms are arranged periodically (in a crystal), they behave like grattings for X-ray and reflect light with given angles.
+When atoms are arranged periodically, as in a crystal, scattered X-rays interfere in a constructive way
+when the difference of optical path is a multiple of the wavelength :math:`2d sin(\theta) = n\lambda`.
+Formula called *Bragg's law*.
 An X-ray beam crossing a powder sample made of many small crystals is then scattered along multiple concentric cones.
 In a powder diffraction experiment, one aims at measuring the intensity of X-rays as function of the opening of the cone, averaged along each ring.
 This transformation is called "azimuthal integration" as it is an averaging of the signal along the azimuthal angle.
@@ -90,7 +92,8 @@ To let the reader have an idea of the scale of the problem and the performances 
 the simulated image of gold powder diffracting an X-rRay beam of wavelength = 1.0e-10m (the intensities of all rings are the same).
 The detector, which has a pixel size of 1e-4m (2048x2048 pixels), is placed at 0.1 m from the sample, orthogonal to the incident beam, and centered.
 The Figure :ref:`rings` represents the input diffraction image on the left sub-plot and the integrated profile along the azimuthal angle on the right side.
-The radial unit in this case is simply the radius calculated from :math:`r=\sqrt{(x - x_c)^2 + (y - y_c)^2}`, while in crystallographers woul have preferred :math:`2\theta` or q.
+The radial unit in this case is simply the radius calculated from :math:`r=\sqrt{(x - x_c)^2 + (y - y_c)^2}`,
+while crystallographers would have preferred :math:`2\theta` or the scattering vector's norm *q*.
 
 .. figure:: rings2.png
 
@@ -111,14 +114,14 @@ Using numpy's slicing feature one can extract all pixels which are between r1 an
        for i in range(npt):
            r1 = rmax * i / npt
            r2 = rmax * (i+1) / npt
-           mask_r12 = numpy.logical_and((r1 <= radius), 
+           mask_r12 = numpy.logical_and((r1 <= radius),
                         (radius < r2))
            values_r12 = data[mask_r12]
            res[i] = values_r12.mean()
        return res
 
 
-The slicing operation takes tens of millisecond and needs to be repeated thousands of times for a sing image,
+The slicing operation takes tens of millisecond and needs to be repeated thousands of times for a single image,
 making each integration last 40 seconds, which is unacceptably slow. :label:`naive`
 
 Numpy histograms
@@ -131,7 +134,8 @@ The mean call can be replaced with the ratio of the sum of all values divided by
 
     values_r12.mean() = values_r12.sum() / mask_r12.sum()
 
-The denominator, mask_r12.sum(), can be obtained from the histogram of r values and the numerator from the weighted histogram of radius weighted by the intensity in the image:
+The denominator, mask_r12.sum(), can be obtained from the histogram of *r* values and the numerator
+from the weighted histogram of radius weighted by the intensity in the image:
 
 .. code-block:: python
 
@@ -146,7 +150,7 @@ but can be optimized by reading only once the radius array from central memory (
 Cython implementation
 ---------------------
 
-Histograms were re-implemented using Cython to perform simultaneously the
+Histograms were re-implemented using [Cython]_ to perform simultaneously the
 weighted and the un-weighted histogram with a single memory read of  the radius array.
 The better use if the caches decreases the integration time to 150ms on a single core.
 
@@ -157,7 +161,8 @@ To accelerate further the code we decided to parallelize the cython code thanks 
 While the implementation was quick, the result we got were wrong (by a few percent) due to
 write conflicts, not protected by atomic_add operation. Apparently the use of atomic operation is
 still not yet possible in Cython (summer 2014).
-Multithreaded histogramming was made possible by using as many histograms as threads, which implies to allocate much more memory.
+Multithreaded histogramming was made possible by using as many histograms as threads,
+which implies to allocate much more memory.
 
 .. table:: Execution speed measured on a pair of Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
 
@@ -180,7 +185,7 @@ Multithreaded histogramming was made possible by using as many histograms as thr
    +----------------+----------------+
 
 
-The speed-up measured when going from 4 threads to 8 threads (i.e. from one processor to two)
+The speed-up measured when going from 4 threads to 8 threads (i.e. from one processor to two on this system)
 is very small showing we reach the limits of the algorithm.
 The only way to go faster is to start thinking in parallel from beginning
 and re-design the algorithm so that it works natively with lots of threads.
@@ -191,18 +196,25 @@ Pixel splitting
 ===============
 
 Pixel splitting is what occurs when a pixel of the detector spans over more than one of the bins of the histogram.
-When that happens, the contribution to each of the involved bins is assumed to be proportional to the area of the pixel segment that falls into that bin.
-The goal behind the addition of that extra complexity to the code is that the results obtained this way owe to be less noisy than the case where pixel splitting is ignored.
-This becomes more apparent when the number of pixels falling into each bin is small like for example on bidimentional integration.
-Figure :ref:`bidimentional` presents such an integration performed using histograms on the left side, hence without pixel splitting which exhibits some high frequency patterns near the beam center.
-The right hand side image was produced using pixel splitting and is unharmed by such defects related to the low statistics.
-Note that for 2D integration this transformation looks like an interpolation, but interpolation never garanties the conservation of the signal :math:`\sum{image} = \sum{ weighted\ histogram }`
+When that happens, the contribution to each of the involved bins is assumed to be
+proportional to the area of the pixel segment that falls into that bin.
+The goal behind the addition of that extra complexity to the code is that the
+results obtained this way owe to be less noisy than the case where pixel splitting is ignored.
+This becomes more apparent when the number of pixels falling into each bin
+is small like for example on bidimentional integration.
+Figure :ref:`bidimentional` presents such an integration performed using histograms
+on the left side, hence without pixel splitting which exhibits some
+high frequency patterns near the beam center (left of the figure).
+The right hand side image was produced using pixel splitting and is
+unharmed by such defects related to the low statistics.
+Note that for 2D integration this transformation looks like an interpolation,
+but interpolation never garanties the conservation of the signal :math:`\sum{image} = \sum{ weighted\ histogram }`
 nor the conservation of pixels :math:`\sum{ unweigted\ histogram } = number\ of\  pixels`.
 
 .. figure:: integrate2d.png
 
    Bi-dimentional azimuthal integration of the gold diffraction image using (right side) or not pixel splitting  :label:`bidimentional`
- 
+
 Bounding Box
 ------------
 
@@ -223,9 +235,12 @@ The conterpart of this simplistic pixel splitting is an overestimation of the pi
 Full Pixel Splitting
 --------------------
 
-In an effort to farther improve the results of the azumithal integration, another pixel-splitting scheme was devised.
-This time, no abstraction takes place and the pixel-splitting is done using the area of the actual pixel segments (assuming they are straight lines).
-This introduces some extra complexity to the calculations, making the process a bit slower.
+In an effort to farther improve the results of the azumithal integration,
+another pixel-splitting scheme was devised.
+This time, no abstraction takes place and the pixel-splitting
+is done using the area of the actual pixel segments (assuming they are straight lines).
+This introduces some extra complexity to the calculations,
+making the process a bit slower.
 
 As before, we first have to check if pixel splitting occurs.
 In the case it does not, the pixel is processed as before.
@@ -233,22 +248,26 @@ Otherwise we have to handle the pixel splitting.
 This is done by firstly defining a function for each of the sides of the pixel in-question.
 That is, calculating the slope and the point of intersection.
 We’ll also require the area of the pixel.
-Next we loop over the bins that the pixel spans over and proceed to integrate the four functions we’ve previously defied in that interval.
-Taking the absolute value of the sum of all those contributions will give us the area of the pixel segment.
-The hard part here was to define the limits of each of the integrals in a way that wouldn’t hinder the performance by adding allot of conditionals.
+Next we loop over the bins that the pixel spans over and proceed to
+integrate the four functions we’ve previously defied in that interval.
+Taking the absolute value of the sum of all those contributions
+will give us the area of the pixel segment.
+The hard part here was to define the limits of each of the integrals in a
+way that wouldn’t hinder the performance by adding allot of conditionals.
 The contribution to the histograms is calculated in a similar fashion as before.
 
 Discussion on the statistics
 ----------------------------
 
 Using either of the two pixel splitting algorithms results in some side effects that the user should be aware of:
-The fact that pixels contributing to neighboring bin of the histogram creates some cross-correlation between those bins, affecting this way the statistics of the final results in a potentially unwanted manner.
+The fact that pixels contributing to neighboring bin of the histogram creates some cross-correlation between those bins,
+affecting this way the statistics of the final results in a potentially unwanted manner.
 
 
 More paralleliztion
 ===================
 
-For faster execution, one solution is to use faster hardware, like for example
+For faster execution, one solution is to use manycore systems, like for example
 Graphical Processing Units (GPU) or
 accelerators, for instance the Xeon-Phi from Intel.
 Those chips allocate more silicon for computing (ALU)
@@ -256,28 +275,30 @@ and less to branch prediction, memory prefetecher and cache coherency, in compar
 Our duties as programmers is to write the code that maximises the usage of ALUs
 without relying on pre-fetcher and other commodities offered by normal processors.
 
-Typical GPU have tens (to hundreeds) of compute units able to schedule and run dozens of threads simultaneously (in a Single Instruction Multiple Data way).
-OpenCL allows to execute the same code on processors, graphics cards or accelerator but we will highlight the memory access pattern is important in order to best use them.
+Typical GPU have tens (to hundreeds) of compute units able to schedule and run
+dozens of threads simultaneously (in a Single Instruction Multiple Data way).
+OpenCL allows to execute the same code on processors, graphics cards or accelerator
+but we will highlight the memory access pattern is important in order to best use them.
 Finally, OpenCL uses on the fly compilation which, at usage, looks very much
-like Python interpreted code when interfaced with PyOpenCL
+like Python interpreted code when interfaced with [PyOpenCL]_
 (thanks to the speed of compilation and the memoizing of the binary generated).
 
 .. table:: Few OpenCL devices we have tested our code on. :label:`Devices`
     :class: w
 
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Vendor             | Intel     | AMD       | AMD     | Nvidia  | Nvidia        | Intel     |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Model              | 2 E5-2667 | 2 E5-2667 | V7800   | K20     | GeForce 750Ti | Phi       |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Type               | CPU       | CPU       | GPU     | GPU     | GPU           | ACC       |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Compute Unit       | 12        | 12        | 18      | 13      | 5             | 4*69      |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Compute Element/CU | 8:AVX256  | 4:SSE     | 80      | 4*8:Warp| 4*8:Warp      | 16:AVX512 |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
-    | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz      | 1052      |
-    +--------------------+-----------+-----------+---------+---------+---------------+-----------+
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Vendor             | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Model              | 2 E5-2667 | 2 E5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Type               | CPU       | CPU       | GPU     | GPU     | GPU         | ACC       |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Compute Unit       | 12        | 12        | 18      | 13      | 5           | 4*69      |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Compute Element/CU | 4:AVX     | 1         | 80      | 4*8:Warp| 4*8:Warp    | 16:AVX512 |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
+    | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz    | 1052      |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
 
 
 
@@ -289,9 +310,9 @@ There are a few identified parallel building blocks like:
 
 - Map: apply the same function on all element of a vector
 - Scatter: write multiple output from a single input, needs atomic operation support
-- Gather or Stencil: write a single output from multiple inputs
+- Gather: write a single output from multiple inputs
 - Reduction: single result from a large vector input, like an inner product
-- Scan: apply subsequently an operation to all preceeding elements on an vector like numpy.cumsum
+- Scan: apply subsequently an operation to all preceeding elements on an vector like np.cumsum
 - Sort: There are optimized sorter for parallel implementation.
 
 Those parallel building blocks will typically be one (or few) individual
@@ -302,7 +323,7 @@ Parallel azimuthal integration
 ------------------------------
 
 The azimuthal integration, like histograms, are scatter operation hence require
-the support of atomic operations.
+the support of atomic operations (in our case of double precision floats).
 As Cython does not (yet) support atomic operation, enabling OpenMP parallelization
 results in a module, while functional, giving wrong results (we measured 2%
 errors on 8 cores)
@@ -311,7 +332,7 @@ To overcome this limitation; instead of looking at where input pixels go to
 in the output curve,
 we instead look at where the output bin come from in the input image.
 This transformation is called a “scatter to gather” transformation and needs atomic operation.
-In our case, it was implemented as a single threaded Cython module.
+In our case, it was implemented as a single threaded [Cython]_ module.
 
 The correspondence between pixels and output bins can be stored in a look-up table (LUT)
 together with the pixel weight (ratio of areas) which make the integration look like a simple
@@ -321,18 +342,28 @@ and to exploit the sparse structure, both index and weight of the pixel have to 
 
 By making this change we switched from a “linear read / random write” forward algorithm to a
 “random read / linear write” backward algorithm which is more suitable for parallelization.
+For optimal memory acces patterns, this array my be transposed depending on the hardware (CPU vs GPU)
 
 Optimization of the sparse matrix multiplication
 ................................................
 
-The compressed sparse row (CSR) sparse matrix format was introduced to reduce the size of the dat stored in the LUT.
-This algorithm was implemented both in [Cython]-OpenMP and OpenCL.
-Our CSR representation contains data, indices and indptr so it is is fully compatible with scipy.sparse.csr.csr_matrix contructor
-The CSR approach has a double benefit: first, it reduces the size of the storage needed compared to the LUT by a factor two to three,
+The compressed sparse row (CSR) sparse matrix format was introduced to
+reduce the size of the data stored in the LUT.
+This algorithm was implemented both in [Cython]_-[OpenMP]_ and [OpenCL]_.
+Our CSR representation contains *data*, *indices* and *indptr* so it is is fully
+compatible with the *scipy.sparse.csr.csr_matrix* contructor from [SciPy]_.
+This representation is a struct of array which is better suited to GPUs
+(stridded memory access) while LUT is an array of struct, known to be
+better adapted to CPU (better use of cache and prefetching)
+The CSR approach has a double benefit: first, it reduces the
+size of the storage needed compared to the LUT by a factor two to three,
 offering the opportunity of working with larger images on the same hardware.
-Secondly, the CSR implementation in OpenCL is using an algorithm based on multiple parallel reductions
-where all threads within a workgroup are collaborating to calculate the content of a single bin.
-This makes it very well suited to run on GPUs and accelerators where hundreds to thousands of simultaneous threads are available.
+Secondly, the CSR implementation in [OpenCL]_ is using an algorithm based
+on multiple parallel reductions
+where all threads within a workgroup are collaborating to calculate the
+content of a single bin.
+This makes it very well suited to run on manycore systems where hundreds
+to thousands of simultaneous threads are available.
 
 About precision of calculation
 ..............................
@@ -345,7 +376,7 @@ of single precision float looks better adapted (with no drop of precision).
 Moreover, GPU devices provide much more computing power in single precision than in double,
 this factor varies from 2 on high-end professional GPU like Nvida Tesla to 24 on most consumer grade devices.
 
-When using OpenCL for the GPU we used a compensated (or Kahan_summation), to
+When using OpenCL for the GPU we used a compensated arithmetic (or Kahan_summation), to
 reduce the error accumulation in the histogram summation (at the cost of more operations to be done).
 This allows accurate results to be obtained on cheap hardware that performs calculations in single
 precision floating-point arithmetic (32 bits) which are available on consumer grade graphic cards.
@@ -361,7 +392,7 @@ additional capability to work on multiple detector simultaneously.
 Outlook on parallel programming
 ...............................
 
-The calculation of the look-up table which is currently performed in single threaded cython code.
+The calculation of the look-up table which is currently performed in single threaded [Cython]_ code.
 As we have seen, this scatter operation is a challenge for parallel programming because of
 the dynamic memory allocation needed and of the use of atomic operation in addition
 to some numerial precision issues with single precision floating point numbers.
@@ -369,15 +400,26 @@ to some numerial precision issues with single precision floating point numbers.
 Benchmarks
 ==========
 
-Reference: splitBBox serial
-
 At this point we present the results from several benchmarks done using the diffetent algorithm options available in PyFAI.
+All benchmarks have been performed using the same bounding box pixel splitting scheme and integrated profiles obtained are of equivalent quality.
+Execution speed have been measured using the *timeit* module, averaged over 10 iterations (best of 3).
+The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from actual diffraction experiment.
+
+They come from various detector and differ in the geometry used and input datatype, which explains why the 16 Mpix image is unusually fast and the 12Mpix image is comparatively slow.
+
+Shall we work only on synthetic images ??? Yes probably
 
 Choice of the algorithm
 -----------------------
 
-The Look-Up Table contains the index togeather with the coeficient, hence it is am array of struc pattern which is known to make best use of CPU caches.
-On the opposite the CSR  sparse matix representation is a struct of array which
+The Look-Up Table contains the index togeather with the coeficient, hence it is an *array of struct* pattern which is known to make best use of CPU caches.
+On the opposite the CSR sparse matix representation is a *struct of array* which is better adapted to GPU.
+As we can see on figure :ref:`serial_lut_csr`, Both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
+the penality of the *array of struct* in CSR is counter-balanced by the smaller chunk on data to be transfered from central memory to CPU
+
+.. figure:: serial_lut_cst.png
+
+   Comparison of azimuthal integration speed obtained using serial implementation versus parallel ones with LUT and CSR sparse matrix representation. :label:`serial_lut_csr`
 
 
 OpenMP vs OpenCL
@@ -398,19 +440,40 @@ All of the GPUs gave better performance than the Xeon Phi, which fared more simi
 But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
 Very close to that came the much more expensive and renown Nvidia Titan, leaving the older Nvidia Tesla K20 trailing behind.
 
+Drivers used
+------------
+
+Computers were all running Debian7 operating system with backported OpenCL drivers:
+
+* Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.3
+* AMD APP drivers 14.4
+* Nvidia CUDA drivers 340.24-2
+
+
+
 Conclusions
 ===========
 
-TODO
-CPUs are GPUs like others...
+This contribution shows how one of the most central algorithm in crystallography has been implemented in Python,
+optimized in Cython and ported to manycore architectures thanks to PyOpenCL.
+50x speed-up have been observed by switching from binary code to OpenCL code running on GPUs.
+Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxell* generation chip
+running as fast as high-end graphics based on the *Kepler* architecture (like the Titan), and litteraly outperforming
+both AMD GPUs and Xeon-Phi accelerator card.
+
+Thanks to the PyOpenCL interfaced in Python, programming CPUs in a parallel is as easy as programming GPUs.
+
 
 Acknoledgments
 ==============
 
-LinkSCEEM
-. Porting pyFAI to
-gpu
-would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
+Claudio Ferrero (head of the Data Analysis Unit) and Andy Götz (Head of the Software group) are acknoledged for supporting the developement of pyFAI.
+The porting of pyFAI to OpenCL would have not been possible without the financial support of LinkSCEEM-2 (RI-261600), financing the contracts of
+Dimitris Karkoulis who started the job, Zubair Nawaz who ported image distortion and Giannis Ashiotis (CSR, pixel splitting, ...)
+Finally the authors would like to acknoledge the different beamlines who promote this work, at ESRF ID02, ID11, ID13, ID15, ID16, ID21, BM29
+and also in other instituts like Soleil, Petra3, CEA, who provide feed-back, bug reports and patches to the library.
+
+
 
 Project description
 ===================
@@ -441,13 +504,6 @@ LinkSCEEM
 gpu
 would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
 
-Drivers used
-============
-
-Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.1
-AMD APP drivers  14.4
-Nvidia CUDA drivers 340.24-2
-
 
 
 References
@@ -455,24 +511,22 @@ References
 .. [pyFAI]  J. Kieffer and D. Karkoulis.
             *PyFAI, a versatile library for azimuthal regrouping*,
             Journal of Physics: Conference Series, 425:202012, 2013.
-.. [pyFAI_ocl] J. Kieffer and J.P. Wright. 
+.. [pyFAI_ocl] J. Kieffer and J.P. Wright.
                *PyFAI: a Python library for high performance azimuthal integration on GPU*,
                Powder Diffraction, 28S2:1945-7413, 2013.
-.. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer. 
+.. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer.
             *FabIO: easy access to two-dimensional X-ray detector images in Python*,
             J. Appl. Cryst., 46:537-539, 2013.
-.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann. 
+.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
             *Two-dimensional detector software*,
             High Press. Res., 14:235–248, 1996.
-.. [SPD] P. Bösecke. 
+.. [SPD] P. Bösecke.
          *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
          J. Appl. Cryst., 40:s423–s427, 2007.
 .. [matplotlib] J. D. Hunter.
             *Matplotlib: A 2D Graphics Environment*,
             Comput. Sci. Eng., 9,3:90-95, 2007.
-.. [PyQt] todo
-
-.. [NumPy] T. E. Oliphant. 
+.. [NumPy] T. E. Oliphant.
          *Python for Scientific Computing*,
          Comput. Sci. Eng., 9,3:10-20, 2007.
 .. [SciPy] E. Jones, T. E. Oliphant and  P. Peterson,
@@ -488,13 +542,4 @@ References
 .. [OpenCL] J.E. Stone, D. Gohara and G. Shi.
             *OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems*,
             Comput. Sci. Eng., 12,3:66-73, 2010.
-
-.. [Atr03] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
-
-
-
-References can be found in
-https://github.com/kif/pyFAI_publi/blob/master/biblio.bib
-and need to be formated
 
