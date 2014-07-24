@@ -451,21 +451,21 @@ GPUs and Xeon Phi
 
 Figure :ref:`gpusa` compares the integration speed of the LUT and CSR implementation on manycore devices.
 The CSR implementation, thanks to the multiple collaborative parallel reductions, runs much faster on all of the GPUs used, compared to the LUT one.
-
-Another benefit of the CSR implementation when it comes to GPUs is its much lower memory usage.
+Another benefit of the CSR implementation when it comes to GPUs is its lower memory usage.
 The ATI GPU used here, features only 1GByte of memory useable for OpenCL, limiting the size of the system processable.
-TODO
-This is the reason the benchmarks stop before reaching the final size of 16 MPixel.
-But as you can see this is done much earlier for the LUT implementation.
-In figure :ref:`gpusb`, we have gathered the results for all the GPUs tested as well as Intel's Xeon Phi.
-As you can see Xeon Phi matches the performance of the relatevly old ATI GPU.
-What is surpising though, is how well did the new, consumer grade Nvidia GeForce 750Ti perform.
-I has match and surpassed the performance of all the high-end GPUs, being only at a fraction of their cost.
+This is the reason the benchmarks stop before reaching the largest image size.
+4 Mpixel images are the largest images processable with the LUT implementation, but 12 Mpixel images are processable using the CSR implementation.
 
 .. figure:: gpusa.png
 
    Comparison of the azimuthal integration speed between the LUT and CSR implementations on GPUs. :label:`gpusa`
-   
+
+
+In figure :ref:`gpusb`, we have gathered the results for all manycore devices the GPUs tested as well as Intel's Xeon Phi.
+As you can see Xeon Phi (from 2012) matches the performance of the AMD GPU from 2010.
+What is surpising though, is how well the consumer grade Nvidia GeForce 750Ti performs in comparison to high-end *Keppler* cards (Titan, Tesla K20) being only at a fraction of their cost.
+
+
 .. figure:: gpusb.png
 
    Comparison of the performances for several Manycore accelerators: GPUs and Xeon Phi. :label:`gpusb`
