@@ -430,44 +430,51 @@ the penality of the *array of struct* in CSR is counter-balanced by the smaller 
 
 .. figure:: serial_lut_csr.png
 
-   Comparison of azimuthal integration speed obtained using serial implementation versus parallel ones with LUT and CSR sparse matrix representation. :label:`serial-lut-csr`
+   Comparison of azimuthal integration speed obtained using serial implementation versus 
+   parallel ones with LUT and CSR sparse matrix representation on two Intel Xeon E2667. :label:`serial-lut-csr`
 
 
 OpenMP vs OpenCL
 ----------------
 
-The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU. 
-This is shown in on figure :ref:'openmp_opencl_intel_amd' (a), where we can see that the OpenCL implementations outperforms the OpenMP one in all the different CPUs is was tested on.
-There is one more thing that should be noted here; the choice of OpenCL driver greatly affects the performance of the program. 
-In figure :ref:'openmp_opencl_intel_amd' (b), we can see that in the case of the newer Intel Xeon E5-1607 the Intel driver clearly out performs the AMD one.
-This can be atrubuted to the lack of support for newer features of the chip, like AVX. 
+The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU.
+This is shown in on figure :ref:`openmp-opencl-intel-amda`, where we can see that the OpenCL implementations outperforms the OpenMP one, in all the different CPUs is was tested on.
+There is one more thing that should be noted here; the choice of OpenCL driver greatly affects the performance of the program.
+In figure :ref:`openmp-opencl-intel-amdb`, we can see that in the case of the newer Intel Xeon E5-1607 the Intel driver clearly out performs the AMD one.
+This can be atrubuted to the lack of support for newer features of the chip, like AVX.
 This is not the case for the older Intel Xeon E-5520, where such features are not avaialble.
 
-.. figure:: openmp_opencl_intel_amd.png
+.. figure:: openmp_opencl_intel_amd_a.png
 
-   (a) Comparison of the azimuthal integration speed between the OpenMP and OpenCL implementations
-   (b) The effects of driver selection on performance on different generations of CPUs
+   Comparison of the azimuthal integration speed between the OpenMP and OpenCL implementations. :label:`openmp-opencl-intel-amda`
+
+.. figure:: openmp_opencl_intel_amd_b.png
+
+   The effects of OpenCL driver selection on performance on different generations of CPUs.:label:`openmp-opencl-intel-amdb`
 
 GPUs and Xeon Phi
 -----------------
 
 
-As promised, the CSR implementation runs much faster on all of the GPUs used, compared to the LUT one. 
-In figure :ref:'gpus' (a) we can see the difference in that performance. 
+As promised, the CSR implementation runs much faster on all of the GPUs used, compared to the LUT one.
+In figure :ref:`gpusa` we can see the difference in that performance.
 Somehow unexpectedly, we can also see another benefit of the CSR implementation when it comes to GPUs.
 That is, the much lower memory usage of it.
 The ATI GPU used here is of a quite old series, with relatevly small amount of onboard memory.
-This is the reason the benchmarks stop before reaching the final size of 16 MPixel. 
+This is the reason the benchmarks stop before reaching the final size of 16 MPixel.
 But as you can see this is done much earlier for the LUT implementation.
-In figure :ref:'gpus' (b), we have gathered the results for all the GPUs tested as well as Intel's Xeon Phi.
+In figure :ref:`gpusb`, we have gathered the results for all the GPUs tested as well as Intel's Xeon Phi.
 As you can see Xeon Phi matches the performance of the relatevly old ATI GPU.
 What is surpising though, is how well did the new, consumer grade Nvidia GeForce 750Ti perform.
 I has match and surpassed the performance of all the high-end GPUs, being only at a fraction of their cost.
 
-.. figure:: gpus.png
+.. figure:: gpus_a.png
 
-   (a) Comparison of the azimuthal integration speed between the LUT and CSR implementations on GPUs
-   (b) Comparison of the performances for several GPUs and Intel Xeon Phi
+   Comparison of the azimuthal integration speed between the LUT and CSR implementations on GPUs. :label:`gpusa`
+   
+.. figure:: gpus_b.png
+
+   Comparison of the performances for several Manycore accelerators: GPUs and Xeon Phi.:label:`gpusb`
 
 
 Kernel timings
