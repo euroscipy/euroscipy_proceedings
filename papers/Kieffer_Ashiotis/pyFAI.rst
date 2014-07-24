@@ -425,10 +425,10 @@ Choice of the algorithm
 
 The Look-Up Table contains the index togeather with the coeficient, hence it is an *array of struct* pattern which is known to make best use of CPU caches.
 On the opposite the CSR sparse matix representation is a *struct of array* which is better adapted to GPU.
-As we can see on figure :ref:`serial-lut-csr`, Both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
+As we can see on figure :ref:`serial-lut-csr`, both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
 the penality of the *array of struct* in CSR is counter-balanced by the smaller chunk on data to be transfered from central memory to CPU
 
-.. figure:: rings2.png
+.. figure:: serial_lut_csr.png
 
    Comparison of azimuthal integration speed obtained using serial implementation versus parallel ones with LUT and CSR sparse matrix representation. :label:`serial-lut-csr`
 
@@ -436,24 +436,39 @@ the penality of the *array of struct* in CSR is counter-balanced by the smaller 
 OpenMP vs OpenCL
 ----------------
 
-Comparing the serial implementation with the ones using the Split Bound Box on the CPU shows that the achieved paralellism depends on the achitecture used, the API chosen, and finaly the size and type of the data.
-The results from an Intel Xeon E-5520, a relatevly old quad-core CPU show that OpenMP implementation generaly out-performs the OpenCL on most input data sizes.
-On top of that, there is a minor difference between the LUT and CSR versions of the algorithms, with the LUT being in the lead.
-Instead on a much newer Intel Xeon E5-2667 6-core CPU, the inverse seems to be true, now with the OpenCL implementation giving the best performance.
-Although, again as before, the LUT version is the one that performse marginaly better.
-(here of at the conclusions) The difference between the benchmarks of the two CPUs might be atributed to the larger SIMD unit of the newer CPU, making OpenCL a batter choise in API for that achitecture.
+The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU. 
+This is shown in on figure :ref:'openmp_opencl_intel_amd' (a), where we can see that the OpenCL implementations outperforms the OpenMP one in all the different CPUs is was tested on.
+There is one more thing that should be noted here; the choice of OpenCL driver greatly affects the performance of the program. 
+In figure :ref:'openmp_opencl_intel_amd' (b), we can see that in the case of the newer Intel Xeon E5-1607 the Intel driver clearly out performs the AMD one.
+This can be atrubuted to the lack of support for newer features of the chip, like AVX. 
+This is not the case for the older Intel Xeon E-5520, where such features are not avaialble.
 
-GPU vs Xeon Phi
----------------
+.. figure:: openmp_opencl_intel_amd.png
 
-One surprice that came from the benhcmarks taken on the Inte Xeon Phi, was the performance deferential between it and several GPUs.
-All of the GPUs gave better performance than the Xeon Phi, which fared more similarly to the CPUs.
-But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
-Very close to that came the much more expensive and renown Nvidia Titan, and its professional version the Nvidia Tesla K20.
-The competition with AMD GPU-hardware is somehow unfear as this high-end GPU is already 3 years old, but it shows the portablity of the developped code.
-The amount of memory available on the device has its importance: it is not possible to store the LUT for images larger then
-X MPix on the AMD v7800 (which has only 1GByte memroy available for OpenCL calculations).
-The CSR representation, much smaller, allows to process image up to XX Mpix on the same device.
+   (a) Comparison of the azimuthal integration speed between the OpenMP and OpenCL implementations
+   (b) The effects of driver selection on performance on different generations of CPUs
+
+GPUs and Xeon Phi
+-----------------
+
+
+As promised, the CSR implementation runs much faster on all of the GPUs used, compared to the LUT one. 
+In figure :ref:'gpus' (a) we can see the difference in that performance. 
+Somehow unexpectedly, we can also see another benefit of the CSR implementation when it comes to GPUs.
+That is, the much lower memory usage of it.
+The ATI GPU used here is of a quite old series, with relatevly small amount of onboard memory.
+This is the reason the benchmarks stop before reaching the final size of 16 MPixel. 
+But as you can see this is done much earlier for the LUT implementation.
+In figure :ref:'gpus' (b), we have gathered the results for all the GPUs tested as well as Intel's Xeon Phi.
+As you can see Xeon Phi matches the performance of the relatevly old ATI GPU.
+What is surpising though, is how well did the new, consumer grade Nvidia GeForce 750Ti perform.
+I has match and surpassed the performance of all the high-end GPUs, being only at a fraction of their cost.
+
+.. figure:: gpus.png
+
+   (a) Comparison of the azimuthal integration speed between the LUT and CSR implementations on GPUs
+   (b) Comparison of the performances for several GPUs and Intel Xeon Phi
+
 
 Kernel timings
 --------------
@@ -466,12 +481,13 @@ The overhead of Python in around 40% compared to the total execution time, and t
 represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
 All vendors are currently working on an unifed memory space, which will be available for OpenCL2.0, it will reduce the time spent in transfers and simplify programming.
 
+
 .. table:: OpenCl profiling of the integration of a Pilatus 1M image on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
 
                                  +-----------------+---------+
                                  |  ai.intergate1d | 2.030ms |
                                  +-----------------+---------+
-                                 |    OpenCL       | 1.445ms |
+                                 |    OpenCL_total | 1.445ms |
                                  +-----------------+---------+
                                  |      H->D image | 0.762ms |
                                  +-----------------+---------+
@@ -483,11 +499,11 @@ All vendors are currently working on an unifed memory space, which will be avail
                                  +-----------------+---------+
                                  |       integrate | 0.384ms |
                                  +-----------------+---------+
-                                 |     D->H ratio  | 0.004ms |
+                                 |      D->H ratio | 0.004ms |
                                  +-----------------+---------+
-                                 |     D->H u_hist | 0.004ms |
+                                 |      D->H uhist | 0.004ms |
                                  +-----------------+---------+
-                                 |     D->H w_hist | 0.004ms |
+                                 |      D->H whist | 0.004ms |
                                  +-----------------+---------+
 
 Drivers used
@@ -517,8 +533,8 @@ Conclusions
 This contribution shows how one of the most central algorithm in crystallography has been implemented in Python,
 optimized in Cython and ported to manycore architectures thanks to PyOpenCL.
 15x speed-up have been observed by switching from binary code to OpenCL code running on GPUs (400x vs NumPy).
-Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxwell* generation chip
-running as fast as high-end graphics based on the *Kepler* architecture, and litteraly outperforming
+Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxell* generation chip
+running as fast as high-end graphics based on the *Kepler* architecture (like the Titan), and litteraly outperforming
 both AMD GPUs and Xeon-Phi accelerator card.
 Thanks to the PyOpenCL interfaced in Python, programming CPUs in a parallel is as easy as programming GPUs.
 
@@ -547,7 +563,7 @@ References
             *Two-dimensional detector software*,
             High Press. Res., 14:235–248, 1996.
 .. [H5Py] A. Collette.
-           *Python and HDF5*
+           * Python and HDF5*
            ISBN 978-1-4493-6783-1, (2013)
 .. [Kahan] W. Kahan.
             *Pracniques: Further Remarks on Reducing Truncation Errors*,
