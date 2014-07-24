@@ -485,7 +485,11 @@ One may wonder what is the actual time spent in which part of the OpenCL code an
 Table :ref:`profile` shows the execution time on the GeForce Titan (controled by a couple of Xeon 5520).
 The overhead of Python in around 40% compared to the total execution time, and the actual azimuthal integration
 represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
-All vendors are currently working on an unifed memory space, which will be available for OpenCL2.0, it will reduce the time spent in transfers and simplify programming.
+All vendors are currently working on an unifed memory space, which will be available for OpenCL 2.0.
+It will reduce the time spent in transfers and simplify programming.
+
+If one focuses only on the timimg of the integration kernel, then one could wrongly conclude pyFAI is able to sustain the speed of the fastest detectors.
+Unfortunately, even at 2 ms processing per image, few hard-drives are able to deliver the requested gigabytes per second of data this represents.
 
 
 .. table:: OpenCl profiling of the integration of a Pilatus 1M image on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
