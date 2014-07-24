@@ -10,7 +10,7 @@ A Python-based Post-processing Tool-set For Seismic Analyses
 
 .. class:: abstract
 
-    This talk will discuss the design and implementation of a Python-based
+    This paper discusses the design and implementation of a Python-based
     tool-set to aid in assessing the response of the UK's Advanced Gas
     Reactor nuclear power stations to earthquakes. The seismic analyses
     themselves are carried out with a commercial Finite Element solver, but
@@ -18,8 +18,8 @@ A Python-based Post-processing Tool-set For Seismic Analyses
     and visualisation tools. Extending the existing tools had become
     increasingly difficult and a decision was made to develop a new,
     Python-based tool-set. This comprises of a post-processing framework
-    ("aftershock") which includes an an embedded Python interpreter, and a
-    plotting package ("afterplot") based on numpy and matplotlib.
+    (``"aftershock"``) which includes an an embedded Python interpreter, and a
+    plotting package (``"afterplot"``) based on numpy and matplotlib.
 
     The new tool-set had to be significantly more flexible and easier to
     maintain than the existing code-base, while allowing the majority of 
@@ -307,7 +307,7 @@ References
 .. [Atr03] Scipy
 
 .. [Atr04] J. D. Hunter. *Matplotlib: A 2D Graphics Environment*,
-	   Computing in Science & Engineering, 9(3):90-95, 2007.
+	       Computing in Science & Engineering, 9(3):90-95, 2007.
 
 .. [Atr99] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
