@@ -300,7 +300,7 @@ like Python interpreted code when interfaced with [PyOpenCL]_
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Vendor /driver     | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Model              | 2xE5-2667 | 2 E5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
+    | Model              | 2xE5-2667 | 2xE5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Type               | CPU       | CPU       | GPU     | GPU     | GPU         | ACC       |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
@@ -428,30 +428,33 @@ the penality of the *array of struct* in CSR is counter-balanced by the smaller 
 OpenMP vs OpenCL
 ----------------
 
-The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU.
-This is shown in on figure :ref:`openmp-opencl-intel-amda`, where we can see that the OpenCL implementations outperforms the OpenMP one, in all the different CPUs is was tested on.
-There is one more thing that should be noted here; the choice of OpenCL driver greatly affects the performance of the program.
-In figure :ref:`openmp-opencl-intel-amdb`, we can see that in the case of the newer Intel Xeon E5-1607 the Intel driver clearly out performs the AMD one.
-This can be atrubuted to the lack of support for newer features of the chip, like AVX.
-This is not the case for the older Intel Xeon E-5520, where such features are not avaialble.
+The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU,
+as we can see on figure :ref:`openmp-opencl-intel-amda`: the OpenCL implementations outperforms the OpenMP one, in all the different CPUs is was tested on.
+This could be linked to the single precision with Kahan summation (in OpenCL) which is more efficient than double precision arithmetics.
+The dual Xeon E5520 (a computer from 2009), running at only 2.2 GHz shows pretty good performances compard to newer computer in OpenMP, it was the only one with hyperthreading activated.
 
-.. figure:: openmp_opencl_intel_amd_a.png
+.. figure:: openmp_opencl.png
 
    Comparison of the azimuthal integration speed between the OpenMP and OpenCL implementations. :label:`openmp-opencl-intel-amda`
 
-.. figure:: openmp_opencl_intel_amd_b.png
+The choice of OpenCL driver on CPU affects the performance of the program, in figure :ref:`openmp-opencl-intel-amdb`,
+the Intel Xeon E5-1607 (Ivy bridge core) with the Intel driver clearly out performs the AMD one.
+This can be attributed to new SIMD instructions (AVX), supported by the Intel driver while the AMD one is more conservative.
+On the older Intel Xeon E-5520 (Nehalem core) which lacks those extensions, the difference in speed is much less.
+
+.. figure:: intel_amd.png
 
    The effects of OpenCL driver selection on performance on different generations of CPUs. :label:`openmp-opencl-intel-amdb`
 
 GPUs and Xeon Phi
 -----------------
 
+Figure :ref:`gpusa` compares the integration speed of the LUT and CSR implementation on manycore devices.
+The CSR implementation, thanks to the multiple collaborative parallel reductions, runs much faster on all of the GPUs used, compared to the LUT one.
 
-As promised, the CSR implementation runs much faster on all of the GPUs used, compared to the LUT one.
-In figure :ref:`gpusa` we can see the difference in that performance.
-Somehow unexpectedly, we can also see another benefit of the CSR implementation when it comes to GPUs.
-That is, the much lower memory usage of it.
-The ATI GPU used here is of a quite old series, with relatevly small amount of onboard memory.
+Another benefit of the CSR implementation when it comes to GPUs is its much lower memory usage.
+The ATI GPU used here, features only 1GByte of memory useable for OpenCL, limiting the size of the system processable.
+TODO
 This is the reason the benchmarks stop before reaching the final size of 16 MPixel.
 But as you can see this is done much earlier for the LUT implementation.
 In figure :ref:`gpusb`, we have gathered the results for all the GPUs tested as well as Intel's Xeon Phi.
@@ -459,13 +462,13 @@ As you can see Xeon Phi matches the performance of the relatevly old ATI GPU.
 What is surpising though, is how well did the new, consumer grade Nvidia GeForce 750Ti perform.
 I has match and surpassed the performance of all the high-end GPUs, being only at a fraction of their cost.
 
-.. figure:: gpus_a.png
+.. figure:: gpusa.png
 
    Comparison of the azimuthal integration speed between the LUT and CSR implementations on GPUs. :label:`gpusa`
    
-.. figure:: gpus_b.png
+.. figure:: gpusb.png
 
-   Comparison of the performances for several Manycore accelerators: GPUs and Xeon Phi.:label:`gpusb`
+   Comparison of the performances for several Manycore accelerators: GPUs and Xeon Phi. :label:`gpusb`
 
 
 Kernel timings
