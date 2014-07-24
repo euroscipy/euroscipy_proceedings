@@ -56,8 +56,8 @@ An X-ray is an electromagnetic wave, like light except that its wavelength is mu
 the size of an atom, making it a perfect probe to analyze atoms and molecules.
 This X-ray is scattered (re-emitted with the same energy) by the electron cloud surrounding atoms.
 When atoms are arranged periodically, as in a crystal, scattered X-rays interfere in a constructive way
-when the difference of optical path is a multiple of the wavelength :math:`2d sin(\theta) = n\lambda`.
-Formula called *Bragg's law*.
+when the difference of optical path is a multiple of the wavelength: :math:`2d sin(\theta) = n\lambda`.
+In this formula, known as *Bragg's law*, *d* is the distance between crystal plans, :math:`\theta` is the incidence angle and :math:`\lambda` is the wavelength.
 An X-ray beam crossing a powder sample made of many small crystals is then scattered along multiple concentric cones.
 In a powder diffraction experiment, one aims at measuring the intensity of X-rays as function of the opening of the cone, averaged along each ring.
 This transformation is called "azimuthal integration" as it is an averaging of the signal along the azimuthal angle.
@@ -79,7 +79,7 @@ The output spaces implemented in pyFAI are:
 * :math:`2\theta = tan^{-1}(r/d)`
 * :math:`q = 4 \pi sin({2 \theta} / 2)/ \lambda`
 
-The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or [h5py]_ for HDF5 files).
+The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or [H5Py]_ for HDF5 files).
 This snipplet of code explains you the basic usage of the library: :label:`use`
 
 .. code-block:: python
@@ -87,13 +87,13 @@ This snipplet of code explains you the basic usage of the library: :label:`use`
    import fabio, pyFAI
    data = fabio.open("Pilatus1M.edf").data
    ai = pyFAI.load("Pilatus1M.poni")
-   tth, I = ai.integrate1d(data, 1000, unit="2th_deg", method="numpy")
+   tth, I = ai.integrate1d(data, 1000, unit="2th_deg",\
+                                        method="numpy")
 
 Output scale (r, q or :math:`2\theta`) and units can be chosen with the *unit* keyword.
-The *method* keyword selects the algorithm used, those algorithms will be precisely described in this contribution.
-The description made in this paper is limited the description of 1D full azimuthal
-integration with a planar detector orthogonal the incoming beam,
-in this case the conic drawn on the detector are concentric circles.
+The *method* keyword selects the algorithm used for integration, those algorithms will be precisely described in this contribution.
+Nevertheless the description will be limited to 1D full azimuthal integration with a planar detector orthogonal the incoming beam,
+in this case the conics drawn on the detector are concentric circles. The generic geometry is described in [pyFAI_ocl]_.
 
 
 Test case
@@ -139,43 +139,43 @@ Numpy histograms
 ----------------
 
 The naive formulation made in :ref:`naive` can be re-written using histograms.
-The mean call can be replaced with the ratio of the sum of all values divided by the number of pixel contributing:
+The *mean* call can be replaced with the ratio of the sum of all values divided by the number of pixel contributing:
 
 .. code-block:: python
 
     values_r12.mean() = values_r12.sum() / mask_r12.sum()
 
-The denominator, mask_r12.sum(), can be obtained from the histogram of *r* values and the numerator
-from the weighted histogram of radius weighted by the intensity in the image:
+The denominator, *mask_r12.sum()*, can be obtained from the histogram of *radius* values and the numerator, *values_r12.sum()*
+from the weighted histogram of *radius* weighted by the *data* in the image:
 
 .. code-block:: python
 
    def azimint_hist(data, npt, radius):
-       hist1 = np.histogram(radius, npt)[0]
+       histu = np.histogram(radius, npt)[0]
        histw = np.histogram(radius, npt, weights=data)[0]
-       return histw / hist1
+       return histw / histu
 
 This new implementation takes about 800ms which is much faster than the loop written in Python
-but can be optimized by reading only once the radius array from central memory (cache re-use optimization).
+but can be optimized by reading only once the radius array from central memory.
 
 Cython implementation
 ---------------------
 
 Histograms were re-implemented using [Cython]_ to perform simultaneously the
-weighted and the un-weighted histogram with a single memory read of  the radius array.
-The better use if the caches decreases the integration time to 150ms on a single core.
+weighted and the un-weighted histogram with a single memory read of the radius array.
+The better use of the CPU cache decreases significantly the integration time to 150ms on a single core.
 
 OpenMP support in Cython
 ........................
 
-To accelerate further the code we decided to parallelize the cython code thanks to OpenMP.
+To accelerate further the code we decided to parallelize the [Cython]_ code using to [OpenMP]_.
 While the implementation was quick, the result we got were wrong (by a few percent) due to
-write conflicts, not protected by atomic_add operation. Apparently the use of atomic operation is
-still not yet possible in Cython (summer 2014).
-Multithreaded histogramming was made possible by using as many histograms as threads,
-which implies to allocate much more memory.
+write conflicts, not protected by atomic_add operation.
+Apparently the use of atomic operation is still not yet possible in [Cython]_ (summer 2014).
+Multithreaded histogramming was made possible by using as many histograms as threads simultaneously running,
+which implies to allocate much more memory for output arrays.
 
-.. table:: Execution speed measured on a pair of Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
+.. table:: Execution speed measured on two Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
 
    +----------------+----------------+
    | Implement.     | Exec. time (ms)|
@@ -198,10 +198,10 @@ which implies to allocate much more memory.
 
 The speed-up measured when going from 4 threads to 8 threads (i.e. from one processor to two on this system)
 is very small showing we reach the limits of the algorithm.
-The only way to go faster is to start thinking in parallel from beginning
+The only way to go faster is to start thinking in parallel from the beginning
 and re-design the algorithm so that it works natively with lots of threads.
-This approach is the one taken by OpenCL where thousands of threads are virtually running in parallel.
-This will be described in paragraph 5.
+This approach is the one taken by [OpenCL]_ where thousands of threads are virtually running in parallel.
+This will be described in paragraph :ref:`paralleliztion`.
 
 Pixel splitting
 ===============
@@ -280,7 +280,7 @@ More paralleliztion
 
 For faster execution, one solution is to use manycore systems, like for example
 Graphical Processing Units (GPU) or
-accelerators, for instance the Xeon-Phi from Intel.
+accelerators, for instance the Xeon-Phi from Intel.:label:`paralleliztion`
 Those chips allocate more silicon for computing (ALU)
 and less to branch prediction, memory prefetecher and cache coherency, in comparison to CPU.
 Our duties as programmers is to write the code that maximises the usage of ALUs
@@ -385,9 +385,9 @@ As out detectors provide a sensitivity of 12 to 20 bits/pixel, performing all ca
 in double precision (with 52 bits mantissa) looks over-sized  and the 24 bits of mantissa
 of single precision float looks better adapted (with no drop of precision).
 Moreover, GPU devices provide much more computing power in single precision than in double,
-this factor varies from 2 on high-end professional GPU like Nvida Tesla to 24 on most consumer grade devices.
+this factor varies from 2 on high-end professional GPU like Nvidia Tesla to 24 on most consumer grade devices.
 
-When using OpenCL for the GPU we used a compensated arithmetic (or Kahan_summation), to
+When using [OpenCL]_ for the GPU we used a compensated arithmetic (or [Kahan]_ summation), to
 reduce the error accumulation in the histogram summation (at the cost of more operations to be done).
 This allows accurate results to be obtained on cheap hardware that performs calculations in single
 precision floating-point arithmetic (32 bits) which are available on consumer grade graphic cards.
@@ -395,8 +395,8 @@ Double precision operations are currently limited to high price and performance 
 The additional cost of Kahan summation, 4x more arithmetic operations, is hidden by smaller data types,
 the higher number of single precision units and that the GPU is usually limited by the memory bandwidth anyway.
 
-The performances of the parallel implementation based on a LUT, stored in CSR format, can reach 750 MPix/s
-on recent multi-core computer with a mid-range graphics card.
+The performances of the parallel azimuthal integration can reach 750 MPix/s
+on recent computer with a mid-range graphics card.
 On multi-socket server featuring high-end GPUs like Tesla cards, the performances are similar with the
 additional capability to work on multiple detector simultaneously.
 
@@ -418,8 +418,6 @@ The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from ac
 
 They come from various detector and differ in the geometry used and input datatype,
 which explains why processing this 16 Mpix image is faster than the 12Mpix image in this benchmark.
-
-Shall we work only on synthetic images ??? Yes probably
 
 Choice of the algorithm
 -----------------------
@@ -505,21 +503,19 @@ PyFAI depends on Python v2.6 or v2.7 and [NumPy]_.
 In order to be able to read images from various X-ray detectors, pyFAI relies on the [FabIO]_ library.
 Optional [OpenCL]_ acceleration is provided by [PyOpenCL]_
 Graphical applications for calibration and integration rely on [matplotlib]_, [PyQt]_ and
-SciPy [Scipy]_ for image processing.
+SciPy [SciPy]_ for image processing.
 A C compilers is needed to build the [Cython]_ code from sources.
 PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
-The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
 
 Conclusions
 ===========
 
 This contribution shows how one of the most central algorithm in crystallography has been implemented in Python,
 optimized in Cython and ported to manycore architectures thanks to PyOpenCL.
-50x speed-up have been observed by switching from binary code to OpenCL code running on GPUs.
+15x speed-up have been observed by switching from binary code to OpenCL code running on GPUs (400x vs NumPy).
 Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxell* generation chip
 running as fast as high-end graphics based on the *Kepler* architecture (like the Titan), and litteraly outperforming
 both AMD GPUs and Xeon-Phi accelerator card.
-
 Thanks to the PyOpenCL interfaced in Python, programming CPUs in a parallel is as easy as programming GPUs.
 
 
@@ -539,7 +535,7 @@ References
 ==========
 .. [Cython] S. Behnel, R. Bradshaw, C. Citro, L. Dalcin, D.S. Seljebotn and K. Smith.
             *Cython: The Best of Both Worlds*
-            Comput. Sci. Eng., 13,2:31-39, 2011.
+            Comput. Sci. Eng., 13(2):31-39, 2011.
 .. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer.
             *FabIO: easy access to two-dimensional X-ray detector images in Python*,
             J. Appl. Cryst., 46:537-539, 2013.
@@ -549,15 +545,18 @@ References
 .. [H5Py] A. Collette.
            * Python and HDF5*
            ISBN 978-1-4493-6783-1, (2013)
+.. [Kahan] W. Kahan.
+            *Pracniques: Further Remarks on Reducing Truncation Errors*,
+            Commun. ACM,8(1):40-, Jan. 1965
 .. [matplotlib] J. D. Hunter.
             *Matplotlib: A 2D Graphics Environment*,
-            Comput. Sci. Eng., 9,3:90-95, 2007.
+            Comput. Sci. Eng., 9(3):90-95, 2007.
 .. [NumPy] T. E. Oliphant.
          *Python for Scientific Computing*,
-         Comput. Sci. Eng., 9,3:10-20, 2007.
+         Comput. Sci. Eng., 9(3):10-20, 2007.
 .. [OpenCL] J.E. Stone, D. Gohara and G. Shi.
             *OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems*,
-            Comput. Sci. Eng., 12,3:66-73, 2010.
+            Comput. Sci. Eng., 12(3):66-73, 2010.
 .. [OpenMP] OpenMP Architecture Review Board.
             *OpenMP Application Program Interface Version 3.0*, 2008.
 .. [pyFAI]  J. Kieffer and D. Karkoulis.
@@ -568,7 +567,7 @@ References
                Powder Diffraction, 28S2:1945-7413, 2013.
 .. [PyOpenCL] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
             *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
-            Parallel Computing, 38,3:157-174, 2012.
+            Parallel Computing, 38(3):157-174, 2012.
 .. [pyQt] Mark Summerfield.
          *Rapid GUI Programming with Python and Qt: The Definitive Guide to PyQt*,
          ISBN 0132354187 (2007).
