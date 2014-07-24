@@ -417,7 +417,7 @@ Execution speed have been measured using the *timeit* module, averaged over 10 i
 The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from actual diffraction experiment and part of the pyFAI test-suite.
 
 They come from various detector and differ in the geometry used and input datatype,
-which explains why processing this 16 Mpix image is fasterthan the 12Mpix image in this benchmark.
+which explains why processing this 16 Mpix image is faster than the 12Mpix image in this benchmark.
 
 Shall we work only on synthetic images ??? Yes probably
 
@@ -464,7 +464,7 @@ The overhead of Python in around 40% compared to the total execution time, and t
 represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
 All vendors are currently working on an unifed memory space, which will be available for OpenCL2.0, it will reduce the time spent in transfers and simplify programming.
 
-.. table:: OpenCl profiling of the integration on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
+.. table:: OpenCl profiling of the integration of a Pilatus 1M image on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
 
                                  +-----------------+---------+
                                  |  ai.intergate1d | 2.030ms |
@@ -497,23 +497,18 @@ Computers were running Debian8/Jessie operating system with backported OpenCL dr
 * AMD APP drivers 14.4
 * Nvidia CUDA drivers 340.24-2
 
-PyFAI and the OpenCL code are known to work on other platforms like MacOSX and Windows 64 bits.
-
 Project description
 ===================
 
 PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
-PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
-In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
-Optional [OpenCL]_ acceleration is provided by pyopencl [PyOpenCL]_
-Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and
+PyFAI depends on Python v2.6 or v2.7 and [NumPy]_.
+In order to be able to read images from various X-ray detectors, pyFAI relies on the [FabIO]_ library.
+Optional [OpenCL]_ acceleration is provided by [PyOpenCL]_
+Graphical applications for calibration and integration rely on [matplotlib]_, [PyQt]_ and
 SciPy [Scipy]_ for image processing.
 A C compilers is needed to build the [Cython]_ code from sources.
 PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
 The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
-
-
-
 
 Conclusions
 ===========
@@ -540,43 +535,46 @@ and also in other instituts like Soleil, Petra3, CEA, APS who provide feed-back,
 
 
 
-
-
 References
 ==========
-.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
-            *Two-dimensional detector software*,
-            High Press. Res., 14:235–248, 1996.
-.. [H5Py] A. Collette ... TODO
-.. [pyFAI]  J. Kieffer and D. Karkoulis.
-            *PyFAI, a versatile library for azimuthal regrouping*,
-            Journal of Physics: Conference Series, 425:202012, 2013.
-.. [pyFAI_ocl] J. Kieffer and J.P. Wright.
-               *PyFAI: a Python library for high performance azimuthal integration on GPU*,
-               Powder Diffraction, 28S2:1945-7413, 2013.
+.. [Cython] S. Behnel, R. Bradshaw, C. Citro, L. Dalcin, D.S. Seljebotn and K. Smith.
+            *Cython: The Best of Both Worlds*
+            Comput. Sci. Eng., 13,2:31-39, 2011.
 .. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer.
             *FabIO: easy access to two-dimensional X-ray detector images in Python*,
             J. Appl. Cryst., 46:537-539, 2013.
-.. [SPD] P. Bösecke.
-         *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
-         J. Appl. Cryst., 40:s423–s427, 2007.
+.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
+            *Two-dimensional detector software*,
+            High Press. Res., 14:235–248, 1996.
+.. [H5Py] A. Collette.
+           * Python and HDF5*
+           ISBN 978-1-4493-6783-1, (2013)
 .. [matplotlib] J. D. Hunter.
             *Matplotlib: A 2D Graphics Environment*,
             Comput. Sci. Eng., 9,3:90-95, 2007.
 .. [NumPy] T. E. Oliphant.
          *Python for Scientific Computing*,
          Comput. Sci. Eng., 9,3:10-20, 2007.
-.. [SciPy] E. Jones, T. E. Oliphant and  P. Peterson,
-           *SciPy: Open source scientific tools for Python*, 2001.
-.. [Cython] S. Behnel, R. Bradshaw, C. Citro, L. Dalcin, D.S. Seljebotn and K. Smith.
-            *Cython: The Best of Both Worlds*
-            Comput. Sci. Eng., 13,2:31-39, 2011.
-.. [PyOpenCL] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
-            *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
-            Parallel Computing, 38,3:157-174, 2012.
-.. [OpenMP] OpenMP Architecture Review Board.
-            *OpenMP Application Program Interface Version 3.0*, 2008.
 .. [OpenCL] J.E. Stone, D. Gohara and G. Shi.
             *OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems*,
             Comput. Sci. Eng., 12,3:66-73, 2010.
+.. [OpenMP] OpenMP Architecture Review Board.
+            *OpenMP Application Program Interface Version 3.0*, 2008.
+.. [pyFAI]  J. Kieffer and D. Karkoulis.
+            *PyFAI, a versatile library for azimuthal regrouping*,
+            Journal of Physics: Conference Series, 425:202012, 2013.
+.. [pyFAI_ocl] J. Kieffer and J.P. Wright.
+               *PyFAI: a Python library for high performance azimuthal integration on GPU*,
+               Powder Diffraction, 28S2:1945-7413, 2013.
+.. [PyOpenCL] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
+            *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
+            Parallel Computing, 38,3:157-174, 2012.
+.. [pyQt] Mark Summerfield.
+         *Rapid GUI Programming with Python and Qt: The Definitive Guide to PyQt*,
+         ISBN 0132354187 (2007).
+.. [SciPy] E. Jones, T. E. Oliphant and  P. Peterson,
+           *SciPy: Open source scientific tools for Python*, 2001.
+.. [SPD] P. Bösecke.
+         *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
+         J. Appl. Cryst., 40:s423–s427, 2007.
 
