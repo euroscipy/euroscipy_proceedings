@@ -70,7 +70,7 @@ This transformation is called "azimuthal integration" as it is an averaging of t
 Azimuthal integration
 =====================
 
-While pyFAI addresses the needs of both single and bi-dimentional integration with various scattering spaces,
+While pyFAI addresses the needs of both mono and bi-dimentional integration with various scattering spaces,
 this contribution focuses on the algorithmic and implementation part.
 The output spaces implemented in pyFAI are:
 
@@ -79,7 +79,16 @@ The output spaces implemented in pyFAI are:
 * :math:`2\theta = tan^{-1}(r/d)`
 * :math:`q = 4 \pi sin({2 \theta} / 2)/ \lambda`
 
+The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or h5py for HDF5 files).
 
+.. code-block:: python
+   import fabio, pyFAI
+   img = fabio.open("Pilatus1M.edf").data
+   ai = pyFAI.load("Pilatus1M.poni")
+   tth, I = ai.integrate1d(data, 1000, unit="2th_deg", method="numpy")
+
+Output scale (r, q or :math:`2\theta`) and units can be chosen with the *unit* keyword.
+The *method* keyword selects the algorithm used, those algorithms will be precisely described in this contribution.
 The description made in this paper is limited the description of 1D full azimuthal
 integration with a planar detector orthogonal the incoming beam,
 in this case the conic drawn on the detector are concentric circles.
@@ -440,10 +449,12 @@ All of the GPUs gave better performance than the Xeon Phi, which fared more simi
 But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
 Very close to that came the much more expensive and renown Nvidia Titan, leaving the older Nvidia Tesla K20 trailing behind.
 
+
+
 Drivers used
 ------------
 
-Computers were all running Debian7 operating system with backported OpenCL drivers:
+Computers were running Debian8/Jessie operating system with backported OpenCL drivers:
 
 * Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.3
 * AMD APP drivers 14.4
