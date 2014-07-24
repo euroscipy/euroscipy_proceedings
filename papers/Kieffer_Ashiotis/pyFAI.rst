@@ -90,10 +90,11 @@ This snipplet of code explains you the basic usage of the library: :label:`use`
    tth, I = ai.integrate1d(data, 1000, unit="2th_deg",\
                                         method="numpy")
 
-Output scale (r, q or :math:`2\theta`) and units can be chosen with the *unit* keyword.
+Output scale (*r*, *q* or :math:`2\theta`) and units can be chosen with the *unit* keyword.
 The *method* keyword selects the algorithm used for integration, those algorithms will be precisely described in this contribution.
-Nevertheless the description will be limited to 1D full azimuthal integration with a planar detector orthogonal the incoming beam,
-in this case the conics drawn on the detector are concentric circles. The generic geometry is described in [pyFAI_ocl]_.
+Nevertheless the experiment will be limited to 1D full azimuthal integration with a planar detector orthogonal the incoming beam,
+in this case the conics drawn on the detector are concentric circles.
+The generic geometry used in pyFAI has already been described in [pyFAI_ocl]_.
 
 
 Test case
@@ -175,7 +176,7 @@ Apparently the use of atomic operation is still not yet possible in [Cython]_ (s
 Multithreaded histogramming was made possible by using as many histograms as threads simultaneously running,
 which implies to allocate much more memory for output arrays.
 
-.. table:: Execution speed measured on two Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
+.. table:: Azimuthal integration time for a 4 Mpix image measured on two Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
 
    +----------------+----------------+
    | Implement.     | Exec. time (ms)|
@@ -450,6 +451,9 @@ All of the GPUs gave better performance than the Xeon Phi, which fared more simi
 But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
 Very close to that came the much more expensive and renown Nvidia Titan, and its professional version the Nvidia Tesla K20.
 The competition with AMD GPU-hardware is somehow unfear as this high-end GPU is already 3 years old, but it shows the portablity of the developped code.
+The amount of memory available on the device has its importance: it is not possible to store the LUT for images larger then
+X MPix on the AMD v7800 (which has only 1GByte memroy available for OpenCL calculations).
+The CSR representation, much smaller, allows to process image up to XX Mpix on the same device.
 
 Kernel timings
 --------------
@@ -467,7 +471,7 @@ All vendors are currently working on an unifed memory space, which will be avail
                                  +-----------------+---------+
                                  |  ai.intergate1d | 2.030ms |
                                  +-----------------+---------+
-                                 |    OpenCL_total | 1.445ms |
+                                 |    OpenCL       | 1.445ms |
                                  +-----------------+---------+
                                  |      H->D image | 0.762ms |
                                  +-----------------+---------+
@@ -479,11 +483,11 @@ All vendors are currently working on an unifed memory space, which will be avail
                                  +-----------------+---------+
                                  |       integrate | 0.384ms |
                                  +-----------------+---------+
-                                 |      D->H ratio | 0.004ms |
+                                 |     D->H ratio  | 0.004ms |
                                  +-----------------+---------+
-                                 |      D->H uhist | 0.004ms |
+                                 |     D->H u_hist | 0.004ms |
                                  +-----------------+---------+
-                                 |      D->H whist | 0.004ms |
+                                 |     D->H w_hist | 0.004ms |
                                  +-----------------+---------+
 
 Drivers used
@@ -513,8 +517,8 @@ Conclusions
 This contribution shows how one of the most central algorithm in crystallography has been implemented in Python,
 optimized in Cython and ported to manycore architectures thanks to PyOpenCL.
 15x speed-up have been observed by switching from binary code to OpenCL code running on GPUs (400x vs NumPy).
-Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxell* generation chip
-running as fast as high-end graphics based on the *Kepler* architecture (like the Titan), and litteraly outperforming
+Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxwell* generation chip
+running as fast as high-end graphics based on the *Kepler* architecture, and litteraly outperforming
 both AMD GPUs and Xeon-Phi accelerator card.
 Thanks to the PyOpenCL interfaced in Python, programming CPUs in a parallel is as easy as programming GPUs.
 
@@ -543,7 +547,7 @@ References
             *Two-dimensional detector software*,
             High Press. Res., 14:235–248, 1996.
 .. [H5Py] A. Collette.
-           * Python and HDF5*
+           *Python and HDF5*
            ISBN 978-1-4493-6783-1, (2013)
 .. [Kahan] W. Kahan.
             *Pracniques: Further Remarks on Reducing Truncation Errors*,
