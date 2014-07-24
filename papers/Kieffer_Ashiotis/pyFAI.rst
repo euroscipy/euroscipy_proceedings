@@ -79,11 +79,13 @@ The output spaces implemented in pyFAI are:
 * :math:`2\theta = tan^{-1}(r/d)`
 * :math:`q = 4 \pi sin({2 \theta} / 2)/ \lambda`
 
-The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or h5py for HDF5 files).
+The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or [h5py]_ for HDF5 files).
+This snipplet of code explains you the basic usage of the library: :label:`use`
 
 .. code-block:: python
+
    import fabio, pyFAI
-   img = fabio.open("Pilatus1M.edf").data
+   data = fabio.open("Pilatus1M.edf").data
    ai = pyFAI.load("Pilatus1M.poni")
    tth, I = ai.integrate1d(data, 1000, unit="2th_deg", method="numpy")
 
@@ -296,15 +298,15 @@ like Python interpreted code when interfaced with [PyOpenCL]_
     :class: w
 
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Vendor             | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
+    | Vendor /driver     | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Model              | 2 E5-2667 | 2 E5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
+    | Model              | 2xE5-2667 | 2 E5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Type               | CPU       | CPU       | GPU     | GPU     | GPU         | ACC       |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Compute Unit       | 12        | 12        | 18      | 13      | 5           | 4*69      |
+    | Compute Unit       | 12        | 12        | 18      | 13      | 5           | 4x69      |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Compute Element/CU | 4:AVX     | 1         | 80      | 4*8:Warp| 4*8:Warp    | 16:AVX512 |
+    | Compute Element/CU | 4:AVX     | 1         | 80      | 4x8:Warp| 4x8:Warp    | 16:AVX512 |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz    | 1052      |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
@@ -412,9 +414,10 @@ Benchmarks
 At this point we present the results from several benchmarks done using the diffetent algorithm options available in PyFAI.
 All benchmarks have been performed using the same bounding box pixel splitting scheme and integrated profiles obtained are of equivalent quality.
 Execution speed have been measured using the *timeit* module, averaged over 10 iterations (best of 3).
-The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from actual diffraction experiment.
+The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from actual diffraction experiment and part of the pyFAI test-suite.
 
-They come from various detector and differ in the geometry used and input datatype, which explains why the 16 Mpix image is unusually fast and the 12Mpix image is comparatively slow.
+They come from various detector and differ in the geometry used and input datatype,
+which explains why processing this 16 Mpix image is fasterthan the 12Mpix image in this benchmark.
 
 Shall we work only on synthetic images ??? Yes probably
 
@@ -423,12 +426,12 @@ Choice of the algorithm
 
 The Look-Up Table contains the index togeather with the coeficient, hence it is an *array of struct* pattern which is known to make best use of CPU caches.
 On the opposite the CSR sparse matix representation is a *struct of array* which is better adapted to GPU.
-As we can see on figure :ref:`serial_lut_csr`, Both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
+As we can see on figure :ref:`serial-lut-csr`, Both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
 the penality of the *array of struct* in CSR is counter-balanced by the smaller chunk on data to be transfered from central memory to CPU
 
-.. figure:: serial_lut_cst.png
+.. figure:: rings2.png
 
-   Comparison of azimuthal integration speed obtained using serial implementation versus parallel ones with LUT and CSR sparse matrix representation. :label:`serial_lut_csr`
+   Comparison of azimuthal integration speed obtained using serial implementation versus parallel ones with LUT and CSR sparse matrix representation. :label:`serial-lut-csr`
 
 
 OpenMP vs OpenCL
@@ -447,9 +450,43 @@ GPU vs Xeon Phi
 One surprice that came from the benhcmarks taken on the Inte Xeon Phi, was the performance deferential between it and several GPUs.
 All of the GPUs gave better performance than the Xeon Phi, which fared more similarly to the CPUs.
 But was was even more surpising, was the fact that the best performance was obtained with the very cost-effective, latest-generation, mid-range Nvidia 750Ti.
-Very close to that came the much more expensive and renown Nvidia Titan, leaving the older Nvidia Tesla K20 trailing behind.
+Very close to that came the much more expensive and renown Nvidia Titan, and its professional version the Nvidia Tesla K20.
+The competition with AMD GPU-hardware is somehow unfear as this high-end GPU is already 3 years old, but it shows the portablity of the developped code.
 
+Kernel timings
+--------------
 
+As stated previously, the benchmark was performed using the *timeit* module from Python
+on the last line of the code snipplet described in :ref:`use`.
+One may wonder what is the actual time spent in which part of the OpenCL code and how much is the Python overhead.
+Table :ref:`profile` shows the execution time on the GeForce Titan (controled by a couple of Xeon 5520).
+The overhead of Python in around 40% compared to the total execution time, and the actual azimuthal integration
+represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
+All vendors are currently working on an unifed memory space, which will be available for OpenCL2.0, it will reduce the time spent in transfers and simplify programming.
+
+.. table:: OpenCl profiling of the integration on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
+
+                                 +-----------------+---------+
+                                 |  ai.intergate1d | 2.030ms |
+                                 +-----------------+---------+
+                                 |    OpenCL_total | 1.445ms |
+                                 +-----------------+---------+
+                                 |      H->D image | 0.762ms |
+                                 +-----------------+---------+
+                                 |            cast | 0.108ms |
+                                 +-----------------+---------+
+                                 |          memset | 0.009ms |
+                                 +-----------------+---------+
+                                 |     corrections | 0.170ms |
+                                 +-----------------+---------+
+                                 |       integrate | 0.384ms |
+                                 +-----------------+---------+
+                                 |      D->H ratio | 0.004ms |
+                                 +-----------------+---------+
+                                 |      D->H uhist | 0.004ms |
+                                 +-----------------+---------+
+                                 |      D->H whist | 0.004ms |
+                                 +-----------------+---------+
 
 Drivers used
 ------------
@@ -459,6 +496,22 @@ Computers were running Debian8/Jessie operating system with backported OpenCL dr
 * Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.3
 * AMD APP drivers 14.4
 * Nvidia CUDA drivers 340.24-2
+
+PyFAI and the OpenCL code are known to work on other platforms like MacOSX and Windows 64 bits.
+
+Project description
+===================
+
+PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
+PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
+In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
+Optional [OpenCL]_ acceleration is provided by pyopencl [PyOpenCL]_
+Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and
+SciPy [Scipy]_ for image processing.
+A C compilers is needed to build the [Cython]_ code from sources.
+PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
+The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
+
 
 
 
@@ -480,45 +533,21 @@ Acknoledgments
 
 Claudio Ferrero (head of the Data Analysis Unit) and Andy Götz (Head of the Software group) are acknoledged for supporting the developement of pyFAI.
 The porting of pyFAI to OpenCL would have not been possible without the financial support of LinkSCEEM-2 (RI-261600), financing the contracts of
-Dimitris Karkoulis who started the job, Zubair Nawaz who ported image distortion and Giannis Ashiotis (CSR, pixel splitting, ...)
-Finally the authors would like to acknoledge the different beamlines who promote this work, at ESRF ID02, ID11, ID13, ID15, ID16, ID21, BM29
-and also in other instituts like Soleil, Petra3, CEA, who provide feed-back, bug reports and patches to the library.
+Dimitris Karkoulis who started the GPU porting, Zubair Nawaz who ported image distortion and Giannis Ashiotis (CSR, pixel splitting, ...)
+Finally the authors would like to acknoledge their colleagues involved in the development of the library, especially Aurore Deschildre and Frédéric Picca for their involvement.
+The authors would like to thank all X-ray beamlines promoting pyFAI and providing resources to further develop it: ESRF BM01, ID02, ID11, ID13, ID15, ID16, ID21, ID23, ID29, BM29 and ID30;
+and also in other instituts like Soleil, Petra3, CEA, APS who provide feed-back, bug reports and patches to the library.
 
 
-
-Project description
-===================
-
-PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
-PyFAI depends on Python v2.6 or v2.7 and NumPy [NumPy]_.
-In order to be able to read images from various X-ray detectors, pyFAI relies on the FabIO [FabIO]_ library available from SourceForge.
-Optional openCL acceleration is provided by pyopencl [pyopencl]_
-Graphical applications for calibration and integration rely on matplotlib [matplotlib]_ and PyQt4 [PyQt]_ and
-SciPy [Scipy]_ for image processing.
-A C compilers is needed to build the [Cython]_ code from sources.
-PyFAI is packaged and available in common Linux distributions like Debian and Ubuntu but it is also tested and functionnal under Windows and MacOSX.
-The software library has already been adopted by four synchrotrons in Europe and in the United States of America as well as a few academic laboratories.
-
-
-
-Conclusions
-===========
-
-TODO
-CPUs are GPUs like others...
-
-Acknoledgments
-==============
-
-LinkSCEEM
-. Porting pyFAI to
-gpu
-would have not been possible without the financial support of LinkSCEEM-2 (RI-261600).
 
 
 
 References
 ==========
+.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
+            *Two-dimensional detector software*,
+            High Press. Res., 14:235–248, 1996.
+.. [H5Py] A. Collette ... TODO
 .. [pyFAI]  J. Kieffer and D. Karkoulis.
             *PyFAI, a versatile library for azimuthal regrouping*,
             Journal of Physics: Conference Series, 425:202012, 2013.
@@ -528,9 +557,6 @@ References
 .. [FabIO]  E. B. Knudsen, H. O. Sorensen, J. P. Wright,  G. Goret and J. Kieffer.
             *FabIO: easy access to two-dimensional X-ray detector images in Python*,
             J. Appl. Cryst., 46:537-539, 2013.
-.. [FIT2D]  A. Hammersley, O. Svensson, M. Hanfland, A. Fitch and D. Hausermann.
-            *Two-dimensional detector software*,
-            High Press. Res., 14:235–248, 1996.
 .. [SPD] P. Bösecke.
          *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
          J. Appl. Cryst., 40:s423–s427, 2007.
@@ -545,7 +571,7 @@ References
 .. [Cython] S. Behnel, R. Bradshaw, C. Citro, L. Dalcin, D.S. Seljebotn and K. Smith.
             *Cython: The Best of Both Worlds*
             Comput. Sci. Eng., 13,2:31-39, 2011.
-.. [pyopencl] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
+.. [PyOpenCL] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
             *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
             Parallel Computing, 38,3:157-174, 2012.
 .. [OpenMP] OpenMP Architecture Review Board.
