@@ -70,6 +70,8 @@ This hybrid architecture was driven a trade-off between the need for relatively 
 
 The C++ ``aftershock`` programme is not discussed further in this paper.
 
+MOVE INTRO TO PLOTTER INTO HERE??
+
 Plotting Architecture and Features
 ----------------------------------
 
