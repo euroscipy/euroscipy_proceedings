@@ -353,7 +353,7 @@ and to exploit the sparse structure, both index and weight of the pixel have to 
 
 By making this change we switched from a “linear read / random write” forward algorithm to a
 “random read / linear write” backward algorithm which is more suitable for parallelization.
-For optimal memory acces patterns, this array my be transposed depending on the hardware (CPU vs GPU)
+For optimal memory acces patterns, this array may be transposed depending on the underlying hardware (CPU vs GPU)
 
 Optimization of the sparse matrix multiplication
 ................................................
@@ -363,9 +363,9 @@ reduce the size of the data stored in the LUT.
 This algorithm was implemented both in [Cython]_-[OpenMP]_ and [OpenCL]_.
 Our CSR representation contains *data*, *indices* and *indptr* so it is is fully
 compatible with the *scipy.sparse.csr.csr_matrix* contructor from [SciPy]_.
-This representation is a struct of array which is better suited to GPUs
-(stridded memory access) while LUT is an array of struct, known to be
-better adapted to CPU (better use of cache and prefetching)
+This representation is a *struct of array* which is better suited to GPUs
+(stridded memory access) while LUT is an *array of struct*, known to be
+better adapted to CPU (better use of cache and prefetching).
 The CSR approach has a double benefit: first, it reduces the
 size of the storage needed compared to the LUT by a factor two to three,
 offering the opportunity of working with larger images on the same hardware.
@@ -399,14 +399,6 @@ The performances of the parallel azimuthal integration can reach 750 MPix/s
 on recent computer with a mid-range graphics card.
 On multi-socket server featuring high-end GPUs like Tesla cards, the performances are similar with the
 additional capability to work on multiple detector simultaneously.
-
-Outlook on parallel programming
-...............................
-
-The calculation of the look-up table which is currently performed in single threaded [Cython]_ code.
-As we have seen, this scatter operation is a challenge for parallel programming because of
-the dynamic memory allocation needed and of the use of atomic operation in addition
-to some numerial precision issues with single precision floating point numbers.
 
 Benchmarks
 ==========
