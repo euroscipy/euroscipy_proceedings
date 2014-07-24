@@ -201,8 +201,7 @@ The speed-up measured when going from 4 threads to 8 threads (i.e. from one proc
 is very small showing we reach the limits of the algorithm.
 The only way to go faster is to start thinking in parallel from the beginning
 and re-design the algorithm so that it works natively with lots of threads.
-This approach is the one taken by [OpenCL]_ where thousands of threads are virtually running in parallel.
-This will be described in paragraph :ref:`paralleliztion`.
+This approach is the one taken by [OpenCL]_ where thousands of threads are virtually running in parallel and described in paragraph 5.
 
 Pixel splitting
 ===============
@@ -276,12 +275,12 @@ The fact that pixels contributing to neighboring bin of the histogram creates so
 affecting this way the statistics of the final results in a potentially unwanted manner.
 
 
-More paralleliztion
-===================
+More parallelization
+====================
 
 For faster execution, one solution is to use manycore systems, like for example
 Graphical Processing Units (GPU) or
-accelerators, for instance the Xeon-Phi from Intel.:label:`paralleliztion`
+accelerators, for instance the Xeon-Phi from Intel.
 Those chips allocate more silicon for computing (ALU)
 and less to branch prediction, memory prefetecher and cache coherency, in comparison to CPU.
 Our duties as programmers is to write the code that maximises the usage of ALUs
@@ -450,7 +449,7 @@ This is not the case for the older Intel Xeon E-5520, where such features are no
 
 .. figure:: openmp_opencl_intel_amd_b.png
 
-   The effects of OpenCL driver selection on performance on different generations of CPUs.:label:`openmp-opencl-intel-amdb`
+   The effects of OpenCL driver selection on performance on different generations of CPUs. :label:`openmp-opencl-intel-amdb`
 
 GPUs and Xeon Phi
 -----------------
@@ -528,7 +527,7 @@ Project description
 PyFAI is open-source software released under the GPL licence available on GitHub (https://github.com/kif/pyFAI).
 PyFAI depends on Python v2.6 or v2.7 and [NumPy]_.
 In order to be able to read images from various X-ray detectors, pyFAI relies on the [FabIO]_ library.
-Optional [OpenCL]_ acceleration is provided by [PyOpenCL]_
+Optional [OpenCL]_ acceleration is provided by [PyOpenCL]_.
 Graphical applications for calibration and integration rely on [matplotlib]_, [PyQt]_ and
 SciPy [SciPy]_ for image processing.
 A C compilers is needed to build the [Cython]_ code from sources.
@@ -553,7 +552,7 @@ Claudio Ferrero (head of the Data Analysis Unit) and Andy Götz (Head of the Sof
 The porting of pyFAI to OpenCL would have not been possible without the financial support of LinkSCEEM-2 (RI-261600), financing the contracts of
 Dimitris Karkoulis who started the GPU porting, Zubair Nawaz who ported image distortion and Giannis Ashiotis (CSR, pixel splitting, ...)
 Finally the authors would like to acknoledge their colleagues involved in the development of the library, especially Aurore Deschildre and Frédéric Picca for their involvement.
-The authors would like to thank all X-ray beamlines promoting pyFAI and providing resources to further develop it: ESRF BM01, ID02, ID11, ID13, ID15, ID16, ID21, ID23, ID29, BM29 and ID30;
+The authors would like to thank all X-ray beamlines promoting pyFAI and providing resources to further develop it: ESRF BM01, ID02, ID11, ID13, ID15, ID16, ID21, ID23, BM26, ID29, BM29 and ID30;
 and also in other instituts like Soleil, Petra3, CEA, APS who provide feed-back, bug reports and patches to the library.
 
 
