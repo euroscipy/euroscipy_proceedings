@@ -568,7 +568,7 @@ References
 .. [PyOpenCL] A. Klöckner, N. Pinto, Y. Lee, B. Catanzaro, P. Ivanov and A. Fasih.
             *PyCUDA and PyOpenCL: A Scripting-Based Approach to GPU Run-Time Code Generation*
             Parallel Computing, 38(3):157-174, 2012.
-.. [pyQt] Mark Summerfield.
+.. [PyQt] Mark Summerfield.
          *Rapid GUI Programming with Python and Qt: The Definitive Guide to PyQt*,
          ISBN 0132354187 (2007).
 .. [SciPy] E. Jones, T. E. Oliphant and  P. Peterson,
