@@ -17,7 +17,7 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
    (like Rietveld refinement, ...)
    This contribution describes how to transform an image into a radial profile
    using the Numpy package, how the process was accelerated using Cython and
-   how the algorithm was parallelize, needing a complete re-design to take benefit
+   how the algorithm was parallelized, needing a complete re-design to take benefit
    of massively parallel devices like graphical processing units or accelerator like
    the Intel Xeon Phi thanks to PyOpenCL.
 
@@ -169,7 +169,7 @@ The better use of the CPU cache decreases significantly the integration time to 
 OpenMP support in Cython
 ........................
 
-To accelerate further the code we decided to parallelize the [Cython]_ code using to [OpenMP]_.
+To accelerate further the code we decided to parallelize the [Cython]_ code using [OpenMP]_.
 While the implementation was quick, the result we got were wrong (by a few percent) due to
 write conflicts, not protected by atomic_add operation.
 Apparently the use of atomic operation is still not yet possible in [Cython]_ (summer 2014).
@@ -541,13 +541,13 @@ both AMD GPUs and Xeon-Phi accelerator card.
 Thanks to the PyOpenCL interfaced in Python, programming CPUs in a parallel is as easy as programming GPUs.
 
 
-Acknoledgments
-==============
+Acknowledgments
+===============
 
-Claudio Ferrero (head of the Data Analysis Unit) and Andy Götz (Head of the Software group) are acknoledged for supporting the developement of pyFAI.
+Claudio Ferrero (head of the Data Analysis Unit) and Andy Götz (Head of the Software group) are acknowledged for supporting the developement of pyFAI.
 The porting of pyFAI to OpenCL would have not been possible without the financial support of LinkSCEEM-2 (RI-261600), financing the contracts of
 Dimitris Karkoulis who started the GPU porting, Zubair Nawaz who ported image distortion and Giannis Ashiotis (CSR, pixel splitting, ...)
-Finally the authors would like to acknoledge their colleagues involved in the development of the library, especially Aurore Deschildre and Frédéric Picca for their involvement.
+Finally the authors would like to acknowledge their colleagues involved in the development of the library, especially Aurore Deschildre and Frédéric Picca for their involvement.
 The authors would like to thank all X-ray beamlines promoting pyFAI and providing resources to further develop it: ESRF BM01, ID02, ID11, ID13, ID15, ID16, ID21, ID23, BM26, ID29, BM29 and ID30;
 and also in other instituts like Soleil, Petra3, CEA, APS who provide feed-back, bug reports and patches to the library.
 
