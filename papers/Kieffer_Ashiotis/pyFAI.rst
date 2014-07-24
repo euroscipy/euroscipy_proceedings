@@ -417,7 +417,7 @@ Choice of the algorithm
 The Look-Up Table contains the index togeather with the coeficient, hence it is an *array of struct* pattern which is known to make best use of CPU caches.
 On the opposite the CSR sparse matix representation is a *struct of array* which is better adapted to GPU.
 As we can see on figure :ref:`serial-lut-csr`, both parallel implementation out-perform the serial code and both LUT and CSR behave similarly:
-the penality of the *array of struct* in CSR is counter-balanced by the smaller chunk on data to be transfered from central memory to CPU
+the penality of the *array of struct* in CSR is counter-balanced by the smaller chunk of data to be transfered from central memory to CPU
 
 .. figure:: serial_lut_csr.png
 
