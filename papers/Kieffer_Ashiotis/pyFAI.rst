@@ -17,9 +17,9 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
    (like Rietveld refinement, ...)
    This contribution describes how to transform an image into a radial profile
    using the Numpy package, how the process was accelerated using Cython and
-   how the algorithm was parallelized, needing a complete re-design to take benefit
-   of massively parallel devices like graphical processing units or accelerator like
-   the Intel Xeon Phi thanks to PyOpenCL.
+   the algorithm was parallelized, needing a complete re-design to take benefit
+   of massively parallel devices like graphical processing units or accelerators like
+   the Intel Xeon Phi thanks to the PyOpenCL library.
 
 
 .. class:: keywords
@@ -31,35 +31,35 @@ Introduction
 
 The Python programming language is widely adopted in the scientific community
 and especially in crystallography, this is why a convenient azimuthal integration
-routine, one of the basic algorithm in crystallography, was requested by the synchrotron community.
-The advent of pixel-detectors with their very high speed (up to 3000 frames per seconds)
-imposed strong constrains in speed that most available programs ([FIT2D]_, [SPD]_, ...),
-while written in FORTRAN or C, could not meet.
+routine, one of the basic algorithms in crystallography, was requested by the synchrotron community.
+The advent of pixel-detectors with their very high speed (up to 3000 frames per second)
+imposed strong constraints in speed that most available programs ([FIT2D]_, [SPD]_, ...),
+written in FORTRAN or C, could not meet.
 
-The [pyFAI]_ project started in 2011 and aims at providing a convenient Pythonic interface
-for azimuthal integration, so that any crystallographer can adapt it to the type of experiment
+The [pyFAI]_ project started in 2011 and aims at providing a convenient *Pythonic* interface
+for azimuthal integration, so that any diffractionist can adapt it to the type of experiment
 he is interested in.
 This contribution describes how one of the most fundamental
-algorithm used in crystallography has been implemented in Python
-and how it was accelerated to reach the performances of today's fastest detectors.
+algorithms used in crystallography has been implemented in Python
+and how it was accelerated to the performances of today's fastest detectors.
 
-After the description of the experiment and the explanation of what is measured and how it must be transformed in paragraph 2,
-the paragraph 3 exposes how the algorithm can be vectorized using [NumPy]_ and speeded up with [Cython]_.
-The fourth paragraph highlights the precision enhancements recently introduced while the fith paragraph focuses on
-the parallelization of azimuthal integration on manycore systems like Graphical Processing Units (GPU) or on accelerators thanks to [PyOpenCL]_.
-Finally, benchmarks are comparing serial and parallel implementation using [OpenMP]_ and [OpenCL]_ from various vendors and devices.
+After describing typical experiment and explaining what is measured and how it must be transformed (section 2),
+section 3 describes how the algorithm can be vectorized using [NumPy]_ and speeded up with [Cython]_.
+Section 4 highlights the accuracy enhancement recently introduced while section 5 focuses on
+the parallelization of the azimuthal integration task on manycore systems like Graphical Processing Units (GPU) or on accelerators via [PyOpenCL]_.
+In section 6, serial and parallel implementations using [OpenMP]_ and [OpenCL]_ from various vendors and devices are benchmarked.
 
 Description of the experiment
 =============================
 
-An X-ray is an electromagnetic wave, like light except that its wavelength is much smaller, of
-the size of an atom, making it a perfect probe to analyze atoms and molecules.
-This X-ray is scattered (re-emitted with the same energy) by the electron cloud surrounding atoms.
-When atoms are arranged periodically, as in a crystal, scattered X-rays interfere in a constructive way
-when the difference of optical path is a multiple of the wavelength: :math:`2d sin(\theta) = n\lambda`.
+X-rays are electromagnetic waves, like light, except for their wavelengths which are much shorter,
+typically of the size of interatomic distances, making them a perfect probe to analyse atomic and molecular structures.
+X-rays can be elastically scattered (i.e. re-emitted with the same energy) by the electron cloud surrounding atoms.
+When atoms are arranged periodically, as in a crystal, scattered X-rays interfer in a constructive way
+when the difference of their optical paths is a multiple of the wavelength: :math:`2d sin(\theta) = n\lambda`.
 In this formula, known as *Bragg's law*, *d* is the distance between crystal plans, :math:`\theta` is the incidence angle and :math:`\lambda` is the wavelength.
-An X-ray beam crossing a powder sample made of many small crystals is then scattered along multiple concentric cones.
-In a powder diffraction experiment, one aims at measuring the intensity of X-rays as function of the opening of the cone, averaged along each ring.
+An X-ray beam crossing a powder-like sample made of many randomly oriented small crystals is then scattered along multiple concentric cones.
+In a powder diffraction experiment, one aims at measuring the intensity of X-rays as a function of the cone aperture, averaged along each ring.
 This transformation is called "azimuthal integration" as it is an averaging of the signal along the azimuthal angle.
 
 .. figure:: HEX-2D-diffraction.png
@@ -70,9 +70,9 @@ This transformation is called "azimuthal integration" as it is an averaging of t
 Azimuthal integration
 =====================
 
-While pyFAI addresses the needs of both mono and bi-dimentional integration with various scattering spaces,
-this contribution focuses on the algorithmic and implementation part.
-The output spaces implemented in pyFAI are:
+While pyFAI addresses the needs of both mono- and bi-dimentional integration in different spaces (real or reciprocal),
+this contribution focuses on the algorithmic and implementation part of the method.
+The work space in which pyFAI operates are one of the following:
 
 * :math:`r = \sqrt{x^2+y^2}`
 * :math:`\chi = tan^{-1}(y/x)`
