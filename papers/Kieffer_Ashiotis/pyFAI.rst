@@ -79,7 +79,7 @@ The work space in which pyFAI operates are one of the following:
 * :math:`2\theta = tan^{-1}(r/d)`
 * :math:`q = 4 \pi sin({2 \theta} / 2)/ \lambda`
 
-The pyFAI library was designed to offer a pythonic interface and work together with [FabIO]_ for image reading (or [H5Py]_ for HDF5 files).
+The pyFAI library was designed to offer a *Pythonic* interface and work together with [FabIO]_ for image reading (or [H5Py]_ for HDF5 files).
 This snipplet of code explains you the basic usage of the library: :label:`use`
 
 .. code-block:: python
@@ -90,7 +90,7 @@ This snipplet of code explains you the basic usage of the library: :label:`use`
    tth, I = ai.integrate1d(data, 1000, unit="2th_deg",\
                                         method="numpy")
 
-Output scale (*r*, *q* or :math:`2\theta`) and units can be chosen with the *unit* keyword.
+Output spaces (*r*, *q* or :math:`2\theta`) and units can be chosen with the *unit* keyword.
 The *method* keyword selects the algorithm used for integration, those algorithms will be precisely described in this contribution.
 Nevertheless the experiment will be limited to 1D full azimuthal integration with a planar detector orthogonal the incoming beam,
 in this case the conics drawn on the detector are concentric circles.
