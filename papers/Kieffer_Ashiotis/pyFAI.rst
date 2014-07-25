@@ -504,18 +504,21 @@ Unfortunately, even at 2 ms processing per image, few hard-drives are able to de
                                  +-----------------+---------+
                                  |       integrate | 0.384ms |
                                  +-----------------+---------+
-                                 |      D->H ratio | 0.004ms |
+                                 |     D->H  ratio | 0.004ms |
                                  +-----------------+---------+
-                                 |      D->H uhist | 0.004ms |
+                                 |     D->H u_hist | 0.004ms |
                                  +-----------------+---------+
-                                 |      D->H whist | 0.004ms |
+                                 |     D->H w_hist | 0.004ms |
                                  +-----------------+---------+
 
-Drivers used
-------------
+Configuration and Drivers used
+------------------------------
 
-Computers were running Debian8/Jessie operating system with backported OpenCL drivers:
+The computer hosting the two Intel Xeon E5-2667 (2x6 cores each, 2.9 GHZ, without hyperthreading, 8x8 GB of RAM) is a Dell PowerEdge R720 with both a Tesla K20 and an Intel Xeon phi accelerator, running debian 7.
+The computer hosting the two Intel Xeon E5520 (2x4cores, 2.27 GHz, hyperthreaded, 6x2 GB of RAM) is a Dell T7500 workstation with two Nvidia GPUs: GeForce 750Ti and Titan, running debian 7.
+The computer hosting the Intel Xeon E5-1607 (1x4cores, 3.0 GHz, without hyperthreading, 2x4 GB of RAM) is a Dell T3610 workstation with two GPUs: Nvidia GeForce 750Ti and AMD FirePro V7800, running debian 8/Jessie.
 
+In addition to the debian operating system, specific OpenCL drivers were installed:
 * Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.3
 * AMD APP drivers 14.4
 * Nvidia CUDA drivers 340.24-2
