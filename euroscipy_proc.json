@@ -1,25 +1,25 @@
 {
   "proceedings": {
-     "citation_key": "proc-euroscipy-2013",
+     "citation_key": "proc-euroscipy-2014",
      "title": {
        "acronym": "EuroSciPy",
        "conference": "European Conference on Python in Science",
-       "ordinal": "6th",
-       "short": "PROC. OF THE 6th EUR. CONF. ON PYTHON IN SCIENCE (EUROSCIPY 2013)",
-       "full": "Proceedings of the 6th European Conference on Python in Science"
+       "ordinal": "7th",
+       "short": "PROC. OF THE 7th EUR. CONF. ON PYTHON IN SCIENCE (EUROSCIPY 2014)",
+       "full": "Proceedings of the 7th European Conference on Python in Science"
      },
-     "year": "2013",
+     "year": "2014",
      "copyright_year": "2014",
      "editor": [
         "Pierre de Buyl",
         "Nelle Varoquaux"
      ],
-     "volume": 6,
+     "volume": 7,
      "number": 1,
      "isbn": "value",
      "arxiv_identifier": "YYYY.NNNN",
-     "location": "Brussels, Belgium",
-     "dates": "21-25 August 2013",
+     "location": "Cambridge, UK",
+     "dates": "27-30 August 2014",
      "copyright": {
        "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited. http://creativecommons.org/licenses/by/3.0/",
        "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors.",
