@@ -49,33 +49,33 @@ To help us answer these questions a complex set of post-processing calculations 
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation split across multiple files. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
 
 - Significantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took XX hours.
 - Linux-based post-processing: The LS-DYNA solver ran on a Linux server and moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware.
-- Improved plotting: Excel's plotting capabilities are poor in some respects, particularly contour plots.
+- Improved plotting: Excel's plotting capabilities are poor in some respects.
 
-A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. However further research convinced us that refactoring the code - a more palatable first step to lowering the technical debt - would not move a significant distance towards achieving the above goals as the Excel/VBA platform was simply too limiting. A feasibility study lead to the architecture described in the next section.
+A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. However further research convinced us that refactoring the code - a more palatable first step to lowering the technical debt - would not move a significant distance towards achieving the above goals as the Excel/VBA platform was simply too limiting. 
 
 Overall Architecture
 --------------------
 
-The new post-processor was split into three separate parts:
+An initial feasibility study lead to an archtecture with a central C++ core handling binary I/O. This would contain an embedded Python interpreter, allowing "user" scripts written in Python to define the actual calculations to be carried out. The C++ core, named ``aftershock``, would essentially be fixed and applicable to all of the reactor models to be analysed. By contrast the Python scripts could be developed and extended by "users", i.e. seismic engineers, as required as new seismic models were developed.
 
-- A C++ programme ``"aftershock"``. This handles the binary file I/O and determines which order to read the various sets of results files in depending on calculation requirements. It contains an embedded Python 2.7 interpreter and provides a Python API to access the results data as built-in Python objects such as lists.
-- A set of Python scripts which define the actual calculations to be carried out, generally with liberal use of the ``numpy`` package [Atr02]_.
-- A custom plotting library ``"afterplot"`` based on the ``matplotlib`` [Atr04]_ Python package.
+FIGURE??
 
-This hybrid architecture was driven a trade-off between the need for relatively high performance access to the binary data and a need for a high-level language for the actual calculations. These would be defined and implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03]_ packages.
+This hybrid architecture was one solution to the trade-off between the need for the best possible performance when accessing and decoding the large quantity of binary data, versus a need for a high-level language for the actual calculations to permit them to be implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03]_ packages.
 
-The C++ ``aftershock`` programme is not discussed further in this paper.
+As the entire binary dataset is too large to fit in memory at once ``aftershock`` operates frame-by-frame, stepping time-wise through the data. At each frame it calls certain functions from the scripts to carry out calculations on the data from that step. The scripts access this data through a simple Python API which returns lists of floats. The scripts may also define functions which are called by ``aftershock`` at the start and end of post-processing for initialisation or output of results. The ``aftershock`` core maintains necessary state from frame-to-frame and also optimises the order in which the results files are processed to minimise the number of passes needed. The ``aftershock`` core is not discussed further in this paper.
 
-MOVE INTRO TO PLOTTER INTO HERE??
+The calculation scripts generally make heavy use of the ``ndarrays`` provided by ``numpy`` [Atr02]_ to carry out efficent element-wise operations, although sometimes a more object-orientated approach is appropriate. As the API provided by ``aftershock`` hides all details of the actual binary file formats and how the data is split across files the engineer can concentrate entirely on the actual calculation required.
 
 Plotting Architecture and Features
 ----------------------------------
 
-With Python as the calculation scripting language a number of plotting packages immediately became options. However ``matplotlib`` stood out for its wide use, "publication quality figures" and sheer variety and flexibility of plotting capabilities it provided. However this versatility comes with a price in complexity and the API is not particularly intuitive. As an example, adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package - might require the user to add:
+Output from the calculation scripts is in some sense not an interesting aspect of post-processing, but it does form the final "product" which the client sees, whereas the rest of the post-processing toolchain is not visible. Tabular output of numerical data is straightforward and is currently handled using the ``csv`` module. However output of graphs and plots is considerably more complex. The previous Excel-based post-processor had exposed some limits to Excel's plotting capabilities, especially for contour-type plots and improvements in the types and format of plots avaiable was highly desirable. With Python as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Atr04]_ stood out for its wide use, "*publication quality figures*" [Atr04]_ and sheer variety and flexibility of plotting capabilities it provided.
+
+Development of the post-processing toolset could have ended at this point, leaving the script engineer to utilise ``matplotlib`` to generate plots as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive. As an example, adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package - might require:
 
 .. code-block:: python
 
@@ -84,216 +84,48 @@ With Python as the calculation scripting language a number of plotting packages 
     plt.yticks(range(0, 100, 20))
     ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
-ADD SOME STUFF HERE ABOUT WHY THIS ISN'T OBVIOUS, And USER=ENGINEER, don't want them to have to learn matplotlib.
+While this probably appears relatively straightforward to a software engineer conceptually there are various levels of abstraction and requiring the domain experts to spend time learning the details of the matplotlib API did not seem to represent good value for money for the client.
 
-However consideration of existing and desirable output formats showed that there were only a handful of different types of plots. This made it feasible to provide a domain-specific plotting package which internally used ``matplotlib`` but represented each type of plot as a class. To create a plot the user (i.e. the engineer developing the calculation) creates an instance of the class.
+Consideration of both the existing post-processor and the scripts under consideration showed that in fact there were only a handful of separate types of plots required, although each type might be used to present multiple datasets. This made it feasible to provide a domain-specific plotting package, ``afterplot``, which internally uses ``matplotlib`` to generate plots but provides various plotter classes to the user. To create a plot the user simply creates an instance of the appropriate class.
 
-Both the raw analysis data and post-processed results are inherently four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing ``numpy`` arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example an array of displacements (4-dimensional data) might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show peak values on a horizontal slice through the simulated core. More abstract plots can also use the same interface; for example the WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis. Locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
+Plotter class interfaces
+------------------------
 
-The use of four-dimensional arrays as the data interface permits each plotter to be fairly general-purpose, defining only how the data is presented, not what is calculated. The user supplies labels for the dimensions to provide meaning to the plot. However defining a specific plotter interface also permitted a significant tightening of control over plot quality as for example the interface can *require* axis labels and titles to be defined or grid-lines to be shown, rather than leaving it to the user or later checks to ensure these have been included.
+Both the raw analysis data and post-processed results are inherently four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing ``numpy`` arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example a four-dimensional ``ndarray`` giving displacements through time might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show the peak values on a horizontal slice through the core. More abstract plots can also use the same interface.  The WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis - locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
+
+The use of four-dimensional arrays as the data interface permits each plotter to be fairly general-purpose, defining only how the data is presented, not what is calculated. The user supplies labels for the dimensions to provide meaning to the plot.
+
+The development of a custom plotting package also permitted a significant standardisation of presentation which improves quality overall. For example the interface *requires* axis labels and titles to be defined and grid-lines to be shown, rather than leaving it to the user to adhere to a best-practice guide or relying on review to ensure these have been included. It also provided an opportunity to drive best-practice across all the plots. For example the default ``matplotlib`` colour scale for contour-type plots was not considered particularly clear. It was discovered that this is an area of active research and the WHAT BAR was identified as a STUFF ABOUT CLARITY; ALSO WANT TO SAY SOME STUFFA BOUT HOW WELL FOUNDED IT WAS.
 
 ADD COLOURBAR EXAMPLES.
 
-BASEPLOT: 
-QA: traceability. Introspection/stack. Imports.
+Plotter functionality
+---------------------
 
-Store/restore
+Each plotter class may define both a GUI interface and an API which mirrors the same functionality, allowing aspects of the plot to be controlled interactively or via the calculation script. What functionality provided by the plotter's GUI and API arises from the central philosopy of ``afterplot``, which is to separate the calculation of *values* from the *presentation* of those values; the former must be tightly controlled whereas flexibility for the latter is desirable. For example, the data shown on a specific contour plot is defined entirely by the sequence of operations in the relevant calculation script, and should not be modifyable. However the color range to be used is initially indeterminate - the calculation script may set some sensible defaults (e.g. max and min of the plotted data) but what values are most appropriate will depend partly on how the plot appears with the specific data from that model.
 
-CHECK "USER"
+Much of the machinery for the GUI for each plotter class is provided by the base class ``baseplot``. This essentially wraps ``matplotlib.Figure`` objects but with a number of signficant extensions. Firstly, plotter classes may define custom options for the ``matplotlib`` toolbar. The ``baseplot`` class handles set-up and tear-down of the necessary widgets, depending on the backend[FOOTNOTE] in use. When adding GUIs to ``Figure`` objects the ``matplotlib`` documentation describes two alternatives:
 
-CHECK CASE
+1. Using the cross-backend widgets provided by WHAT
+2. Starting from scratch calling the necessary backend functions, as documented WHERE.
+
+However during development of it was noted a third option was possible and combined the ease of development of the first with the functionality of the second. Essentially, ``matplotlib.pyplot`` can be used to create the Figure THEN WHAT. Obviously this does not have the cross-backend functionality of the approach using ``whatever``, but the default ``WHICHEVER`` backend which is available on most ``matplotlib`` installations was found to have sufficent functionality for our purposes. CODE EXAMPLE:
+
+The second major extension was to allow the user to store and restore plots together with their GUI. Saving of static images of plots is provided by ``matplotlib``. However with ``matplotlib`` alone, once a ``Figure`` window has been closed there is no way to regenerate it except for re-running the entire script which created it. As discussed above it was considered desirable to have the the *presentation* of data easily modifiable, while preventing modification of the actual data itself. As the entire post-processing run might take several hours to complete, re-running it simply to change presentation aspects such as the colour ranges on a contour plot was clearly not acceptable. The store/restore functionality provided by the ``baseplot`` class enables the state of an entire plot object, including its GUI, to be saved to disk, and restored later to a new interactive session. The major steps for this are described below:
+
+Store:
+- steps
+
+Restore:
+- steps
+
+The ``baseplot`` class also enables traceability of data on each plot. QA objects. Introspection/stack. Imports.
 
 
-
-
-
-Features
---------
-
-Difficulties
-------------
-
-
-
-## EVERYTHING BELOW HERE IS FROM THE EXAMPLE ##
-
-
-Twelve hundred years ago  |---| in a galaxy just across the hill...
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sapien
-tortor, bibendum et pretium molestie, dapibus ac ante. Nam odio orci, interdum
-sit amet placerat non, molestie sed dui. Pellentesque eu quam ac mauris
-tristique sodales. Fusce sodales laoreet nulla, id pellentesque risus convallis
-eget. Nam id ante gravida justo eleifend semper vel ut nisi. Phasellus
-adipiscing risus quis dui facilisis fermentum. Duis quis sodales neque. Aliquam
-ut tellus dolor. Etiam ac elit nec risus lobortis tempus id nec erat. Morbi eu
-purus enim. Integer et velit vitae arcu interdum aliquet at eget purus. Integer
-quis nisi neque. Morbi ac odio et leo dignissim sodales. Pellentesque nec nibh
-nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
-Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
-justo vitae odio tincidunt tempus at vitae tortor.
-
-Of course, no paper would be complete without some source code.  Without
-highlighting, it would look like this::
-
-   def sum(a, b):
-       """Sum two numbers."""
-
-       return a + b
-
-With code-highlighting:
-
-.. code-block:: python
-
-   def sum(a, b):
-       """Sum two numbers."""
-
-       return a + b
-
-Maybe also in another language, and with line numbers:
-
-.. code-block:: c
-   :linenos:
-
-   int main() {
-       for (int i = 0; i < 10; i++) {
-           /* do something */
-       }
-       return 0;
-   }
-
-Or a snippet from the above code, starting at the correct line number:
-
-.. code-block:: c
-   :linenos:
-   :linenostart: 2
-
-   for (int i = 0; i < 10; i++) {
-       /* do something */
-   }
- 
-Important Part
+Lessons Learnt
 --------------
 
-It is well known [Atr03]_ that Spice grows on the planet Dune.  Test
-some maths, for example :math:`e^{\pi i} + 3 \delta`.  Or maybe an
-equation on a separate line:
-
-.. math::
-
-   g(x) = \int_0^\infty f(x) dx
-
-or on multiple, aligned lines:
-
-.. math::
-   :type: eqnarray
-
-   g(x) &=& \int_0^\infty f(x) dx \\
-        &=& \ldots
-
-
-The area of a circle and volume of a sphere are given as
-
-.. math::
-   :label: circarea
-
-   A(r) = \pi r^2.
-
-.. math::
-   :label: spherevol
-
-   V(r) = \frac{4}{3} \pi r^3
-
-We can then refer back to Equation (:ref:`circarea`) or
-(:ref:`spherevol`) later.
-
-Mauris purus enim, volutpat non dapibus et, gravida sit amet sapien. In at
-consectetur lacus. Praesent orci nulla, blandit eu egestas nec, facilisis vel
-lacus. Fusce non ante vitae justo faucibus facilisis. Nam venenatis lacinia
-turpis. Donec eu ultrices mauris. Ut pulvinar viverra rhoncus. Vivamus
-adipiscing faucibus ligula, in porta orci vehicula in. Suspendisse quis augue
-arcu, sit amet accumsan diam. Vestibulum lacinia luctus dui. Aliquam odio arcu,
-faucibus non laoreet ac, condimentum eu quam. Quisque et nunc non diam
-consequat iaculis ut quis leo. Integer suscipit accumsan ligula. Sed nec eros a
-orci aliquam dictum sed ac felis. Suspendisse sit amet dui ut ligula iaculis
-sollicitudin vel id velit. Pellentesque hendrerit sapien ac ante facilisis
-lacinia. Nunc sit amet sem sem. In tellus metus, elementum vitae tincidunt ac,
-volutpat sit amet mauris. Maecenas diam turpis, placerat at adipiscing ac,
-pulvinar id metus.
-
-.. figure:: figure1.png
-
-   This is the caption. :label:`egfig`
-
-.. figure:: figure1.png
-   :align: center
-   :figclass: w
-
-   This is a wide figure, specified by adding "w" to the figclass.  It is also
-   center aligned, by setting the align keyword (can be left, right or center).
-
-.. figure:: figure1.png
-   :scale: 20%
-   :figclass: bht
-
-   This is the caption on a smaller figure that will be placed by default at the
-   bottom of the page, and failing that it will be placed inline or at the top.
-   Note that for now, scale is relative to a completely arbitrary original
-   reference size which might be the original size of your image - you probably
-   have to play with it. :label:`egfig2`
-
-As you can see in Figures :ref:`egfig` and :ref:`egfig2`, this is how you reference auto-numbered
-figures.
-
-.. table:: This is the caption for the materials table. :label:`mtable`
-
-   +------------+----------------+
-   | Material   | Units          |
-   +------------+----------------+
-   | Stone      | 3              |
-   +------------+----------------+
-   | Water      | 12             |
-   +------------+----------------+
-   | Cement     | :math:`\alpha` |
-   +------------+----------------+
-
-
-We show the different quantities of materials required in Table
-:ref:`mtable`.
-
-
-.. The statement below shows how to adjust the width of a table.
-
-.. raw:: latex
-
-   \setlength{\tablewidth}{0.8\linewidth}
-
-
-.. table:: This is the caption for the wide table.
-   :class: w
-
-   +--------+----+------+------+------+------+--------+
-   | This   | is |  a   | very | very | wide | table  |
-   +--------+----+------+------+------+------+--------+
-
-
-Perhaps we want to end off with a quote by Lao Tse:
-
-  *Muddy water, let stand, becomes clear.*
-
-
-.. Customised LaTeX packages
-.. -------------------------
-
-.. Please avoid using this feature, unless agreed upon with the
-.. proceedings editors.
-
-.. ::
-
-..   .. latex::
-..      :usepackage: somepackage
-
-..      Some custom LaTeX source here.
+TODO
 
 References
 ----------
