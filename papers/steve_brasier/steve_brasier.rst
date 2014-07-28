@@ -62,7 +62,7 @@ Overall Architecture
 
 An initial feasibility study lead to an archtecture with a central C++ core handling binary I/O. This would contain an embedded Python interpreter, allowing "user" scripts written in Python to define the actual calculations to be carried out. The C++ core, named ``aftershock``, would essentially be fixed and applicable to all of the reactor models to be analysed. By contrast the Python scripts could be developed and extended by "users", i.e. seismic engineers, as required as new seismic models were developed.
 
-FIGURE??
+**FIGURE??**
 
 This hybrid architecture was one solution to the trade-off between the need for the best possible performance when accessing and decoding the large quantity of binary data, versus a need for a high-level language for the actual calculations to permit them to be implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03]_ packages.
 
@@ -75,7 +75,7 @@ Plotting Architecture and Features
 
 Output from the calculation scripts is in some sense not an interesting aspect of post-processing, but it does form the final "product" which the client sees, whereas the rest of the post-processing toolchain is not visible. Tabular output of numerical data is straightforward and is currently handled using the ``csv`` module. However output of graphs and plots is considerably more complex. The previous Excel-based post-processor had exposed some limits to Excel's plotting capabilities, especially for contour-type plots and improvements in the types and format of plots avaiable was highly desirable. With Python as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Atr04]_ stood out for its wide use, "*publication quality figures*" [Atr04]_ and sheer variety and flexibility of plotting capabilities it provided.
 
-Development of the post-processing toolset could have ended at this point, leaving the script engineer to utilise ``matplotlib`` to generate plots as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive. As an example, adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package - might require:
+Development of the post-processing toolset could have ended at this point, leaving the script engineer to utilise ``matplotlib`` plots as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive. As an example adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package - might require:
 
 .. code-block:: python
 
@@ -84,48 +84,121 @@ Development of the post-processing toolset could have ended at this point, leavi
     plt.yticks(range(0, 100, 20))
     ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
-While this probably appears relatively straightforward to a software engineer conceptually there are various levels of abstraction and requiring the domain experts to spend time learning the details of the matplotlib API did not seem to represent good value for money for the client.
+While this probably appears relatively straightforward to a software engineer there are various levels of abstraction being used here. Requiring the domain experts to spend time learning the details of the matplotlib API did not seem to represent good value for the client. However consideration of the existing post-processor and the new calculation scripts to be developed showed that in fact there were only a handful of separate types of plots required, although each type might be used to present multiple datasets. This made it feasible to provide a domain-specific plotting package, ``afterplot``. This internally uses ``matplotlib``, but provides plotter classes to the user. To create a plot the user  creates an instance of the appropriate class, passing the data to be plotted as well as subsiduary information such as titles as the parameters. All of the plotter classes are derived from a base class ``BasePlot`` which essentially wraps the ``matplotlib.Figure`` object to provide additional functionality. 
 
-Consideration of both the existing post-processor and the scripts under consideration showed that in fact there were only a handful of separate types of plots required, although each type might be used to present multiple datasets. This made it feasible to provide a domain-specific plotting package, ``afterplot``, which internally uses ``matplotlib`` to generate plots but provides various plotter classes to the user. To create a plot the user simply creates an instance of the appropriate class.
+Four types of plotters are provided at present:
 
-Plotter class interfaces
-------------------------
+#. LayerPlot, representing values on a horizontal slice through the model using a contour-type plot with discrete markers.
+#. ChannelPlot, representing the geometry of a vertical region through the model in the X-Z and Y-Z planes.
+#. TimePlot, representing timehistories as individual series plotted against time.
+#. WfallPlot, providing an overview of the frequency distribution of a value at every time-step during an analysis, like a series of stacked histograms.
 
-Both the raw analysis data and post-processed results are inherently four-dimensional; each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" during post-processing, for example to provide a maximum value through time. From this it was clear that data interface to the plotter classes should be by passing ``numpy`` arrays of up to four dimensions. Standardising the meaning and order of the dimensions in the plotter interface meant that the same data easily be be plotted different ways. For example a four-dimensional ``ndarray`` giving displacements through time might be passed to a ``ChannelPlot`` object to show the physical arrangement of a vertical region of the core, or collapsed along the time axis and passed to a ``LayerPlot`` object to show the peak values on a horizontal slice through the core. More abstract plots can also use the same interface.  The WaterfallPlot class takes the same 4-dimensional data and provides an overview of every location in the core throughout the analysis - locations along the three spatial dimensions are collapsed into the vertical axis of the plot, time is plotted on the horizontal axis and values are represented by colour.
+These classes all use a similar interface for the data to be plotted; all data is inherently four-dimensional as each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" by the calculation scripts, for example when plotting  maximum values over time. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of the dimensions are standardised, so that different "views" of the same data can easily be generated by passing it to the different plotters. In this way ``afterplot`` defines a set of conventions for data, and the calculation scripts can be thought of as essentially transforming data from the lists of floats provided by ``aftershock`` into four-dimensional arrays for plotting.
 
-The use of four-dimensional arrays as the data interface permits each plotter to be fairly general-purpose, defining only how the data is presented, not what is calculated. The user supplies labels for the dimensions to provide meaning to the plot.
+The development of a custom plotting package also permitted a significant standardisation of presentation which improves quality overall. For example the interface *requires* axis labels and titles to be defined and grid-lines to be shown on plots, rather than leaving it to the user to adhere to a best-practice guide or relying on review to ensure these have been included. As another example it noted that the default ``matplotlib`` colour scale for contour-type plots was not particularly easy to interprete. It was discovered that this is an area of active research and the WHAT BAR was identified as a STUFF ABOUT CLARITY; ALSO WANT TO SAY SOME STUFFA BOUT HOW WELL FOUNDED IT WAS.
 
-The development of a custom plotting package also permitted a significant standardisation of presentation which improves quality overall. For example the interface *requires* axis labels and titles to be defined and grid-lines to be shown, rather than leaving it to the user to adhere to a best-practice guide or relying on review to ensure these have been included. It also provided an opportunity to drive best-practice across all the plots. For example the default ``matplotlib`` colour scale for contour-type plots was not considered particularly clear. It was discovered that this is an area of active research and the WHAT BAR was identified as a STUFF ABOUT CLARITY; ALSO WANT TO SAY SOME STUFFA BOUT HOW WELL FOUNDED IT WAS.
+**ADD COLOURBAR EXAMPLES.**
 
-ADD COLOURBAR EXAMPLES.
+**TODO:** Add something about separation between scripts as provided by architecture.
 
-Plotter functionality
----------------------
+An alternative GUI methodology
+------------------------------
+Providing a simple GUI for plots was desirable to help bridge the gap for users between the previous Excel-based tool and the new ``aftershock``-based toolset. The ``matplotlib`` documentation describes two methods of providing a GUI:
+
+1. Using the cross-backend widgets provided by ``matplotlib.widgets``, which are fairly limited.
+2. Embedding the ``matplotlib.FigureCanvas`` object directly into the window provided by the selected GUI toolset.
+
+A third option is used for ``afterplot`` which is simplier than the second but allows the richer widgets provided by the selected GUI toolset to be used. The ``matplotlib.pyplot`` framework is intended for convenient scripting use, but as it contains an internal state machine it is generally more appropriate to use the ``matplotlib`` API directly in packages wrapping ``matplotlib``. However the ``plyplot.figure()`` function can be used to handle all of the initial set-up of the GUI, with additional widgets then inserted using the GUI toolset's manager. The below demonstrates the approach with the ``TkAgg`` backend used in ``aftershock`` by adding a button to the ``Figure`` object:
+
+.. code-block:: python
+
+    import Tkinter as Tk
+    from matplotlib import pyplot
+    class Plot(object):
+        def _init__(self):
+            self.figure = pyplot.figure()
+            toolbar = self.figure.canvas.manager.toolbar
+            window = self.figure.canvas.manager.window
+            btn_next = Tk.Button(master=window,
+                         text='next', command=self._next)
+            btn_next.pack(side=Tk.LEFT)
+            self.figure.show() ## CHECK THIS
+
+Immutable data and flexible presentation
+----------------------------------------
+**TODO** Match between GUI and API: concept of data and presentation.
+
+A key consideration in the design of ``afterplot`` is that some aspects of a plot should be modifiable after creation, and some aspects should not be.  For example the title of a plot should not be changeable, as this defines what the data shows, but the colour ranges on a contour-type plot will often need adjustment for clarity. In ``afterplot`` there is therefore a distinction made between *data* and its *presentation*. Plotter classes may provide methods or parameters to enable aspects of the presentation to be changed by the calculation script. However it was recognised 
 
 Each plotter class may define both a GUI interface and an API which mirrors the same functionality, allowing aspects of the plot to be controlled interactively or via the calculation script. What functionality provided by the plotter's GUI and API arises from the central philosopy of ``afterplot``, which is to separate the calculation of *values* from the *presentation* of those values; the former must be tightly controlled whereas flexibility for the latter is desirable. For example, the data shown on a specific contour plot is defined entirely by the sequence of operations in the relevant calculation script, and should not be modifyable. However the color range to be used is initially indeterminate - the calculation script may set some sensible defaults (e.g. max and min of the plotted data) but what values are most appropriate will depend partly on how the plot appears with the specific data from that model.
 
-Much of the machinery for the GUI for each plotter class is provided by the base class ``baseplot``. This essentially wraps ``matplotlib.Figure`` objects but with a number of signficant extensions. Firstly, plotter classes may define custom options for the ``matplotlib`` toolbar. The ``baseplot`` class handles set-up and tear-down of the necessary widgets, depending on the backend[FOOTNOTE] in use. When adding GUIs to ``Figure`` objects the ``matplotlib`` documentation describes two alternatives:
+Storing and Restoring Plots
+---------------------------
 
-1. Using the cross-backend widgets provided by WHAT
-2. Starting from scratch calling the necessary backend functions, as documented WHERE.
+Saving plots as static images is provided by methods on ``matplotlib's`` ``Figure`` objects. However once a ``Figure`` window has been closed there is no way to regenerate it apart for re-running the entire script which created it. As a complete post-processing run might take several hours to complete, re-running it simply to change presentational aspects such as a colour range was clearly not ideal. The ``baseplot`` class therefore provides additional functionality to all to enable an entire plotter instance including its GUI to be stored to disk and later restored to a new interactive GUI. A simplified description of the process is as follows:
 
-However during development of it was noted a third option was possible and combined the ease of development of the first with the functionality of the second. Essentially, ``matplotlib.pyplot`` can be used to create the Figure THEN WHAT. Obviously this does not have the cross-backend functionality of the approach using ``whatever``, but the default ``WHICHEVER`` backend which is available on most ``matplotlib`` installations was found to have sufficent functionality for our purposes. CODE EXAMPLE:
+**Storing**:
 
-The second major extension was to allow the user to store and restore plots together with their GUI. Saving of static images of plots is provided by ``matplotlib``. However with ``matplotlib`` alone, once a ``Figure`` window has been closed there is no way to regenerate it except for re-running the entire script which created it. As discussed above it was considered desirable to have the the *presentation* of data easily modifiable, while preventing modification of the actual data itself. As the entire post-processing run might take several hours to complete, re-running it simply to change presentation aspects such as the colour ranges on a contour plot was clearly not acceptable. The store/restore functionality provided by the ``baseplot`` class enables the state of an entire plot object, including its GUI, to be saved to disk, and restored later to a new interactive session. The major steps for this are described below:
+#. Create a plot instance:
 
-Store:
-- steps
+    .. code-block:: python
 
-Restore:
-- steps
+        orig_plotter = PlotClass(args, kwargs)
 
+#. In the BasePlot superclass, store the ``*args`` and ``**kwargs`` used to create the plot instance on the instance - these will include one or more ``ndarrays`` containing the actual data to be plotted:
+
+    .. code-block:: python
+
+        def __new__(cls, *args, **kwargs):                
+            obj = object.__new__(cls)
+            obj._args, obj._kwargs = args, kwargs
+            return obj
+        
+#. Obtain a type object:
+
+    .. code-block:: python
+
+        t_plotter = type(orig_plotter)
+
+#. Pickle the type object, args and kwargs into a file.
+
+**Restoring**:
+
+#. Unpickle the type object, ``args`` and ``kwargs`` from the file
+#. Call the type object to create a new instance, passing it the unpickled ``args`` and ``kwargs``:
+
+    .. code-block:: python
+
+        new_plotter = TypeObj(*args, **kwargs)
+
+The benefits of this approach are that:
+
+- The restoring code does not need to know anything about the plot class at all, therefore it works for any plot class.
+- The storing code only needs to be able to retrieve the args and kwargs, hence it can be implemented by ``BasePlot`` and storing/restoring “magically” works for all derived classes.
+
+The major complication not shown in the simplifed code above is that ideally storing and restoring should be totally insensitive to whether parameters have been specified as positional or named arguments. Therefore the ``__new__()`` method of the ``BasePlot`` superclass has to use the information provided by ``inspect.getargspec()`` to convert all arguments to a dictionary of name:value, and stores/restores them as ``**kwargs``.
+
+With this method the only interface which storing and restoring knows about is the plotter class’s arguments. This is simple and quite robust to changes in the plotter class as code can be added to handle any depreciated parameters if the signature changes. It also means that if stored plots are restored by a later version of ``afterplot`` any added functionality provided by the updated plotter class will automatically be available to the restored plot.
+
+**TOD0:** add some comment about figures now being pickleable?
+
+Traceability
+------------
+**TODO:** QA and traceability
 The ``baseplot`` class also enables traceability of data on each plot. QA objects. Introspection/stack. Imports.
+
+There is one way in which a restored plot should be different from a “live” original: the “live” plot has associated QA info (actually generated automatically by BasePlot) and this should be stored and restored.  To do this:
+We require derived plot classes to take a “secret” argument _qainfo=None.
+
+When BasePlot is __init__ed, if this is None we generate “live” qa info as a dictionary.
+On storing, we update the plot’s _qainfo parameter with this dictionary
+On restoring, BasePlot’s __init__ can use the info which is now in this parameter to provide the qa info.
 
 
 Lessons Learnt
 --------------
 
-TODO
+**TODO:**
 
 References
 ----------
