@@ -18,8 +18,8 @@ A Python-based Post-processing Tool-set For Seismic Analyses
     and visualisation tools. Extending the existing tools had become
     increasingly difficult and a decision was made to develop a new,
     Python-based tool-set. This comprises of a post-processing framework
-    (``"aftershock"``) which includes an an embedded Python interpreter, and a
-    plotting package (``"afterplot"``) based on numpy and matplotlib.
+    (``aftershock``) which includes an embedded Python interpreter, and a
+    plotting package (``afterplot``) based on ``numpy`` and ``matplotlib``.
 
     The new tool-set had to be significantly more flexible and easier to
     maintain than the existing code-base, while allowing the majority of 
@@ -35,27 +35,29 @@ A Python-based Post-processing Tool-set For Seismic Analyses
 Introduction
 ------------
 
-The UK has a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These were a second generation reactor design and have a core consisting of layers of interlocking graphite bricks which act to slow neutrons from the fuel to sustain the nuclear reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
+The UK has a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These are a second generation reactor design and have a core consisting of layers of interlocking graphite bricks, **ADD FIGURE** which act to slow neutrons from the fuel to sustain the fission reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
 
-A series of computer models have been developed to examine the behaviour of the reactors during an earthquake. These models are regularly upgraded and extended as the cores age to ensure the relevant behaviour can be modelled. The models themselves are analysed using the commercial Finite Element Analysis code LS-DYNA. This calculates predictions for the positions and velocities of the tens of thousands of bricks in the core during the simulated earthquake.
+A series of computer models have been developed to examine the behaviour of the reactors during an earthquake. These models are regularly upgraded and extended as the cores change over their lives to ensure that the relevant behaviours can be simulated. The models themselves are analysed using the commercial Finite Element Analysis code LS-DYNA. This calculates predicted positions and velocities for the thousands of graphite bricks in the core during the simulated earthquake. However engineers seek answers to high-level questions such as:
 
-By itself, this raw data is not particularly informative and engineers seek answers to higher-level questions such as:
+- Can the control rods still enter the core?
+- Is the integrity of the fuel maintained?
 
-- Can the control rods enter the distorted core?
-- Is the fuel integrity maintained?
+To help answer these questions a complex set of post-processing calculations is required. These convert the raw position and velocity data into parameters describing the seismic performance of the core, assess these parameters against acceptable limits, and present the results in tabular or graphical form.
 
-To help us answer these questions a complex set of post-processing calculations is carried out to convert the raw data into parameters which describe the seismic performance of the core, assess these parameters against acceptable limits, and present the results in tabular or graphical form. This paper describes a recent complete re-write of this post-processing toolset and seeks to explore some of the software decisions made and their impact on the engineering users.
+This paper describes a recent complete re-write of this post-processing toolset. It seeks to explore some of the software and architectural decisions made and examine the impact of these decisions on the engineering users.
 
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation split across multiple files. The original post-processing suite was a Microsoft Excel-based solution, using VBA to decode the binary data and carry out calculations and writing results to workbooks for plotting using Excel's in-built graphing capabilities. The post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended. The start of a new analysis campaign forced a reappraisal of the existing approach as there was little confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high; a non-modular architecture and limited adherence to software design best-practices made it difficult to be sure that changes made in one place would not impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The original post-processing suite was a Microsoft Excel-based solution which used VBA to decode the binary data and carry out calculations. The results were output to workbooks for plotting using Excel's graphing capabilities. This post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended.
 
-- Significantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took XX hours.
-- Linux-based post-processing: The LS-DYNA solver ran on a Linux server and moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware.
-- Improved plotting: Excel's plotting capabilities are poor in some respects.
+The start of a new analysis campaign forced a reappraisal of the existing approach as there was low confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high and a non-modular architecture made it difficult to guarantee that changes made in one place would not have an impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
 
-A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. However further research convinced us that refactoring the code - a more palatable first step to lowering the technical debt - would not move a significant distance towards achieving the above goals as the Excel/VBA platform was simply too limiting. 
+- Significantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took *X* hours.
+- Linux-based post-processing: The LS-DYNA solver ran on a Linux server. Moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware than was available when using Excel and a Windows platform.
+- Improved plotting: While convenient, Excel's plotting capabilities are limited in some respects.
+
+A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. A more palatable first step would have been refactoring the existing code. However futher investigation convinced us that this would not progress a significant distance towards the above goals as the Excel/VBA platform was simply too limiting.
 
 Overall Architecture
 --------------------
@@ -145,7 +147,7 @@ Saving plots as static images is provided by methods on ``matplotlib's`` ``Figur
 
         orig_plotter = PlotClass(args, kwargs)
 
-#. In the BasePlot superclass, store the ``*args`` and ``**kwargs`` used to create the plot instance on the instance - these will include one or more ``ndarrays`` containing the actual data to be plotted:
+#. In the ``BasePlot`` superclass, store the ``*args`` and ``**kwargs`` used to create the plot instance on the instance - these will include one or more ``ndarrays`` containing the actual data to be plotted:
 
     .. code-block:: python
 
