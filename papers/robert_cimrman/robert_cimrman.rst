@@ -148,8 +148,8 @@ outlined. For both methods, we will use the domain shown in Figure
 :ref:`domain`. Its geometry is described by [NURBS]_ (Non-uniform rational
 B-spline) curves.
 
-.. figure:: domain.png
-   :figwidth: 40%
+.. figure:: domain.pdf
+   :scale: 50%
    :figclass: bht
 
    The domain with NURBS boundary. :label:`domain`
@@ -171,8 +171,8 @@ difficult task in general, especially in 3D space. Here a cheat has been used
 and the mesh depicted in Figure :ref:`fe-domain` was generated from the NURBS
 description using the IGA techniques described below.
 
-.. figure:: fe-domain.png
-   :figwidth: 40%
+.. figure:: fe-domain.pdf
+   :scale: 50%
    :figclass: bht
 
    The FE-discretized domain covered by quadrilateral
@@ -196,6 +196,13 @@ Several families of the element basis functions exist. In SfePy, Lagrange basis
 and Lobatto (hierarchical) basis can be used on quadrilaterals, see Figure
 :ref:`fe-bases`.
 
+.. figure:: fe-bases.png
+   :scale: 30%
+   :figclass: w
+
+   Bi-quadratic basis functions on the reference quadrilateral: left: Langrange
+   right: Lobatto. :label:`fe-bases`
+
 IGA
 ```
 
@@ -207,10 +214,23 @@ single NURBS patch. Several auxiliary grids (called "meshes" as well, but do
 not mistake with the FE mesh) can be drawn for the patch, see Figure
 :ref:`ig-domain-grids`.
 
+.. figure:: ig-domain-grids.pdf
+   :scale: 50%
+   :figclass: w
+
+   From left to right: parametric mesh (tensor product of knot vectors),
+   control mesh, Bézier mesh. :label:`ig-domain-grids`
+
 On a single patch, such as our whole domain, the NURBS basis can be arbitrarily
 smooth - this is another compelling feature not easily obtained by FEM.
-The basis on the patch is uniquely determined by a *knot vector* for each axis.
+The basis on the patch is uniquely determined by a *knot vector* for each axis,
+and covers the whole patch, see Figure :ref:`iga-base`.
 
+.. figure:: iga-base.png
+   :scale: 12%
+   :figclass: w
+
+   The order 2 NURBS basis on the single patch domain. :label:`iga-base`
 
 Implementation in SfePy
 -----------------------
@@ -227,7 +247,23 @@ that the overall shape remains the same, but the "elements" appear naturally as
 given by non-zero knot spans. In [BE]_ algorithms are developed that allow
 computing *Bézier extraction operator* :math:`C` for each such element such
 that the original (smooth) NURBS basis function :math:`R` can be recovered from
-the local Bernstein basis :math:`B` using :math:`R = CB`.
+the local Bernstein basis :math:`B` using :math:`R = CB`. The Bézier extraction
+also allows construction of the Bézier mesh. The code then loops over the
+Bézier elements and assembles local contributions in the usual FE sense.
+
+In SfePy, various subdomains can be defined using *regions*, see [SfePy]_. For
+this purpose, a *topological Bézier mesh* is constructed, using only the corner
+vertices of the Bézier mesh, because those are interpolatory, i.e., they are in
+the domain or on its boundary, unlike the other vertices, see Figure
+:ref:`bezier-extraction` right.
+
+.. figure:: bezier-extraction.pdf
+   :scale: 30%
+   :figclass: bht
+
+   From left to right: NURBS basis of degree 2 that describes the second axis
+   of the parametric mesh, corresponding Bernstein basis with Bézier elements
+   delineated by vertical lines. :label:`bezier-extraction`
 
 Examples
 --------
@@ -268,3 +304,7 @@ References
 .. [PetIGA] N. Collier, L. Dalcin, V.M. Calo: PetIGA: High-Performance
             Isogeometric Analysis, arxiv 1305.4452, 2013,
             http://arxiv.org/abs/1305.4452.
+
+.. [SfePy] Robert Cimrman: SfePy - Write Your Own FE Application,
+           arxiv 1404.6391, 2014,
+           http://arxiv.org/abs/1404.6391.
