@@ -177,7 +177,8 @@ First we need to make a FE mesh from the NURBS description, usual in
 computer-aided design (CAD) systems. While it is easy for our domain, it is a
 difficult task in general, especially in 3D space. Here a cheat has been used
 and the mesh depicted in Figure :ref:`fe-domain` was generated from the NURBS
-description using the IGA techniques described below.
+description using the IGA techniques described below. Quite a fine mesh had to
+be used to capture the curved boundaries.
 
 .. figure:: fe-domain.pdf
    :scale: 40%
@@ -408,11 +409,43 @@ Numerical examples illustrating the IGA calculations are presented below.
 Temperature Distribution
 ````````````````````````
 
+The 2D domain depicted in Figure :ref:`domain` is used in this example.  The
+temperature distribution is given by the solution of the Laplace equation
+(:ref:`weak`) with a particular set of Dirichlet boundary conditions on
+:math:`\Gamma_D`. The region :math:`\Gamma_D` consisted of two parts
+:math:`\Gamma_1`, :math:`\Gamma_2` of the domain boundary on the opposite edges
+of the patch, see Figure :ref:`domain-regions` - the temperature was fixed to
+0.5 on :math:`\Gamma_1` and to -0.5 on :math:`\Gamma_2`, as can be seen in
+Figure :ref:`laplace`.
+
+.. figure:: domain-regions.png
+   :scale: 30%
+   :figclass: bht
+
+   The regions defined on the domain shown on the topological Bézier mesh by
+   red color. From left: :math:`\Gamma_1`, :math:`\Gamma_2`, :math:`\Omega_0`
+   :label:`domain-regions`
+
 .. figure:: laplace.png
    :scale: 30%
    :figclass: bht
 
    A solution of the 2D Laplace equation. :label:`laplace`
+
+Next we added a negative source term to the Laplace equation in region
+:math:`\Omega_0` (see Figure :ref:`domain-regions` right):
+
+.. math::
+   :label: weak-vf
+   :type: eqnarray
+
+    \int_{\Omega} \nabla s \cdot \nabla T
+    &=& \int_{\Omega_0} -2 s
+    \;, \quad \forall s \in H^1_0(\Omega) \;, \\
+    T &=& \bar{T} \quad \mbox{ on } \Gamma_D \;,
+
+The corresponding solution can be seen in Figure :ref:`laplace-vf`. The boundary
+conditions stayed the same as in the previous case.
 
 .. figure:: laplace-vf.png
    :scale: 30%
@@ -421,8 +454,89 @@ Temperature Distribution
    A solution of the 2D Laplace equation with volume source in a
    subdomain. :label:`laplace-vf`
 
+The complete problem description file for computing (:ref:`weak-vf`) is shown
+below. See [SfePy]_ or http://sfepy.org for explanation.
+
+.. code-block:: python
+
+    filename_domain = 'ig_domain.iga'
+
+    regions = {
+        'Omega' : 'all',
+        'Omega_0' : 'vertices in (x > 1.5) & (y < 1.5)',
+        'Gamma1' : ('vertices of set xi10', 'facet'),
+        'Gamma2' : ('vertices of set xi11', 'facet'),
+    }
+
+    fields = {
+        'temperature'
+        : ('real', 1, 'Omega', None, 'H1', 'iga'),
+    }
+
+    variables = {
+        'T' : ('unknown field', 'temperature', 0),
+        's' : ('test field',    'temperature', 'T'),
+    }
+
+    ebcs = {
+        'T1' : ('Gamma1', {'T.0' : 0.5}),
+        'T2' : ('Gamma2', {'T.0' : -0.5}),
+    }
+
+    materials = {
+        'm' : ({'f' : -2.0},),
+    }
+
+    integrals = {
+        'i' : 3,
+    }
+
+    equations = {
+        'Temperature'
+        : """dw_laplace.i.Omega(s, T)
+           = dw_volume_lvf.i.Omega_0(m.f, s)"""
+    }
+
+    solvers = {
+        'ls' : ('ls.scipy_direct', {}),
+        'newton' : ('nls.newton', {
+            'i_max'      : 1,
+            'eps_a'      : 1e-10,
+        }),
+    }
+
+
 Elastic Deformation
 ```````````````````
+
+This example illustrates a calculation with a vector variable, the displacement
+field :math:`\underline{u}`, given by deformation of a 3D elastic body. The
+weak form of the problem is: Find :math:`\underline{u} \in [H^1(\Omega)]^3`
+such that:
+
+.. math::
+   :type: eqnarray
+
+    \int_{\Omega} D_{ijkl}\ e_{ij}(\underline{v}) e_{kl}(\underline{u})
+    &=& 0
+    \;, \quad \forall \underline{v} \in [H^1_0(\Omega)]^3 \;, \\
+    \underline{u} &=& \bar{\underline{u}} \quad \mbox{ on } \Gamma_D \;,
+
+where :math:`D_{ijkl} = \mu (\delta_{ik} \delta_{jl}+\delta_{il} \delta_{jk}) +
+\lambda \ \delta_{ij} \delta_{kl}` is the isotropic stiffness tensor given in
+terms of Lamé's coefficients :math:`\lambda`, :math:`\mu` and
+:math:`e_{ij}(\underline{u}) = \frac{1}{2}(\frac{\partial u_i}{\partial x_j} +
+\frac{\partial u_j}{\partial x_i})` is the Cauchy, or small strain, deformation
+tensor. The equation expresses the internal and external (zero here) force
+balance, where the internal forces are described by the Cauchy stress tensor
+:math:`\sigma_{ij}(\underline{u}) = D_{ijkl}\ e_{kl}(\underline{u})`.
+
+The 3D domain :math:`\Omega` was simply obtained by extrusion of the 2D domain
+of the previous example, and again :math:`\Gamma_D` consisted of two parts
+:math:`\Gamma_1`, :math:`\Gamma_2`. The body was clamped on :math:`\Gamma_1`:
+:math:`\underline{u} = 0` and displaced on :math:`\Gamma_2`: :math:`u_1 = 0.01`,
+:math:`u_2 = u_3 = 0.05`. The corresponding solution can be seen in Figure
+:ref:`elasticity`.
 
 .. figure:: elasticity.png
    :scale: 30%
@@ -433,6 +547,28 @@ Elastic Deformation
 
 Conclusion
 ----------
+
+Two numerical techniques for discretization of partial differential equations
+were briefly outlined and compared, namely the well-established and proven
+finite element method and its much more recent generalization, the isogeometric
+analysis, on the background given by the open source finite element package
+SfePy, that has been recently enhanced with the isogeometric analysis
+functionality.
+
+The Bézier extraction operators technique, that was used for a relatively
+seamless integration into the existing finite element package, was mentioned,
+as well as some of the difficulties "on the road" and limitations of the
+current version.
+
+Finally, numerical examples - a scalar diffusion problem in 2D and a vector
+elastic body deformation problem in 2D were shown.
+
+Support
+```````
+
+Work on SfePy is partially supported by the Grant Agency of the Czech Republic,
+project P108/11/0853.
+
 
 .. Customised LaTeX packages
 .. -------------------------
