@@ -24,7 +24,6 @@ Enhancing SfePy with Isogeometric Analysis
    partial differential equations, finite element method, isogeometric
    analysis, SfePy
 
-
 Introduction
 ------------
 
@@ -90,13 +89,13 @@ The problem is as follows: Find temperature :math:`T` such that:
           \nabla T \cdot \underline{n} &=& 0 \mbox{ on } \Gamma_N \;,
 
 where the second equation is the Dirichlet (or essential) boundary condition
-and the third line is the Neumann (or natural) boundary condition and
+and the third equation is the Neumann (or natural) boundary condition that
 corresponds to a flux through the boundary.
 
 The operator :math:`\Delta` has second derivatives - that means that the
 solution :math:`T` needs to have continuous first derivatives, or, it has to be
 from :math:`C^1` function space - this is often not possible in examples from
-practice. Instead, a *weak solution* is sought, that satisfies: Find :math:`T
+practice. Instead, a *weak solution* is sought that satisfies: Find :math:`T
 \in H^1(\Omega)`
 
 .. math::
@@ -115,7 +114,7 @@ by a test function :math:`s \in H^1_0(\Omega)`, integrating over the whole
 domain and then integrating by parts.
 
 Both FEM and IGA now replace the infinite function space :math:`H^1(\Omega)` by
-a finite subspace with basis with a small support on a discretized domain
+a finite subspace with a basis with a small support on a discretized domain
 :math:`\Omega_h`, see below particular basis choices. Then
 :math:`T(\underline{x}) \approx \sum_{k=1}^{N} T_k \phi_k(\underline{x})`,
 where :math:`T_k` are the DOFs and :math:`\phi_k` are the base
@@ -125,7 +124,7 @@ functions. Similarly, :math:`s(\underline{x}) \approx \sum_{k=1}^{N} s_k
 .. math::
    :type: eqnarray
 
-   \int_{\Omega_h} \left( \sum_{j=1}^{N} s_j (\nabla \phi_j)^T \cdot
+   \int_{\Omega_h} \left( \sum_{j=1}^{N} s_j \nabla \phi_j \cdot
    \sum_{k=1}^{N} \nabla \phi_k T_k \right) = 0 \;.
 
 This has to hold for any :math:`s`, so we can choose :math:`s = \phi_j` for
@@ -137,12 +136,12 @@ discrete system:
    :label: discrete
    :type: eqnarray
 
-   \sum_{k=1}^{N} \int_{\Omega_h} \left((\nabla \phi_j)^T \cdot
+   \sum_{k=1}^{N} \int_{\Omega_h} \left(\nabla \phi_j \cdot
    \nabla \phi_k \right) T_k = 0 \;.
 
 In compact matrix notation we can write :math:`\bm{K} \bm{T} = \bm{0}`, where
 the matrix :math:`\bm{K}` has components :math:`K_{ij} = \int_{\Omega_h}
-(\nabla \phi_i)^T \cdot \nabla \phi_j` and :math:`\bm{T}` is the vector of
+\nabla \phi_i \cdot \nabla \phi_j` and :math:`\bm{T}` is the vector of
 :math:`T_k`. The Dirichlet boundary conditions are satisfied by setting the
 :math:`T_k` on the boundary :math:`\Gamma_D` to appropriate values.
 
@@ -193,6 +192,9 @@ polynomials, see Figure :ref:`fe-basis-1d` for an illustration in 1D. A
 :math:`k`-th base function is nonzero only in elements that share the DOF
 :math:`T_k` and it is a continuous polynomial over each element.
 
+.. [1] See the Wikipedia page for a basic overview of FEM and its many
+       variations: http://en.wikipedia.org/wiki/Finite_element_method.
+
 .. figure:: fe-basis-1d.pdf
    :scale: 30%
    :figclass: bht
@@ -217,10 +219,7 @@ adding new basis functions without modifying the existing ones, has also
 advantages, for example better condition number of the matrix for higher order
 approximations.
 
-.. [1] See the Wikipedia page for a basic overview of FEM and its many
-       variations: http://en.wikipedia.org/wiki/Finite_element_method.
-
-The basis functions are usually defined in a reference element, that are then
+The basis functions are usually defined in a reference element, and are then
 mapped to the physical mesh elements by an (affine) transformation. For our
 mesh we will use bi-quadratic polynomials over the reference quadrilateral - a
 quadratic function along each axis direction, such as those in the bottom row
@@ -256,9 +255,9 @@ not mistake with the FE mesh) can be drawn for the patch, see Figure
    control mesh, Bézier mesh. :label:`ig-domain-grids`
 
 On a single patch, such as our whole domain, the NURBS basis can be arbitrarily
-smooth - this is another compelling feature not easily obtained by FEM.
-The basis on the patch is uniquely determined by a *knot vector* for each axis,
-and covers the whole patch, see Figure :ref:`ig-base`.
+smooth - this is another compelling feature not easily obtained by FEM.  The
+basis on the patch is uniquely determined by a *knot vector* for each axis, see
+[NURBS]_, and covers the whole patch, see Figure :ref:`ig-base`.
 
 .. figure:: ig-base.png
    :scale: 12%
@@ -295,8 +294,8 @@ Bézier elements and assembles local contributions in the usual FE sense.
 
 In SfePy, various subdomains can be defined using *regions*, see [SfePy]_. For
 this purpose, a *topological Bézier mesh* is constructed, using only the corner
-vertices of the Bézier mesh, because those are interpolatory, i.e., they are in
-the domain or on its boundary, unlike the other vertices, see Figure
+vertices of the Bézier mesh elements, because those are interpolatory, i.e.,
+they are in the domain or on its boundary, see Figures :ref:`ig-domain-grids`,
 :ref:`bezier-extraction` right.
 
 Notes on Code Organization
@@ -387,7 +386,7 @@ There are currently several limitations that will be addressed in future:
 
 - general Dirichlet boundary conditions;
 
-  - currently only constants on whole sides of the parametric mesh;
+  - currently only constants on whole sides of the parametric mesh can be used;
 
 - projections of functions into the NURBS basis;
 - support for surface integrals;
