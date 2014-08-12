@@ -37,7 +37,9 @@ Introduction
 
 The UK has a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These are a second generation reactor design and have a core consisting of layers of interlocking graphite bricks, **ADD FIGURE** which act to slow neutrons from the fuel to sustain the fission reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
 
-A series of computer models have been developed to examine the behaviour of the reactors during an earthquake. These models are regularly upgraded and extended as the cores change over their lives to ensure that the relevant behaviours can be simulated. The models themselves are analysed using the commercial Finite Element Analysis code LS-DYNA. This calculates predicted positions and velocities for the thousands of graphite bricks in the core during the simulated earthquake. However engineers seek answers to high-level questions such as:
+A series of computer models have been developed to simulate the behaviour of the reactors during an earthquake. These models are regularly upgraded and extended as the cores change over their lives to ensure that the relevant behaviours are included. The models themselves are analysed using the commercial Finite Element Analysis code LS-DYNA, which predicts positions and velocities for the thousands of graphite bricks in the core during the simulated earthquake.
+
+However engineers seek answers to high-level questions such as:
 
 - Can the control rods still enter the core?
 - Is the integrity of the fuel maintained?
@@ -49,72 +51,72 @@ This paper describes a recent complete re-write of this post-processing toolset.
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The original post-processing suite was a Microsoft Excel-based solution which used VBA to decode the binary data and carry out calculations. The results were output to workbooks for plotting using Excel's graphing capabilities. This post-processor was written by engineers with no formal software development training and had gradually grown more complex over several years as the models themselves were extended.
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The original post-processing tool was written in Microsoft Excel using VBA to decode the binary data and carry out the required calculations. The results were output to workbooks and plotted using Excel's graphing capabilities. The original design was not particularly modular and the technical debt [Atr01]_ had grown signficantly as the post-processor became more complex due to changes in the models themselves and additional requirements, making it difficult to determine whether changes would impact existing code.
 
-The start of a new analysis campaign forced a reappraisal of the existing approach as there was low confidence that the new post-processing features required could be developed in the time or budget available. The technical debt [Atr01]_ in the system was high and a non-modular architecture made it difficult to guarantee that changes made in one place would not have an impact on unrelated functionality. As well as improving maintainability and extendibility, a number of other features were considered highly desirable for the revised post-processing package, including:
+The start of a new analysis campaign forced a reappraisal of the existing approach as these issues meant there was low confidence that the new post-processing features required could be developed in the time or budget available. The following requirements were identified as strongly desirable in any new post-processing tool:
 
-- Significantly faster performance: The Excel-based package was extremely limited in its ability to take advantage of multi-core processors, and post-processing runs commonly took *X* hours.
-- Linux-based post-processing: The LS-DYNA solver ran on a Linux server. Moving post-processing onto the same hardware offered opportunities to batch analysis and post-processing, as well as providing access to higher-performance hardware than was available when using Excel and a Windows platform.
-- Improved plotting: While convenient, Excel's plotting capabilities are limited in some respects.
+- A far more modular and easily extensible architecture.
+- More flexible plotting capabilties.
+- Signficantly faster; the Excel/VBA post-processor could take **X** hours to complete which was inconvenient.
+- A Linux platform; this would allow post-processing to be carried out on the analysis server to streamline the workflow and allow access to more powerful hardware.
 
-A ground-up re-write was considered with some trepidation as it was clear that this would be a major undertaking. A more palatable first step would have been refactoring the existing code. However futher investigation convinced us that this would not progress a significant distance towards the above goals as the Excel/VBA platform was simply too limiting.
+A complete re-write was considered with some trepidation as it was clear that this would be a major undertaking. A more palatable first step would have been refactoring the existing code. However futher investigation convinced us that this would not progress a significant distance towards the above goals as the Excel/VBA platform was simply too limiting.
 
 Overall Architecture
 --------------------
 
-An initial feasibility study lead to an archtecture with a central C++ core handling binary I/O. This would contain an embedded Python interpreter, allowing "user" scripts written in Python to define the actual calculations to be carried out. The C++ core, named ``aftershock``, would essentially be fixed and applicable to all of the reactor models to be analysed. By contrast the Python scripts could be developed and extended by "users", i.e. seismic engineers, as required as new seismic models were developed.
+An initial feasibility study lead to an architecture which has:
+
+#. A central C++ core, ``aftershock``, which handles the binary I/O and contains an embedded Python 2.7 interpreter.
+#. A set of Python "calculation scripts", defining the actual post-processing calculations to be carried out.
+#. A Python plotting package ``afterplot``, based on ``matplotlib``.
 
 **FIGURE??**
 
-This hybrid architecture was one solution to the trade-off between the need for the best possible performance when accessing and decoding the large quantity of binary data, versus a need for a high-level language for the actual calculations to permit them to be implemented by domain experts who were not software engineers. As usual the choice of language partly depended on user familiarity and there was some experience within the team with Python, both as a scripting language for other analysis packages and as a numerical programming language in its own right using the ``numpy`` and ``scipy`` [Atr03]_ packages.
+As the entire binary dataset is too large to fit in memory at once the ``aftershock`` core operates frame-by-frame, stepping time-wise through the data. At each frame it decodes the raw binary data and calls defined functions from the calculation scripts which have been loaded. These scripts access the raw data for this frame through a simple API which returns lists of floats, and carry out the required calculations, generally with heavy use of the ``ndarrays`` provided by ``numpy`` [Atr02]_ to carry out efficent element-wise operations. As well as decoding the binary data, the ``aftershock`` core optimises the order in which the results files are processed to minimise the number of passes required and maintains necessary state for the scripts from frame-to-frame.
 
-As the entire binary dataset is too large to fit in memory at once ``aftershock`` operates frame-by-frame, stepping time-wise through the data. At each frame it calls certain functions from the scripts to carry out calculations on the data from that step. The scripts access this data through a simple Python API which returns lists of floats. The scripts may also define functions which are called by ``aftershock`` at the start and end of post-processing for initialisation or output of results. The ``aftershock`` core maintains necessary state from frame-to-frame and also optimises the order in which the results files are processed to minimise the number of passes needed. The ``aftershock`` core is not discussed further in this paper.
+The split between ``afterplot`` and a set of calculation scripts results in an architecture which:
 
-The calculation scripts generally make heavy use of the ``ndarrays`` provided by ``numpy`` [Atr02]_ to carry out efficent element-wise operations, although sometimes a more object-orientated approach is appropriate. As the API provided by ``aftershock`` hides all details of the actual binary file formats and how the data is split across files the engineer can concentrate entirely on the actual calculation required.
+a. Has sufficent performance to handle large amounts of binary data, and has a core which can be reused across all models and analyses.
+b. Allows users, i.e. seismic engineers, to define the calculations required in a high-level language with no knowledge of the raw binary format.
+c. Separates the post-processing into individual scripts which cannot impact each other, enforcing modularity.
 
-**TODO:** Add something about separation between scripts as provided by architecture.
+With Python selected as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Atr04]_ stood out for its wide use, "*publication quality figures*" [Atr04]_ and the sheer variety and flexibility of plotting capabilities it provided. Development of the post-processing toolset could have ended at this point, leaving the script engineers to utilise ``matplotlib`` directly as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive; requiring seismic engineers to learn the details of this did not seem to represent good value for the client. It was therefore decided to wrap ``matplotlib`` in a package ``afterplot`` to provide a custom set of very focussed plot formats.
 
-Plotting Architecture and Features
-----------------------------------
+Plotting Architecture
+---------------------
+``afterplot`` provides each type of plotting functionality as a separate plotter class, with the user (i.e. the engineer writing a calculation script) creating an instance of this class to generate a plot. All plotter classes inherit from a ``BasePlot`` class **FIGURE**. This base class is essentially a wrapper for a ``matplotlib`` ``Figure`` object (which represents a single plotting window in ``matplotlib``) plus the ``Axes`` objects which represent the plots or sub-plots this contains.
 
-Output from the calculation scripts is in some sense not an interesting aspect of post-processing, but it does form the final "product" which the client sees, whereas the rest of the post-processing toolchain is not visible. Tabular output of numerical data is straightforward and is currently handled using the ``csv`` module. However output of graphs and plots is considerably more complex. The previous Excel-based post-processor had exposed some limits to Excel's plotting capabilities, especially for contour-type plots and improvements in the types and format of plots avaiable was highly desirable. With Python as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Atr04]_ stood out for its wide use, "*publication quality figures*" [Atr04]_ and sheer variety and flexibility of plotting capabilities it provided.
+At present ``afterplot`` provides only four types of plotter, although these are sufficent for most requirements:
 
-Development of the post-processing toolset could have ended at this point, leaving the script engineer to utilise ``matplotlib`` plots as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive. As an example adding adding markers on the Y-axis of a plot - a familiar GUI operation in the existing Excel-based package - might require:
+#. ``LayerPlot``. This represents values on a horizontal slice through the model using a contour-type plot but using discrete markers.
+#. ``ChannelPlot``. This represents the geometry of a vertical column in the model in the X-Z and Y-Z planes.
+#. ``TimePlot``. This is a conventional X-Y plot, representing time-histories as individual series with time on the X-axis.
+#. ``WfallPlot``. This provides an overview of the frequency distribution of a value at every time-step during an analysis, like a series of **stacked histograms**.
 
-.. code-block:: python
+Inherently all post-processed results have some associated spatial position within the model and some associated time within the simulation. For some parameters one or more of these dimensions may be collapsed, e.g. in the case of a 2D plan-view of peak values through time, maximums are taken over the vertical and time axes. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of the dimensions are standardised, so that different "views" of the same data can easily be generated by passing it to the different plotters. In this way ``afterplot`` defines a set of conventions for data, and the calculation scripts can be thought of as essentially transforming data from the lists of floats provided by ``aftershock`` into four-dimensional arrays for plotting.
 
-    from matplotlib.ticker import AutoMinorLocator
-    <code here>
-    plt.yticks(range(0, 100, 20))
-    ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+Quality Advantages
+------------------
+A key advantage of providing a custom plotting package is that best-practice can be enforced on the author of the calculation script, for example the provision of titles or use of gridlines. <<COLORBAR EXAMPLE>>.
 
-While this probably appears relatively straightforward to a software engineer there are various levels of abstraction being used here. Requiring the domain experts to spend time learning the details of the matplotlib API did not seem to represent good value for the client. However consideration of the existing post-processor and the new calculation scripts to be developed showed that in fact there were only a handful of separate types of plots required, although each type might be used to present multiple datasets. This made it feasible to provide a domain-specific plotting package, ``afterplot``. This internally uses ``matplotlib``, but provides plotter classes to the user. To create a plot the user  creates an instance of the appropriate class, passing the data to be plotted as well as subsiduary information such as titles as the parameters.
+The plotter classes can also enforce a demarcation between alteration of *presentation*, e.g. color-bar limits, and alteration of *data*. Alteration of presentation is provided for through methods or GUI features defined by the plotter classes. Alteration of data is prevented as there is no interface to the data itself once the relevant array has been passed to the plot instance. This is not a security feature but simplifies quality assurance by limiting where errors could be introduced.
 
-All of the plotter classes are derived from a base class ``BasePlot`` which essentially wraps the ``matplotlib.Figure`` object to provide additional functionality. At present four plotter classes are defined:
+Another quality assurance feature is the provision of traceability data. The ``baseplot`` class traveses the stack frames using the ``inspect`` module when a new plot is generated, gathering information about paths and versions of scripts and modules used. The use of this approach means that no additional effort from the script author is required to gather this information.
 
-#. ``LayerPlot``, representing values on a horizontal slice through the model using a contour-type plot with discrete markers.
-#. ``ChannelPlot``, representing the geometry of a vertical region through the model in the X-Z and Y-Z planes.
-#. ``TimePlot``, representing timehistories as individual series plotted against time.
-#. ``WfallPlot``, providing an overview of the frequency distribution of a value at every time-step during an analysis, like a series of stacked histograms.
+Interactive GUI
+---------------
+Providing a simple GUI was considered desirable to bridge the gap for users from the previous Excel-based toolset. The ``matplotlib`` documentation describes two methods of providing a GUI:
 
-These classes all use a similar interface for the data to be plotted; all data is inherently four-dimensional as each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" by the calculation scripts, for example when plotting  maximum values over time. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of the dimensions are standardised, so that different "views" of the same data can easily be generated by passing it to the different plotters. In this way ``afterplot`` defines a set of conventions for data, and the calculation scripts can be thought of as essentially transforming data from the lists of floats provided by ``aftershock`` into four-dimensional arrays for plotting.
+1. Using the cross-backend widgets provided in ``matplotlib.widgets``, which are fairly limited.
+2. Embedding the ``matplotlib.FigureCanvas`` object directly into the window provided by a specific GUI toolset, e.g. ``Tk``.
 
-The development of a custom plotting package also permitted a significant standardisation of presentation which improves quality overall. For example the interface *requires* axis labels and titles to be defined and grid-lines to be shown on plots, rather than leaving it to the user to adhere to a best-practice guide or relying on review to ensure these have been included. As another example it noted that the default ``matplotlib`` colour scale for contour-type plots was not particularly easy to interprete. It was discovered that this is an area of active research and the WHAT BAR was identified as a STUFF ABOUT CLARITY; ALSO WANT TO SAY SOME STUFFA BOUT HOW WELL FOUNDED IT WAS. **ADD COLOURBAR EXAMPLES.**
-
-A key consideration in the design of ``afterplot`` control of which aspects of a plot are modifiable after creation. For example the title of a plot defines what the data shows, and therefore should not be changeable, but the colour ranges on a contour-type plot will often need adjustment to clearly show the specific data displayed. In ``afterplot`` there is therefore a distinction made between *data* and *presentation*. The former is "write-once" and provided through the arguments to the plotter class, whereas the plot class may provide GUI controls or API methods to modify the latter.
-
-An alternative GUI methodology
-------------------------------
-Providing a simple GUI for plots was desirable to help bridge the gap for users between the previous Excel-based tool and the new ``aftershock`` toolset. The ``matplotlib`` documentation describes two methods of providing a GUI:
-
-1. Using the cross-backend widgets provided by ``matplotlib.widgets``, which are fairly limited.
-2. Embedding the ``matplotlib.FigureCanvas`` object directly into the window provided by the selected GUI toolset.
-
-A third option is used for ``afterplot`` which is simplier than the second but allows the richer widgets provided by the selected GUI toolset to be used. The ``matplotlib.pyplot`` framework is intended for convenient scripting use, but as it contains an internal state machine it is generally more appropriate to use the ``matplotlib`` API directly in packages wrapping ``matplotlib``. However the ``plyplot.figure()`` function can be used to handle all of the initial set-up of the GUI, with additional widgets then inserted using the GUI toolset's manager. The below demonstrates the approach with the ``TkAgg`` backend by adding a button to a ``Figure`` object:
+A third option is used by ``afterplot`` which is simplier than the second approach but allows the use of the richer widgets provided by specific GUI toolsets. This approach uses the ``plyplot.figure()`` function to handle all of the initial set-up of the GUI, with additional widgets then inserted using the GUI toolset's manager. This is demonstrated below adding a ``Tk`` button to a ``Figure`` object with the ``TkAgg`` backend:
 
 .. code-block:: python
 
     import Tkinter as Tk
+    # ADD USE
     from matplotlib import pyplot
     class Plot(object):
         def _init__(self):
@@ -122,9 +124,37 @@ A third option is used for ``afterplot`` which is simplier than the second but a
             toolbar = self.figure.canvas.manager.toolbar
             window = self.figure.canvas.manager.window
             btn_next = Tk.Button(master=window,
-                         text='next', command=self._next)
+                         	 text='next',
+				 command=self._next)
             btn_next.pack(side=Tk.LEFT)
             self.figure.show()
+
+
+Th
+
+
+
+
+
+-------------------------
+
+
+x are used to pass the data to plot to all plott is passed to plot classes as has All plot classes have a very similar interface by which data is passed to them. Inherantly provided
+
+However consideration of the existing post-processor and the new calculation scripts to be developed showed that in fact there were only a handful of separate types of plots required, although each type might be used to present multiple datasets. This made it feasible to provide a domain-specific plotting package, ``afterplot``. This internally uses ``matplotlib``, but provides plotter classes to the user. To create a plot the user  creates an instance of the appropriate class, passing the data to be plotted as well as subsiduary information such as titles as the parameters.
+
+All of the plotter classes are derived from a base class ``BasePlot`` which essentially wraps the ``matplotlib.Figure`` object to provide additional functionality. At present four plotter classes are defined:
+
+
+
+These classes all use a similar interface for the data to be plotted; all data is inherently four-dimensional as each value is associated with a particular spatial location in the model and a time during the simulated earthquake. In some cases one or more of these dimensions may be "collapsed" by the calculation scripts, for example when plotting  maximum values over time. 
+
+The development of a custom plotting package also permitted a significant standardisation of presentation which improves quality overall. For example the interface *requires* axis labels and titles to be defined and grid-lines to be shown on plots, rather than leaving it to the user to adhere to a best-practice guide or relying on review to ensure these have been included. As another example it noted that the default ``matplotlib`` colour scale for contour-type plots was not particularly easy to interprete. It was discovered that this is an area of active research and the WHAT BAR was identified as a STUFF ABOUT CLARITY; ALSO WANT TO SAY SOME STUFFA BOUT HOW WELL FOUNDED IT WAS. **ADD COLOURBAR EXAMPLES.**
+
+A key consideration in the design of ``afterplot`` control of which aspects of a plot are modifiable after creation. For example the title of a plot defines what the data shows, and therefore should not be changeable, but the colour ranges on a contour-type plot will often need adjustment to clearly show the specific data displayed. In ``afterplot`` there is therefore a distinction made between *data* and *presentation*. The former is "write-once" and provided through the arguments to the plotter class, whereas the plot class may provide GUI controls or API methods to modify the latter.
+
+An alternative GUI methodology
+------------------------------
 
 Storing and Restoring Plots
 ---------------------------
@@ -155,7 +185,7 @@ Simplified code for the ``BasePlot`` class implementing this:
 **Restoring**:
 
 #. The type object, ``args`` and ``kwargs`` are unpickled from the file.
-#. Call the type object to create a new instance, passing it the unpickled ``args`` and ``kwargs``.
+#. The type object is called to create a new instance, passing it the unpickled ``args`` and ``kwargs``.
 
 Simplfied restoring code:
 
@@ -167,7 +197,7 @@ Simplfied restoring code:
 
 The benefits of this approach are that neither the storing nor restoring code needs to know anything about the actual plot class - hence any plotter derived from ``BasePlot`` inherits this functionality. The only interface for which storing and restoring needs to address is the parameter list. This is simple and quite robust to changes in the plotter class as code can be added to handle any depreciated parameters if the signature changes. It also means that if stored plots are restored by a later version of ``afterplot`` any added functionality provided by the updated plotter class will automatically be available to the restored plot.
 
-The major complication not shown in the simplifed code above is that ideally storing and restoring should be totally insensitive to whether parameters have been specified as positional or named arguments. Therefore the ``__new__()`` method of the ``BasePlot`` superclass has to use the information provided by ``inspect.getargspec()`` to convert all arguments to a dictionary of name:value, and stores/restores them as ``**kwargs``.
+One signficant complication omitted from the simplifed code above is that ideally storing and restoring should be totally insensitive to whether parameters have been specified as positional or named arguments. Therefore the ``__new__()`` method of the ``BasePlot`` superclass has to use information provided by ``inspect.getargspec()`` to convert all arguments to a dictionary of ``name:value``, and stores/restores them all as ``**kwargs``.
 
 Traceability
 ------------
