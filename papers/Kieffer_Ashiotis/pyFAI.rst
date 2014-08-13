@@ -300,7 +300,7 @@ like Python interpreted code when interfaced with [PyOpenCL]_
     :class: w
 
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-    | Vendor /driver     | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
+    | Vendor / driver    | Intel     | AMD       | AMD     | Nvidia  | Nvidia      | Intel     |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Model              | 2xE5-2667 | 2xE5-2667 | V7800   |Tesla K20|GeForce 750Ti| Phi 5110  |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
@@ -607,4 +607,3 @@ References
 .. [SPD] P. Bösecke.
          *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
          J. Appl. Cryst., 40:s423–s427, 2007.
-
