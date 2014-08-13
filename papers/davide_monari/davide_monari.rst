@@ -57,7 +57,7 @@ The aim of the temporal calibration is to estimate the time delay between US and
 US probe spatial calibration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The probe spatial calibration is an essential procedure for image reconstruction which allows to determine the *pose* (position and orientation) of the US images with respect to the POS device. The corresponding results take the form of six constants, three for position and three for orientation. The quality of this step mainly influences the reconstruction quality of the anatomical shape. To perform the probe calibration we used two different step. First we applied an established procedure already published in the literature [Prager98]_ and later we tuned the results by using an image compounding algorithm [Wein08]_. The established procedure was proposed by Prager et al. [Prager98]_ and improved by Hsu [Hsu06]_, with the idea of scanning the floor of a water tank by covering all the degrees of freedom; this scanning modality produces clear and consistent edge lines (between water and tank bottom) in the US images (B-scans). All the pixels lying on the visible line in the B-scan should satisfy equations that come from the different spatial transformations, which leave to solve 11 identifiable parameters. Each B-scan can be used to write 2 equations. The overdetermined set of equations is solved using the Levenberg–Marquardt algorithm. It is really important to move the US transducers following the sequence of movements suggested in [Prager98]_, in order to have reasonable results.
+The probe spatial calibration is an essential procedure for image reconstruction which allows to determine the *pose* (position and orientation) of the US images with respect to the POS device. The corresponding results take the form of six constants, three for position and three for orientation. The quality of this step mainly influences the reconstruction quality of the anatomical shape. To perform the probe calibration we used two different step. First we applied an established procedure already published in the literature [Prager98]_ and later we tuned the results by using an image compounding algorithm [Wein08]_. The established procedure was proposed by Prager et al. [Prager98]_ and improved by Hsu [Hsu06]_, with the idea of scanning the floor of a water tank by covering all the degrees of freedom; this scanning modality produces clear and consistent edge lines (between water and tank bottom) in the US images (B-scans). All the pixels lying on the visible line in the B-scan should satisfy equations that come from the different spatial transformations, which leave to solve 11 identifiable parameters. Each B-scan can be used to write 2 equations. The overdetermined set of equations is solved using the Levenberg-Marquardt algorithm. It is really important to move the US transducers following the sequence of movements suggested in [Prager98]_, in order to have reasonable results.
 
 .. figure:: probe_calib.png
 
@@ -209,7 +209,7 @@ The quick-and-dirty way, known as VNN (Voxel Nearest Neighbour), consists of fil
 
 - If that percentage is not found, the cube size in incremented by 2 voxels (e.g. 5);
 
-- If cube size is lesser or equal than a maximum size, start again from point 2. Otherwise, stop and don’t fill the gap.
+- If cube size is lesser or equal than a maximum size, start again from point 2. Otherwise, stop and don't fill the gap.
 
 
 The entire voxel array can be subdivided in N parallelepipedal blocks, and the gap filling is performed on each one at a time, to spare some of the RAM. The bigger the number of blocks, the bigger the number of iterations to go, but the smaller the block size, the RAM used and the time spent per iteration.
@@ -227,16 +227,16 @@ The calibration quality assessments were 1.9 mm and 3.9 mm for the distance accu
 References
 ----------
 
-.. [Prager99] Prager RW, Gee AH, Berman L. Stradx: Real-time acquisition and visualisation of freehand 3D ultrasound. Med Image Analysis 1999; 3(2):129–140.
+.. [Prager99] Prager RW, Gee AH, Berman L. Stradx: Real-time acquisition and visualisation of freehand 3D ultrasound. Med Image Analysis 1999; 3(2):129-140.
 
-.. [Rankin93] Rankin, R. N., Fenster, A., Downey, D. B., Munk, P. L., Levin, M. F. and Vellet, A. D. (1993) Three-dimensional sonographic reconstruction: techniques and diagnostic applications. Am. J. Roentgenol., 161, 695–702.
+.. [Rankin93] Rankin, R. N., Fenster, A., Downey, D. B., Munk, P. L., Levin, M. F. and Vellet, A. D. (1993) Three-dimensional sonographic reconstruction: techniques and diagnostic applications. Am. J. Roentgenol., 161, 695-702.
 
-.. [Prager98] Prager, R. W., Rohling, R. N., Gee, A. H. and Berman, L. (1998) Rapid calibration for 3-D freehand ultrasound. Ultrasound Med. Biol., 24, 855–869.
+.. [Prager98] Prager, R. W., Rohling, R. N., Gee, A. H. and Berman, L. (1998) Rapid calibration for 3-D freehand ultrasound. Ultrasound Med. Biol., 24, 855-869.
 
 .. [Wein08] Wolfgang Wein and Ali Khamene. Image-Based Method for In-Vivo Freehand Ultrasound Calibration. Medical Imaging 2008: Ultrasonic Imaging and Signal Processing, edited by Stephen A. McAleavey, Jan D'hooge, Proc. of SPIE Vol. 6920, 69200K, (2008).
 
-.. [Hsu06] Po-Wei Hsu, Richard W. Prager, Andrew H. Gee, and Graham M. Treece. Rapid, easy and reliable calibration for freehand 3d ultrasound. Ultrasound in Med. & Biol., Vol. 32, No. 6, pp. 823–835, 2006.
+.. [Hsu06] Po-Wei Hsu, Richard W. Prager, Andrew H. Gee, and Graham M. Treece. Rapid, easy and reliable calibration for freehand 3d ultrasound. Ultrasound in Med. & Biol., Vol. 32, No. 6, pp. 823-835, 2006.
 
-.. [Barre14] Arnaud Barre, Stéphane Armand, Biomechanical ToolKit: Open-source framework to visualize and process biomechanical data, Computer Methods and Programs in Biomedicine, Volume 114, Issue 1, April 2014, Pages 80-87, ISSN 0169-2607.
+.. [Barre14] Arnaud Barre, StÃ©phane Armand, Biomechanical ToolKit: Open-source framework to visualize and process biomechanical data, Computer Methods and Programs in Biomedicine, Volume 114, Issue 1, April 2014, Pages 80-87, ISSN 0169-2607.
 
 
