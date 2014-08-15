@@ -33,7 +33,7 @@ Temperature diagnostics of the solar atmosphere using SunPy
     anticipating new solar missions which will result in even larger sets of 
     data. An overview of the method and implementation is given, along with 
     tests involving synthetic data and examples of results using real data for 
-    various regions in the Sunâ€™s atmosphere.
+    various regions in the Sun's atmosphere.
 
 .. class:: keywords
 
@@ -692,20 +692,37 @@ community-developed solar data analysis package written in Python
 
 References
 ----------
-.. [Lemen2011]
-.. [Aschwanden2011b]
-.. [Guennou2012]
-.. [Judge2010]
-.. [Warren2008]
-.. [Aschwanden2011]
-.. [DelZanna2013]
-.. [Plowman2012]
-.. [Guennou2012a]
-.. [Mumford2013]
-.. [Morgan2014]
-.. [Awasthi2014]
-.. [Kramar2014]
-.. [Judge1997]
-.. [Mackovjak2014]
+
+.. [Lemen2011] J. R. Lemen, A. M. Title, D. J. Akin, P. F. Boerner, C. Chou, J. F. Drake, D. W. Duncan, C. G. Edwards, F. M. Friedlaender, G. F. Heyman, N. E.
+   Hurlburt, N. L. Katz, G. D. Kushner, M. Levay, R. W. Lindgren, D. P. Mathur, E. L. McFeaters, S. Mitchell, R. a. Rehse, C. J. Schrijver, L. a.
+   Springer, R. a. Stern, T. D. Tarbell, J.-P. Wuelser, C. J. Wolfson, C. Yanari, J. a. Bookbinder, P. N. Cheimets, D. Caldwell, E. E. Deluca, R. Gates,
+   L. Golub, S. Park, W. a. Podgorski, R. I. Bush, P. H. Scherrer, M. a. Gummin, P. Smith, G. Auker, P. Jerram, P. Pool, R. Soufli, D. L. Windt,
+   S. Beardsley, M. Clapp, J. Lang, and N. Waltham, .The Atmospheric Imaging Assembly (AIA) on the Solar Dynamics Observatory (SDO),. Solar
+   Physics, vol. 275, pp. 17.40, June 2011.
+.. [Aschwanden2011b] M. J. Aschwanden and P. Boerner, .Solar Corona Loop Studies With the Atmospheric Imaging Assembly. I. Cross-Sectional Temperature Structure,.
+   The Astrophysical Journal, vol. 732, p. 81, May 2011.
+.. [Guennou2012] C. Guennou, F. Auchère, E. Soubrié, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
+   of Solar Plasmas. Application To Sdo /Aia. I. Isothermal Plasmas,. The Astrophysical Journal Supplement Series, vol. 203, p. 25, Dec. 2012.
+.. [Judge2010] P. G. Judge, .Coronal Emission Lines As Thermometers,. The Astrophysical Journal, vol. 708, pp. 1238.1240, Jan. 2010.
+.. [Warren2008] H. P. Warren, I. Ugarte-Urra, G. a. Doschek, D. H. Brooks, and D. R. Williams, .Observations of Active Region Loops with the EUV Imaging
+   Spectrometer on Hinode,. The Astrophysical Journal, vol. 686, pp. L131.L134, Oct. 2008.
+.. [Aschwanden2011] M. J. Aschwanden, P. Boerner, C. J. Schrijver, and A. Malanushenko, .Automated Temperature and Emission Measure Analysis of Coronal Loops
+   and Active Regions Observed with the Atmospheric Imaging Assembly on the Solar Dynamics Observatory (SDO/AIA),. Solar Physics, Nov. 2011.
+.. [DelZanna2013] G. Del Zanna, .The multi-thermal emission in solar active regions,. Astronomy & Astrophysics, vol. 558, p. A73, Oct. 2013.
+.. [Plowman2012] J. Plowman, C. Kankelborg, and P. Martens, .Fast Differential Emission Measure Inversion of Solar Coronal Data,. arXiv preprint arXiv: . . . , 2012.
+.. [Guennou2012a] C. Guennou, F. Auchère, E. Soubrié, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
+   of Solar Plasmas. Application To Sdo /Aia. II. Multithermal Plasmas,. The Astrophysical Journal Supplement Series, vol. 203, p. 26, Dec. 2012.
+.. [Mumford2013] S. Mumford, D. Pérez-suárez, S. Christe, F. Mayer, and R. J. Hewett, .SunPy : Python for Solar Physicists,. no. Scipy, pp. 74.77, 2013.
+.. [Morgan2014] H. Morgan and M. Druckmüller, .Multi-Scale Gaussian Normalization for Solar Image Processing,. Solar Physics, vol. 289, pp. 2945.2955, Apr.
+   2014.
+.. [Mackovjak2014] S. Mackovjak, E. Dzifcáková, and J. Dudík, .Differential emission measure analysis of active region cores and quiet Sun for the non-Maxwellian 
+   -distributions,. Astronomy & Astrophysics, vol. 564, p. A130, Apr. 2014.
+.. [Awasthi2014] A. K. Awasthi, R. Jain, P. D. Gadhiya, M. J. Aschwanden, W. Uddin, A. K. Srivastava, R. Chandra, N. Gopalswamy, N. V. Nitta, S. Yashiro, P. K.
+   Manoharan, D. P. Choudhary, N. C. Joshi, V. C. Dwivedi, and K. Mahalakshmi, .Multiwavelength diagnostics of the precursor and main phases of
+   an M1.8 flare on 2011 April 22,. Monthly Notices of the Royal Astronomical Society, vol. 437, pp. 2249.2262, Nov. 2014.
+.. [Kramar2014] M. Kramar, V. Airapetian, Z. Mikic, and J. Davila, .3D Coronal Density Reconstruction and Retrieving the Magnetic Field Structure during Solar
+   Minimum,. Solar Physics, pp. 1.22, 2014.
+.. [Judge1997] P. G. Judge, V. Hubeny, and J. C. Brown, .Fundamental Limitations of Emission-Line Spectra as Diagnostics of Plasma Temperature and Density
+   Structure,. The Astrophysical Journal, vol. 475, pp. 275.290, Jan. 1997.
 
 .. _www.sunpy.org: http://www.sunpy.org/
