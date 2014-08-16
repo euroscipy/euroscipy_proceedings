@@ -343,13 +343,13 @@ Validation using synthetic data
 :label:`modeltests`
 
 Given the non-uniform nature of the instrument temperature response functions 
-and the ‚Äúsmoothing‚Äù effect of the integral equations, the accuracy of any DEM 
-solution will not necessarily be the same for all plasma DEMs. For instance, if
-the plasma has a wide temperature distribution, the inverted DEM is less likely
+and the "smoothing" effect of the integral equations, the accuracy of any DEM 
+solution will not necessarily be the same for all plasma DEMs. For instance, if 
+the plasma has a wide temperature distribution, the inverted DEM is less likely 
 to correctly identify the peak temperature than if the plasma is isothermal, 
-due to a reduced dependence of the DEM function on temperature [Guennou2012a]_.
+due to a reduced dependence of the DEM function on temperature [Guennou2012a]_. 
 It is therefore important to quantify the accuracy of DEM solutions with 
-respect to different plasma conditions as well as looking at the performance of
+respect to different plasma conditions as well as looking at the performance of 
 the method overall.
 
 To achieve this, the method was tested by using a variety of model Gaussian 
@@ -468,7 +468,7 @@ this are more uniform and have no clearly visible structure.
     Temperature map for quiet sun region on 2011-01-28 00:00.
     The X-position and 
     Y-position of the axis refer to arc seconds from solar disk centre in the 
-    observer‚Äôs frame of reference, with the Y-position aligned to solar north. 
+    observer's frame of reference, with the Y-position aligned to solar north. 
 
 .. figure:: qs_2011-02-08T0000.png
     :align: center
@@ -701,7 +701,7 @@ References
    Physics, vol. 275, pp. 17.40, June 2011.
 .. [Aschwanden2011b] M. J. Aschwanden and P. Boerner, .Solar Corona Loop Studies With the Atmospheric Imaging Assembly. I. Cross-Sectional Temperature Structure,.
    The Astrophysical Journal, vol. 732, p. 81, May 2011.
-.. [Guennou2012] C. Guennou, F. AuchËre, E. SoubriÈ, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
+.. [Guennou2012] C. Guennou, F. Auch√®re, E. Soubri√©, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
    of Solar Plasmas. Application To Sdo /Aia. I. Isothermal Plasmas,. The Astrophysical Journal Supplement Series, vol. 203, p. 25, Dec. 2012.
 .. [Judge2010] P. G. Judge, .Coronal Emission Lines As Thermometers,. The Astrophysical Journal, vol. 708, pp. 1238.1240, Jan. 2010.
 .. [Warren2008] H. P. Warren, I. Ugarte-Urra, G. a. Doschek, D. H. Brooks, and D. R. Williams, .Observations of Active Region Loops with the EUV Imaging
@@ -710,12 +710,12 @@ References
    and Active Regions Observed with the Atmospheric Imaging Assembly on the Solar Dynamics Observatory (SDO/AIA),. Solar Physics, Nov. 2011.
 .. [DelZanna2013] G. Del Zanna, .The multi-thermal emission in solar active regions,. Astronomy & Astrophysics, vol. 558, p. A73, Oct. 2013.
 .. [Plowman2012] J. Plowman, C. Kankelborg, and P. Martens, .Fast Differential Emission Measure Inversion of Solar Coronal Data,. arXiv preprint arXiv: . . . , 2012.
-.. [Guennou2012a] C. Guennou, F. AuchËre, E. SoubriÈ, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
+.. [Guennou2012a] C. Guennou, F. Auch√®re, E. Soubri√©, K. Bocchialini, S. Parenti, and N. Barbey, .On the Accuracy of the Differential Emission Measure Diagnostics
    of Solar Plasmas. Application To Sdo /Aia. II. Multithermal Plasmas,. The Astrophysical Journal Supplement Series, vol. 203, p. 26, Dec. 2012.
-.. [Mumford2013] S. Mumford, D. PÈrez-su·rez, S. Christe, F. Mayer, and R. J. Hewett, .SunPy : Python for Solar Physicists,. no. Scipy, pp. 74.77, 2013.
-.. [Morgan2014] H. Morgan and M. Druckm¸ller, .Multi-Scale Gaussian Normalization for Solar Image Processing,. Solar Physics, vol. 289, pp. 2945.2955, Apr.
+.. [Mumford2013] S. Mumford, D. P√©rez-su√°rez, S. Christe, F. Mayer, and R. J. Hewett, .SunPy : Python for Solar Physicists,. no. Scipy, pp. 74.77, 2013.
+.. [Morgan2014] H. Morgan and M. Druckm√ºller, .Multi-Scale Gaussian Normalization for Solar Image Processing,. Solar Physics, vol. 289, pp. 2945.2955, Apr.
    2014.
-.. [Mackovjak2014] S. Mackovjak, E. Dzifc·kov·, and J. DudÌk, .Differential emission measure analysis of active region cores and quiet Sun for the non-Maxwellian 
+.. [Mackovjak2014] S. Mackovjak, E. Dzifc√°kov√°, and J. Dud√≠k, .Differential emission measure analysis of active region cores and quiet Sun for the non-Maxwellian 
    -distributions,. Astronomy & Astrophysics, vol. 564, p. A130, Apr. 2014.
 .. [Awasthi2014] A. K. Awasthi, R. Jain, P. D. Gadhiya, M. J. Aschwanden, W. Uddin, A. K. Srivastava, R. Chandra, N. Gopalswamy, N. V. Nitta, S. Yashiro, P. K.
    Manoharan, D. P. Choudhary, N. C. Joshi, V. C. Dwivedi, and K. Mahalakshmi, .Multiwavelength diagnostics of the precursor and main phases of
