@@ -2,8 +2,6 @@
 :email: steve.brasier@atkinsglobal.com
 :institution: Atkins, 500 Park Avenue, Aztec West, BS32 4RZ 
 
-
-
 ------------------------------------------------------------
 A Python-based Post-processing Tool-set For Seismic Analyses
 ------------------------------------------------------------
@@ -51,7 +49,7 @@ This paper describes a recent complete re-write of this post-processing toolset.
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The original post-processing tool was written in Microsoft Excel using VBA to decode the binary data and carry out the required calculations. The results were output to workbooks and plotted using Excel's graphing capabilities. The original design was not particularly modular and the technical debt [Atr01]_ had grown signficantly as the post-processor became more complex due to changes in the models themselves and additional requirements, making it difficult to determine whether changes would impact existing code.
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The existing post-processing tool was based on Microsoft Excel, using VBA to decode the binary data and carry out the required calculations and Excel's graphing capabilities to plot the results. The original design of the VBA code was not particularly modular and its complexity had grown signficantly as additional post-processing calculations were included and to accomodate developments in the models themselves. In short, there was signficant "technical debt" [Cun92]_ in the code which made it difficult to determine whether new functionality would adversely impact the existing calculations.
 
 The start of a new analysis campaign forced a reappraisal of the existing approach as these issues meant there was low confidence that the new post-processing features required could be developed in the time or budget available. The following requirements were identified as strongly desirable in any new post-processing tool:
 
@@ -65,44 +63,46 @@ A complete re-write was considered with some trepidation as it was clear that th
 Overall Architecture
 --------------------
 
-An initial feasibility study lead to an architecture which has:
+An initial feasibility study lead to an architecture with three distinct parts:
 
 #. A central C++ core, ``aftershock``, which handles the binary I/O and contains an embedded Python 2.7 interpreter.
-#. A set of Python "calculation scripts", defining the actual post-processing calculations to be carried out.
-#. A Python plotting package ``afterplot``, based on ``matplotlib``.
+#. A set of Python "calculation scripts" which define the actual post-processing calculations to be carried out.
+#. A purpose-made Python plotting package ``afterplot`` which is based on ``matplotlib``.
 
 **FIGURE??**
 
-As the entire binary dataset is too large to fit in memory at once the ``aftershock`` core operates frame-by-frame, stepping time-wise through the data. At each frame it decodes the raw binary data and calls defined functions from the calculation scripts which have been loaded. These scripts access the raw data for this frame through a simple API which returns lists of floats, and carry out the required calculations, generally with heavy use of the ``ndarrays`` provided by ``numpy`` [Atr02]_ to carry out efficent element-wise operations. As well as decoding the binary data, the ``aftershock`` core optimises the order in which the results files are processed to minimise the number of passes required and maintains necessary state for the scripts from frame-to-frame.
+As the entire binary dataset is too large to fit in memory at once the ``aftershock`` core operates frame-by-frame, stepping time-wise through the data. At each frame it decodes the raw binary data and calls defined functions from the calculation scripts which have been loaded. These scripts access the raw data for this frame through a simple API which returns lists of floats and carry out the required calculations. The scripts generally with heavy use of the ``ndarrays`` provided by ``numpy`` [Wal11]_ to carry out efficent element-wise operations. As well as decoding the binary data and maintaining the necessary state for the scripts from frame-to-frame, the ``aftershock`` core optimises the order in which the results files are processed to minimise the number of passes required.
 
 The split between ``afterplot`` and a set of calculation scripts results in an architecture which:
 
-a. Has sufficent performance to handle large amounts of binary data, and has a core which can be reused across all models and analyses.
-b. Allows users, i.e. seismic engineers, to define the calculations required in a high-level language with no knowledge of the raw binary format.
-c. Separates the post-processing into individual scripts which cannot impact each other, enforcing modularity.
+a. Has sufficent performance to handle large amounts of binary data.
+b. Has a core which can be reused across all models and analyses.
+c. Allows "users", i.e. seismic engineers, to define the calculations required in a high-level language.
+d. Hides the complex binary file-format entirely from the users.
+e. Enforces modularity, separating the post-processing into individual scripts which cannot impact each other.
 
-With Python selected as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Atr04]_ stood out for its wide use, "*publication quality figures*" [Atr04]_ and the sheer variety and flexibility of plotting capabilities it provided. Development of the post-processing toolset could have ended at this point, leaving the script engineers to utilise ``matplotlib`` directly as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive; requiring seismic engineers to learn the details of this did not seem to represent good value for the client. It was therefore decided to wrap ``matplotlib`` in a package ``afterplot`` to provide a custom set of very focussed plot formats.
+With Python selected as the calculation scripting language a number of plotting packages immediately became options but ``matplotlib`` [Hun07]_ stood out for its wide use, "*publication quality figures*" [Hun07]_ and the sheer variety and flexibility of plotting capabilities it provided. Development of the post-processing toolset could have ended at this point, leaving the script engineers to utilise ``matplotlib`` directly as required. However ``matplotlib's`` versatility comes with a price in complexity and the API is not particularly intuitive; requiring seismic engineers to learn the details of this did not seem to represent good value for the client. It was therefore decided to wrap ``matplotlib`` in a package ``afterplot`` to provide a custom set of very focussed plot formats.
 
 Plotting Architecture
 ---------------------
-``afterplot`` provides each type of plotting functionality as a separate plotter class, with the user (i.e. the engineer writing a calculation script) creating an instance of this class to generate a plot. All plotter classes inherit from a ``BasePlot`` class **FIGURE**. This base class is essentially a wrapper for a ``matplotlib`` ``Figure`` object (which represents a single plotting window in ``matplotlib``) plus the ``Axes`` objects which represent the plots or sub-plots this contains.
+``afterplot`` provides each type of plotting functionality as a separate plotter class, with the user (i.e. the engineer writing a calculation script) creating an instance of this class to generate a plot. All plotter classes inherit from a ``BasePlot`` class **FIGURE**. This base class is essentially a wrapper for a ``matplotlib`` ``Figure`` object which represents a single plotting window plus the ``Axes`` objects which represent the plots or sub-plots this contains.
 
-At present ``afterplot`` provides only four types of plotter, although these are sufficent for most requirements:
+At present ``afterplot`` provides only four types of plotter, although these are expected to be sufficent for most current requirements:
 
 #. ``LayerPlot``. This represents values on a horizontal slice through the model using a contour-type plot but using discrete markers.
-#. ``ChannelPlot``. This represents the geometry of a vertical column in the model in the X-Z and Y-Z planes.
+#. ``ChannelPlot``. This represents the 3D geometry of a vertical column in the model by projection onto X-Z and Y-Z planes.
 #. ``TimePlot``. This is a conventional X-Y plot, representing time-histories as individual series with time on the X-axis.
-#. ``WfallPlot``. This provides an overview of the frequency distribution of a value at every time-step during an analysis, like a series of **stacked histograms**.
+#. ``WfallPlot``. **FIXT:** his provides an overview of the frequency distribution of a value at every time-step during an analysis, like a series of **stacked histograms**.
 
-Inherently all post-processed results have some associated spatial position within the model and some associated time within the simulation. For some parameters one or more of these dimensions may be collapsed, e.g. in the case of a 2D plan-view of peak values through time, maximums are taken over the vertical and time axes. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of the dimensions are standardised, so that different "views" of the same data can easily be generated by passing it to the different plotters. In this way ``afterplot`` defines a set of conventions for data, and the calculation scripts can be thought of as essentially transforming data from the lists of floats provided by ``aftershock`` into four-dimensional arrays for plotting.
+Inherently all post-processed results are associated with a three-dimensional position within the model and a time within the simulation. Some parameters or outputs may collapse one or more of these dimensions may be collapsed, for example if plotting a plan view of peak values through time, maximums are taken over the vertical and time axes resulting in a result with two dimensions. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of these dimensions are standardised, so that different "views" of the same data can easily be generated by passing an array to different plotters.
 
 Quality Advantages
 ------------------
-A key advantage of providing a custom plotting package is that best-practice can be enforced on the author of the calculation script, for example the provision of titles or use of gridlines. <<COLORBAR EXAMPLE>>.
+A key advantage of providing a custom plotting package is that best-practice can be enforced on the output, for example the provision of titles or use of gridlines. Another example is that ``afterplot`` replaces the default colourmap in ``matplotlib`` with custom diverging colourmap based on the comprehensive discussion and methods presented in [Mor09]_ which should be significantly easier to interpret in most cases.
 
-The plotter classes can also enforce a demarcation between alteration of *presentation*, e.g. color-bar limits, and alteration of *data*. Alteration of presentation is provided for through methods or GUI features defined by the plotter classes. Alteration of data is prevented as there is no interface to the data itself once the relevant array has been passed to the plot instance. This is not intended as sa security feature but simplifies quality assurance by limiting where errors could be introduced.
+The plotter classes can also allow alteration of *presentation*, e.g. axis limits, and prevent alteration of *data*. Alteration of presentation is provided for through methods or GUI features defined by the plotter classes. Alteration of data is prevented simply by the lack of any interface to do this once the relevant array has been passed to the plot instance. This is not intended as a security feature but simplifies quality assurance by limiting where errors could be introduced.
 
-Another quality assurance feature is the provision of traceability data. The ``baseplot`` class traveses the stack frames using the ``inspect`` module when a new plot is generated, gathering information about paths and versions of scripts and modules used. The use of this approach means that no additional effort from the script author is required to gather this information.
+A further quality assurance feature is the capture of traceability data. When a new plot is generated, the ``baseplot`` class traverses the stack frames using the ``inspect`` module to gather information about the paths and versions of calculation scripts and modules used. The use of introspection means that this can occur automatically without requiring any action by the script author.
 
 Interactive GUI
 ---------------
@@ -132,9 +132,7 @@ An alternative approach is used by ``afterplot`` which is simplier than the seco
 
 Store and Restore
 -----------------
-As noted above plotter classes provide for the plot presentation to be altered after the plot has been created through instance methods or GUI features. Plots can then be saved to disk as images in a variety of file formats using functionality provided by ``matplotlib`` via ``Figure.savefig()``.
-
-However once the ``Figure`` object has been closed there there is no way to regenerate it for interactive use except for re-running the script which created it. As a complete ``aftershock`` post-processing run might take several hours to complete, this is clearly not ideal when minor presentation changes are required, for example altering the limits on an axis. A means to enable an entire plotter instance - including its GUI - to be stored to disk and later restored to a new fully interactive GUI was therefore strongly desirable. While ``Figure`` objects were not pickleable at the time (this has been added in the latest version of ``matplotlib``), following the same basic approach which ``pickle`` internally uses to handle class instances enabled this to be achieved relatively simply as follows:
+Functionality to save plots to disk as images in a variety of file formats is provided by ``matplotlib`` via ``Figure.savefig()`` and ``afterplot`` exposes this functionality. However once a ``matplotlib`` ``Figure`` object has been closed there there is no way to regenerate it for interactive use, except for re-running the script which created it. As a complete ``aftershock`` post-processing run might take several hours to complete, this is clearly not ideal when minor presentation changes are required such as altering the limits on an axis. A means to enable an entire plotter instance - including its GUI - to be stored to disk and later restored to a new fully interactive GUI was therefore strongly desirable. While ``Figure`` objects were not pickleable at the time (this has been added in the latest version of ``matplotlib``), following the same basic approach which the ``pickle`` module uses internally to handle class instances enabled this to be achieved relatively simply.
 
 **Storing:**
 
@@ -167,7 +165,7 @@ Simplfied restoring code:
 
     with open(path, 'r') as pkl:
         t_plt, args, kwargs = pickle.load(pkl)
-    new_plotter = t_plt(*args, **kwargs)
+        new_plotter = t_plt(*args, **kwargs)
 
 The benefits of this approach are that neither the storing nor restoring code needs to know anything about the actual plot class - hence any plotter derived from ``BasePlot`` inherits this functionality. The only interface which storing and restoring needs to address is the plotter class parameter list. This is simple and quite robust to changes in the plotter class definition as code can always be added to handle any depreciated parameters, meaning that it should essentially always be possible to make stored plots forward-compatible with later versions of ``afterplot``. Additionally, if a plot is restored with a later version of ``afterplot`` any enhanced GUI functionality will automatically be available. For convenience a simple ``cmd`` script and short Python function also allow stored plots to be restored on user's local Windows PCs by simply double-clicking the file. Alternatively plots can be restored and by a separate script which then uses the plotter class methods to alter presentational aspects, allowing batch processing of changes such as color bars or line thickness if desired.
 
@@ -177,16 +175,23 @@ While this approach essentially mirrors how ``pickle`` handles class instances, 
 
 Outcomes and Lessons Learnt
 ---------------------------
-The architecture of an ``aftershock`` core and a set of separate calculation scripts has been a success:
+The overal architecture has been a success:
 
-- Performance has been significantly improved and post-processing can easily be integrated with analysis runs if required.
+- Performance is significantly improved.
+- Post-processing can easily be integrated with analysis runs if required.
 - Maintainability and extensibility of the calculations has been vastly improved.
-- Python + numpy vastly better language for numerical calcs than VBA with very simplistic array support, can get on with the difficult bits.
-- The ``aftershock`` core is being re-used across different models.
-- Cross-platform; entire stack running on Windows and Linux.
+- Python and ``numpy`` form a vastly more usable and concise high-language for describing calculations than VBA, allowing engineers to concentrate on the logic rather than limitations imposed by the language.
+- The ``aftershock`` core is reusable across different models, saving considerable effort.
+- Cross-platform portability to Windows and Linux was achieved without any significant effort for the calculation scripts and plotting module, providing flexibility for future deployment.
 
-Challenges:
-- Education requirements: Teach users Python. Familar with other high-level scripting languages (e.g. VBA or DSL for scripting analysis software) but still generators, etc quite new. Then teach users numpy element-based thinking - very hard.
+However there were a number of challenges, some of which were expected at the outset and some which were not:
+
+*Education and training:* As discussed a key driver for the architecture was that it was intended that the calculation scripts would be written by seismic engineers, as they were the domain experts. Some of these engineers, although not all, were already familiar with Python, often from scripting environoments provided by commercial analysis software. Others were familar with other high-level scripting languages such as VBA. In general users found it relatively simple to pick up and start developing procedural and simple object-orientated Python, although some "Pythonic" features such as generators were less familar. The use of ``numpy`` then required users to learn a third programming paradigm; vectorised element-wise operations. While the basic concepts were easily understood, learning when procedural code with explicit loops or vectorised code is more appropriate requires considerably more experience and guidance. Performance had not previously been critical for most engineers and hence basic optimisation techniques such as moving constant expressions outside of loops were not necessarily obvious. The API for the scientitic Python stack contains some subtleties and inconsistenciess too, for example the three *TODO*
+
+- ``abs()``, ``numpy.abs()``
+- ``math.exp()``, ``numpy.exp()``,
+- ``math.pi``, ``scipy.pi``, ``numpy.pi``
+
 - Still requires thinking about performance. e.g. move constants outside of loops. Some subtleties too - e.g. why sum() or numpy.sum() [bad example]
 - Lack of brackets not a problem, but use of signficant whitespace was!
 - Installation: Installation of Python/numpy/scipy difficult on non-administrator Windows machines.
@@ -197,22 +202,19 @@ Plotting:
 - Major problem was lack of resouces with appropriate skill level to carry out checking and code review: GUI programming and some relatively sophisticated approaches e.g. decorators used internally. Has held up wider use of ``afterplot``.
 - Matplotlib GUI isn't really that great; would really help if GUI functionality to modify basic style elements of plots was included (as it is in ``Spyder`` using the ``Qt4Agg`` backend) ideally with an option to selectively disable these.
 
-
 References
 ----------
-.. [Atr01] W Cunningham. *The WyCash Portfolio Management System*,
-           OOPSLA '92 Addendum to the proceedings on Object-oriented programming
-           systems, languages, and applications, pp. 29-30.
-	   http://c2.com/doc/oopsla92.html
 
-.. [Atr02] Numpy
+.. [Cun92] W Cunningham. *The WyCash Portfolio Management System*,
+           OOPSLA '92 Addendum to the proceedings on object-oriented programming systems, languages, and applications, pp. 29-30.
+           http://c2.com/doc/oopsla92.html
 
-.. [Atr03] Scipy
+.. [Wal11] S. Van Der Walt, S. Chris Colbert, Gaël Varoquaux. *The NumPy array: a structure for efficient numerical computation*,
+           Computing in Science and Engineering, 13(2):22-30, 2011.
 
-.. [Atr04] J. D. Hunter. *Matplotlib: A 2D Graphics Environment*,
+.. [Hun07] J. D. Hunter. *Matplotlib: A 2D Graphics Environment*,
 	       Computing in Science & Engineering, 9(3):90-95, 2007.
 
-.. [Atr99] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
-
+.. [Mor09] K. Moreland. *Diverging Color Maps for Scientific Visualization*,
+           Proceedings of the 5th International Symposium on Visual Computing, 2009.
 
