@@ -33,7 +33,7 @@ A Python-based Post-processing Tool-set For Seismic Analyses
 Introduction
 ------------
 
-Nuclear power in the UK is provided by a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These are a second generation reactor design and have a core consisting of layers of interlocking graphite bricks, **ADD FIGURE** which act to slow neutrons from the fuel to sustain the fission reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
+Nuclear power in the UK is provided by a fleet of Advanced Gas-cooled Reactors (AGRs) which became operational in the 1970's. These are a second generation reactor design and have a core consisting of layers of interlocking graphite bricks, Figure :ref:`agrcore`, which act to slow neutrons from the fuel to sustain the fission reaction. Although the UK does not regularly experience significant earthquakes it is still necessary to demonstrate that the reactors could be safely shut-down if a severe earthquake were to occur.
 
 The response of the graphite core to an earthquake is extremely complex and a series of computer models have been developed to simulate the behaviour. These models are regularly upgraded and extended as the cores change over their lives to ensure that the relevant behaviours are included. The models are analysed using the commercial Finite Element Analysis code LS-DYNA. This provides predicted positions and velocities for the thousands of graphite bricks in the core during the simulated earthquake.
 
@@ -45,6 +45,11 @@ By itself this raw data is not particularly informative, and a complex set of po
 This post-processing converts the raw position and velocity data into parameters describing the seismic performance of the core, assesses these parameters against acceptable limits, and presents the results in tabular or graphical form.
 
 This paper describes a recent complete re-write of this post-processing toolset. It seeks to explore some of the software and architectural decisions made and examine the impact of these decisions on the engineering users.
+
+.. figure:: figure1.png
+   :scale: 20%
+
+   Detail of AGR core :label:`agrcore`
 
 Background
 ----------
@@ -70,8 +75,6 @@ An initial feasibility study lead to an architecture with three distinct parts:
 #. A set of Python "calculation scripts" which define the actual post-processing calculations to be carried out.
 #. A purpose-made Python plotting package ``afterplot`` which is based on ``matplotlib`` [Hun07]_.
 
-**FIGURE??**
-
 As the entire binary dataset is too large to fit in memory at once the ``aftershock`` core operates frame-by-frame, stepping time-wise through the data. At each frame it decodes the raw binary data and calls defined functions from the calculation scripts which have been loaded. These scripts access the data for the frame through a simple API provided by ``aftershock`` which returns lists of floats. The actual post-processing calculations defined by the scripts generally make heavy use of the ``ndarrays`` provided by ``numpy`` [Wal11]_ to carry out efficent element-wise operations. As well as decoding the binary data and maintaining the necessary state for the scripts from frame-to-frame, the ``aftershock`` core also optimises the order in which the results files are processed to minimise the number of passes required.
 
 The split between ``afterplot`` and a set of calculation scripts results in an architecture which:
@@ -86,7 +89,7 @@ With Python selected as the calculation scripting language a number of plotting 
 
 Plotting Architecture
 ---------------------
-``afterplot`` provides plotting functionality via a set of plotter classes, with the user (i.e. the engineer writing a calculation script) creating an instance of the appropriate class to generate a plot. All plotter classes inherit from a ``BasePlot`` class. This base class is essentially a wrapper for a ``matplotlib`` ``Figure`` object which represents a single plotting window, plus the ``Axes`` objects which represent the plots or sub-plots this contains  **FIGURE**.
+``afterplot`` provides plotting functionality via a set of plotter classes, with the user (i.e. the engineer writing a calculation script) creating an instance of the appropriate class to generate a plot. All plotter classes inherit from a ``BasePlot`` class. This base class is essentially a wrapper for a ``matplotlib`` ``Figure`` object which represents a single plotting window, plus the ``Axes`` objects which represent the plots or sub-plots this contains.
 
 At present ``afterplot`` provides only four types of plotter, although these are expected to be sufficent for most current requirements:
 
@@ -94,6 +97,32 @@ At present ``afterplot`` provides only four types of plotter, although these are
 #. ``ChannelPlot``. This represents the 3D geometry of a vertical column in the model by projection onto X-Z and Y-Z planes.
 #. ``TimePlot``. This is a conventional X-Y plot, representing time-histories as individual series with time on the X-axis.
 #. ``WfallPlot``. **FIXT:** his provides an overview of the frequency distribution of a value at every time-step during an analysis, like a series of **stacked histograms**.
+
+Examples are shown in Figures :ref:`LayerPlot` to :ref:`WfallPlot`.
+
+.. figure:: figure1.png
+   :scale: 20%
+   :figclass: bht
+
+   LayerPlot example :label:`LayerPlot`
+
+.. figure:: figure1.png
+   :scale: 20%
+   :figclass: bht
+
+   ChannelPlot example :label:`ChannelPlot`
+
+.. figure:: figure1.png
+   :scale: 20%
+   :figclass: bht
+
+   TimePlot example :label:`TimePlot`
+
+.. figure:: figure1.png
+   :scale: 20%
+   :figclass: bht
+
+   WfallPlot example :label:`WfallPlot`
 
 Inherently all post-processed results are associated with a three-dimensional position within the model and a time within the simulation. Some parameters or outputs may collapse one or more of these dimensions, for example if plotting a plan view of peak values through time, maximums are taken over the vertical and time axes creating a set of results with two dimensions. All plotter classes therefore accept ``numpy`` arrays with up to four dimensions (or ``axes`` in numpy terminology). The meanings and order of these dimensions are standardised, so that different "views" of the same data can easily be generated by passing an array to different plotters.
 
