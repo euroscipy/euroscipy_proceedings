@@ -217,18 +217,16 @@ The overal architecture has been a success:
 
 However there were a number of challenges, some of which were expected at the outset and some which were not:
 
-*Education and training:* As discussed a key driver for the architecture was that it was intended that the calculation scripts would be written by seismic engineers, as they were the domain experts. Some of these engineers, although not all, were already familiar with Python, often from scripting environoments provided by commercial analysis software. Others were familar with other high-level scripting languages such as VBA. In general users found it relatively simple to pick up and start developing procedural and simple object-orientated Python, although some "Pythonic" features such as generators were less familar. The use of ``numpy`` then required users to learn a third programming paradigm; vectorised element-wise operations. While the basic concepts were easily understood, learning when procedural code with explicit loops or vectorised code is more appropriate requires considerably more experience and guidance. Performance had not previously been critical for most engineers and hence basic optimisation techniques such as moving constant expressions outside of loops were not necessarily obvious. The API for the scientitic Python stack contains some subtleties and inconsistenciess too, for example the three *TODO*
+*Education and training:* As discussed a key driver for the architecture was that it was intended that the calculation scripts would be written by seismic engineers, as they were the domain experts. Some of these engineers, although not all, were already familiar with Python, often from scripting environoments provided by commercial analysis software. Others were familar with other high-level scripting languages such as VBA. In general users found it relatively simple to pick up and start developing procedural and simple object-orientated Python, although some "Pythonic" features such as generators required more consideration. The use of ``numpy`` then required users to learn a third programming paradigm of element-wise operations. While the basic concepts were easily understood, deciding when the use of explicit loops or element-wise operations is more appropriate requires considerably more experience. Most engineers had not written code where performance was an issue and hence basic optimisation techniques such as moving constant expressions outside of loops were not necessarily obvious. Inconsistencies in the API for the scientific Python stack also led to some subtle performance and functionality issues; for example the three examples below all have different answers as to which package is "best":
 
-- ``abs()``, ``numpy.abs()``
-- ``math.exp()``, ``numpy.exp()``,
-- ``math.pi``, ``scipy.pi``, ``numpy.pi``
+- ``abs()`` vs. ``numpy.abs()``
+- ``math.exp()`` vs. ``numpy.exp()``,
+- ``math.pi`` vs. ``scipy.pi`` vs. ``numpy.pi``
 
-- Still requires thinking about performance. e.g. move constants outside of loops. Some subtleties too - e.g. why sum() or numpy.sum() [bad example]
-- Lack of brackets not a problem, but use of signficant whitespace was!
-- Installation: Installation of Python/numpy/scipy difficult on non-administrator Windows machines.
-- Embedding 2.7 interpreter signficantly difficult due to compiler version issues, although outside scope of paper to discuss.
+*Development practicalities*: Some significant difficulties were encountered with the toolchain for compiling ``afterplot`` due to the embedded Python 2.7 interpreter, but these are outside the scope of this paper to discuss.
 
-Plotting:
+*Plotting functionality:*
+
 - More mixed bag?
 - Major problem was lack of resouces with appropriate skill level to carry out checking and code review: GUI programming and some relatively sophisticated approaches e.g. decorators used internally. Has held up wider use of ``afterplot``.
 - Matplotlib GUI isn't really that great; would really help if GUI functionality to modify basic style elements of plots was included (as it is in ``Spyder`` using the ``Qt4Agg`` backend) ideally with an option to selectively disable these.
