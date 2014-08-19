@@ -2,6 +2,10 @@
 :email: steve.brasier@atkinsglobal.com
 :institution: Atkins, 500 Park Avenue, Aztec West, BS32 4RZ 
 
+:author: Fred Pollard
+:email: fred.pollard@atkinsglobal.com
+:institution: Atkins, 500 Park Avenue, Aztec West, BS32 4RZ 
+
 ------------------------------------------------------------
 A Python-based Post-processing Toolset For Seismic Analyses
 ------------------------------------------------------------
