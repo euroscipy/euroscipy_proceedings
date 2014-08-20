@@ -1,0 +1,550 @@
+% CRITICAL TECHNICAL PRACTICE
+\documentclass[10pt, a4paper, twocolumn]{article}
+
+%\linespread{1}
+%\usepackage[sc]{mathpazo}
+%\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry}
+  %\setlength{\textwidth}{\paperwidth}%
+\addtolength{\textheight}{2.0in}%
+\addtolength{\voffset}{-1.0in}%
+\addtolength{\textwidth}{1.0in}%
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+
+
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{eurosym}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{nicefrac}
+\usepackage{pdfsync}
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage[cmex10]{amsmath}
+\usepackage{mathrsfs}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+\usepackage{import}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{hyperref}
+
+\usepackage{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,backgrounds,fit}
+
+\title{\textbf{SClib, a hack for straightforward\\embedded C functions in
+(I)Python}}
+
+\author{Esteban Fuentes
+\thanks{E. Fuentes is with the Electric Drives and Power
+Electronics group at the Technical University of Munich. 80333 Munich, Germany
+(email: \href{mailto:esteban.fuentes@tum.de}{esteban.fuentes@tum.de}).}
+\and Hector E. Martinez
+\thanks{H. Martinez is with
+the Physics Department T30F for Theory on Particles and Nuclear Physics at the
+Technical University of Munich.
+(email: \href{mailto:hector.martinez@tum.de}{hector.martinez@tum.de})
+}
+}
+\date{}
+
+\usepackage{abstract}
+
+\begin{document}
+
+\twocolumn[
+  \maketitle
+  \begin{onecolabstract}
+We present SClib, a simple hack that allows easy and straightforward evaluation
+of C functions within python code, boosting flexibility for better trade-off
+between computation power and feature availability, such as visualization and
+existing computation routines in SciPy.
+We also present two use cases for SClib.\\
+In the first set of applications we use SClib to implement a Python script that solves efficiently the Schr\"odinger equation for bound-states in the context of particle physics. We present an introduction to the situations where this script have been used. We also describe the solution to the related problem of solving a set of coupled Schr\"odinger-like equations where SClib is used to implement the
+speed-critical parts of the code. We argue that when using SClib within
+IPython we can use NumPy and Matplotlib for the manipulation and visualization of the solutions in an interactive environment with no performance conceading.\\
+The second case is an engineering application. We use SClib to evaluate the
+control and system derivatives in a feedback control loop for electrical motors.
+With this and the integration routines available in SciPy, we can run
+simulations of the control loop a la Simulink. The use of C code not only boosts
+the speed of the simulations, but also enables to test the exact same code that
+we use in the test rig to get experimental results. Again, integration with
+(I)Python gives us the flexibility to analyze and visualize the data.
+\\
+
+  \end{onecolabstract}
+]
+\saythanks
+
+\section{SClib}
+At the core of SClib\footnote{
+The code for SClib and example use are availible at
+\url{https://github.com/drestebon/SClib}
+}
+ is \verb+ctypes+ \cite{ctypes}, which actually does the
+whole work: it maps Python data to C compatible data and provides a way to call
+functions in DLLs or shared libraries.  SClib acts as glue: it puts things
+together for the user, to provide him with an easy to use interface.
+
+The requirements for SClib are very simple: call a function on an array of
+numbers of arbitrary type and size and return the output of the function, again
+of arbitrary type and size.
+
+The resulting interface is also very simple: A \emph{library} is initialized
+in the python side with the path to the DLL (or shared library) and a list with
+the names of the functions to be called:
+\begin{verbatim}
+In [1]: import SClib as sc
+In [2]: lib = sc.Clib('test.so', ['fun'])
+\end{verbatim}
+The functions are then available as a members of the \emph{library} and can be
+called with the appropriate number of arguments, which are one dimensional
+arrays of numbers.  The function returns a list containing the output arrays of
+the function:
+\begin{verbatim}
+In [3]: out, = lib.fun([0])
+\end{verbatim}
+In the C counterpart, the function declaration must be accompanied with
+specifications of the inputs and outputs lengths and types. This is accomplished
+with the helper macros defined in \verb+sclib.h+:
+\begin{verbatim}
+#include <sclib.h>
+      PYO(fun, 1,   1);
+PYO_TYPES(fun, 1, INT);
+      PYI(fun, 1,   1);
+PYI_TYPES(fun, 1, INT);
+void fun(int * out, int * in) {
+    *out = 42;
+}\end{verbatim}
+An arbitrary number of inputs or outputs can be specified, for example:
+\begin{verbatim}
+#include <math.h>
+#include <sclib.h>
+      PYO(fun, 2,   1,     2);
+PYO_TYPES(fun, 2, INT, FLOAT);
+      PYI(fun, 2,   1,     2);
+PYI_TYPES(fun, 2, INT, FLOAT);
+void fun(int * out0, float * out1,
+         int * in0, float * in1) {
+    *out0 = 42*in0[0];
+    out1[0] = in1[0]*in1[1];
+    out1[1] = powf(in1[0], in1[1]);
+}\end{verbatim}
+In the function declaration, all the outputs must precede the inputs and must be
+placed in the same order as in the \verb+PY+ macros.
+
+These specifications are processed during compilation time, but only the number
+of inputs and outputs is static, the lengths of each component can be overridden
+at run time:
+\begin{verbatim}
+In [4]: lib.INPUT_LEN['fun'] = [10, 1]
+In [5]: lib.retype()
+\end{verbatim}
+In these use cases the length of the arguments should be given to the function
+through an extra integer argument.
+
+In the function body, both inputs and outputs should be treated as one
+dimensional arrays.
+
+\section{Applications quarkonium physics}
+\subsection{Motivation}
+The Schr\"odinger equation is the one the fundamental equations in physics for describing non-relativistic quantum mechanical dynamics. For the applications we will present in this section we will focus on the time-independent version which in natural units is given by
+\begin{equation}\label{schroe}
+    \left(-\frac{\nabla_{\mathbf r}^2}{2m}+V(\mathbf{r})\right)\psi(\mathbf{r}) = E\psi(\mathbf{r}).
+\end{equation} It corresponds to an eigenvalue equation where the term inside the parenthesis in l.h.s. is called the Hamiltonian operator, the value $E$, its eigenvalue, is the measurable quantity (the energy) associated with it, $m$ is the mass (or the reduced mass if the system formed by more than one particle) and the wavefunction, $\psi(\mathbf{r})$, is the entity containing all the information about the system, since its modulus squared correspond to the probability density of a given measurement, it has to be normalized to unity. The term $V({\mathbf r})$ in the Hamiltonian is called the potential.\\
+Since its discovery, the Schr\"odinger equation has played an important role in our understanding of nature and it is present in almost every aspect of modern physics. In this section we will review some cases where SClib has been used to implement solutions of the computing problems associated with eq. (\ref{schroe}) that arise in the study of heavy quarkonia\footnote{For a comprehensive review of the status and perspectives of the research in heavy quarkonia we refer the reader to chapter four of \cite{Brambilla:2014jmp}.}.
+\\
+Quarkonium is a bound-state composed by a quark and its corresponding antiquark. By heavy we mean states composed by the charm and bottom quarks, called charmonium and bottomonium respectively. Due to its large mass, the top quark decays before forming a bound state. For heavy quarkonium the relative velocity between the quark and antiquark inside of the bound-system is believed to be small enough for the system to be considered, at least in a first approximation, non-relativistic, making it suitable for being described by eq. (\ref{schroe}). Considering the equal mass case with a spherically symmetric potential, the angular part can be neglected (it correspond to the spherical harmonics) and the relevant part of eq. (\ref{schroe}) reduces to the one-dimensional equation given by
+\begin{equation}\label{reduced}
+    \left[-\frac{1}{m}\frac{d^2}{dr^2}+\frac{l(l+1)}{r^2}+V(r)\right]y_{n,l}(r)=E_{n,l}y_{n,l}(r), 
+\end{equation} where $r$ is the relative distance between the quark and the antiquark, $l$ is the angular momentum quantum number, $m$ is the (anti)quark mass, $y_{n,l}$ is called the reduced wavefunction and the eigenvalue $E_{n,l}$ is interpreted as the binding energy of the bound-system, where $n=0,1,2,\dots$ accounts for the number of nodes (radial excitations) of the wavefunction. The total mass of the quarkonium is then given by
+\begin{equation}\label{lomass}
+    M=2m+E_{n,l}.
+\end{equation} The potential $V(r)$ describes the quark-antiquark interaction, it is a function of $r$ and $\Lambda_{\rm QCD}$, the typical hadronic scale ($\sim 200\,{\rm MeV}$). For $r\Lambda_{\rm QCD} \ll 1$ (short-distance regime) the potential may be evaluated perturbatively, but for $r\Lambda_{\rm QCD} \gtrsim 1$ (long-distance regime) it cannot. To overcome this issue, models based on non-relativistic reductions of phenomenological observations have been used to describe heavy quarkonia, one these being the so-called Cornell potential \cite{Eichten:1974af,Eichten:1978tg,Eichten:1979ms}) 
+\begin{equation}\label{cornell}
+    V(r) = \frac{a}{r}+kr,
+\end{equation} where $a$ and $k$ are unknown parameters which need to be fixed by experimental (or lattice) data of some observable. This potential incorporates two of the main observed characteristics of the quark-antiquark interaction: at short distances it exhibits a Coulombic behavior and in the long-distance regime the interaction is dominated by a confinement phase.\\
+Since the beginning of the last decade, non-relativistic effective field theories (EFT), in particular non-relativistic QCD (NRQCD) \cite{Caswell:1985ui,Bodwin:1994jh} and potential NRQCD (pNRQCD) \cite{Brambilla:1999xf}, have become the state-of-the-art tools for the study of heavy quarkonia (for review see \cite{Brambilla:2004jw}). NRQCD is obtained from QCD integrating out modes that scale like $m$, while pNRQCD is obtained from NRQCD integrating out modes that scale like the quark momentum\footnote{These EFT exploit the hierarchy of energy scales present in the bound-system. If the relative velocity of between the quark and the antiquark, $v$, is small, we have that $mv^2(\sim E)\ll mv(\sim p) \ll m$, where $p$ is the momentum of the particles and $E$ its kinetic energy. If one is interested in studying a process that happen at the scale $E$ (like the binding) it is more suitable to integrate out degrees of freedoms with energies that scale like the other two higher scales, this is the motivation behind pNRQCD. For a detailed analysis of the scales in heavy quarkonia we refer the reader to \cite{Brambilla:2004jw}.}.
+The physics of the modes that have been integrated out is encoded in Wilson coefficients that must be calculated comparing at the same  scale the results (observables, Green functions) of the EFT, with the ones of QCD (for NRQCD) or NRQCD (for pNRQCD). A key feature of pNRQCD is that it allows the relativistic corrections to the quark-antiquark potential to be organized as an expansion in powers of $1/m$, up to second order $V(r)$ can be written as
+\begin{equation}\label{pnrqcdpot}
+    V(r)=V^{(0)}(r)+\frac{V^{(1/m)}(r)}{m}+\frac{V^{(1/m^2)}(r)}{m^2},
+\end{equation} where $V^{(1/m)}$ and $V^{(1/m^2)}$ are derived from QCD (through the matching procedure with NRQCD). The details about $V^{(1/m)}$ and $V^{(1/m^2)}$  and how they are obtained are beyond the scope of this document, however, we can list some of their features
+\begin{itemize}
+	\item They correspond to Green functions that in the short-distance regime can be computed in perturbation theory.
+	\item In the long-distance regime they can be computed in in lattice QCD, however only some of these Green functions have been already calculated.
+	\item Eq. (\ref{cornell}) correspond, at least qualitatively, to the leading order $V^{(0)}$ in eq. (\ref{pnrqcdpot})
+\end{itemize} For the details about the derivation of the terms present in eq. (\ref{pnrqcdpot}) we refer the reader to refs. \cite{Brambilla:2000gk} and \cite{Pineda:2000sz}. It is important to recall that, although it can not be evaluated analytically in the whole range of $r$, eq. ({\ref{pnrqcdpot}) represents a definite model-independent expression for the quark-antiquark potential, contrary to models like the one presented in eq. (\ref{cornell}).\\
+Including the relativistic corrections to the potential the expression for the bound-state mass reads
+\begin{eqnarray}\label{mass}
+    M&=&2m+E_{n,l}^{(0)}+\frac{\langle nl| V^{(1/m)}(r)|nl \rangle}{m}\\ \nonumber
+    &+&\frac{\langle nl| V^{(1/m^2)}(r)|nl \rangle}{m^2}+\frac{1}{m^2}\sum_{m\neq n}^{\infty}\frac{|\langle nl|V^{(1/m)} | ml \rangle|^2}{E_{n,l}^{(0)}-E_{ml}^{(0)}},
+\end{eqnarray} where $E_{il}^{(0)}$ correspond to solve eq. (\ref{reduced}) with $V(r)=V^{(0)}(r)$ and
+\begin{equation}
+    \langle nl | f(r) | n'l' \rangle  \propto  \int_0^\infty dr\, y_{n,l}(r)f(r)y_{n'l'}(r),
+\end{equation} where the proportionality factor will depended on the corresponding quantum numbers of the operators appearing in $V^{(1/m)}$ and $V^{(1/m^2)}$. 
+\begin{figure}[htb]
+    \centering
+\noindent\begin{minipage}[b]{.9\linewidth}
+\includegraphics[width=\textwidth]{wfa.pdf}
+\end{minipage}
+\vfill
+\noindent\begin{minipage}[b]{.9\linewidth}
+\includegraphics[width=\textwidth]{wfb.pdf}
+\end{minipage}
+\hfill
+\caption{Reduced wavefunctions $y_{n,l}(r)$ for two steps in the search of the eigenvalue $E_{n=1\,l=1}$. For each step in the process to find the eigenvalue the nodes of the $y_{n,l}$ are counted, only when the value of $E_{n,l}$ correspond to an eigenvalue $y_{n,l}$ is not divergent. In the plot (a) $E_{n,l} = 3.1\,m$ and $y_{n,l}$ fulfills the condition of have one node, however, the accuracy in the value of $E_{n,l}$ is too low and the function diverges. In the plot (b)  $E_{n,l} = 3.10952\,m$ so $y_{n,l}\rightarrow 0$ for larger values of $r$. We have used the Cornell potential eq. (\ref{cornell}) with parameters $m = 1$ $a = 0.1$, $k =0.5m^2$, all dimensions defined in terms of the mass.}
+\label{wavefunctions}
+\end{figure}
+\\
+\subsection{Applications of SClib}
+The simplest computational problem related to eq. (\ref{reduced}) is to find $E_{n,l}$ for a given $n$ and $l$. Methods to solve this problem have been implemented since long ago (see for instance \cite{schroe1}), in a nutshell, the standard method consist in to apply two known constraints to the reduced wavefunction $y_{n,l}$:
+
+\begin{enumerate}
+\item The number of nodes of $y_{n,l}(r)$ must be equal to $n$.
+\item $y_{n,l}(r)$  has to be normalizable
+\begin{equation}\label{norm}
+	\int_0^\infty dr[y_{n,l}(r)]^2 = 1.
+\end{equation} 
+\end{enumerate}
+
+In general $y_{n,l}(r)$ will diverge except when $E_{n,l}$ correspond to an eigenvalue. The procedure to find the eigenvalue consists in to perform a scan of values of $E_{n,l}$ until $y_{n,l}(r)$  has $n$ nodes and converges for a large enough value of $r$ (see fig. (\ref{wavefunctions})). This implies that for each test value of $E_{n,l}$ eq. (\ref{reduced}) must to be (numerically) solved.
+A popular\footnote{The paper describing the script ranks fifth among the most cited papers (91 citations) of the International Journal of Modern Physics C with the last citation from  July 2014.} Mathematica \cite{mathematica9} implementation of this method to solve eq. (\ref{reduced}) has been available in \cite{Lucha:1998xc}. This script has the advantage that the user can profit from the Mathematica built-in functions to plot, integrate or store the resulting wavefunctions, however, it has a very poor performance. With the goal of mimic the advantages of this script but without compromising in speed we have developed SChroe.py\footnote{Code available in \url{https://github.com/heedmane/schroepy/}}, a Python script that uses SClib to implement the speed-critical parts of the algorithm. In this script the wavefunctions are stored as NumPy arrays \cite{numpy} so when the script is run within IPython \cite{ipython} together with SciPy \cite{scipy}, NumPy and Matplotlib \cite{matplotlib} the user can profit of the same or more flexibility as with the Mathematica script plus a boosted speed. In table \ref{comparison} we compare the performance of SChroe.py against other implementations of the same algorithm.
+\begin{table}[h]
+	\centering
+\begin{tabular}{c | c | c | c | c}
+	$n$ & $E_{n,l=1}\,\,[m]$ & schroe.nb \cite{Lucha:1998xc} & Python & SChroe.py\\
+	\hline
+	\hline
+0  & 2.15789 	& 98.88 & 25.46 & 11.11\\ 
+1  & 3.10952	& 124.14 & 30.95 & 12.65\\ 
+2  & 3.93850	& 135.68 & 35.32 & 14.93\\ 	
+20 & 13.5995	& 370.0  & 88.04 & 32.13\\ 	
+\end{tabular}
+\caption{Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (\ref{cornell}). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in fig. (\ref{wavefunctions}). All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.}
+\label{comparison}
+\end{table}
+
+In \cite{Brambilla:2014eaa} SChroe.py has been used to evaluate the relativistic corrections to the mass spectrum of quarkonium in the long-distance regime. In that paper the relativistic corrections $V^{(1/m)}$ and $V^{(1/m^2)}$ appearing in (\ref{mass}) were evaluated assuming the hypothesis that in the long-distance regime the interaction between the quark and the antiquark can be described by a string. In fig. (\ref{string-levels}) we show some of the energy levels (masses) corresponding to the string spectrum. It is noteworthy to mention that all the numerical calculations and plots of that paper were done with (I)Python using the SciPy library.
+\begin{figure}[htb]
+\begin{centering}
+    \includegraphics[width=1.0\linewidth]{string-levels.pdf}
+    \caption{Long-range energy levels of the first triplet quarkonium state. The lines are calculated from eq. (\ref{mass}) using the relativistic corrections derived from the string hypothesis \cite{Brambilla:2014eaa}. The leading order (LO) correspond to eq. (\ref{cornell}) setting $a=0$ and $k=1$ (in the plot labeled $\sigma$) and $m=3\sqrt{k}$. This plot shows the relative size of the next-to-leading-order (NLO) correction (the term proportional to $1/m$ in the r.h.s. of eq. (\ref{mass})) and the newly computed next-to-next-to-leading-order (NNLO) corrections (the terms proportional $1/m^2$). For more details see \cite{Brambilla:2014eaa}.}
+\label{string-levels}
+\end{centering}
+\end{figure}
+\\
+An application in which the speed of SChroe.py plays an important role is fixing the parameters of the potential given some experimental input. For instance, consider the problem of finding the parameters $a$ and $k$ of eq. (\ref{cornell}) together with $m$, given the experimental values of the masses of three different quarkonium states. If relativistic corrections are included, in order to find the parameters  we must solve a system of three equations like eq. (\ref{mass}). For each probe value of $(a,k,m)$ we have to find the eigenvalues and reduced wavefunctions of eq. (\ref{reduced}) and then with these values evaluate the sums and integrals in (\ref{mass}). A parameter fixing of this type was necessary to implement in \cite{phen-paper}. The implementation has been carried out using SChroe.py together with a mixture of C and SciPy functions using SClib to link both environments\footnote{Some of the code will be available once the paper appear online}.\\ 
+Another related computational problem that arises from the study of heavy quarkonium hybrids, bound-states composed by a quark-antiquark pair plus an exited gluon, is to solve a system of $N$ Schr\"odinger-like coupled equations. Explicitly the system to solve reads
+\begin{equation}\label{coupled}
+    \left(-\frac{\delta_{ij}}{m}\frac{d^2}{dr^2}+V_{ij}(r,l)\right)u_{j,(n,l)}(r)=E_{n,l}\,u_{i,(n,l)}(r),
+\end{equation} where $i = 1,2,..N$ and the angular momentum dependence has been included in the potential matrix. A method to solve this equation for the case $N=2$ has been implemented in \cite{coup-paper}. The method relies on an extension of the nodal theorem \cite{nodal} and convergence conditions for the components of the vector wavefunction $u_{j,(n,l)}(r)$. The extension of the nodal theorem states that the number of nodes of the determinant of the matrix $U_{n,l}(r)$, whose columns are $N$ lineal-independent solutions of eq. (\ref{coupled}), is equal to $n$. The procedure then consist in a scan of values $E_{n,l}$; in each step the set of equations (\ref{coupled}) is solved and the nodes of $|U_{n,l}(r)|$ are counted for a large enough interval of $r$. As in the one-dimensional case, if $E_{n,l}$ approached to an eigenvalue the components of $u_{j,(n,l)}$ converge for large $r$. In the solution presented in \cite{coup-paper} the performance-intensive parts of the implementation rely on C functions linked to the (I)Python interface trough SClib.\\
+As an example of the application of the method implemented in \cite{coup-paper}, in fig. (\ref{wfcoupled}) we show the results for the search of the first two eigenvalues and wavefunctions with the matrix potential given by
+\begin{equation}\label{matrixpotential}
+   V_{ij}(r,l) = \begin{pmatrix} \frac{l(l+1)+2}{mr^2}+F_0(r) & -\frac{2\sqrt{l(l+1)}}{mr^2} \\ -\frac{2\sqrt{l(l+1)}}{mr^2} &  \frac{l(l+1)}{mr^2}+F_1(r) \end{pmatrix}
+\end{equation} where 
+\begin{equation}
+    F_i(r)=\ln(a_i+b_ir).
+\end{equation} 
+\begin{figure}[htb]
+    \centering
+\noindent\begin{minipage}[b]{.9\linewidth}
+\includegraphics[width=\textwidth]{coupleda.pdf}
+\end{minipage}
+\vfill
+\noindent\begin{minipage}[b]{.9\linewidth}
+\includegraphics[width=\textwidth]{coupledb.pdf}
+\end{minipage}
+\hfill
+\caption{Solutions for the components of the vector wavefunction $u_{n,l}(r)$ for the first two eigenvalues ($l=1$) of eq. (\ref{coupled}) with the matrix potential given in (\ref{matrixpotential}). We have used $m=1$, $a_0=1$, $b_0=0.5$, $a_1=2$ and $b_1=0.1$. The eigenvalues are $E_{n=0,l=1} = 1.01727\,m$ for fig. (a) and  $E_{n=1,l=1} = 1.18789\,m$ for fig. (b).}
+\label{wfcoupled}
+\end{figure} 
+\\
+\\
+In all the applications described in this section the combination of SClib and the SciPy library within IPython provided a powerful interactive environment based entirely on open source software for solving problems that require a high performance and visualization tools. 
+\section{Application in\\Control Engineering}
+\begin{figure}[htb]
+    \centering
+    {\Large \import{.}{ctrl_sch.tex}}
+    \caption{General scheme of a control system.}
+    \label{fig:ctrl_sch}
+\end{figure}
+
+Most control systems have the structure depicted in Fig \ref{fig:ctrl_sch}.
+$G$ is the plant, it represent the natural phenomena we wish to control.
+We usually describe it using ordinary differential equations:
+\begin{align}
+G:\;\left\{
+        \begin{array}{rl}
+            \frac{dx}{dt} &= f(x,u,d)\\
+            y & = c(x,u,d).
+        \end{array}
+        \right.
+        \label{eq:dxdt}
+\end{align}
+$x$ represents the internal state of the plant and $y$ its output (the
+measurements). $d$ is an independent variable, usually not measurable, named the
+perturbation and $u$ is the actuation: the degree of freedom used by the
+controller $C$ to achieve the control goal $r$. In general the controller is a
+function of the measurements and the reference $r$:
+\begin{align*}
+    C:\;u = \pi(y,r),
+\end{align*}
+but it also may comprise internal states. They are commonly used to reconstruct
+the state $x$ out of the history of $y$ and $u$. The latter systems are called
+state observers and the whole is called feedback control.
+
+We use SClib to put together a simulator for these kind of systems.  Both the
+system derivatives $f(\cdot)$ and the control $\pi(\cdot)$ are written in C and
+are evaluated using SClib. As stated before, the system state represents a
+natural phenomena, therefore it is natural to describe it as a continuous time
+variable, as eq. \eqref{eq:dxdt} suggests. To calculate the system state we
+have to solve this equation. In our simulator this is achieved using numerical
+methods, namely the integration routines available in \verb+scipy.integrate+. On
+the other hand, the controller is usually implemented in a real-time computer,
+which can only sample $y$ at a fixed interval (called $h$): it is a
+discrete-time system.  This means, that the simulator only needs to evaluate
+$\pi(\cdot)$ at given times.
+
+Traditional controllers took the form of linear filters, which could even be
+implemented using analog circuitry. As control techniques and requirements
+advance, more complex controllers are devised. Many modern control techniques
+are based on optimization methods. Time-optimal controllers, for example,
+require the solution of an usually very complex optimization problem, to find a
+control $u$ that leads the system state $x$ towards its target $r$ in minimum
+time \cite{Gruene}:
+\begin{align}\label{feedback}
+u ^*= \pi^*(x)=\argmin_{\pi\in U,\, x\in X}\left\lbrace T_{x}(u)\right\rbrace.
+\end{align}
+Here $T_x(u)$ is the time required to lead $x$ towards its target and $X$ and
+$U$ are the regions where we want $x$ and $u$ to be confined, they constitute
+the constraints for the control problem.  These kind of controllers require
+exhaustive computation and it is natural to implement them in C.
+
+For motivation, we present the results for a minimum-time control strategy for
+a relatively simple and well known problem, the double integrator
+\cite{Fuentes2013}:
+\begin{align}
+    \frac{d}{dt}\left[ 
+        \begin{array}{c}
+            x_0\\
+            x_1
+        \end{array}
+    \right]
+    =
+    \left( 
+    \begin{array}{c}
+        \nicefrac{u}{\tau_0}\\
+        \nicefrac{x_0}{\tau_1}
+    \end{array}
+    \right).
+    \label{eq:di}
+\end{align}
+The relevance of this system lays in that it models many mechanical systems:
+$u$, $x_0$ and $x_1$ may represent acceleration, speed and position, for
+example.
+
+Fig. \ref{fig:toc} presents a minimum time control strategy for this system.
+\begin{figure}[htb]
+    \centering
+    {
+    \import{.}{u.pgf}}
+    \caption{Time optimal control for the double integrator considering
+        $\tau_0=\tau_1=5$, $u\in[-1,1]$, $h=1$ and $x\in[-1, 1]\times\mathbb{R}$.
+}
+    \label{fig:toc}
+\end{figure}
+The form of $\pi(x)$ for this case reveals its non-linear nature.
+
+Fig. \ref{fig:x} presents the trajectory developed by the state using this
+control strategy and random initial conditions.
+\begin{figure}[htb]
+    \centering
+    {
+    \import{.}{x.pgf}}
+    \caption{Time optimal trajectories for the double integrator, with random
+    initial conditions.}
+    \label{fig:x}
+\end{figure}
+
+These results were obtained using SClib and the devised simulator. The example
+code is ready to reproduce them.
+
+The main advantage we obtained from this work was that, since we were using a
+Linux based real time system in our test rig, we could use exactly the same code
+for the simulations and the experimental tests.  Another feature of this work is
+that it effectively replaces Simulink in all of our use cases using only free
+software.\\
+\\
+We hope the applications of SClib scope beyond the ones listed in this paper since we believe it provides a simple but powerful way to boost (I)Python performance.
+
+\section*{Acknowledgments}
+H.M. acknowledges financial support from DAAD and the TUM Graduate School during the realization of this work. 
+
+\begin{thebibliography}{99}
+
+\bibitem{ctypes}
+Heller. The \verb+ctypes+ module.
+\url{https://docs.python.org/3.4/library/ctypes.html#module-ctypes}
+%\cite{Brambilla:2014jmp}
+\bibitem{Brambilla:2014jmp} 
+  N.~Brambilla, S.~Eidelman, P.~Foka, S.~Gardner, A.~S.~Kronfeld, M.~G.~Alford, R.~Alkofer and M.~Butenschoen {\it et al.},
+  %``QCD and Strongly Coupled Gauge Theories: Challenges and Perspectives,''
+  arXiv:1404.3723 [hep-ph].
+  %%CITATION = ARXIV:1404.3723;%%
+  %20 citations counted in INSPIRE as of 19 Aug 2014
+
+%\cite{Eichten:1974af} cornell 1
+\bibitem{Eichten:1974af} 
+  E.~Eichten, K.~Gottfried, T.~Kinoshita, J.~B.~Kogut, K.~D.~Lane and T.~M.~Yan,
+  %``The Spectrum of Charmonium,''
+  Phys.\ Rev.\ Lett.\  {\bf 34}, 369 (1975)
+  [Erratum-ibid.\  {\bf 36}, 1276 (1976)].
+  %%CITATION = PRLTA,34,369;%%
+  %902 citations counted in INSPIRE as of 16 Aug 2014
+
+  %\cite{Eichten:1978tg} cornell 2
+\bibitem{Eichten:1978tg} 
+  E.~Eichten, K.~Gottfried, T.~Kinoshita, K.~D.~Lane and T.~M.~Yan,
+  %``Charmonium: The Model,''
+  Phys.\ Rev.\ D {\bf 17}, 3090 (1978)
+  [Erratum-ibid.\ D {\bf 21}, 313 (1980)].
+  %%CITATION = PHRVA,D17,3090;%%
+  %1054 citations counted in INSPIRE as of 16 Aug 2014
+
+
+  %\cite{Eichten:1979ms} cornell 3
+\bibitem{Eichten:1979ms} 
+  E.~Eichten, K.~Gottfried, T.~Kinoshita, K.~D.~Lane and T.~M.~Yan,
+  %``Charmonium: Comparison with Experiment,''
+  Phys.\ Rev.\ D {\bf 21}, 203 (1980).
+  %%CITATION = PHRVA,D21,203;%%
+  %1391 citations counted in INSPIRE as of 16 Aug 2014
+%\cite{Caswell:1985ui}
+\bibitem{Caswell:1985ui} 
+  W.~E.~Caswell and G.~P.~Lepage,
+  %``Effective Lagrangians for Bound State Problems in QED, QCD, and Other Field Theories,''
+  Phys.\ Lett.\ B {\bf 167}, 437 (1986).
+  %%CITATION = PHLTA,B167,437;%%
+  %787 citations counted in INSPIRE as of 19 Aug 2014
+
+  %\cite{Bodwin:1994jh}
+\bibitem{Bodwin:1994jh} 
+  G.~T.~Bodwin, E.~Braaten and G.~P.~Lepage,
+  %``Rigorous QCD analysis of inclusive annihilation and production of heavy quarkonium,''
+  Phys.\ Rev.\ D {\bf 51}, 1125 (1995)
+  [Erratum-ibid.\ D {\bf 55}, 5853 (1997)]
+  [hep-ph/9407339].
+  %%CITATION = HEP-PH/9407339;%%
+  %1645 citations counted in INSPIRE as of 19 Aug 2014
+
+  %\cite{Brambilla:2004jw} review EFT
+\bibitem{Brambilla:2004jw} 
+  N.~Brambilla, A.~Pineda, J.~Soto and A.~Vairo,
+  %``Effective field theories for heavy quarkonium,''
+  Rev.\ Mod.\ Phys.\  {\bf 77}, 1423 (2005)
+  [hep-ph/0410047].
+  %%CITATION = HEP-PH/0410047;%%
+  %283 citations counted in INSPIRE as of 16 Aug 2014
+
+%\cite{Brambilla:1999xf} pNRQCD 1
+\bibitem{Brambilla:1999xf} 
+  N.~Brambilla, A.~Pineda, J.~Soto and A.~Vairo,
+  %``Potential NRQCD: An Effective theory for heavy quarkonium,''
+  Nucl.\ Phys.\ B {\bf 566}, 275 (2000)
+  [hep-ph/9907240].
+  %%CITATION = HEP-PH/9907240;%%
+  %386 citations counted in INSPIRE as of 16 Aug 2014
+
+%\cite{Brambilla:2000gk} pNRQCD 2 (quark antiquark potential 1)
+\bibitem{Brambilla:2000gk} 
+  N.~Brambilla, A.~Pineda, J.~Soto and A.~Vairo,
+  %``The QCD potential at O(1/m),''
+  Phys.\ Rev.\ D {\bf 63}, 014023 (2001)
+  [hep-ph/0002250].
+  %%CITATION = HEP-PH/0002250;%%
+  %115 citations counted in INSPIRE as of 16 Aug 2014
+
+
+%\cite{Pineda:2000sz} pNRQCD 3 (quark antiquark potential 2)
+\bibitem{Pineda:2000sz} 
+  A.~Pineda and A.~Vairo,
+  %``The QCD potential at O (1 / $m^{2)}$ : Complete spin dependent and spin independent result,''
+  Phys.\ Rev.\ D {\bf 63}, 054007 (2001)
+  [Erratum-ibid.\ D {\bf 64}, 039902 (2001)]
+  [hep-ph/0009145].
+  %%CITATION = HEP-PH/0009145;%%
+  %106 citations counted in INSPIRE as of 16 Aug 2014
+
+
+\bibitem{schroe1} %old schrodinger
+P. Falkensteiner and H. Grosse and F. Sch\"oberl and P. Hertel
+Comput. Phys. Comm. {\bf 34}, 287 (1985)
+
+%\cite{Lucha:1998xc} mathematica schroedinger
+\bibitem{Lucha:1998xc} 
+  W.~Lucha and F.~F.~Schoberl,
+  %``Solving the Schrodinger equation for bound states with Mathematica 3.0,''
+  Int.\ J.\ Mod.\ Phys.\ C {\bf 10}, 607 (1999)
+  [hep-ph/9811453].
+  %%CITATION = HEP-PH/9811453;%%
+  %54 citations counted in INSPIRE as of 16 Aug 2014
+
+\bibitem{mathematica9}
+Wolfram Research, Inc.
+Mathematica Version 9.0 (2012)
+
+%\cite{Brambilla:2014eaa} string-paper
+\bibitem{Brambilla:2014eaa} 
+  N.~Brambilla, M.~Groher, H.~E.~Martinez and A.~Vairo,
+  %``Effective string theory and the long-range relativistic corrections to the quark-antiquark potential,''
+  arXiv:1407.7761 [hep-ph].
+  %%CITATION = ARXIV:1407.7761;%%
+
+\bibitem{phen-paper}
+N.~Brambilla, H.~E.~Martinez and A.~Vairo,
+  TUM-EFT 40/13, In preparation.
+
+\bibitem{scipy}
+Eric Jones and Travis Oliphant and Pearu Peterson and others
+\url{http://www.scipy.org/} (2001--)
+
+\bibitem{numpy}
+    St\'efan van der Walt, S. Chris Colbert and Gaël Varoquaux. The NumPy Array: A Structure for Efficient Numerical Computation, Computing in Science \& Engineering, {\bf 13}, 22-30 (2011)
+
+\bibitem{coup-paper}
+  M. Berwein and H.~E.~Martinez,
+  TUM-EFT 48/14, In preparation.
+
+%\cite{Nodal} nodal theorem for coupled equations
+\bibitem{nodal} 
+  H.~Amann and P.~Quittner,
+  %``A nodal theorem for coupled systems of Schr\"odinger equations and the number of bound states,''
+  Journal of Mathematical Physics {\bf 36}, 4553 (1995),
+  doi:10.1063/1.530907.
+
+\bibitem{matplotlib}
+John D. Hunter. Matplotlib: A 2D Graphics Environment, Computing in Science \& Engineering, {\bf 9}, 90-95 (2007)	
+
+\bibitem{ipython}
+    Fernando P\'erez and Brian E. Granger. IPython: A System for Interactive Scientific Computing, Computing in Science \& Engineering, {\bf 9}, 21-29 (2007)
+
+\bibitem{Gruene}
+L.~Gr\"{u}ne and J.~Pannek, \emph{{ Nonlinear Model Predictive Control: Theory
+  and Algorithms }}.\hskip 1em plus 0.5em minus 0.4em\relax Springer-Verlag,
+  2011.
+
+\bibitem{Fuentes2013}
+E.~Fuentes, D.~Kalise, J.~Rodriguez, and R.~Kennel, ``Cascade-free predictive
+  speed control for electrical drives,'' \emph{Industrial Electronics, IEEE
+  Transactions on}, vol.~PP, no.~99, pp. 1--1, 2013.
+\end{thebibliography}
+
+\end{document}
+

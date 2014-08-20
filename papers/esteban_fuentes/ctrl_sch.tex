@@ -1,0 +1,58 @@
+%\documentclass{standalone}
+%\usepackage{tikz}
+%\usetikzlibrary{positioning,calc,fit,backgrounds}
+%\begin{document}
+
+\begin{tikzpicture}[]
+    \newcommand*{\msep}{-0.15}
+    \newcommand*{\hsep}{0.5}
+    \newcommand*{\vsep}{0.5}
+
+    %\newcommand*{\msep}{-0.8}
+    %\newcommand*{\hsep}{1.0}
+    %\newcommand*{\vsep}{1.0}
+    %\tikzset{every path/.style={line width=3 pt}}
+
+    \def\GCsep{0.5*\hsep}
+    \def\vmedio{\GCsep*0.5}
+    \def\hmedio{\hsep*0.5}
+    \tikzstyle{block} = [draw,rectangle]
+    \tikzstyle{io} = [coordinate]
+
+    \node[block] (G) {$G$};
+    \node[io, above left=\msep and \hsep of G] (d) {};
+    \node[io, right=\hsep of d] (dt) {};
+    \node[io, above right=\msep and \hsep of G] (Go) {};
+    \node[io, left=\hsep of Go] (Got) {};
+    \draw [->] (d) node[left]{$d$} -- (dt);
+    \draw [->] (Got) -- (Go) node[right]{$G_o$};
+
+    \node[block, below=\GCsep of G] (C) {$C$};
+    \node[io, below left=\msep and \hsep of C] (r) {};
+    \node[io, right=\hsep of r] (rt) {};
+    \node[io, below right=\msep and \hsep of C] (Co) {};
+    \node[io, left=\hsep of Co] (Cot) {};
+    \draw [->] (r) node[left]{$r$} -- (rt);
+    \draw [->] (Cot) -- (Co) node[right]{$C_o$};
+
+    \node[io, below right=\vmedio and \hmedio of G] (y) {y};
+    \coordinate (D) at ($2*(G.east)-(dt)$);
+    \draw [-] (D -| Got) -| (y) node[right]{$y$};
+
+    \coordinate (D) at ($2*(C.east)-(Cot)$);
+    \draw [->] (y) |- (D -| Cot);
+
+    \node[io, below left=\vmedio and \hmedio of G] (u) {u};
+    \coordinate (D) at ($2*(C.west)-(rt)$);
+    \draw [-] (D -| rt) -| (u) node[left]{$u$};
+
+    \coordinate (D) at ($2*(G.west)-(dt)$);
+    \draw [->] (u) |- (D -| dt);
+
+    \begin{pgfonlayer}{background}
+        \node [fill=white,fit=(current bounding box.north west) (current bounding box.south east)] {};
+    \end{pgfonlayer}
+
+\usetikzlibrary{calc}
+\end{tikzpicture}
+%\end{document}
