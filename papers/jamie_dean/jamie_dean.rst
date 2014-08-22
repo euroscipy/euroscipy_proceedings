@@ -225,7 +225,7 @@ PCA was used for data visualisation. Figure :ref:`pcaVarianceExplained` displays
 
   Data projection into the first two principal components space. Red points represent patients who experienced severe dysphagia, blue points represent patients who did not experience severe dysphagia. :label:`pca`
 
-The following features were selected for inclusion in the final model: V50, V65, V70 and age. The model hyper parameters chosen were: RLR regularisation constant (C) = 1.0; RLR threshold = 0.4; RLR scaling = 0.75; SVC regularisation constant (C) = 100.0; SVC kernel = radial basis function; SVC kernel hyper parameter (gamma) = 1.0. During model training the area under the ROC curve was determined to be 0.54 +/- 0.23 and when the model was validated on the independent dataset it was 0.54. Figure :ref:`roc` shows the ROC curve for the independent validation.
+The model hyper parameters chosen were: RLR regularisation constant (C) = 1.0; RLR threshold = 0.4; RLR scaling = 0.75; SVC regularisation constant (C) = 100.0; SVC kernel = radial basis function; SVC kernel hyper parameter (gamma) = 1.0. During model training the area under the ROC curve was determined to be 0.54 +/- 0.23 and when the model was validated on the independent dataset it was 0.54. Figure :ref:`roc` shows the ROC curve for the independent validation.
 
 .. figure:: roc.png
 
