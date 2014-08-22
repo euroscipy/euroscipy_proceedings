@@ -7,13 +7,13 @@
 :institution: European Bioinformatics Institute (EMBL-EBI)
 
 
---------------------------------------------------------
-Diving into Human Cells with CellNOpt and BioServices
---------------------------------------------------------
+----------------------------------------------------------------------
+Using Python to Dive into Human Cells with CellNOpt and BioServices
+----------------------------------------------------------------------
 
 .. class:: abstract
 
-    Systems biology is an inter-disciplinary field that studies systems of biological components at different scales, which may be molecules, cells or entire species. In particular, systems biology is used for understanding functional deregulations within human cells (e.g., cancers). In this context, we present several python packages linked to **CellNOptR** (R package), which is used to build predictive logic models of signaling networks by training networks (derived from literature) to signaling (phospho-proteomic) data. The first package (**cellnopt.wrapper**) is a wrapper based on RPY2 that allows a full access to CellNOptR functionalities within Python. The second one (**cellnopt.core**) was designed to ease the manipulation and visualisation of data structures used in CellNOptR, which was achieved by using Pandas, NetworkX and matplotlib. Systems biology also makes extensive use of web resources and services. We will give an overview and status of **BioServices**, which allows one to access programmatically to web resources used in fife science and how it can be combined with CellNOptR.
+    Systems biology is an inter-disciplinary field that studies systems of biological components at different scales, which may be molecules, cells or entire organism. In particular, systems biology method are applied to understan functional deregulations within human cells (e.g., cancers). In this context, we present several python packages linked to **CellNOptR** (R package), which is used to build predictive logic models of signalling networks by training networks (derived from literature) to signalling (phospho-proteomic) data. The first package (**cellnopt.wrapper**) is a wrapper based on RPY2 that allows a full access to CellNOptR functionalities within Python. The second one (**cellnopt.core**) was designed to ease the manipulation and visualisation of data structures used in CellNOptR, which was achieved by using Pandas, NetworkX and matplotlib. Systems biology also makes extensive use of web resources and services. We will give an overview and status of **BioServices**, which allows one to access programmatically to web resources used in fife science and how it can be combined with CellNOptR.
 
 
 
@@ -28,11 +28,16 @@ Diving into Human Cells with CellNOpt and BioServices
 Context and Introduction
 --------------------------
 
-Systems biology studies systems of biological components at different scales, which may be molecules, cells or entire species. It is a recent term that emerged in the 2000s [IDE01]_, [KIT02]_ to describe an inter-disciplinary research field in biology. In human cells, which will be considered in this paper, systems biology helps to understand functional deregulations inside the cells that are induced either by gene mutations (in the  nucleus) or extracellular signalling. Such deregulations may lead to the apparition of cancers or other diseases.
+Systems biology studies systems of biological components at different scales, which may be molecules, cells or entire organism. It is a recent term that emerged in the 2000s [IDE01]_, [KIT02]_ to describe an inter-disciplinary research field in biology. In human cells, which will be considered in this paper, systems biology helps to understand functional deregulations inside the cells that are induced either by gene mutations (in the  nucleus) or extracellular signalling. Such deregulations may lead to the apparition of cancers or other diseases.
 
-Cells are constantly stimulated by extracellular signalling. Receptors on the cell surface may be activated by those signals thereby triggering a chain of events inside the cell (signal transduction). These chain of events also called **signalling pathways**. Depending on the response, the cell behaviour may be altered (shape, gene expression, etc.). These pathways are dense network of interactions between proteins that propagate the external signals down to the gene expression level (see Figure :ref:`fig:overview`). For simplicity, relationship between proteins are considered to be either activation or inhibition. Besides, complex of proteins may also be formed, which means that several type of proteins may be required to activate or inhibit another protein. 
+Cells are constantly stimulated by extracellular signalling. Receptors on the cell surface may be activated by those signals thereby triggering a chain of events inside the cell (signal transduction). These chain of events also called **signalling pathways**. Depending on the response, the cell behaviour may be altered (shape, gene expression, etc.). These pathways are connected to dense network of interactions between proteins that propagate the external signals down to the gene expression level (see Figure :ref:`fig:overview`). For simplicity, relationship between proteins are often considered to be either activation or inhibition. Besides, complex of proteins may also be formed, which means that several type of proteins may be required to activate or inhibit another protein. Protein interaction networks are complex:
 
-A classical example of pathway is the so-called P53 pathway (see Figure :ref:`fig:overview`). In a normal cell the P53 protein is inactive (inhibited by the MDM2 protein). However, upon DNA damage or other stresses, various pathways will lead to the dissociation of this P53-MDM2 complex, thereby activating P53. Consequently, P53 will either prevent further cell growth to allow a DNA repair or initiate an apoptosis (cell death) to discard the damaged cell. A deregulation of the P53 pathway would results in an uncontrolled cell proliferation, such as cancer.
+- the number of protein types is large (about 20,000 in human cells)
+- signalling pathways are context specific and cell-type specific ; there are about 200 human cell types (e.g., blood, liver)
+- proteins may have different dynamic (from a few minutes to several hours).
+
+
+A classical pathway example is the so-called P53 pathway (see Figure :ref:`fig:overview`). In a normal cell the P53 protein is inactive (inhibited by the MDM2 protein). However, upon DNA damage or other stresses, various pathways will lead to the dissociation of this P53-MDM2 complex, thereby activating P53. Consequently, P53 will either prevent further cell growth to allow a DNA repair or initiate an apoptosis (cell death) to discard the damaged cell. A deregulation of the P53 pathway would results in an uncontrolled cell proliferation, such as cancer.
 
 
 .. figure:: signal_transduction.png
@@ -40,18 +45,11 @@ A classical example of pathway is the so-called P53 pathway (see Figure :ref:`fi
 
     Overview of signal transduction pathways. The cell boundary (thick orange line) has receptors to external signals (e.g., survival factors IGF1). These signals propagate inside the cell via complex networks of protein interactions (e.g., activation and inhibition) down to the gene expression level inside the cell nucleus (red thick line). Image source: `wikipedia <http://en.wikipedia.org/wiki/File:Signal_transduction_v1.png>`_.     :label:`fig:overview`
 
-In order to predict novel therapeutic solutions, it is essential to understand the behaviour of signalling pathways. Discrete logic modelling provides a framework to link signalling pathways to extracellular signals and drug effects [SAEZ]_.  Experimental data can be obtained by measuring protein responses to combination of drug (altering normal behaviour of a protein) and stimulation. There are different type of experiments from mass-spectrometry (many proteins but few perturbations) to antibody-based experiments (few proteins but more time points and perturbations).
-
-Yet, building logical models in the context of signalling pathways is challenging. Indeed, networks formed by protein interactions are complex:
-
-- the number of protein types is large (about 20,000 in human cells)
-- signalling pathways are context specific and cell-type specific ; there are about 200 human cell types (e.g., blood, liver)
-- proteins may have different dynamic (from a few minutes to several hours)
+In order to predict novel therapeutic solutions, it is essential to understand the behaviour of signalling pathways. Discrete logic modelling provides a framework to link signalling pathways to extracellular signals and drug effects [SAEZ]_.  Experimental data can be obtained by measuring protein responses to combination of drugs (altering normal behaviour of a protein) and stimulations. There are different type of experiments from mass-spectrometry (many proteins but few perturbations) to antibody-based experiments (few proteins but more time points and perturbations).
 
 
 The software CellNOptR [CNO12]_ provides tools to perform logic modelisation at the protein level using  network of protein interactions and perturbation data sets. The core of the software consist in (1)
-transforming protein network into logical networks (2) simulate the flow of
-signalling in the network using for instance a boolean formalism (3) comparing real biological data with the simulated data. The software is essentially  an optimisation problem, which can be solved by various algorithms (e.g., genetic algorithm). 
+transforming protein network into logical networks; (2) simulate the flow of signalling in the network using for instance a boolean formalism; (3) comparing real biological data with the simulated data. The software is essentially  an optimisation problem, which can be solved by various algorithms (e.g., genetic algorithm). 
 
 Although CellNOpt is originally written with the R language, which may seem
 off topic, we will focus on two python packages that are related to it.
@@ -59,7 +57,7 @@ The first one called **cellnopt.wrapper** is a Python wrapper that have been wri
 
 The second python package that we will present is **cellnopt.core**. It combines several libraries (e.g., Pandas [MCK10]_, NetworkX [ARI08]_ and Matplotlib [HUN07]_) to provide tools dedicated to the manipulation of network of proteins and perturbation data sets that are the input of CellNOptR packages.
 
-Another important of systems biology is be able to access easily to online resources and databases.
+Another important need of systems biology is be able to access easily to online resources and databases.
 In the context of logical modeling, resources of importance are signalling pathways (e.g., Wiki Pathway [WP09]_) and retrieval of information about proteins (e.g., UniProt [UNI14]_). In order to help us in this task, we developed **BioServices** that ease programmatic access to web services in Python. It was then extended to retrieve information from other web services so as to cover the spectrum of bioinformatics resources (e.g., genomics, sequence analysis) [COK13]_.
 
 
@@ -73,9 +71,9 @@ CellNOpt
 
 CellNOptR [CNO12]_ is a R package used for creating logic-based models of signal
 transduction networks using different logic formalisms but we consider boolean logic only here below. 
-Other formalisms including differential equation formalism are covered in [MAC12]_.
+Other formalisms including differential equation formalism are covered in [MAC12]_ , [CNO12]_.
 
-In a nutshell, CellNOptR uses information on signaling pathways encoded as a Prior Knowledge Network (PKN), and trains it against high-throughput biochemical data to create cell-specific models. The training is performed with optimisation such as genetic algorithms. 
+In a nutshell, CellNOptR uses information on signalling pathways encoded as a Prior Knowledge Network (PKN), and trains it against high-throughput biochemical data to create cell-specific models. The training is performed with optimisation such as genetic algorithms. 
 
 For more details see also the `www.cellnopt.org <www.cellnopt.org>`_ website.
 
@@ -106,7 +104,7 @@ In the SIF file provided above, only OR relationships are encoded: the protein *
 DATA
 ^^^^^^^^
 
-The data used in CellNOpt is made of measurements of protein responses to perturbations, which is a combination of stimuli (on cell receptor) and inhibition (caused by a drug). These Measurements are stored in a format called MIDAS [MIDAS]_ , which is a CSV file format. Figure :ref:`figmidas` gives an example of a MIDAS data file together with further explanations.
+The data used in CellNOpt is made of measurements of protein responses to perturbations, which is a combination of stimuli (on cell receptor) and inhibition (caused e.g., by a drug). These Measurements are stored in a format called MIDAS [MIDAS]_ , which is a CSV file format. Figure :ref:`figmidas` gives an example of a MIDAS data file together with further explanations.
 
 
 Training
@@ -140,7 +138,7 @@ cellnopt.wrapper
 CellNOptR provides a set of R packages available on BioConductor website, which guarantees a minimal quality. Packages are indeed multi-platform and tested regularly. However, the functional approach that has been chosen limits somehow the
 user experience. In order to be able to use the Python language, we therefore decided to provide also a python wrapper. To do so, we used the RPY2 package. The cost for the implementation is reasonable: considering that the R packages in CellNOptR relies on about 16,000 lines of code (in R) and another 4,000 in C, the final python wrappers required  2000 lines of code including the documentation.
 
-In addition to the wrappers, we also implemented a set of classes (or for each of the logical formalism) that encapsulate the R functions. The results is that **cellnopt.wrapper** provides a full access to the entire CellNOptR packages with an objected oriented approach.
+In addition to the wrappers, we also implemented a set of classes (or for each of the logical formalism) that encapsulate the R functions. The results is that **cellnopt.wrapper** (introduced in [CNO12]_) provides a full access to the entire CellNOptR packages with an objected oriented approach.
 
 A simple R script written with CellNOptR functions (to find the optimal model that fit the data) would look like:
 
@@ -182,7 +180,7 @@ The two code snippets are equivalent. The main difference appears to be that the
     c = CNOGraph(pkn, data)
     c.plot()
 
-Note, that **cellnopt.wrapper** is designed to provide a full access to CellNOptR functionalities, only. Yet, for end-users, it is often required to manipulate the PKN or MIDAS data structures. This was the main motivation to design **cellnopt.core** to complement CellNOptR.
+Note that **cellnopt.wrapper** is designed to provide a full access to CellNOptR functionalities only. Yet, for end-users, it is often required to manipulate the PKN or MIDAS data structures. This was the main motivation to design **cellnopt.core** to complement CellNOptR.
 
 cellnopt.core
 ~~~~~~~~~~~~~
@@ -190,7 +188,7 @@ cellnopt.core
 PKN
 ^^^^^^^
 
-The **cellnopt.core** package provides lots of tools to manipulate and visualise networks and MIDAS files. It is implemented in Python and makes use of standard scientific libraries including Pandas, Matplotlib and NetworkX.
+The **cellnopt.core** package provides many tools to manipulate and visualise networks and MIDAS files. It is implemented in Python and makes use of standard scientific libraries including Pandas, Matplotlib and NetworkX.
 
 
 .. figure:: cellnopt_preprocess.png
@@ -284,7 +282,7 @@ The **XMIDAS** data structure contains 2 dataframes. The first one stores the ex
     when there is no stimuli and no inhibition)
     :label:`midascut`
 
-One systematic issue when data is acquired is that it is not in MIDAS format so codec are required from one non standard format to a complex data structure. Instead of rewriting codes, we can think about the data as a set measurement defined by the list of stimuli and inhibitors, a time point and a value. Splitting the data into a set of measurements, we can then write one single codec that transforms this list of measurements into MIDAS data structure. Here is an example:
+One systematic issue when data is acquired is that it is not in MIDAS format so codec are required from one non-standard format to a complex data structure. Instead of rewriting codes, we can think about the data as a set measurement defined by the list of stimuli and inhibitors, a time point and a value. Splitting the data into a set of measurements, we can then write one single codec that transforms this list of measurements into MIDAS data structure. Here is an example:
 
 .. code-block:: python
 
@@ -309,7 +307,9 @@ discussion and future directions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to be able to call the CellNOptR functionalities within Python, we decided to use RPy2. 
-There were 16,000 lines of R code and 4,000 lines of C code, that could not be re-used within Python without being alterd. Yet, the C code being called inside R, this is really 16,000 lines of R code that needed to be considerd. The wrapping itself what actually fairly straighforward following RPy2 documentation. However, we had to take into account some considerations. First, we did not want to  rewrite the documentation. The simplest solution we found was to implemenet a decorator (*Rsetdoc*) that appends the R documetation to the python docstring. Another issue was that we found non-trivial for the user to figure out where to access to the R objects inside the python function. Consequently, we wrote another decorator (*Rnames2attributes*) that transforms the R objects into read-only attribute. So, our wrapping could be as simple as:
+There are 16,000 lines of R code in CellNOptR and 4,000 lines of C code, that could not be re-used within Python without being alterd. 
+However, the C code is called by the R functions and therefore do not need any
+wrappig functions. Even though the wrapping could be written following RPy2 documentation, however, we had to take into account some considerations. First, we did not want to  rewrite the documentation. The simplest solution we found was to implement a *decorator* (called *Rsetdoc*) that appends the R documentation to the python docstring. Another issue was that we found non-trivial for the user to figure out where to access to the R objects inside the python function. Consequently, we wrote another decorator (*Rnames2attributes*) that transforms the R objects into read-only attribute. So, our wrapping could be as simple as:
 
 .. code-block:: python
 
@@ -328,7 +328,7 @@ With a straitghtforward usage, especially for those familiar with the R commands
     [-1.000000, 0.000000, 0.000000, ...
 
 Obviously a wrapper has a cost both from a development point of view and computation point of view. 
-From the development point of view, we have to keep in mind that the wrapper and the R code have to be closely managed either by the same developer or team of developers so that the two codes are maintained and updated synchronously. The second issue is the that a high-level interface such as RPy2 may have a cost on performance. This is not apparent of a simple script that calls only a few functions, but may be obvious when calling a function a million times. What would you do that ? To call an objective functions like the ones used in CellNOptR...
+From the development point of view, we have to keep in mind that the wrapper and the R code have to be closely managed either by the same developer or team of developers so that the two codes are maintained and updated synchronously. The second issue is the that a high-level interface such as RPy2 may have a cost on performance. This is not apparent of a simple script that calls only a few functions, but may be obvious when calling a function a million times (e.g., to perform an optimisation of the  in CellNOptR objective functions).
 
 An alternative to RPy2 is to use subprocess Python module. This solution also works well if a R pipeline is defined and can be called routinely but overall the RPy2 wrapping provides a way to access to a R package easily.
 
@@ -392,13 +392,13 @@ We can then retrieve a particulat signalling pathway and look at it (see Figure 
    :align: center
    :scale: 50%
 
-   Image obtained from WikiPathay showing a signalling pathway that contains the mTOR protein.
+   Image obtained from WikiPathway showing a signalling pathway that contains the mTOR protein.
    :label:`figwiki`
 
 Combining BioServices with standard scientific tools
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-BioServices does not depend on scientific librairies such as Pandas so as to limit its dependencies. In fact, there is one method in BioServices that depends on Pandas. However, its import is local and is therefore not strictly speaking required to install BioServices. In the next example, it appears that we will use that particular method. UniProt service [UNI14]_ is useful in CellNOpt for mapping and protein identification. Let us use it to retrieve information about proteins (human) and to extract the sequence length of those proteins. We will then study its distribution. Assuming you have a list of valid identifiers, just type:
+BioServices does not depend on scientific librairies such as Pandas so as to limit its dependencies. However, there are a few experimental methods in BioServices that uses Pandas (the  *import* being local, Pandas is required to install BioServices). In the next example, we will use on of those experimental method. UniProt service [UNI14]_ is useful in CellNOpt for mapping and protein identification. Let us use it to retrieve information about proteins (human) and to extract the sequence length of those proteins. We will then study its distribution. Assuming you have a list of valid identifiers, just type:
 
 .. code-block:: python
     :linenos:
@@ -408,7 +408,7 @@ BioServices does not depend on scientific librairies such as Pandas so as to lim
     u = UniProt()
     u.get_df(entries)
 
-Note that the method *get_df* is the function that use Pandas and it returns a dataframe. One of the column of the data contains the sequence length. We can then use a simple module called **fitter** (available on PyPi) that fits the distribution to SciPy distributions to figure out the best distribution that fits the data:
+Note that the method *get_df* is the method that uses Pandas; it returns a dataframe. One of the column of the data contains the sequence length. We can then use a simple package (called **fitter**; available on PyPi) that fits the length distribution to SciPy distributions to figure out the best distribution that fits the data:
 
 .. code-block:: python
     :linenos:
@@ -453,7 +453,7 @@ bioinformatics web services within a single Python library. See Table :ref:`tabb
     |               | WSDbfetch                                            |
     +---------------+------------------------------------------------------+
 
-The request used in the previous example last actually a very long time (about 20 minutes depending on the network). There are faster way to obtain such information. Downloading the database or flat files for instance. Yet, one need to consider that such files are large (500Mb for UniProt) and that they make be updated regularly. You may also want to use several services, which means several flat files. If you provide a pipeline, do you want to provide a 500Mb file as well. The answer may be yes or no depending on your needs. In BioServices, the idea is that you do not necesseraly want to download flat files and are willing to wait for the requests. Yet, there are improvments to be made to make BioServices faster. Future directions of BioServices are two-folds. One is to provide new web services depending on the user requests and/or contributions. The other aspect is to update the core part of BioServices so as
+The request used in the previous example last actually a very long time (about 20 minutes depending on the network). There are faster way to obtain such information. Downloading the database or flat files for instance. Yet, one need to consider that such files are large (500Mb for UniProt) and that they make be updated regularly. You may also want to use several services, which means several flat files. If you provide a pipeline, do you want to provide a 500Mb file as well ? The answer may be yes or no depending on your needs. In BioServices, the idea is that you do not necesseraly want to download flat files and are willing to wait for the requests. Yet, there are improvements to be made to make BioServices faster. Future directions of BioServices are two-fold. One is to provide new web services depending on the user requests and/or contributions. The other aspect is to update the core part of BioServices so as
 
 - to use the requests package, which seems to be currently faster than standard modules (e.g., urllib2)
 - use buffering or caching to save requests and their results to speed up repetitive requests.
@@ -464,7 +464,9 @@ The request used in the previous example last actually a very long time (about 2
 Conclusions
 -------------------------------------
 
-In this paper, we presented **cellnopt.wrapper** that provides a Python interface to CellNOptR software. We discussed how and why RPy2 was used to develop cellnopt.wrapper pacakge. We then presented **cellnopt.core** that provides a set of tools to manipulate input data structures requires by CellNOptR (MIDAS and SIF format amongsts others) Visualisation tools are also provided and the package is linked to Pandas, NetworkX and Matplotlib librairies making user and developer experience easier and more dynamic.
+In this paper, we presented **cellnopt.wrapper** that provides a Python interface to CellNOptR software. We discussed how and why RPy2 was used to develop cellnopt.wrapper pacakge. We then presented **cellnopt.core** that provides a set of tools to manipulate input data structures requires by CellNOptR (MIDAS and SIF formats amongst others). Visualisation tools are also provided and the package is linked to Pandas, NetworkX and Matplotlib librairies making user and developer experience easier and more dynamic.
+
+Python is also used to connect CellNOpt to Answer Set Programming (with the Caspo package [ASP13]) and to heuristic optimisation methods (EGE14).
 
 We also briefly introduced BioServices Python package that allows a programmatic access to web services used in life sciences. The main interests of BioServices are (i) to hide technical aspects related to web resource access (GET/POST requests) so as to foster the integration of new web services (ii) to put within a single framework many web services. 
 
