@@ -28,7 +28,7 @@ Predictive Modelling of Toxicity Resulting from Radiotherapy Treatments of Head 
 
    **Materials and methods:** The 3D dose distributions delivered to the pharyngeal mucosa of 249 patients treated as part of clinical trials were reconstructed. Pydicom was used to extract DICOM data (the standard file formats for medical imaging and radiotherapy data). NumPy and SciPy were used to manipulate the data to generate 3D maps of the dose distribution delivered to the pharyngeal mucosa. Multivariate predictive modelling of severe dysphagia, including descriptions of the dose distribution and relevant clinical factors, was performed using Pandas and SciKit-Learn. Matplotlib and Mayavi were used for 2D and 3D data visualisation.
 
-   **Results:** Python was successfully used to manipulate radiotherapy data and calculate metrics describing the radiotherapy dose distribution. A support vector classification model, with feature selection using randomised logistic regression, to predict radiation-induced severe dysphagia, was trained. When this model was independently validated, the area under the receiver operating characteristic curve was ….
+   **Results:** Python was successfully used to manipulate radiotherapy data and calculate metrics describing the radiotherapy dose distribution. A support vector classification model, with feature selection using randomised logistic regression, to predict radiation-induced severe dysphagia, was trained. When this model was independently validated, the area under the receiver operating characteristic curve was 0.54.
 
    **Conclusions:** A combination of Python modules has been used to generate 3D maps of the dose distribution delivered to the pharyngeal mucosa and characterise the dose distribution. Classification models are being developed, using machine learning approaches, to predict severe dysphagia resulting from radiotherapy for head and neck cancer. It is hoped that this will lead to further improvements in radiotherapy treatments with fewer patients experiencing severe dysphagia than the current technique.
 
@@ -141,7 +141,7 @@ The model training pipeline consisted of data centering about 0 and scaling to u
        ('modelFitting’, modelFitting)]
    classifier = Pipeline(estimators)
 
-Since the toxicity outcomes were known supervised learning techniques could be utilised. There is no obvious solution to the problem of collinearity between the variables. Discriminant analysis techniques, such as linear discriminant analysis and quadratic discriminant analysis, cannot robustly handle correlated variables, making them inappropriate. One potential strategy is to remove the collinearity by performing PCA. However, this results in a model with low interpretability and so would not allow the causal features to be determined. An alternative approach is to initially remove features using interpretable dimensionality reduction techniques, for example, univariate feature selection and recursive feature elimination and then remove remaining correlated variables. These approaches, however, may be unstable and suffer from reduced generalisability as different features may be selected with different datasets. Randomised logistic regression [Meinshausen]_ was chosen for feature selection in order to maximise the stability of the selected features. Support vector classification (SVC) with linear and radial basis function kernels [Cortes]_ was employed for model fitting as this technique is capable of producing high performance, complex (incorporating non-linearity and interactions), yet interpretable, models. A cross-validated grid search, with stratified 5-fold cross-validation, was used over the whole pipeline to tune the hyper parameters of the models used for feature selection and model fitting on the reduced set of features:
+Since the toxicity outcomes were known supervised learning techniques could be utilised. There is no obvious solution to the problem of collinearity between the variables. Discriminant analysis techniques, such as linear discriminant analysis and quadratic discriminant analysis, cannot robustly handle correlated variables, making them inappropriate. One potential strategy is to remove the collinearity by performing PCA. However, this results in a model with low interpretability and so would not allow the causal features to be determined. An alternative approach is to initially remove features using interpretable dimensionality reduction techniques, for example, univariate feature selection and recursive feature elimination and then remove remaining correlated variables. These approaches, however, may be unstable and suffer from reduced generalisability as different features may be selected with different datasets. Randomised logistic regression (RLR) [Meinshausen]_ was chosen for feature selection in order to maximise the stability of the selected features. Support vector classification (SVC) with linear and radial basis function kernels [Cortes]_ was employed for model fitting as this technique is capable of producing high performance, complex (incorporating non-linearity and interactions), yet interpretable, models. A cross-validated grid search, with stratified 5-fold cross-validation, was used over the whole pipeline to tune the hyper parameters of the models used for feature selection and model fitting on the reduced set of features:
 
 .. code-block:: python
 
@@ -173,7 +173,7 @@ Since the toxicity outcomes were known supervised learning techniques could be u
    print 'Best Parameters:', bestParameters
    print 'Best Score:', bestScore
 
-To obtain an unbiased estimate of the model prediction score on new data a nested 5-fold cross-validation was carried out, with area under the receiver operating characteristic curve used as the scoring function:
+To obtain an unbiased estimate of the model prediction score on new data a nested 5-fold cross-validation was carried out, with area under the receiver operating characteristic (ROC) curve used as the scoring function:
 
 .. code-block:: python
 
@@ -225,7 +225,11 @@ PCA was used for data visualisation. Figure :ref:`pcaVarianceExplained` displays
 
   Data projection into the first two principal components space. Red points represent patients who experienced severe dysphagia, blue points represent patients who did not experience severe dysphagia. :label:`pca`
 
-The following features were selected for inclusion in the final model: V50, V65, V70 and age. The model hyper parameters chosen were: SVC regularisation constant (C) = 10.0; SVC kernel = radial basis function; SVC kernel hyper parameter (gamma) = 1.0. During model training the area under the ROC curve was determined to be … and when the model was validated on the independent dataset it was …. Figure :ref:`roc` shows the ROC curve for the independent validation.
+The following features were selected for inclusion in the final model: V50, V65, V70 and age. The model hyper parameters chosen were: RLR regularisation constant (C) = 1.0; RLR threshold = 0.4; RLR scaling = 0.75; SVC regularisation constant (C) = 100.0; SVC kernel = radial basis function; SVC kernel hyper parameter (gamma) = 1.0. During model training the area under the ROC curve was determined to be 0.54 +/- 0.23 and when the model was validated on the independent dataset it was 0.54. Figure :ref:`roc` shows the ROC curve for the independent validation.
+
+.. figure:: roc.png
+
+   ROC curve for the independent validation. :label:`roc`
 
 Discussion
 ----------
@@ -234,18 +238,20 @@ Python was deemed to be a well suited platform for achieving our aims of trainin
 
 The overlap of the two outcome classes in the first two principal components space upon PCA suggests that generalised linear models, such as logistic regression, are unlikely to make good classifiers in this instance. Non-linear kernel modelling is likely to result in models with greater predictive power for this dataset. During model hyper parameter tuning the SVC kernel selected was the radial basis function, supporting this observation.
 
-The uncertainty on the area under the ROC curve from the nested cross-validation is quite high suggesting that the model is relatively unstable. The machine learning pipeline developed has been designed to enable simple addition of different feature selection and model fitting techniques. Alternative approaches will be explored in the future.
+The area under the ROC curve is low for both the internal and external validation indicating that the model is unable to correctly classify patients better than chance. The uncertainty on the area under the ROC curve from the nested cross-validation is large suggesting that the model is unstable. Our present model is thus unsuitable to support clinical decision making and inform on the causal features of radiation-induced severe dysphagia. However, we are currently exploring improvements to our methodology with promising preliminary results.
 
-There are many potential reasons why our model suffers from relatively low predictive power. These include insufficient characterisation of chemotherapy treatments, smoking status or alcohol status, the influence of other organs, not considered in our study, involved in the onset of severe dysphagia, and the impact of other factors not considered, such as surgery or genetic susceptibility to radiation-induced mucosal damage.
+There are many potential reasons why our model suffers from low predictive power. These include insufficient characterisation of chemotherapy treatments, smoking status or alcohol status, the influence of other organs, not considered in our study, involved in the onset of severe dysphagia, and the impact of other factors not considered, such as surgery or genetic susceptibility to radiation-induced mucosal damage.
 
 However, we suspect that the low predictive power may, at least in part, be due to limitations associated with the dosimetric input data. In reducing the 3D dose distribution to a DVH the spatial information is discarded. We believe that spatial aspects of the dose distribution are likely to be important for predicting toxicity. We are developing several novel dose metrics that we aim to use as model inputs in the future. We anticipate that these may improve the predictive power of the models.
 
 Furthermore, there are discrepancies between the planned doses calculated using the treatment planning software (and extracted for use in our study) and the doses that are actually delivered to the patients. These are due to movement of the patients’ internal anatomy whilst the radiation is delivered and weight loss over the course of treatment. In the future we plan to explore the magnitude of these effects and attempt to develop strategies to minimise their impact.
 
+The machine learning pipeline developed has been designed to enable simple addition of different feature selection and model fitting algorithms enabling alternative statistical techniques to be utilised in the future.
+
 Conclusions
 -----------
 
-In this study we have shown that Python can be successfully applied to studies of radiotherapy dose-toxicity relationships. The Pydicom, NumPy, SciPy, Pandas and SciKit-Learn modules allow for both manipulation and processing of the treatment planning data, and statistical modelling using machine learning, making Python well suited to this type of study. Ongoing work involves using NumPy and SciPy to calculate novel dose metrics, describing spatial features of the dose distributions expected to influence toxicity.
+In this study we have shown that Python can be successfully applied to studies of radiotherapy dose-toxicity relationships. The Pydicom, NumPy, SciPy, Pandas and SciKit-Learn modules allow for both manipulation and processing of the treatment planning data, and statistical modelling using machine learning, making Python well suited to this type of study. Whilst initial attempts to generate a predictive model of severe dysphagia were unsuccessful, preliminary investigation of using novel dose metrics to characterise the dose distribution appear promising. Ongoing work involves using NumPy and SciPy to calculate novel dose metrics, describing spatial features of the dose distributions expected to influence toxicity and the application of alternative statistical methods within the machine learning pipeline.
 
 .. Customised LaTeX packages
 .. -------------------------
