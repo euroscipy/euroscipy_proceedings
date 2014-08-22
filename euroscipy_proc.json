@@ -32,46 +32,44 @@
         {
             "name": "Conference Chairs",
             "members": [
-                {"name": "Pierre de Buyl",
-                 "org": "Université libre de Bruxelles"},
-                {"name": "Nicolas Pettiaux",
-                 "org": "Haute École de Bruxelles - École supérieure d'informatique"}
+                {"name": "Mark Hayes",
+                 "org": "University of Cambridge"},
+                {"name": "Didrik Pinte",
+                 "org": "Enthought Europe"}
                 ]
         },
  
         {
             "name": "Program Committee Chair",
             "members": [
-                {"name": "Tiziano Zito",
-                 "org": "Humboldt-Universität zu Berlin"}
+                {"name": "Ralf Gommers",
+                 "org": "ASML"}
                 ]
         },
 
         {
-            "name": "Tutorial Chairs",
+            "name": "Tutorial Chair",
             "members": [
-                {"name": "Nicolas Rougier",
-                 "org": "Inria Nancy"}
+                {"name": "David Cournapeau",
+                 "org": "Enthought Europe"}
                 ]
         },
 
         {
             "name": "Program Committee",
             "members": [
+                {"name": "Evgeni Burovski",
+                 "org": "Lancaster University"},
+                {"name": "Robert Cimrman",
+                 "org": "New Technologies Research Centre, University of West Bohemia"},
 		{"name": "Pierre de Buyl",
-		 "org": "Université libre de Bruxelles"},
-		{"name": "Ralf Gommers",
-		 "org": "ASML"},
+		 "org": "KU Leuven"},
 		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
 		 "org": "France"},
-		{"name": "Kael Hanson",
-		 "org": "Université libre de Bruxelles"},
 		{"name": "Konrad Hinsen",
 		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
-		{"name": "Hans Petter Langtangen",
-		 "org": "Simula and University of Oslo"},
-		{"name": "Mike Müller",
-		 "org": "Python Academy"},
+                {"name": "Almar Klein",
+                 "org": "Cybermind"},
 		{"name": "Raphael Ritz",
 		 "org": "International Neuroinformatics Coordinating Facility"},
 		{"name": "Stéfan van der Walt",
@@ -81,67 +79,25 @@
 		{"name": "Nelle Varoquaux",
 		 "org": "Mines ParisTech"},
 		{"name": "Pauli Virtanen",
-		 "org": "Aalto University"}
+		 "org": "Aalto University"},
+		{"name": "Tiziano Zito",
+		 "org": "Humboldt-Universität zu Berlin"}
 	    ]
         },
 
         {
             "name": "Organizing Committee",
             "members": [
-		{"name": "Nicolas Chauvat",
-		 "org": "Logilab"},
-		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
-		 "org": "France"},
-		{"name": "Kael Hanson",
-		 "org": "Université libre de Bruxelles"},
-		{"name": "Renaud Lambiotte",
-		 "org": "University of Namur"},
-		{"name": "Thomas Lecocq",
-		 "org": "Royal Observatory of Belgium"},
-		{"name": "Mike Müller",
-		 "org": "Python Academy"},
-		{"name": "Didrik Pinte",
-		 "org": "Enthought"},
-		{"name": "Gaël Varoquaux",
-		 "org": "INRIA Parietal"},
-		{"name": "Nelle Varoquaux",
-		 "org": "Mines ParisTech"}
+                {"name": "Pierre de Buyl",
+                 "org": "KU Leuven"},
+                {"name": "Simon Jagoe",
+                 "org": "Enthought Europe"}
 		]
 	},
 
       {
             "name": "Proceedings reviewers",
             "members": [
-		{"name": "Francesc Alted",
-		 "org": "Continuum Analytics Inc."},
-		{"name": "Daniel J. Bates",
-		 "org": "Colorado State University"},
-		{"name": "Ondřej Čertík",
-		 "org": "Los Alamos National Laboratory"},
-		{"name": "David Cournapeau",
-		 "org": "Enthought"},
-		{"name": "Alexandre Gramfort",
-		 "org": "Telecom ParisTech, CNRS LTCI"},
-		{"name": "Valentin Haenel",
-		 "org": "Independent"},
-		{"name": "Konrad Hinsen",
-		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
-		{"name": "Robert Kern",
-		 "org": "Enthought"},
-		{"name": "Mike Müller",
-		 "org": "Python Academy"},
-		{"name": "Andy R. Terrel",
-		 "org": "Continuum Analytics Inc."},
-		{"name": "C. Titus Brown",
-		 "org":  "Michigan State University"},
-		{"name": "Jake Vanderplas",
-		 "org": "University of Washington"},
-		{"name": "Gaël Varoquaux",
-		 "org": "INRIA Parietal"},
-		{"name": "Paul Zimmermann",
-		 "org": "INRIA"},
-                {"name": "Tiziano Zito",
-                 "org": "Humboldt-Universität zu Berlin"}
 		]
 	}
 
