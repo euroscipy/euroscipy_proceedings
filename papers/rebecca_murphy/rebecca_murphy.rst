@@ -16,7 +16,13 @@ pyFRET: A Python Library for Single Molecule Fluorescence Data Analysis
 
 .. class:: abstract
 
-   Single molecule Forster resonance energy transfer (smFRET) is a powerful experimental technique for studying the properties of individual biological molecules in solution. However, as adoption of smFRET techniques becomes more widespread, the lack of available software, whether Open Source or commercial, for data analysis, is becoming a significant issue. Here, we present pyFRET, a fully open source python package for the analysis of data from single-molecule fluorescence experiments from freely diffusing biomolecules. The package provides methods for the complete analysis of a smFRET dataset, from burst selection and denoising, through data visualisation and model fitting. We provide support for both continuous excitation and alternating laser excitation (ALEX) data analysis. pyFRET is available as a package downloadable from the Python Package Index (pyPI) under an open source MIT/BSD licence, together with links to extensive documentation and tutorials, including example usage and test data. Additional documentation including tutorials is hosted independently on ReadTheDocs. Through distribution of this software, we hope to lower the barrier for the adoption of smFRET experiments by other research groups and we encourage others to contribute packages for specific analysis needs.    
+   Single molecule Forster resonance energy transfer (smFRET) is a powerful experimental technique for studying the properties of individual biological molecules in solution. 
+   However, as adoption of smFRET techniques becomes more widespread, the lack of available software, whether Open Source or commercial, for data analysis, is becoming a significant issue. 
+   Here, we present pyFRET, a fully open source python package for the analysis of data from single-molecule fluorescence experiments from freely diffusing biomolecules. 
+   The package provides methods for the complete analysis of a smFRET dataset, from burst selection and denoising, through data visualisation and model fitting. We provide support for both continuous excitation and alternating laser excitation (ALEX) data analysis. 
+   pyFRET is available as a package downloadable from the Python Package Index (pyPI) under an open source MIT/BSD licence, together with links to extensive documentation and tutorials, including example usage and test data. 
+   Additional documentation including tutorials is hosted independently on ReadTheDocs. 
+   Through distribution of this software, we hope to lower the barrier for the adoption of smFRET experiments by other research groups and we encourage others to contribute packages for specific analysis needs.    
 
 .. class:: keywords
 
@@ -26,39 +32,64 @@ pyFRET: A Python Library for Single Molecule Fluorescence Data Analysis
 Introduction
 ------------
 
-Forster resonance energy transfer (FRET) [Forster48]_ is a physical process that allows the study of molecular interactions and intramolecular distances. FRET is the non-radiative transfer of energy between two fluorescent molecules, where the fraction of energy transferred varies with the sixth power of the inter-fluorophore distance providing an extremely sensitive readout of the distance between two fluorophores. Since the first demonstration that FRET can be used to quantify the distance between two fluorescent dyes [ha96]_, single-molecule FRET (smFRET) has grown in popularity as a tool to investigate the structure and dynamics of biomolecules diffusing in solution [haran03]_, [schuler02]_, [weiss00]_.
+Forster resonance energy transfer (FRET) [Forster48]_ is a physical process that allows the study of molecular interactions and intramolecular distances. 
+FRET is the non-radiative transfer of energy between two fluorescent molecules, where the fraction of energy transferred varies with the sixth power of the inter-fluorophore distance providing an extremely sensitive readout of the distance between two fluorophores. 
+Since the first demonstration that FRET can be used to quantify the distance between two fluorescent dyes [ha96]_, single-molecule FRET (smFRET) has grown in popularity as a tool to investigate the structure and dynamics of biomolecules diffusing in solution [haran03]_, [schuler02]_, [weiss00]_.
 
-In a smFRET experiment, biological molecules are labelled with two fluorescent dyes, selected such that the emission spectrum of one dye (the donor, D) overlaps with the excitation spectrum of the other (the acceptor, A). When the donor and acceptor are physically close in space, exciting the donor dye can result in emission from the acceptor dye, where the proportion of emission from the acceptor and donor, known as the FRET Efficiency, E, depends on the distance, r between the two dyes:
+In a smFRET experiment, biological molecules are labelled with two fluorescent dyes, selected such that the emission spectrum of one dye (the donor, D) overlaps with the excitation spectrum of the other (the acceptor, A). 
+When the donor and acceptor are physically close in space, exciting the donor dye can result in emission from the acceptor dye, where the proportion of emission from the acceptor and donor, known as the FRET Efficiency, E, depends on the distance, r between the two dyes:
 
 .. math::
 
   E = \frac{1}{1 + (\frac{r}{R_0})^6}
 
 
-Experimentally, E can be determined by focusing a laser beam through a highly dilute solution of labelled molecules onto a diffraction-limited focal point. When a labelled molecule diffuses through the laser beam, the donor dye is excited and photons are emitted (Fig. :ref:`microscope`). Emitted photons are collected through the objective and separated by a dichroic mirror into donor and acceptor photons, which are then collected and analysed. The ratio of acceptor to donor photons allows calculation of E:
+Experimentally, E can be determined by focusing a laser beam through a highly dilute solution of labelled molecules onto a diffraction-limited focal point. When a labelled molecule diffuses through the laser beam, the donor dye is excited and photons are emitted (Fig. :ref:`microscope`). 
+Emitted photons are collected through the objective and separated by a dichroic mirror into donor and acceptor photons, which are then collected and analysed. The ratio of acceptor to donor photons allows calculation of E:
 
 .. math::
 
   E = \frac{n_A}{n_A + \gamma \cdot n_D}
 
-for n\ :sub:`A` and n\ :sub:`D` photons in the acceptor and donor channels respectively and :math:`\gamma` an experimentally determined instrument-dependent factor that corrects for unequal detection efficiencies.  Histograms constructed from calculated FRET efficiencies are fitted with Gaussian distributions to identify populations of fluorescent species [ha96]_.
+for n\ :sub:`A` and n\ :sub:`D` photons in the acceptor and donor channels respectively and :math:`\gamma` an experimentally determined instrument-dependent factor that corrects for unequal detection efficiencies. 
+Histograms constructed from calculated FRET efficiencies are fitted with Gaussian distributions to identify populations of fluorescent species [ha96]_.
 
 .. figure:: S1_diagram_scheme.pdf
    
    Instrumentation for a smFRET experiment. :label:`microscope`
 
 
-A smFRET experiment involves several computational challenges. Bursts of fluorescence emission, corresponding to a molecule diffusing through the laser beam, must be identified against a noisy background and identified bursts must be denoised. Correction of photobleaching effects, donor-acceptor crosstalk and other photophysical artifacts must also be applied to get accurate intramolecular distance information. Multiple methods of burst selection and analysis have been developed and applied to the analysis of smFRET data [weiss00]_, [deniz01]_, [gell06]_, [nir06]_, [kapanidis05]_, [muller05]_, [doose07]_, [kudryavtsev2012]_, [eggeling01]_. However, software for analysis of smFRET data has thus far been developed on an ad hoc basis, with individual groups preparing and maintaining their own analysis scripts. 
+A smFRET experiment involves several computational challenges. 
+Bursts of fluorescence emission, corresponding to a molecule diffusing through the laser beam, must be identified against a noisy background and identified bursts must be denoised. 
+Correction of photobleaching effects, donor-acceptor crosstalk and other photophysical artifacts must also be applied to get accurate intramolecular distance information. Multiple methods of burst selection and analysis have been developed and applied to the analysis of smFRET data [weiss00]_, [deniz01]_, [gell06]_, [nir06]_, [kapanidis05]_, [muller05]_, [doose07]_, [kudryavtsev2012]_, [eggeling01]_. 
+However, software for analysis of smFRET data has thus far been developed on an ad hoc basis, with individual groups preparing and maintaining their own analysis scripts. 
 
 This method of software development has created several problems for the smFRET research community that are typical of research programming projects [wilson06]_, [merali10]_. 
 
-Firstly, there is the problem of "reinventing the wheel" [mirams13]_. Within smFRET research groups, programming ability is not a standard skill, despite the need for sophisticated data analysis and use of custom data collection hardware. It is common for researchers with programming skills to maintain their own series of data-analysis scripts which may be wholly dependent on particular hardware tools or analysis packages. Other researchers, who may lack the skills to maintain and develop even simple scripts, are dependent on black-box techniques provided by their colleagues. Consequently, data analysis is dependent on scripts written and maintained by just a few researchers. Loss of programming expertise when these team members leave can result in significant difficulties for the remaining group members, who are then dependent on poorly documented code that they do not fully understand how to use. Furthermore, the lack of available open source software often requires new researchers in the field of smFRET to completely reimplement standard analysis techniques in order to become independently productive.    
+Firstly, there is the problem of "reinventing the wheel" [mirams13]_. Within smFRET research groups, programming ability is not a standard skill, despite the need for sophisticated data analysis and use of custom data collection hardware. 
+It is common for researchers with programming skills to maintain their own series of data-analysis scripts which may be wholly dependent on particular hardware tools or analysis packages. 
+Other researchers, who may lack the skills to maintain and develop even simple scripts, are dependent on black-box techniques provided by their colleagues. Consequently, data analysis is dependent on scripts written and maintained by just a few researchers. 
+Loss of programming expertise when these team members leave can result in significant difficulties for the remaining group members, who are then dependent on poorly documented code that they do not fully understand how to use. 
+Furthermore, the lack of available open source software often requires new researchers in the field of smFRET to completely reimplement standard analysis techniques in order to become independently productive.    
 
-Secondly, the need for many researchers to develop and maintain their own analyis tools has significant impact on research productivity. The requirement to reimplement standard analysis techniques consumes valuable time that could better be used in experimental research or in developing and benchmarking improved analysis tools. Furthermore, most researchers have no formal training in software engineering, with the result that analysis software can vary hugely in quality and is frequently poorly documented and maintained, making it difficult for other researchers to understand and use. New analysis scipts are often added in an ad hoc manner, with the result that straighforward tasks are performed using an unweildy mess of spaghetti code, transforming simple modifications into complex undertakings requring significant time investmenent. Poorly maintained code adds an additional barrier to open sharing of resources as groups are embarrassed to share low-quality software.  
+Secondly, the need for many researchers to develop and maintain their own analyis tools has significant impact on research productivity. 
+The requirement to reimplement standard analysis techniques consumes valuable time that could better be used in experimental research or in developing and benchmarking improved analysis tools. 
+Furthermore, most researchers have no formal training in software engineering, with the result that analysis software can vary hugely in quality and is frequently poorly documented and maintained, making it difficult for other researchers to understand and use. 
+New analysis scipts are often added in an ad hoc manner, with the result that straighforward tasks are performed using an unweildy mess of spaghetti code, transforming simple modifications into complex undertakings requring significant time investmenent. 
+Poorly maintained code adds an additional barrier to open sharing of resources as groups are embarrassed to share low-quality software.  
 
-Finally, there is the issue of research reproducibility. Different research groups use widely differing tools to complete relatively similar tasks. New methods of data collection and analysis are frequently developed~\cite{kapanidis05, nir06, sisamakis2010}. However, when software is not released to the community, it is difficult for researchers, who must often implement poorly described methodologies entirely from scratch, to verify results or to adopt new techniques in their own research. As a consequence, new techniques are poorly benchmarked, making it difficult to understand whether a new analysis adds quality or merely complexity, whilst adoption of useful new methods is relatively slow. These three issues of productivity, reliability and reproducibility, all linked to the problem of poorly maintained softwared and lack of software development skills, are now becoming a key bottleneck in smFRET research.  
+Finally, there is the issue of research reproducibility. Different research groups use widely differing tools to complete relatively similar tasks. 
+New methods of data collection and analysis are frequently developed [kapanidis05]_, [nir06]_, [sisamakis2010]_. 
+However, when software is not released to the community, it is difficult for researchers, who must often implement poorly described methodologies entirely from scratch, to verify results or to adopt new techniques in their own research. As a consequence, new techniques are poorly benchmarked, making it difficult to understand whether a new analysis adds quality or merely complexity, whilst adopt
+ion of useful new methods is relatively slow. 
+These three issues of productivity, reliability and reproducibility, all linked to the problem of poorly maintained softwared and lack of software development skills, are now becoming a key bottleneck in smFRET research.  
 
-We have developed pyFRET, a fully open-source library, written in python, for the analysis of smFRET data. To our knowledge, this is the first open source code ever released by the smFRET research community. Our library aims to address the issues described above by providing a simple toolkit for smFRET data analysis. pyFRET is a small library, consisting of just 700 lines of python code (including inline comments). However, it contains functions for all key steps in analysis of smFRET data, including burst selection; cross-talk subtraction and burst denoising; data visualisation; and construction and simple fitting of FRET efficiency histograms. In providing this toolkit to the smFRET research community, we hope to facilitate the wider adoption of smFRET techniques in biological research as well as providing a framework for open communication about and sharing of data analsyis tools.
+We have developed pyFRET, a fully open-source library, written in python, for the analysis of smFRET data. 
+To our knowledge, this is the first open source code ever released by the smFRET research community. 
+Our library aims to address the issues described above by providing a simple toolkit for smFRET data analysis. 
+pyFRET is a small library, consisting of just 700 lines of python code (including inline comments). 
+However, it contains functions for all key steps in analysis of smFRET data, including burst selection; cross-talk subtraction and burst denoising; data visualisation; and construction and simple fitting of FRET efficiency histograms. 
+In providing this toolkit to the smFRET research community, we hope to facilitate the wider adoption of smFRET techniques in biological research as well as providing a framework for open communication about and sharing of data analsyis tools.
 
 
 Design and Implementation
@@ -67,9 +98,14 @@ Design and Implementation
 Implementation
 ++++++++++++++
 
-pyFRET provides two key classes for manipulation of smFRET data. The FRET data object describes two fluorescence channels, corresponding to time-bins containing photons collected from donor (the donor channel, D) and acceptor (the acceptor channel, A) fluorophores. The ALEX data object describes four fluorescence channels, corresponding to the four temporal states in a smFRET experiment using Alternating Laser Excitation (ALEX), namely the donor channel when the donor laser is switched on (D_D); the donor channel when the acceptor laser is switched on (D_A); the acceptor channel when the donor laser is on (A_D); and the acceptor channel when the acceptor laser is on (A_A). These data channels are implemented as numpy arrays, allowing efficient computations and selection operations.
+pyFRET provides two key classes for manipulation of smFRET data. 
+The FRET data object describes two fluorescence channels, corresponding to time-bins containing photons collected from donor (the donor channel, D) and acceptor (the acceptor channel, A) fluorophores. 
+The ALEX data object describes four fluorescence channels, corresponding to the four temporal states in a smFRET experiment using Alternating Laser Excitation (ALEX), namely the donor channel when the donor laser is switched on (D_D); the donor channel when the acceptor laser is switched on (D_A); the acceptor channel when the donor laser is on (A_D); and the acceptor channel when the acceptor laser is on (A_A). 
+These data channels are implemented as numpy arrays, allowing efficient computations and selection operations.
 
-The data analysis workflow is illustrated in Figure :ref:`fig1workflow`. Following initialization of data objects, background subtraction, event selection, cross-talk correction and calculation of the FRET efficiency can each be performed with a single call to a pyFRET function. Simple but high-quality figures can be generated in a variety of formats (Fig. :ref:`fig2plots`). 
+The data analysis workflow is illustrated in Figure :ref:`fig1workflow`. 
+Following initialization of data objects, background subtraction, event selection, cross-talk correction and calculation of the FRET efficiency can each be performed with a single call to a pyFRET function. 
+Simple but high-quality figures can be generated in a variety of formats (Fig. :ref:`fig2plots`). 
 
 .. figure:: workflow_new.pdf
    :figclass: w
@@ -85,16 +121,26 @@ The data analysis workflow is illustrated in Figure :ref:`fig1workflow`. Followi
 Compatibilities
 +++++++++++++++
 
-pyFRET is written in Python. Both python 2 (v2.7) and python 3 (v3.3) are supported. pyFRET requires three further python libraries,  namely numpy and scipy for data manipulation, and matplotlib for data visualisation. Installation of pyFRET using the pip install method supported by PyPI will facilitate automatic installation of these packages if they are not already included in your python build. 
+pyFRET is written in Python. Both python 2 (v2.7) and python 3 (v3.3) are supported. 
+pyFRET requires three further python libraries,  namely numpy [numpy]_ and scipy [scipy]_ for data manipulation, and matplotlib [matplotlib]_ for data visualisation.
+Installation of pyFRET using the pip install method supported by PyPI will facilitate automatic installation of these packages if they are not already included in your python build. 
 
-The lack of Open Source software in the smFRET community has led to a proliferation of esoteric file-types used for data collection and storage. To make pyFRET as usable as possible for a wide range of smFRET researchers, the pyFRET data structures can be initialised using arrays of time-binned photons. The tutorial provides example scripts for parsing common filetypes into pyFRET objects.
+The lack of Open Source software in the smFRET community has led to a proliferation of esoteric file-types used for data collection and storage. 
+To make pyFRET as usable as possible for a wide range of smFRET researchers, the pyFRET data structures can be initialised using arrays of time-binned photons. The tutorial provides example scripts for parsing common filetypes into pyFRET objects.
 
-pyFRET currently provides basic tools for analysis and visualisation of smFRET data. In the interest of providing the pyFRET infrastructure to smFRET researchers at an early stage, we are choosing to release our software at a relatively early stage of development. pyFRET provides a complete tool-chain for analysis of time-binned smFRET data, but does not currently include a burst-search algorithm for identification of fluorescent bursts from photon arrival times [nir06]_. Researchers who wish to use pyFRET in its current implementation for data visualisation and analysis, but whose data consists of time-stamped photon arrivals are encouraged to apply their own burst selection algorithms to generate arrays of fluorescent bursts that can be manipulated using pyFRET methods.  
+pyFRET currently provides basic tools for analysis and visualisation of smFRET data. 
+In the interest of providing the pyFRET infrastructure to smFRET researchers at an early stage, we are choosing to release our software at a relatively early stage of development. 
+pyFRET provides a complete tool-chain for analysis of time-binned smFRET data, but does not currently include a burst-search algorithm for identification of fluorescent bursts from photon arrival times [nir06]_. 
+Researchers who wish to use pyFRET in its current implementation for data visualisation and analysis, but whose data consists of time-stamped photon arrivals are encouraged to apply their own burst selection algorithms to generate arrays of fluorescent bursts that can be manipulated using pyFRET methods.  
 
 
 Experimental Methods
 --------------------
-We tested the pyFRET library using DNA duplexes dual-labelled with Alexa Fluor 488 and Alexa Fluor 647. The duplex sequences and labelling sites are shown in Tables :ref:`tab-donor` (Donor strand) and :ref:`tab-acceptor` (Acceptor strands). DNA duplexes were prepared by mixing a 1.1 molar excess of the appropriate acceptor strand with the donor strand, heating to 95 C for 10 minutes, then gradual cooling to room temperature. FRET data were collected for 15 minutes using continuous excitation at 488 nm and binned in intervals of 1 ms. ALEX data were collected for 15 minutes using alternating excitation at 488 and 640 nm, with a modulation rate of 0.1 ms, a dead-time of 0.1 :math:`\mu` s and a delay compensation of 3 :math:`\mu` s. ALEX data were then binned in intervals of 1 ms. The scripts and configuration files used to analyse these data using pyFRET can be found in the "bin" folder of the pyFRET repository.
+We tested the pyFRET library using DNA duplexes dual-labelled with Alexa Fluor 488 and Alexa Fluor 647. The duplex sequences and labelling sites are shown in Tables :ref:`tab-donor` (Donor strand) and :ref:`tab-acceptor` (Acceptor strands). 
+DNA duplexes were prepared by mixing a 1.1 molar excess of the appropriate acceptor strand with the donor strand, heating to 95 C for 10 minutes, then gradual cooling to room temperature. 
+FRET data were collected for 15 minutes using continuous excitation at 488 nm and binned in intervals of 1 ms. 
+ALEX data were collected for 15 minutes using alternating excitation at 488 and 640 nm, with a modulation rate of 0.1 ms, a dead-time of 0.1 :math:`\mu` s and a delay compensation of 3 :math:`\mu` s. 
+ALEX data were then binned in intervals of 1 ms. The scripts and configuration files used to analyse these data using pyFRET can be found in the "bin" folder of the pyFRET repository.
 
 .. table:: DNA sequence of the donor-labelled strand, where 5 is a deoxy-T nucleotide, labelled with Alexa Fluor 488 at the C6 amino position  :label:`tab-donor`
    :class: w
@@ -124,7 +170,13 @@ We tested the pyFRET library using DNA duplexes dual-labelled with Alexa Fluor 4
 
 Results
 -------
-As an example of the analysis that can be performed using pyFRET, we collected data from dual-labelled DNA duplexes with various dye-dye separation distances, using both FRET and ALEX excitation patterns. We then analysed the data using the pyFRET analsyis pipeline. Timebins were background corrected and events were selected using a fixed threshold. FRET efficiency histograms were constructed and fitted to a single gaussian distribution. The mean FRET efficiencies were then plotted against the dye separation distance to show the characteristic sigmoidal curve. Results of the analysis are show in Fig. :ref:`fig3FRET` (FRET) and Fig. :ref:`fig3ALEX` (ALEX). An example analysis script to produce a fitted smFRET histogram is shown below.
+As an example of the analysis that can be performed using pyFRET, we collected data from dual-labelled DNA duplexes with various dye-dye separation distances, using both FRET and ALEX excitation patterns. 
+We then analysed the data using the pyFRET analsyis pipeline. 
+Timebins were background corrected and events were selected using a fixed threshold. 
+FRET efficiency histograms were constructed and fitted to a single gaussian distribution. 
+The mean FRET efficiencies were then plotted against the dye separation distance to show the characteristic sigmoidal curve. 
+Results of the analysis are show in Fig. :ref:`fig3FRET` (FRET) and Fig. :ref:`fig3ALEX` (ALEX). 
+An example analysis script to produce a fitted smFRET histogram is shown below.
 
 |
 |
@@ -173,11 +225,17 @@ As an example of the analysis that can be performed using pyFRET, we collected d
 Conclusion
 ----------
 
-pyFRET is available to download from PyPI under an open source MIT/BSD licence from the Python Package Index. Documentation can also be found here, whilst a more extensive tutorial, including example scripts, can be found on our website at ReadTheDocs.
+pyFRET is available to download from PyPI under an open source MIT/BSD licence from the Python Package Index. 
+Documentation can also be found here, whilst a more extensive tutorial, including example scripts, can be found on our website at ReadTheDocs.
 
-pyFRET currently provides basic tools for burst selection and denoising, based on simple thresholding and noise subtraction techniques. We are aware that more sophisticated methodologies exist and are currently working to produce and open source burst selection algorithm based on photon arrival times [nir06]_ as well as stochastic denoising algorithms [kudryavtsev2012]_. We have also developed a novel analysis method based on Bayesian statistics [murphy14]_, for which source code is available (https://bitbucket.org/rebecca_roisin/fret-inference}) and which could be folded into the pyFRET library. We are also working to increase support for the wide variety of file formats that result from custom-built data collection hardware. 
+pyFRET currently provides basic tools for burst selection and denoising, based on simple thresholding and noise subtraction techniques. 
+We are aware that more sophisticated methodologies exist and are currently working to produce and open source burst selection algorithm based on photon arrival times [nir06]_ as well as stochastic denoising algorithms [kudryavtsev2012]_. 
+We have also developed a novel analysis method based on Bayesian statistics [murphy14]_, for which source code is available (https://bitbucket.org/rebecca_roisin/fret-inference}) and which could be folded into the pyFRET library. 
+We are also working to increase support for the wide variety of file formats that result from custom-built data collection hardware. 
 
-smFRET is a fast-developing and active research field and we are keen to support scientific progress through development of high-quality usable software. We are keen to work with others to enable their use of and contribution to the pyFRET library. We welcome requests for custom analysis requirements and are happy to support others who wish to contribute additional code to the pyFRET infrastucture.
+smFRET is a fast-developing and active research field and we are keen to support scientific progress through development of high-quality usable software. 
+We are keen to work with others to enable their use of and contribution to the pyFRET library. 
+We welcome requests for custom analysis requirements and are happy to support others who wish to contribute additional code to the pyFRET infrastucture.
 
 
 References
@@ -218,6 +276,9 @@ References
 .. [doose07]  S. Doose, M. Heilemann, X. Michalet, S. Weiss and A. N. Kapanidis. *Periodic acceptor excitation spectroscopy of single molecules*,
               Eur. Biophys. J., 36:669-674, 2007.
 
+..	[sisamakis2010]	E. Sisamakis, A. Valeri, S. Kalinin, P. J. Rothwell and C. A. M. Seidel. *Accurate Single-Molecule FRET Studies Using Multiparameter Fluorescence Detection*, 
+					Methods in Enzymology, 475:455-514, 2010.
+
 .. [kudryavtsev2012]  author =    V. Kudryavtsev, M. Sikor, S. Kalinin, D. Mokranjac, C. A. M. Seidel and D. C. Lamb. *Combining MFD and PIE for Accurate Single-Pair Förster Resonance Energy Transfer Measurements*,
                         ChemPhysChem, 13:1060-1078, 2012.
 
@@ -236,3 +297,11 @@ References
 ..  [murphy14] R. R. Murphy, G. Danezis, M. H. Horrocks, S. E. Jackson and D. Klenerman. *Bayesian Inference of Accurate Population Sizes and FRET Efficiencies from Single Diffusing Biomolecules*,
                Anal. Chem.,  http://dx.doi.org/10.1021/ac501188r, 2014.
 
+..	[numpy]	S. van der Walt, S. C. Colbert and G. Varoquaux. *The NumPy Array: A Structure for Efficient Numerical Computation*, 
+			Computing in Science & Engineering, 13:22-30, 2011. 
+
+..	[scipy]	K. J. Millman and M. Aivazis. *Python for Scientists and Engineers*,
+			Computing in Science & Engineering, 13:9-12, 2011.
+
+..	[matplotlib]	J. D. Hunter. *Matplotlib: A 2D graphics environment*,
+					IEEE Comp. Soc., 9(3):90-95, 2007.
