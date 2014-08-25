@@ -91,7 +91,7 @@ The following snippet of code explains the basic usage of the library: :label:`u
                                         method="numpy")
 
 Output variables' space (*r*, *q* or :math:`2\theta`) and units can be chosen with the *unit* keyword.
-The *method* keyword is used to choose one of the available algorithms for the integration. 
+The *method* keyword is used to choose one of the available algorithms for the integration.
 These algorithms will be described in this contribution.
 However, the experiment reported here will be limited to 1D full azimuthal integration, with a planar detector, orthogonal to the incoming beam.
 In this case the conics described by the beam on the detector are concentric circles.
@@ -232,7 +232,7 @@ Bounding Box
 
 The first way pixel splitting was implemented was with a bounding box like in Fit2D [FIT2D]_.
 In this case we are working with an abstraction of the pixel.
-This is represented by a rectangular box circumscribing the actual pixel, 
+This is represented by a rectangular box circumscribing the actual pixel,
 with two sides parallel to the radial axis and the other two of unit length.
 Presently, instead of calculating the contribution of each segment of the pixel based on its area, we use the area of the bounding box segment instead.
 This greatly simplifies the algorithm's flow, providing good performance.
@@ -258,7 +258,7 @@ making the process a bit slower.
 As before, the algorithm first has to check if pixel splitting occurs.
 In the case it does not, the pixel is processed like in the case of the simple histogram.
 Otherwise the pixel is split according to the following steps.
-Firstly, a function for each of the lines that make up the sides of the pixel being processed is defined 
+Firstly, a function for each of the lines that make up the sides of the pixel being processed is defined
 by calculating the slope and the point of intersection.
 The area of the pixel is also required.
 Next, the algorithm loops over the bins that the pixel spans over and proceeds to
@@ -277,7 +277,7 @@ The fact that pixels contributing to neighbouring bins in the histogram creates 
 affecting, this way, the statistics of the results in a potentially unwanted manner.
 
 
-More parallelisation 
+More parallelisation
 ====================
 
 For faster execution, one solution is to use many-core systems, such as
@@ -433,7 +433,7 @@ OpenMP vs OpenCL
 The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU,
 as we can see in figure :ref:`openmp-opencl-intel-amda`: the OpenCL implementation outperforms the OpenMP one, in all the different CPUs it was tested on.
 This could be linked to the use of single precision with Kahan summation (in OpenCL) which is more efficient than double precision arithmetic.
-The dual Xeon E5520 (a computer from 2009), running at only 2.2 GHz shows pretty good performances compared to more recent computers when using OpenMP: 
+The dual Xeon E5520 (a computer from 2009), running at only 2.2 GHz shows pretty good performances compared to more recent computers when using OpenMP:
 it was the only one with activated hyper-threading.
 
 .. figure:: openmp_opencl.png
@@ -522,6 +522,7 @@ The computer hosting the two Intel Xeon E5520 (2x4cores, 2.27 GHz, hyper-threade
 The computer hosting the Intel Xeon E5-1607 (1x4cores, 3.0 GHz, without hyper-threading, 2x4 GB of RAM) is a Dell T3610 workstation with two GPUs: Nvidia GeForce 750Ti and AMD FirePro V7800, running Debian 8/Jessie.
 
 In addition to the Debian operating system, specific OpenCL drivers were installed:
+
 * Intel OpenCL drivers V4.4.0-117 + MPSS stack v3.2.3
 * AMD APP drivers 14.4
 * Nvidia CUDA drivers 340.24-2
@@ -574,7 +575,7 @@ References
             *Two-dimensional detector software*,
             High Press. Res., 14:235–248, 1996.
 .. [H5Py] A. Collette.
-           * Python and HDF5*
+           *Python and HDF5*
            ISBN 978-1-4493-6783-1, (2013)
 .. [Kahan] W. Kahan.
             *Pracniques: Further Remarks on Reducing Truncation Errors*,
