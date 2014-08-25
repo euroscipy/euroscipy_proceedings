@@ -398,7 +398,7 @@ We can then retrieve a particulat signalling pathway and look at it (see Figure 
 Combining BioServices with standard scientific tools
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-BioServices does not depend on scientific librairies such as Pandas so as to limit its dependencies. However, there are a few experimental methods in BioServices that uses Pandas (the  *import* being local, Pandas is required to install BioServices). In the next example, we will use on of those experimental method. UniProt service [UNI14]_ is useful in CellNOpt for mapping and protein identification. Let us use it to retrieve information about proteins (human) and to extract the sequence length of those proteins. We will then study its distribution. Assuming you have a list of valid identifiers, just type:
+In generalt, BioServices does not depend on scientific librairies such as Pandas so as to limit its dependencies. However, there are a few experimental methods (with a local  *import* so that it is not required during the installation). In the next example, we will use on of those experimental method. UniProt service [UNI14]_ is useful in CellNOpt for protein identification and mapping. Let us use it to extract the sequence length of those proteins. We will then study its distribution. Assuming you have a list of valid identifiers, just type:
 
 .. code-block:: python
     :linenos:
@@ -408,7 +408,7 @@ BioServices does not depend on scientific librairies such as Pandas so as to lim
     u = UniProt()
     u.get_df(entries)
 
-Note that the method *get_df* is the method that uses Pandas; it returns a dataframe. One of the column of the data contains the sequence length. We can then use a simple package (called **fitter**; available on PyPi) that fits the length distribution to SciPy distributions to figure out the best distribution that fits the data:
+Note that the method *get_df* uses Pandas: it returns a dataframe. One of the column contains the sequence length. The sequence length distribution can then be fitted to a SciPy distribution (using a simple package called **fitter**, which is available on PyPi):
 
 .. code-block:: python
     :linenos:
@@ -437,8 +437,7 @@ In this example, it appears that a log normal distribution is a very good guess 
 Status and future directions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-BioServices provides a comprehensive access to
-bioinformatics web services within a single Python library. See Table :ref:`tabbioservices` for the current list of services.
+BioServices provides a comprehensive access to bioinformatics web services within a single Python library. See Table :ref:`tabbioservices` for the current list of services.
 
 
 .. table:: Web services accessible from BioServices (release 1.2.6). :label:`tabbioservices`
@@ -453,7 +452,7 @@ bioinformatics web services within a single Python library. See Table :ref:`tabb
     |               | WSDbfetch                                            |
     +---------------+------------------------------------------------------+
 
-The request used in the previous example last actually a very long time (about 20 minutes depending on the network). There are faster way to obtain such information. Downloading the database or flat files for instance. Yet, one need to consider that such files are large (500Mb for UniProt) and that they make be updated regularly. You may also want to use several services, which means several flat files. If you provide a pipeline, do you want to provide a 500Mb file as well ? The answer may be yes or no depending on your needs. In BioServices, the idea is that you do not necesseraly want to download flat files and are willing to wait for the requests. Yet, there are improvements to be made to make BioServices faster. Future directions of BioServices are two-fold. One is to provide new web services depending on the user requests and/or contributions. The other aspect is to update the core part of BioServices so as
+The previous example lasts about 20 minutes depending on the network speed. There are faster way to obtain such information like downloading the database or flat files. Yet, one need to consider that such files are large (500Mb for UniProt) and that they may be updated regularly. You may also want to use several services, which means several flat files. Within a pipeline, you may not want to provide a set of 500Mb files. In BioServices, the idea is that you do not necesseraly want to download flat files and are willing to wait for the requests. Yet, there are improvements to be made to make BioServices faster. Future directions of BioServices are two-fold. One is to provide new web services depending on the user requests and/or contributions. The second aspect is to update the core part of BioServices so as
 
 - to use the requests package, which seems to be currently faster than standard modules (e.g., urllib2)
 - use buffering or caching to save requests and their results to speed up repetitive requests.
@@ -483,13 +482,19 @@ Authors acknowledge support from EU *BioPreDyn* FP7-KBBE grant 289434.
 References
 ----------
 
-.. [UNI14] The UniProt Consortium
-    Nucleic Acids Res. 42: D191-D198 (2014).
+.. [ASP13] Guziolowski et al. 
+    *Exhaustively characterizing feasible logic models of a signaling network using Answer Set Programming*
+    Bioinformatics(2013) 29 (18) 2320-2326
+
+.. [EGE14] J. Egea et al. 
+    *MEIGO: an open-source software suite based on metaheuristics for global optimization in systems biology and bioinformatics*
+    BMC Bioinformatics 2014, 15:136
+
+.. [UNI14] The UniProt Consortium. Nucleic Acids Res. 42: D191-D198 (2014).
 
 .. [COK13] T. Cokelaer, D. Pultz, L.M. Harder, J. Serra-Musach and J. Saez-Rodriguez
     *BioServices: a common Python package to access biological Web Services programmatically*
     Bioinformatics, 29 (24) 3241-3242 (2013)
-
 
 .. [WP09] T. Kelder, AR. Pico, K. Hanspers, MP. van Iersel, C. Evelo, BR. Conklin.
     *Mining Biological Pathways Using WikiPathways Web Services.*
