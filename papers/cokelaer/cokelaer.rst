@@ -8,7 +8,7 @@
 
 
 ----------------------------------------------------------------------
-Using Python to Dive into Human Cells with CellNOpt and BioServices
+Using Python to Dive Sigalling Data with CellNOpt and BioServices
 ----------------------------------------------------------------------
 
 .. class:: abstract
