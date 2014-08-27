@@ -312,7 +312,8 @@ like Python interpreted code when interfaced with [PyOpenCL]_
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
     | Core frequency     | 2900 MHz  | 2900 MHz  | 700 MHz | 705 MHz | 1100 MHz    | 1052      |
     +--------------------+-----------+-----------+---------+---------+-------------+-----------+
-
+    | Mem. Bandwidth     | 102 GB/s  | 102 GB/s  | 128 GB/s| 208 GB/s| 88 GB/s     | 320 GB/s  |
+    +--------------------+-----------+-----------+---------+---------+-------------+-----------+
 
 
 Parallel algorithms
@@ -432,7 +433,7 @@ OpenMP vs OpenCL
 
 The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU,
 as we can see in figure :ref:`openmp-opencl-intel-amda`: the OpenCL implementation outperforms the OpenMP one, in all the different CPUs it was tested on.
-This could be linked to the use of single precision with Kahan summation (in OpenCL) which is more efficient than double precision arithmetic.
+This could be linked to the better use of SIMD vector units by the OpenCL.
 The dual Xeon E5520 (a computer from 2009), running at only 2.2 GHz shows pretty good performances compared to more recent computers when using OpenMP:
 it was the only one with activated hyper-threading.
 
