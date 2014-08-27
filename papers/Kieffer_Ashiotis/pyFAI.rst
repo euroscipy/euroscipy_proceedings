@@ -198,8 +198,8 @@ which implies the allocation of much more memory for output arrays.
    +----------------+----------------+
 
 
-The speed-up measured when going from 4 threads to 8 threads (i.e. from one processor to two on our test system)
-is very small, illustrating the limits of the algorithm.
+The gains in performance obtained by this method were minor, especially when using more than 2 threads,
+illustrating the limits of the parellisation scheme.
 The only way to go faster is to start thinking in parallel from the beginning
 and re-design the algorithm so that it works natively with lots of threads.
 This approach is the one taken by [OpenCL]_, where thousands of threads are virtually running in parallel, and is described in paragraph 5.
@@ -408,7 +408,7 @@ Benchmarks
 We present the results from several benchmark tests done using the different algorithm options available in PyFAI.
 All benchmarks were performed using the same bounding box pixel splitting scheme and the resulting integrated profiles are of equivalent quality.
 Execution speed has been measured using the *timeit* module, averaged over 10 iterations (best of 3).
-The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images taken from actual diffraction experiments, which are part of the pyFAI test suite.
+The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images, with pixel ranges of either 16 or 32 bits (int or uint), taken from actual diffraction experiments, which are part of the pyFAI test suite.
 
 The data come from various detectors and differ in the geometry used as well as in the input data type,
 which explains why processing the 16 Mpixel image is faster than the 12 Mpixel image in this benchmark.
@@ -548,7 +548,7 @@ A 15x speed-up factor has been obtained by switching from binary code to the Ope
 Some of the best performances were obtained on a mid-range consumer grade Nvidia GeForce 750Ti thanks to the new *Maxwell* generation chip
 running as fast as high-end graphics based on the *Kepler* architecture (like the Titan), and literally outperforming
 both AMD GPUs and the Xeon-Phi accelerator card.
-Programming CPUs in parallel is as easy as programming GPUs via the use of PyOpenCL interfaced with Python, .
+Programming CPUs in parallel is as easy as programming GPUs via the use of PyOpenCL interfaced with Python.
 
 
 Acknowledgements
