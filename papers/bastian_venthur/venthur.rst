@@ -243,8 +243,8 @@ Python 3.
 Summary and Conclusion
 ----------------------
 
-In this paper we presented Mushu, a free and open source BCI toolbox in Python.
-We introduced Mushu's main data structure and explained the design ideas behind
+In this paper we presented Wyrm, a free and open source BCI toolbox in Python.
+We introduced Wyrm's main data structure and explained the design ideas behind
 the current implementation. We gave a short overview of the existing methods in
 the toolbox and showed how we utilized unit testing to make sure the toolbox
 works as specified, where to find the extensive documentation and some detailed
@@ -255,8 +255,8 @@ our Framework for Feedback and Stimulus Presentation, Wyrm adds the final piece
 to our ongoing effort to provide a complete, free and open source BCI system in
 Python.
 
-Mushu is available under the terms of the MIT license, its repository can be
-found at http://github.com/venthur/mushu.
+Wyrm is available under the terms of the MIT license, its repository can be
+found at http://github.com/venthur/wyrm.
 
 
 Acknowledgements
