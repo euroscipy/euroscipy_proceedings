@@ -198,7 +198,9 @@ only the labels (finger or tongue movement) for the training data were
 available. The task for the competition was to use the training data and its
 labels to predict the 100 labels of the test data. Since the competition is
 over, we also had the true labels for the test data, so we could calculate and
-compare the accuracy of our results.
+compare the accuracy of our results. For this experiment our classification
+accuracy was 92% which is comparable with the winners of the competition whose
+accuracy was: 91%, 87%, and 86%.
 
 The second data set uses Electroencephalography (EEG) recordings, provided by
 the Wadsworth Center, NYS Department of Health, USA. The data were acquired
@@ -220,7 +222,9 @@ collected signals were bandpass filtered from 0.1-60Hz and digitized at 240Hz.
 The data set consists of a training set of 85 characters and a test set of 100
 characters for each of the two subjects. For the trainings sets the labels of
 the characters were available. The task for this data set was to predict the
-labels of the test sets using the training sets and the labels.
+labels of the test sets using the training sets and the labels. In this
+experiment we reached a classification accuracy for single letters of 93,5%, the
+winners of the competition reached 96,5%, 90,5%, and 90%.
 
 We also provide an example online experiment where we use the ERP data set with
 an pseudo amplifier that feeds the data in real-time to the toolbox, to show how
