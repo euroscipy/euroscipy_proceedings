@@ -16,11 +16,11 @@ pyFRET: A Python Library for Single Molecule Fluorescence Data Analysis
 
 .. class:: abstract
 
-   Single molecule Forster resonance energy transfer (smFRET) is a powerful experimental technique for studying the properties of individual biological molecules in solution. 
+   Single molecule Förster resonance energy transfer (smFRET) is a powerful experimental technique for studying the properties of individual biological molecules in solution. 
    However, as adoption of smFRET techniques becomes more widespread, the lack of available software, whether Open Source or commercial, for data analysis, is becoming a significant issue. 
-   Here, we present pyFRET, a fully open source python package for the analysis of data from single-molecule fluorescence experiments from freely diffusing biomolecules. 
+   Here, we present pyFRET, an open source python package for the analysis of data from single-molecule fluorescence experiments from freely diffusing biomolecules. 
    The package provides methods for the complete analysis of a smFRET dataset, from burst selection and denoising, through data visualisation and model fitting. We provide support for both continuous excitation and alternating laser excitation (ALEX) data analysis. 
-   pyFRET is available as a package downloadable from the Python Package Index (pyPI) under an open source MIT/BSD licence, together with links to extensive documentation and tutorials, including example usage and test data. 
+   pyFRET is available as a package downloadable from the Python Package Index (PyPI) under an open source MIT/BSD licence, together with links to extensive documentation and tutorials, including example usage and test data. 
    Additional documentation including tutorials is hosted independently on ReadTheDocs. 
    Through distribution of this software, we hope to lower the barrier for the adoption of smFRET experiments by other research groups and we encourage others to contribute packages for specific analysis needs.    
 
@@ -32,12 +32,12 @@ pyFRET: A Python Library for Single Molecule Fluorescence Data Analysis
 Introduction
 ------------
 
-Forster resonance energy transfer (FRET) [Forster48]_ is a physical process that allows the study of molecular interactions and intramolecular distances. 
+Förster resonance energy transfer (FRET) [Forster48]_ is a physical process that allows the study of molecular interactions and intramolecular distances. 
 FRET is the non-radiative transfer of energy between two fluorescent molecules, where the fraction of energy transferred varies with the sixth power of the inter-fluorophore distance providing an extremely sensitive readout of the distance between two fluorophores. 
 Since the first demonstration that FRET can be used to quantify the distance between two fluorescent dyes [ha96]_, single-molecule FRET (smFRET) has grown in popularity as a tool to investigate the structure and dynamics of biomolecules diffusing in solution [haran03]_, [schuler02]_, [weiss00]_.
 
 In a smFRET experiment, biological molecules are labelled with two fluorescent dyes, selected such that the emission spectrum of one dye (the donor, D) overlaps with the excitation spectrum of the other (the acceptor, A). 
-When the donor and acceptor are physically close in space, exciting the donor dye can result in emission from the acceptor dye, where the proportion of emission from the acceptor and donor, known as the FRET Efficiency, E, depends on the distance, r between the two dyes:
+When the donor and acceptor are physically close in space, exciting the donor dye can result in emission from the acceptor dye, where the proportion of emission from the acceptor and donor, known as the FRET Efficiency, E, depends on the distance, r between the two dyes and :math:`R_0`:, the Förster distance, a dye dependent constant that describes the dye separation at which 50% energy transfer is achieved.  
 
 .. math::
 
@@ -130,7 +130,7 @@ To make pyFRET as usable as possible for a wide range of smFRET researchers, the
 
 pyFRET currently provides basic tools for analysis and visualisation of smFRET data. 
 In the interest of providing the pyFRET infrastructure to smFRET researchers at an early stage, we are choosing to release our software at a relatively early stage of development. 
-pyFRET provides a complete tool-chain for analysis of time-binned smFRET data, but does not currently include a burst-search algorithm for identification of fluorescent bursts from photon arrival times [nir06]_. 
+pyFRET provides a complete tool-chain for analysis of time-binned smFRET data, but does not currently include a burst-search algorithm for identification of fluorescent bursts from photon arrival times [nir06]_. Fluorescent bursts identified using a burst search algorithm can be analysed using pyFRET by initialising a pyFRET data object from the paired burst photon frequencies.   Denoising and cross-talk correction is achieved in exactly the same manner as for time-binned data, but thresholding is not required. 
 Researchers who wish to use pyFRET in its current implementation for data visualisation and analysis, but whose data consists of time-stamped photon arrivals are encouraged to apply their own burst selection algorithms to generate arrays of fluorescent bursts that can be manipulated using pyFRET methods.  
 
 
@@ -176,12 +176,8 @@ Timebins were background corrected and events were selected using a fixed thresh
 FRET efficiency histograms were constructed and fitted to a single gaussian distribution. 
 The mean FRET efficiencies were then plotted against the dye separation distance to show the characteristic sigmoidal curve. 
 Results of the analysis are show in Fig. :ref:`fig3FRET` (FRET) and Fig. :ref:`fig3ALEX` (ALEX). 
-An example analysis script to produce a fitted smFRET histogram is shown below.
+An example analysis script to produce a fitted smFRET histogram is shown below. Here, the parameters auto_donor, auto_acceptor, cross_DtoA, cross_AtoD and g_factor are user-supplied experimentally determined correction factors; T_donor and T_acceptor are user-supplied thresholds for event selection.
 
-|
-|
-|
-|
 |
 
 .. raw:: pdf
@@ -243,7 +239,7 @@ References
 .. [Atr03] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
 
-.. [Forster48]  T. Forster. *Zweischenmolekulare energiewanderung undfluoreszenz*,
+.. [Forster48]  T. Förster. *Zweischenmolekulare energiewanderung undfluoreszenz*,
                 Annalen der Physik, 2:55-75, 1948.
 
 .. [ha96] T. Ha, T. Enderle, D. F. Ogletree, D. S. Chemla, P. R. Selvin and S. Weiss. *Probing the interaction between two single molecules: Fluorescence     resonance energy transfer between a single donor and a single acceptor*,
@@ -279,7 +275,7 @@ References
 ..	[sisamakis2010]	E. Sisamakis, A. Valeri, S. Kalinin, P. J. Rothwell and C. A. M. Seidel. *Accurate Single-Molecule FRET Studies Using Multiparameter Fluorescence Detection*, 
 					Methods in Enzymology, 475:455-514, 2010.
 
-.. [kudryavtsev2012]  author =    V. Kudryavtsev, M. Sikor, S. Kalinin, D. Mokranjac, C. A. M. Seidel and D. C. Lamb. *Combining MFD and PIE for Accurate Single-Pair Förster Resonance Energy Transfer Measurements*,
+.. [kudryavtsev2012]  V. Kudryavtsev, M. Sikor, S. Kalinin, D. Mokranjac, C. A. M. Seidel and D. C. Lamb. *Combining MFD and PIE for Accurate Single-Pair Förster Resonance Energy Transfer Measurements*,
                         ChemPhysChem, 13:1060-1078, 2012.
 
 .. [eggeling01] C. Eggeling, S. Berger, L. Brand, J. R. Fries, J. Schaffer, A. Volkmer and C. A. M. Seidel. *Data registration and selective single-molecule analysis using multi-parameter fluorescence detection*,
