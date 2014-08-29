@@ -52,7 +52,7 @@ Emitted photons are collected through the objective and separated by a dichroic 
   E = \frac{n_A}{n_A + \gamma \cdot n_D}
 
 for n\ :sub:`A` and n\ :sub:`D` photons in the acceptor and donor channels respectively and :math:`\gamma` an experimentally determined instrument-dependent factor that corrects for unequal detection efficiencies. 
-Histograms constructed from calculated FRET efficiencies are fitted with Gaussian distributions to identify populations of fluorescent species [ha96]_.
+Histograms constructed from calculated FRET efficiencies are fitted with Gaussian distributions to identify populations of fluorescent species [ha96]_, [nir11]_.
 
 .. figure:: S1_diagram_scheme.pdf
    
@@ -236,8 +236,6 @@ We welcome requests for custom analysis requirements and are happy to support ot
 
 References
 ----------
-.. [Atr03] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
 
 .. [Forster48]  T. Förster. *Zweischenmolekulare energiewanderung undfluoreszenz*,
                 Annalen der Physik, 2:55-75, 1948.
@@ -301,3 +299,6 @@ References
 
 ..	[matplotlib]	J. D. Hunter. *Matplotlib: A 2D graphics environment*,
 					IEEE Comp. Soc., 9(3):90-95, 2007.
+
+..  [nir11] Ey. Nir, X. Michalet, K. M. Hamadani, T. A. Laurence, D. Neuhauser, Y. Kovchegov and S. Weiss. *Shot-Noise Limited Single-Molecule FRET Histograms: Comparison between Theory and Experiments*,
+            J. Phys. Chem. B., 110(44):22103-22124, November 2011. 
