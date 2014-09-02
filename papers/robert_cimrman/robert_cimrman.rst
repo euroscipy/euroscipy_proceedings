@@ -269,14 +269,16 @@ case.
 
 The particulars of domain geometry description and basis choice will now be
 outlined. For both methods, we will use the domain shown in Figure
-:ref:`domain`. Its geometry is described by [NURBS]_ (Non-uniform rational
-B-spline) curves.
+:ref:`domain`. Its geometry is described by NURBS, see `Geometry Description
+using NURBS`_.
 
 .. figure:: domain.pdf
    :scale: 40%
    :figclass: bht
 
-   The domain with NURBS boundary. :label:`domain`
+   The domain with a curved boundary described by NURBS. The internal
+   lines correspond to several selected iso-lines given by the parametrization
+   of the 2D tensor-product NURBS patch. :label:`domain`
 
 FEM
 ```
