@@ -429,12 +429,16 @@ The Bézier extraction is illustrated in Figure :ref:`bezier-extraction`. It is
 based on the observation that repeating a knot in the knot vector decreases
 continuity of the basis in that knot by one. This can be done in such a way
 that the overall shape remains the same, but the "elements" appear naturally as
-given by non-zero knot spans. In [BE]_ algorithms are developed that allow
-computing *Bézier extraction operator* :math:`C` for each such element such
-that the original (smooth) NURBS basis function :math:`R` can be recovered from
-the local Bernstein basis :math:`B` using :math:`R = CB`. The Bézier extraction
-also allows construction of the Bézier mesh. The code then loops over the
-Bézier elements and assembles local contributions in the usual FE sense.
+given by non-zero knot spans. The final basis restricted to each of the
+elements is formed by the Bernstein polynomials :math:`\bm{B}`.
+
+In [BE]_ algorithms are developed that allow computing *Bézier extraction
+operator* :math:`\bm{C}` for each such element such that the original (smooth)
+NURBS basis function :math:`\bm{R}` can be recovered from the local Bernstein
+basis :math:`\bm{B}` using :math:`\bm{R} = \bm{C}\bm{B}`. The Bézier extraction
+also allows construction of the Bézier mesh, see Figure :ref:`ig-domain-grids`,
+right. The code then loops over the Bézier elements and assembles local
+contributions in the usual FE sense.
 
 .. figure:: bezier-extraction.pdf
    :scale: 30%
@@ -445,10 +449,16 @@ Bézier elements and assembles local contributions in the usual FE sense.
    delineated by vertical lines. :label:`bezier-extraction`
 
 In SfePy, various subdomains can be defined using *regions*, see [SfePy]_. For
-this purpose, a *topological Bézier mesh* is constructed, using only the corner
-vertices of the Bézier mesh elements, because those are interpolatory, i.e.,
-they are in the domain or on its boundary, see Figures :ref:`ig-domain-grids`,
-:ref:`bezier-extraction` right.
+example, below we use the following region definition to specify an internal
+subdomain::
+
+  'vertices in (x > 1.5) & (y < 1.5)'
+
+To make this work with IGA, where no real mesh exists, a *topological Bézier
+mesh* is constructed, using only the corner vertices of the Bézier mesh
+elements, because those are interpolatory, i.e., they are in the domain or on
+its boundary, see Figures :ref:`ig-domain-grids`, :ref:`bezier-extraction`
+right.
 
 Notes on Code Organization
 ``````````````````````````
