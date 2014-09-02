@@ -67,7 +67,8 @@ terminology and the notation from Table :ref:`notation`.
    symbol, meaning
    :math:`\Omega`, solution domain
    :math:`\Omega_h`, discretized solution domain
-   ":math:`\Gamma_D`, :math:`\Gamma_N`", surface subdomains
+   ":math:`\Gamma_D`, :math:`\Gamma_N`", "subdomains representing parts of the
+   domain surface for applying Dirichlet and Neumann boundary conditions"
    :math:`\underline{n}`, unit outward normal
    ":math:`\nabla \equiv [\frac{\partial}{\partial x_1},
    \frac{\partial}{\partial x_2}]^T`", gradient operator
@@ -115,7 +116,7 @@ domain and then integrating by parts.
 
 Both FEM and IGA now replace the infinite function space :math:`H^1(\Omega)` by
 a finite subspace with a basis with a small support on a discretized domain
-:math:`\Omega_h`, see below particular basis choices. Then
+:math:`\Omega_h`, see below for particular basis choices. Then
 :math:`T(\underline{x}) \approx \sum_{k=1}^{N} T_k \phi_k(\underline{x})`,
 where :math:`T_k` are the DOFs and :math:`\phi_k` are the base
 functions. Similarly, :math:`s(\underline{x}) \approx \sum_{k=1}^{N} s_k
