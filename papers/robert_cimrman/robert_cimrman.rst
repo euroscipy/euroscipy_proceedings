@@ -361,10 +361,30 @@ IGA
 In IGA, the CAD geometrical description in terms of NURBS patches is used
 directly for the approximation of the unknown fields, without the intermediate
 FE mesh - the meshing step is removed, which is one of its principal
-advantages. Our domain in Figure :ref:`domain` can be exactly described by a
-single NURBS patch. Several auxiliary grids (called "meshes" as well, but do
-not mistake with the FE mesh) can be drawn for the patch, see Figure
-:ref:`ig-domain-grids`.
+advantages. As described in `Geometry Description using NURBS`_, a
+D-dimensional geometric domain is defined by
+
+.. math::
+
+   \underline{x}(\underline{\xi})
+   = \sum_{A=1}^{n} \bm{P}_A R_{A,p}(\underline{\xi})
+   = \bm{P}^T \bm{R}(\underline{\xi}) \;,
+
+where :math:`\underline{\xi} = \{\xi_1, \dots, \xi_D\}` are the parametric
+coordinates, and :math:`\bm{P} = \{\bm{P}_A\}_{A=1}^{n}` is the set of control
+points. The same NURBS basis is used also for the approximation of PDE
+solutions. For our temperature problem we have
+
+.. math::
+
+   \underline{T}(\underline{\xi})
+   = \sum_{A=1}^{n} T_A R_{A,p}(\underline{\xi})\;,
+   \quad
+   \underline{s}(\underline{\xi})
+   = \sum_{A=1}^{n} s_A R_{A,p}(\underline{\xi})\;,
+
+where :math:`T_A` are the unknown DOFs - coefficients of the basis in the linear
+combination, and :math:`s_A` are the test function DOFs.
 
 .. figure:: ig-domain-grids.pdf
    :scale: 50%
@@ -373,16 +393,29 @@ not mistake with the FE mesh) can be drawn for the patch, see Figure
    From left to right: parametric mesh (tensor product of knot vectors),
    control mesh, Bézier mesh. :label:`ig-domain-grids`
 
+Our domain in Figure :ref:`domain` can be exactly described by a single NURBS
+patch. Several auxiliary grids (called "meshes" as well, but do not mistake
+with the FE mesh) can be drawn for the patch, see Figure
+:ref:`ig-domain-grids`. The parametric mesh is simply the tensor product of the
+knot vectors defining the parametrization - the lines correspond to the knot
+vector values. In our case there are four unique knot values in the first
+parametric axis, while five in the second axis. The control mesh has vertices
+given by the NURBS patch control points and connectivity corresponding to the
+tensor product nature of the patch. The Bézier mesh will be described below.
+The thin blue lines are iso-lines of the NURBS parametrization.
+
 On a single patch, such as our whole domain, the NURBS basis can be arbitrarily
-smooth - this is another compelling feature not easily obtained by FEM.  The
-basis on the patch is uniquely determined by a *knot vector* for each axis, see
-[NURBS]_, and covers the whole patch, see Figure :ref:`ig-base`.
+smooth - this is another compelling feature not easily obtained by FEM. The
+basis functions :math:`R_{A,p}`, :math:`A = 1, \dots, n` on the patch are
+uniquely determined by the knot vector for each axis, and cover the whole
+patch, see Figure :ref:`ig-base`.
 
 .. figure:: ig-base.png
    :scale: 12%
    :figclass: w
 
-   The order 2 NURBS basis on the single patch domain. :label:`ig-base`
+   The degree 2 NURBS basis functions on the single patch
+   domain. :label:`ig-base`
 
 IGA Implementation in SfePy
 ---------------------------
