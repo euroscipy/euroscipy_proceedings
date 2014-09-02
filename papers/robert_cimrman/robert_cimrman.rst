@@ -52,6 +52,122 @@ will be presented and illustrated using examples of PDE solutions.
 
 All computations below were done in SfePy.
 
+Geometry Description using NURBS
+--------------------------------
+
+First, let us briefly review the geometric representation of objects using
+Bézier curves, B-splines and [NURBS]_ (Non-uniform rational B-spline) curves
+and 2D (surface) or 3D (solid) bodies, to elucidate terminology used in
+subsequent sections.
+
+Bézier curves
+`````````````
+
+A degree :math:`p` Bézier curve is defined by a linear combination of
+:math:`p + 1` *Bernstein polynomial basis* functions as
+
+.. math::
+
+   C(\xi) = \sum_{a=1}^{p+1} \bm{P}_a B_{a,p}(\xi) = \bm{P}^T \bm{B}(\xi)
+   \mbox{ for } \xi \in [0, 1] \;,
+
+where :math:`\bm{P} = \{\bm{P}_a\}_{a=1}^{p+1}` is the set of control points and
+:math:`\bm{B}(\xi) = \{B_{a,p}(\xi)\}_{a=1}^{p+1}` is the set of Bernstein
+polynomial basis functions. The Bernstein basis can be defined recursively for
+:math:`\xi \in [0, 1]` as :math:`B_{a,p}(\xi) = (1 - \xi) B_{a,p-1}(\xi) + \xi
+B_{a-1,p-1}(\xi)`, :math:`B_{1,0}(\xi) \equiv 1`, :math:`B_{a,p}(\xi) \equiv 0`
+if :math:`a < 1` or :math:`a > p + 1`.
+
+B-splines
+`````````
+
+A univariate B-spline curve of degree :math:`p` is defined by a linear
+combination of :math:`n` basis functions as
+
+.. math::
+
+   T(\xi) = \sum_{A=1}^{n} \bm{P}_A N_{A,p}(\xi) = \bm{P}^T \bm{N}(\xi) \;,
+
+where :math:`\bm{P} = \{\bm{P}_A\}_{A=1}^{n}` is the set of control points. The
+basis functions are defined by a *knot vector* - a set of non-decreasing
+parametric coordinates :math:`\Xi = \{\xi_1, \xi_2, \dots, \xi_{n + p + 1}\}`,
+where :math:`\xi_A \in \mathbb{R}` is the :math:`A^{th}` knot and :math:`p` is
+the polynomial degree of the B-spline basis functions. Then for :math:`p = 0`
+
+.. math::
+   :type: eqnarray
+
+   N_{A,0}(\xi) &=& 1 \mbox { for } \xi_A \leq \xi < \xi_{A+1} \;, \\
+   &=& 0 \mbox{ otherwise.}
+
+For :math:`p > 0` the basis functions are defined by the Cox-de Boor recursion
+formula
+
+.. math::
+
+   N_{A,p}(\xi) = \frac{\xi - \xi_A}{\xi_{A+p} - \xi_A} N_{A,p-1}(\xi)
+   + \frac{\xi_{A+p+1} - \xi}{\xi_{A+p+1} - \xi_{A+1}}N_{A+1,p-1}(\xi) \;.
+
+Note that it is possible to insert knots into a knot vector without changing
+the geometric or parametric properties of the curve by computing the new set of
+control points in a particular way, see e.g. [BE]_.
+
+NURBS
+`````
+
+B-splines can be used to approximately describe almost any geometry. Their main
+drawback is the fact, that a circular or spherical segment cannot be described
+exactly. This problem was eliminated by the introduction of NURBS in geometry
+modelling.
+
+A NURBS (Non-uniform rational B-spline) of degree :math:`p` is defined by a
+linear combination of :math:`n` rational basis functions as
+
+.. math::
+
+   T(\xi) = \sum_{A=1}^{n} \bm{P}_A R_{A,p}(\xi) = \bm{P}^T \bm{R}(\xi) \;,
+
+where :math:`\bm{P} = \{\bm{P}_A\}_{A=1}^{n}` is the set of control points and
+:math:`\bm{R}(\xi) = \{R_{A,p}(\xi)\}_{A=1}^{p+1}` is the set of rational basis
+functions. The rational basis functions are defined using the B-spline basis
+functions as
+
+.. math::
+
+   R_{A,p}(\xi) = \frac{w_A {N_{A,p}(\xi)}}{W(\xi)} \;, \quad
+   W(\xi) = \sum_{B=1}^{n} w_B N_{B,p}(\xi) \;,
+
+where :math:`w_i` is the weight corresponding to the :math:`i^{th}` basis
+function and :math:`W` is the weight function.
+
+Note that a NURBS curve in :math:`\mathbb{R}^n` is equal to a B-spline curve in
+:math:`\mathbb{R}^{n+1}`:
+
+.. math::
+
+   T(\xi) = \sum_{A=1}^{n} \bar{\bm{P}_A} N_{A,p}(\xi) \;, \quad
+   \bar{\bm{P}_A} = \{w_A \bm{P}_A, w_A\}^T \;.
+
+This means that all algorithms that work for B-splines work also for NURBS.
+
+NURBS Surfaces and Solids
+"""""""""""""""""""""""""
+
+A surface is obtained by the tensor product of two NURBS curves.  The knot
+vector is defined for each axial direction and there are :math:`n \times m`
+control points for :math:`n` basis functions in the first axis and :math:`m`
+basis functions in the second one.
+
+Analogically, a solid is given by tensor product of three NURBS curves.
+
+NURBS Patches
+"""""""""""""
+
+Complex geometries cannot be described by a single NURBS described above, often
+called *NURBS patch* - many such patches might be needed, and special care must
+be taken to ensure required continuity along patch boundaries and to avoid
+holes. A single patch geometry will be used in the following text.
+
 Outline of FEM and IGA
 ----------------------
 
