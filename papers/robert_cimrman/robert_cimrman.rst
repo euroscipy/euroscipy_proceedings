@@ -592,13 +592,13 @@ problem had 1363 DOFs in the linear system, while the IGA problem only 20. The
 mesh depicted in Figure :ref:`fe-domain` was used for the FEM computation.
 
 .. figure:: laplace.png
-   :scale: 27%
+   :scale: 30%
    :figclass: bht
 
    A solution of the 2D Laplace equation. :label:`laplace`
 
 .. figure:: laplace-fem.png
-   :scale: 27%
+   :scale: 30%
    :figclass: bht
 
    A solution of the 2D Laplace equation by FEM. :label:`laplace-fem`
@@ -619,7 +619,7 @@ The corresponding solution can be seen in Figure :ref:`laplace-vf`. The boundary
 conditions stayed the same as in the previous case.
 
 .. figure:: laplace-vf.png
-   :scale: 27%
+   :scale: 30%
    :figclass: bht
 
    A solution of the 2D Laplace equation with volume source in a
@@ -710,7 +710,7 @@ of the previous example, and again :math:`\Gamma_D` consisted of two parts
 :ref:`elasticity`.
 
 .. figure:: elasticity.png
-   :scale: 27%
+   :scale: 30%
    :figclass: bht
 
    A solution of the 3D linear elasticity equation. The undeformed domain is
