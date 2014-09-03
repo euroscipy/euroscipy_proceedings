@@ -163,7 +163,7 @@ Analogically, a solid is given by tensor product of three NURBS curves.
 NURBS Patches
 """""""""""""
 
-Complex geometries cannot be described by a single NURBS described above, often
+Complex geometries cannot be described by a single NURBS outlined above, often
 called *NURBS patch* - many such patches might be needed, and special care must
 be taken to ensure required continuity along patch boundaries and to avoid
 holes. A single patch geometry will be used in the following text.
@@ -377,10 +377,10 @@ solutions. For our temperature problem we have
 
 .. math::
 
-   \underline{T}(\underline{\xi})
+   T(\underline{\xi})
    = \sum_{A=1}^{n} T_A R_{A,p}(\underline{\xi})\;,
    \quad
-   \underline{s}(\underline{\xi})
+   s(\underline{\xi})
    = \sum_{A=1}^{n} s_A R_{A,p}(\underline{\xi})\;,
 
 where :math:`T_A` are the unknown DOFs - coefficients of the basis in the linear
@@ -399,10 +399,11 @@ with the FE mesh) can be drawn for the patch, see Figure
 :ref:`ig-domain-grids`. The parametric mesh is simply the tensor product of the
 knot vectors defining the parametrization - the lines correspond to the knot
 vector values. In our case there are four unique knot values in the first
-parametric axis, while five in the second axis. The control mesh has vertices
+parametric axis and five in the second axis. The control mesh has vertices
 given by the NURBS patch control points and connectivity corresponding to the
 tensor product nature of the patch. The Bézier mesh will be described below.
-The thin blue lines are iso-lines of the NURBS parametrization.
+The thin blue lines are iso-lines of the NURBS parametrization, as in Figure
+:ref:`domain`.
 
 On a single patch, such as our whole domain, the NURBS basis can be arbitrarily
 smooth - this is another compelling feature not easily obtained by FEM. The
@@ -577,7 +578,11 @@ temperature distribution is given by the solution of the Laplace equation
 :math:`\Gamma_1`, :math:`\Gamma_2` of the domain boundary on the opposite edges
 of the patch, see Figure :ref:`domain-regions` - the temperature was fixed to
 0.5 on :math:`\Gamma_1` and to -0.5 on :math:`\Gamma_2`, as can be seen in
-Figure :ref:`laplace`.
+Figure :ref:`laplace`. As mentioned in `Limitations`_, the resulting field
+:math:`T` was sampled by fixed uniform parameter vectors along each axis, and
+the corresponding output FE mesh was generated. The mesh was saved in the VTK
+format and the results visualized using SfePy's ``postproc.py`` script based on
+Mayavi. The generated mesh can be seen as the undeformed wire-frame.
 
 .. figure:: domain-regions.png
    :scale: 30%
