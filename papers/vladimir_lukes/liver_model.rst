@@ -63,14 +63,37 @@ resections.
 The task of numerical modelling of a human liver can be divided into
 two sub-problems. First of all, the geometry of larger vascular
 structures and hepatic parenchyma must be identified from data
-obtained by computed tomography (CT) or magnetic resonance (MR)
-examinations. With the knowledge of liver shape and vascular
+obtained by computed tomography (CT) or magnetic resonance imaging
+(MRI) examinations. With the knowledge of liver shape and vascular
 structures, the numerical simulations of liver perfusion can be
 performed using different mathematical models of blood flow at
 different spatial scales. The question, how to obtain all the
 necessary parameters of our models (permeabilities, etc.) is out of
 the scope of this paper. More information can be found in [RL12]_ or
 [Coo12]_.
+
+The mathematical model of tissue perfusion presented in this paper has
+been already used for similar problems, e.g. for cardiac perfusion
+[Mich13]_. With this in mind, our modelling approach seems to be
+reasonable in the context of current computational biomechanics.
+
+The main part of computation is performed in SfePy, which is an open
+source Python framework for solving various problems described by
+partial differential equations, see [Cim]_, [Cim14]_. Because we
+participate in the development of the code, we have a full control
+over the computational process and we are able to easily modify the
+code or extend it to solve specific tasks. To extract geometrical data
+of the liver and vascular structures from CT/MRI scans, we had to
+develop own tools (DICOM2FEM, LISA, VTreeGen) due to unavailability of
+any suitable open source applications that would meet our demands on
+reliability, efficiency, portability and simplicity of use. The
+processing toolchain for the numerical simulation of liver perfusion
+is depicted in Fig. :ref:`swtools`.
+
+.. figure:: swtoolchain2.pdf
+
+   Toolchain for a patient specific numerical modelling of liver
+   perfusion. :label:`swtools`
 
 
 Volumetric model of liver parenchyma
@@ -80,13 +103,13 @@ We developed an application called DICOM2FEM [Luk]_ for semi-automatic
 segmentation and generation of finite element meshes from CT scans
 stored in the DICOM file format. Because it is a standard format for
 storing information in medical imaging we are able to process data
-from a wide range of sources (Magnetic Resonance, Positron Emission
-Tomography, etc.). A series of the DICOM files is handled by the
-pydicom library [Mas]_. The graphical user interface of DICOM2FEM
+from a wide range of sources (Magnetic Resonance Imaging, Positron
+Emission Tomography, etc.). A series of the DICOM files is handled by
+the pydicom library [Mas]_. The graphical user interface of DICOM2FEM
 (Fig. :ref:`dicom2fem`) is build up using PyQt library and the
-resulting data structures are stored to the VTK file by the help of
-PyVTK. Segmented bodies can be visualized using a simple VTK viewer
-implemented in the application.
+resulting data structures are stored to the VTK (Visualization
+Toolkit) file by the help of PyVTK. Segmented bodies can be visualized
+using a simple VTK viewer implemented in the application.
 
 
 Segmentation
@@ -105,10 +128,10 @@ into account. Various methods for segmentation are compared in
 
 Our segmentation approach is based on the Graph-Cut method described
 in [BVZ01]_ and [BF06]_. We use the original implementation of
-max-flow/min-cut algorithm [Kol]_ and the python wrapper by Andreas Müller
-[Mül]_. Known weakness of the algorithm is great memory demand, memory
-usage is quickly increasing as the data size grows. In our case we
-define a region of interest and downsampling to suppress this
+max-flow/min-cut algorithm [Kol]_ and the python wrapper by Andreas
+Müller [Mül]_. Known weakness of the algorithm is great memory demand,
+memory usage is quickly increasing as the data size grows. In our case
+we define a region of interest and downsampling to suppress this
 disadvantage. The Graph-Cut method combines advantages of region and
 edge based segmentation methods. It minimizes cost function
 :math:`E(A)`:
@@ -190,13 +213,13 @@ filling period of the portal and hepatic systems in the liver. Due to
 physiological conditions, automated detection of the liver portal tree
 is an easier task then in the case of the hepatic tree.
 
-Segmentation of vessel tree is based on the algorithm described in
+Segmentation of a vessel tree is based on the algorithm described in
 [Sel02]_ with several modifications. In order to improve the quality
 of CT data, we use the Gaussian blur denoising filter during the
 preprocessing steps. We have automatic threshold selection based on a
 histogram of the image, but the user is able to control this operation
 by setting seed points. User interactivity is essential when
-segmenting the vena cava, where the blood with dissolved contrast
+segmenting the vena cava, where the blood with a dissolved contrast
 fluid is mixed with the blood from the rest of the body. The segmented
 3D data are smoothed using a set of morphological operations - opening
 and closing.
@@ -204,7 +227,8 @@ and closing.
 .. figure:: vessel_segmentation0.png
    :scale: 30%
 
-   Manual threshold selection for vessel segmentation. :label:`vesselseg`
+   LISA - LIver Surgery Analyser: manual threshold selection for
+   vessel segmentation. :label:`vesselseg`
 
 A voxel-based representation of the vascular structures is transformed
 into a graph representation preserving all important geometric
@@ -251,10 +275,12 @@ optimization process and allows to find the better minimum of a cost
 function. The smoothing-pruning-reconnecting loop is repeated several
 times according to the number of hierarchies in the tree.
 
-.. figure:: liver_gen_hierarchy.pdf
+.. figure:: liver_gen_tree_porta_hs1.png
+   :scale: 20%
 
-   Different hierarchies of the portal tree, hierarchies based on
-   the Horton-Strahler order. :label:`gentreehier`
+   Hierarchy levels (distinguished by the colors) of the generated
+   portal tree, hierarchies based on the Horton-Strahler
+   order. :label:`gentreehier`
 
 We take the main branching part up to a certain diameter of the
 vessels and generate randomly hundreds or thousands points inside the
@@ -270,6 +296,10 @@ on real data with well defined hierarchy are obtained
    portal (red) and hepatic (blue) veins, front and rear
    view. :label:`gentree`
 
+Our Python code for generating artificial vascular trees is called
+VTreeGen, see Fig. :ref:`swtools`. It is not yet publicly available as
+other tools presented in this paper.
+
 
 Mathematical model of liver perfusion
 -------------------------------------
@@ -282,9 +312,10 @@ mm is described by a simple 1D model based on the Bernoulli equation
 while the blood flow at lower hierarchies is modelled as parallel
 flows in a 3D porous media governed by the Darcy's equation. Spatially
 co-existing domains are referred as compartments, each of them
-reflects a certain hierarchy of tissue vascularity. The compartments
-are coupled together and communicate with the 1D flow model through
-sources and sinks, see Refs. [RLJB12]_, [RL12]_, [Mich13]_, [JRLB14]_.
+reflects a certain hierarchy of the tissue vascularity. The
+compartments are coupled together and communicate with the 1D flow
+model through sources and sinks, see Refs. [RLJB12]_, [RL12]_,
+[Mich13]_, [JRLB14]_.
 
 The multicompartment approach allows to respect the different
 characteristic features of perfusion hierarchies present in the tissue
@@ -356,9 +387,10 @@ Fig. :ref:`compartments`
 .. figure:: compartments.pdf
    :scale: 30%
 
-   Schematic drawing of parenchyma compartments connected to the
-   portal and hepatic venous trees via sources and
-   sinks. :label:`compartments`
+   Schematic drawing of spatially co-existing compartments
+   (representing distinct perfusion hierarchies in the liver
+   parenchyma) connected to the reconstructed or generated portal and
+   hepatic venous trees via sources and sinks. :label:`compartments`
 
 The multicompartment Darcy system of :math:`N` compartments can be
 written as:
@@ -401,13 +433,12 @@ Ref. [RLJB12]_.
 
 
 The multicompartment Darcy flow model is implemented in SfePy (Simple
-Finite Elements in Python), see [Cim]_, [Cim14]_. SfePy is a framework for
-solving various kinds of problems (mechanics, physics, biology, ...)
-described by partial differential equations in two or three space
-dimensions by the finite element method. The code is written mostly in
-Python and relies on fast vectorized operations provided by NumPy
-[Oli07]_ arrays. Solvers and algorithms from SciPy [JOP]_ are used as
-well.
+Finite Elements in Python), see [Cim]_, [Cim14]_. SfePy is a framework
+for solving various kinds of problems (mechanics, physics, biology, ...)
+described by partial differential equations in two or three
+space dimensions by the finite element method. The code is written
+mostly in Python (C and Cython are used in some places due to
+speed). Solvers and algorithms from SciPy [JOP]_ are used as well.
 
 
 Transport of contrast fluid
@@ -443,7 +474,7 @@ expressed by the saturation :math:`S`.
 
 .. figure:: liver_simul_w.pdf
 
-   Computed perfusion velocities in the filtration (inter) and hepatic
+   Computed perfusion velocities in the filtration (left) and hepatic (right)
    compartments are depicted. :label:`simulation1`
 
 .. figure:: liver_simul.pdf
@@ -461,7 +492,7 @@ Conclusion
 Using Python with standard modules for scientific computing and image
 processing together with the Python based finite element solver SfePy
 and a collection of developed supporting applications, we are able to
-produce a simplified patient-specific liver model and numerically
+produce a simplified patient specific liver model and numerically
 simulate hepatic blood perfusion.
 
 CT data are processed by the semi-automatic segmentation algorithms
@@ -475,7 +506,13 @@ the finite element method. The model of contrast fluid propagation
 provides time-dependent concentration of the tracer, that can be
 compared with the standard medical measurements. It will allow us to
 solve the inverse problem in order to identify some of the perfusion
-parameters of our models.
+parameters of our models. This is a crucial point for further
+development.
+
+Despite the fact that there is still a wide gap between our current
+research and clinical practice, the LISA application was successfully
+tested by radiologists and surgeons for volumetric analyses of livers
+prior to surgeries and is now actively used.
 
 
 Acknowledgment
@@ -545,7 +582,7 @@ References
          `<http://www.scipy.org>`_.
 
 .. [Kol] V. Kolmogorov. *Max-flow/min-cut.* Home page:
-         `<http://vision.csd.uwo.ca/code/>`.
+         `<http://vision.csd.uwo.ca/code/>`_.
 
 .. [LC87] W. E. Lorensen, H. E. Cline. *Marching Cubes: A high
           resolution 3D surface construction algorithm.* Computer
@@ -571,7 +608,7 @@ References
 
 .. [Mül] A. Müller. *Python wrappers for GCO alpha-expansion and
           alpha-beta-swaps.* Home page:
-          `<https://github.com/amueller/gco_python>`.
+          `<https://github.com/amueller/gco_python>`_.
 
 .. [Oli07] T. E. Oliphant. *Python for scientific computing.* In
            Computing in Science & Engineering,
