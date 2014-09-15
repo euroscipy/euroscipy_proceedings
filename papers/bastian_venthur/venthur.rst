@@ -36,9 +36,11 @@ In the last years Python has gained more and more traction in the scientific
 community. Projects like Numpy [Numpy]_, SciPy [SciPy]_, and Matplotlib
 [Matplotlib]_ have created a strong foundation for scientific computing in
 Python and machine learning packages like Scikit-learn [Scikit-learn]_ or
-packages for data analysis like Pandas [Pandas]_ are building on top of it. Yet,
-in the brain-computer interfacing (BCI) community Matlab is still the dominant
-programming language.
+packages for data analysis like Pandas [Pandas]_ are building on top of it.
+Although in recent years python toolboxes like SCoT for EEG source connectivity
+[Billinger]_, or MNE-Python for MEG and EEG data analysis [Gramfort]_ were
+published, Matlab seems still to be the dominant programming language in the
+brain-computer interface (BCI) community.
 
 A BCI is a system that measures central nervous system activity and translates
 the recorded data into an output suitable for a computer to use as an input
@@ -121,7 +123,7 @@ channel selection, IIR filters, sub-sampling, spectrograms, spectra, baseline
 removal for signal processing; Common Spatial Patterns (CSP) [Ramoser], Source
 Power Co-modulation (SPoC) [Dähne], classwise average, jumping means, signed
 :math:`r^2`-values for feature extraction; Linear Discriminant Analyis (LDA)
-with and without shrinkage for machine learning [Blankertz], and many more. It
+with and without shrinkage for machine learning [Blankertz]_, and many more. It
 is worth mentioning that with scikit-learn you have a wide range of machine
 learning algorithms readily at your disposal. Our data format is very compatible
 with scikit-learn and one can usually apply the algorithms without any data
@@ -299,6 +301,12 @@ References
              assessing the speed of a p300-based brain-computer interface.*
              Rehabilitation Engineering, IEEE Transactions on, 8(2):174–179, Jun
              2000.
+.. [Gramfort] Gramfort, A., Luessi, M., Larson, E., Engemann, D. A., Strohmeier,
+              D., Brodbeck, C., ... & Hämäläinen, M. (2013). *MEG and EEG data
+              analysis with MNE-Python*. Frontiers in neuroscience, 7.
+.. [Billinger] Billinger, M., Brunner, C., & Müller-Putz, G. R. (2014). *SCoT: a
+               Python toolbox for EEG source connectivity*. Frontiers in
+               neuroinformatics, 8. ISO 690	
 .. [Numpy] http://numpy.org
 .. [SciPy] http://scipy.org
 .. [Matplotlib] http://matplotlib.org
