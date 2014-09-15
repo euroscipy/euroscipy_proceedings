@@ -204,27 +204,27 @@ accuracy was: 91%, 87%, and 86%.
 
 The second data set uses Electroencephalography (EEG) recordings, provided by
 the Wadsworth Center, NYS Department of Health, USA. The data were acquired
-using BCI2000’s Matrix Speller paradigm, originally described in. The subject
-had to focus on one out of 36 different characters, arranged in a 6x6 matrix.
-The rows and columns were successively and randomly intensified. Two out of 12
-intensifications contained the desired character (i.e., one row and one column).
-The event-related potential (ERP) components evoked by these target stimuli are
-different from those ERPs evoked by stimuli that did not contain the desired
-character. The ERPs are composed of a combination of visual and cognitive
-components. The subject’s task was to focus her/his attention on characters
-(i.e. one at a time) in a word that was prescribed by the investigator. For each
-character of the word, the 12 intensifications were repeated 15 times before
-moving on to the next character. Any specific row or column was intensified 15
-times per character and there were in total 180 intensifications per character.
-The data was recorded using 64 channel EEG. The 64 channels covered the whole
-scalp of the subject and were aligned according to the 10-20 system. The
-collected signals were bandpass filtered from 0.1-60Hz and digitized at 240Hz.
-The data set consists of a training set of 85 characters and a test set of 100
-characters for each of the two subjects. For the trainings sets the labels of
-the characters were available. The task for this data set was to predict the
-labels of the test sets using the training sets and the labels. In this
-experiment we reached a classification accuracy for single letters of 93,5%, the
-winners of the competition reached 96,5%, 90,5%, and 90%.
+using BCI2000’s Matrix Speller paradigm, originally described in [Donchin]_. The
+subject had to focus on one out of 36 different characters, arranged in a 6x6
+matrix. The rows and columns were successively and randomly intensified. Two out
+of 12 intensifications contained the desired character (i.e., one row and one
+column). The event-related potential (ERP) components evoked by these target
+stimuli are different from those ERPs evoked by stimuli that did not contain the
+desired character. The ERPs are composed of a combination of visual and
+cognitive components. The subject’s task was to focus her/his attention on
+characters (i.e. one at a time) in a word that was prescribed by the
+investigator. For each character of the word, the 12 intensifications were
+repeated 15 times before moving on to the next character. Any specific row or
+column was intensified 15 times per character and there were in total 180
+intensifications per character. The data was recorded using 64 channel EEG. The
+64 channels covered the whole scalp of the subject and were aligned according to
+the 10-20 system. The collected signals were bandpass filtered from 0.1-60Hz and
+digitized at 240Hz. The data set consists of a training set of 85 characters and
+a test set of 100 characters for each of the two subjects. For the trainings
+sets the labels of the characters were available. The task for this data set was
+to predict the labels of the test sets using the training sets and the labels.
+In this experiment we reached a classification accuracy for single letters of
+93,5%, the winners of the competition reached 96,5%, 90,5%, and 90%.
 
 We also provide an example online experiment where we use the ERP data set with
 an pseudo amplifier that feeds the data in real-time to the toolbox, to show how
@@ -295,6 +295,10 @@ References
              spatial filtering of single trial eeg during imagined hand
              movement*. Rehabilitation Engineering, IEEE Transactions on
              8(4):441–446
+.. [Donchin] E. Donchin, K. Spencer, and R. Wijesinghe. *The mental prosthesis:
+             assessing the speed of a p300-based brain-computer interface.*
+             Rehabilitation Engineering, IEEE Transactions on, 8(2):174–179, Jun
+             2000.
 .. [Numpy] http://numpy.org
 .. [SciPy] http://scipy.org
 .. [Matplotlib] http://matplotlib.org
