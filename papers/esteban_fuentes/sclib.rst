@@ -6,7 +6,7 @@
 
 :author: Hector E. Martinez
 :email: hector.martinez@tum.de
-:institution: Physics Department T30F for Theory on Particles and Nuclear Physics at the Technical University of Munich
+:institution: T30f group at the Physics Department of the Technical University of Munich
 
 
 -------------------------------------------------------------------
@@ -23,14 +23,14 @@ SClib, a hack for straightforward embedded C functions in (I)Python
    We also present two use cases for SClib.
 
    In the first set of applications we use SClib to implement a Python script
-   that solves efficiently the Schrödinger equation for bound-states in the
+   that solves efficiently the Schrödinger equation for bound states in the
    context of particle physics. We present an introduction to the situations
    where this script have been used. We also describe the solution to the
    related problem of solving a set of coupled Schrödinger-like equations
    where SClib is used to implement the speed-critical parts of the code. We
    argue that when using SClib within IPython we can use NumPy and Matplotlib
    for the manipulation and visualization of the solutions in an interactive
-   environment with no performance conceading.
+   environment with no performance compromise.
 
    The second case is an engineering application. We use SClib to evaluate the
    control and system derivatives in a feedback control loop for electrical
@@ -54,7 +54,7 @@ work: it maps Python data to C compatible data and provides a way to call
 functions in DLLs or shared libraries.  SClib acts as glue: it puts things
 together for the user, to provide him with an easy to use interface.
 
-.. [#] The code for SClib and example use are availible at <https://github.com/drestebon/SClib>
+.. [#] The code for SClib and example use are available at <https://github.com/drestebon/SClib>
 
 The requirements for SClib are very simple: call a function on an array of
 numbers of arbitrary type and size and return the output of the function, again
@@ -134,21 +134,21 @@ Application in Quarkonium Physics
 
 Motivation
 ----------
-The Schrödinger equation is the one the fundamental equations in physics for
+The Schrödinger equation is one the fundamental equations in physics for
 describing non-relativistic quantum mechanical dynamics. For the applications
 we will present in this section we will focus on the time-independent version
-which in natural units is given by 
+which, in natural units, is given by 
 
 .. math::
    :label: schroe
 
-   \left(-\frac{\nabla_{\mathbf r}^2}{2m}+V(\mathbf{r})\right)\psi(\mathbf{r}) = E\psi(\mathbf{r}).
+   \left(-\frac{\nabla_{\mathbf r}^2}{2\mu}+V(\mathbf{r})\right)\psi(\mathbf{r}) = E\psi(\mathbf{r}).
 
 It corresponds to an eigenvalue equation where the term inside the parenthesis
 in l.h.s. is called the Hamiltonian operator, the value :math:`E`, its
 eigenvalue, is the measurable quantity (the energy) associated with it,
-:math:`m` is the mass (or the reduced mass if the system formed by more than
-one particle) and the wavefunction, :math:`\psi(\mathbf{r})`, is the entity
+:math:`\mu` is the reduced mass of the system  (it correspond the mass of the particle in one-particle systems) 
+and the wavefunction, :math:`\psi(\mathbf{r})`, is the entity
 containing all the information about the system, since its modulus squared
 correspond to the probability density of a given measurement, it has to be
 normalized to unity. The term :math:`V({\mathbf r})` in the Hamiltonian is
@@ -179,7 +179,7 @@ one-dimensional equation given by
 .. math::
    :label: reduced
 
-   \left[-\frac{1}{m}\frac{d^2}{dr^2}+\frac{l(l+1)}{r^2}+V(r)\right]y_{n,l}(r)=E_{n,l}y_{n,l}(r),
+   \left[-\frac{1}{m}\frac{d^2}{dr^2}+\frac{l(l+1)}{mr^2}+V(r)\right]y_{n,l}(r)=E_{n,l}y_{n,l}(r),
 
 where :math:`r` is the relative distance between the quark and the antiquark,
 :math:`l` is the angular momentum quantum number, :math:`m` is the (anti)quark
@@ -223,7 +223,7 @@ obtained from NRQCD integrating out modes that scale like the quark momentum
 [#]_.
 
 .. [#] These EFT exploit the hierarchy of energy scales present in the
-    bound-system. If the relative velocity of between the quark and the antiquark,
+    bound-system. If the relative velocity of the (anti)quark,
     :math:`v`, is small, we have that :math:`mv^2(\sim E)\ll mv(\sim p) \ll m`,
     where :math:`p` is the momentum of the particles and :math:`E` its kinetic
     energy. If one is interested in studying a process that happen at the scale
@@ -261,7 +261,7 @@ For the details about the derivation of the terms present in eq.
 [Pin00]_. It is important to recall that, although it can not be
 evaluated analytically in the whole range of :math:`r`, eq. (:ref:`pnrqcdpot`)
 represents a definite model-independent expression for the quark-antiquark
-potential, contrary to models like the one presented in eq. ({\ref{cornell}).
+potential, contrary to models like the one presented in eq. (:ref:`cornell`).
 
 Including the relativistic corrections to the potential the expression for the
 bound-state mass reads
@@ -290,9 +290,9 @@ numbers of the operators appearing in :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}`.
    Reduced wavefunctions :math:`y_{n,l}(r)` for two steps in the search of the
    eigenvalue :math:`E_{n=1\,l=1}`. For each step in the process to find the
    eigenvalue the nodes of the :math:`y_{n,l}` are counted, only when the
-   value of :math:`E_{n,l}` correspond to an eigenvalue :math:`y_{n,l}` is not
+   value of :math:`E_{n,l}` corresponds to an eigenvalue :math:`y_{n,l}` is not
    divergent. In the plot (a) :math:`E_{n,l} = 3.1\,m` and :math:`y_{n,l}`
-   fulfills the condition of have one node, however, the accuracy in the value
+   fulfills the condition of having one node, however, the accuracy in the value
    of :math:`E_{n,l}` is too low and the function diverges. In the plot (b)
    :math:`E_{n,l} = 3.10952\,m` so :math:`y_{n,l}\rightarrow 0` for larger
    values of :math:`r`. We have used the Cornell potential eq. (:ref:`cornell`)
@@ -305,7 +305,7 @@ Applications of SClib
 The simplest computational problem related to eq. (:ref:`reduced`) is to find
 :math:`E_{n,l}` for a given :math:`n` and :math:`l`. Methods to solve this
 problem have been implemented since long ago (see for instance [Fal85]_), in a
-nutshell, the standard method consist in to apply two known constraints to the
+nutshell, the standard method consist of applying two known constraints to the
 reduced wavefunction :math:`y_{n,l}`:
 
 - The number of nodes of :math:`y_{n,l}(r)` must be equal to :math:`n`.
@@ -317,7 +317,7 @@ reduced wavefunction :math:`y_{n,l}`:
    \int_0^\infty dr[y_{n,l}(r)]^2 = 1.
 
 In general :math:`y_{n,l}(r)` will diverge except when :math:`E_{n,l}`
-correspond to an eigenvalue. The procedure to find the eigenvalue consists in
+corresponds to an eigenvalue. The procedure to find the eigenvalue consists in
 to perform a scan of values of :math:`E_{n,l}` until :math:`y_{n,l}(r)`  has
 :math:`n` nodes and converges for a large enough value of :math:`r` (see Fig.
 1). This implies that for each test value of :math:`E_{n,l}` eq.
@@ -326,7 +326,7 @@ to perform a scan of values of :math:`E_{n,l}` until :math:`y_{n,l}(r)`  has
 available in [Luc98]_.  This script has the advantage that the user can profit
 from the Mathematica built-in functions to plot, integrate or store the
 resulting wavefunctions, however, it has a very poor performance.  With the
-goal of mimic the advantages of this script but without compromising in speed
+goal of mimicking the advantages of this script, but without compromising speed,
 we have developed SChroe.py [#]_, a Python script that uses SClib to implement
 the speed-critical parts of the algorithm. In this script the wavefunctions are
 stored as NumPy arrays [NumPy]_ so when the script is run within IPython [IPy]_
@@ -342,7 +342,7 @@ implementations of the same algorithm.
 .. [#] Code available in <https://github.com/heedmane/schroepy/>
 
 
-.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (\ref{cornell}). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in fig. (\ref{wavefunctions}). All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
+.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in fig. (\ref{wavefunctions}). All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
 
    +----------+-------------------------+--------------------+-------+----------+
    | :math:`n`| :math:`E_{n,l=1}\,\,[m]`| schroe.nb [Luc98]_ | Python| SChroe.py|
@@ -373,7 +373,7 @@ library.
    Long-range energy levels of the first triplet quarkonium state. The lines
    are calculated from eq. (:ref:`mass`) using the relativistic corrections
    derived from the string hypothesis [Bra14a]_. The leading order (LO)
-   correspond to eq. (\ref{cornell}) setting :math:`a=0` and :math:`k=1` (in
+   correspond to eq. (:ref:`cornell`) setting :math:`a=0` and :math:`k=1` (in
    the plot labeled :math:`\sigma`) and :math:`m=3\sqrt{k}`.  This plot shows
    the relative size of the next-to-leading-order (NLO) correction (the term
    proportional to :math:`1/m` in the r.h.s. of eq.  (:ref:`mass`) and the
@@ -394,11 +394,11 @@ in (:ref:`mass`). A parameter fixing of this type was necessary to implement in
 with a mixture of C and SciPy functions using SClib to link both environments
 [#]_.
 
-.. [#] Some of the code will be available once the paper appear online.
+.. [#] Some of the code will be available once the paper appears online.
 
 Another related computational problem that arises from the study of heavy
 quarkonium hybrids, bound-states composed by a quark-antiquark pair plus an
-exited gluon, is to solve a system of :math:`N` Schr\"odinger-like coupled
+exited gluon, is to solve a system of :math:`N` Schrödinger-like coupled
 equations.  Explicitly the system to solve reads
 
 .. math::
@@ -413,9 +413,9 @@ of the nodal theorem [Ama95]_ and convergence conditions for the components of
 the vector wavefunction :math:`u_{j,(n,l)}(r)`. The extension of the nodal
 theorem states that the number of nodes of the determinant of the matrix
 :math:`U_{n,l}(r)`, whose columns are :math:`N` lineal-independent solutions of
-eq. (\ref{coupled}), is equal to :math:`n`. The procedure then consist in a
+eq. (:ref:`coupled`), is equal to :math:`n`. The procedure then consist in a
 scan of values :math:`E_{n,l}`; in each step the set of equations
-(\ref{coupled}) is solved and the nodes of :math:`|U_{n,l}(r)|` are counted for
+(:ref:`coupled`) is solved and the nodes of :math:`|U_{n,l}(r)|` are counted for
 a large enough interval of :math:`r`. As in the one-dimensional case, if
 :math:`E_{n,l}` approached to an eigenvalue the components of
 :math:`u_{j,(n,l)}` converge for large :math:`r`. In the solution presented in
@@ -510,7 +510,7 @@ control :math:`u` that leads the system state :math:`x` towards its target :math
 time [Gru11]_:
 
 
-latex-preamble: \DeclareMathOperator*{\argmin}{arg\,min}
+
 
 .. math::
     :label: feedback
@@ -639,7 +639,7 @@ References
 .. [Fal85]  P. Falkensteiner and H. Grosse and F. Schoeberl and P. Hertel
             Comput. Phys. Comm.    34 , 287 (1985)
 .. [Luc98]  W. Lucha and F. F. Schoberl,
-            *Solving the Schrodinger equation for bound states with Mathematica 3.0,*
+            *Solving the Schrödinger equation for bound states with Mathematica 3.0,*
             Int.  J.  Mod.  Phys.  C    10 , 607 (1999)
 .. [Mat9]   Wolfram Research, Inc.
             Mathematica Version 9.0 (2012)
