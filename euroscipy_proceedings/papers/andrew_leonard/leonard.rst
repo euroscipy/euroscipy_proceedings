@@ -89,26 +89,26 @@ Instrumentation & Method
 Overview of AIA/SDO
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The AIA on NASA's SDO satellite [Lemen2011]_ was launched in February 2010 and started 
-making regular observations in March 2010. AIA takes a 4096 x 4096 full-disk image of 
-the corona in each of ten wavelength channels every ~12 seconds, with a 
-resolution of ~1.2 arcsec per pixel. Seven of these channels observe within the
-EUV wavelength range, of which six are each dominated by emission from a 
-different Fe ion. Figure :ref:`exampleAIAimage` shows an example AIA image 
-using the 17.1nm channel. It has been processed to enhance smaller-scale 
-features using a newly-developed method [Morgan2014]_. The intensity measured 
-in each of the six narrow-band Fe channels (9.4nm, 13.1nm, 17.1nm, 19.3nm, 21.1nm
-and 33.5nm) is dominated by a spectral line of iron at a specific stage of 
-ionisation. Simply speaking, therefore, they correspond to different 
-temperatures of the emitting plasma. The fact that there are six channels 
-observing simultaneously means that the temperature of the corona can be 
-effectively constrained [Guennou2012]_. Another advantage is that relative 
+The AIA on NASA's SDO satellite [Lemen2011]_ was launched in February 2010 and 
+started making regular observations in March 2010. AIA takes a 4096 x 4096 
+full-disk image of the corona in each of ten wavelength channels every ~12 
+seconds, with a resolution of ~1.2 arcsec per pixel. Seven of these channels 
+observe within the EUV wavelength range, of which six are each dominated by 
+emission from a different Fe ion. Figure :ref:`exampleAIAimage` shows an 
+example AIA image using the 17.1nm channel. It has been processed to enhance 
+smaller-scale features using a newly-developed method [Morgan2014]_. The 
+intensity measured in each of the six narrow-band Fe channels (9.4nm, 13.1nm, 
+17.1nm, 19.3nm, 21.1nm and 33.5nm) is dominated by a spectral line of iron at a 
+specific stage of ionisation. Simply speaking, therefore, they correspond to 
+different temperatures of the emitting plasma. The fact that there are six 
+channels observing simultaneously means that the temperature of the corona can 
+be effectively constrained [Guennou2012]_. Another advantage is that relative 
 elemental abundances do not need to be considered when using emission from only 
 one element, thus reducing the associated errors. AIA is therefore beginning to 
-be widely used for this type of study (e.g. [Aschwanden2011]_), as its very high 
-spatial, temporal and thermal resolution make it an excellent source of data 
-for investigating the temperatures of small-scale and/or dynamic features in 
-the corona, as well as for looking at global and long-term temperature 
+be widely used for this type of study (e.g. [Aschwanden2011]_), as its very 
+high spatial, temporal and thermal resolution make it an excellent source of 
+data for investigating the temperatures of small-scale and/or dynamic features 
+in the corona, as well as for looking at global and long-term temperature 
 distributions. 
 
 It is important that the large amount of data produced by AIA 
@@ -130,20 +130,23 @@ The Differential Emission Measure
 Coronal emission lines originate from a wide range of ions which form at 
 different temperatures. By using multi-wavelength observations of the corona to
 compare the brightnesses of the emission due to these ions, one can infer the 
-temperature of the corona at the location of the emission. This temperature is 
-usually expressed in terms of the Differential Emission Measure (DEM), which 
-describes the column electron density for a given line-of-sight (LOS) as a 
-function of temperature:
+temperature of the corona at the location of the emission. Since the plasma may 
+have a range of temperatures rather than being isothermal, it is common to 
+describe the amount of plasma emitting along a given line-of-sight (LOS) as a 
+function of temperature. This function is called the Differential Emission
+Measure (DEM). The DEM is usally expressed in terms of the electron density, 
+:math:`n_e` (which is not known unless already determined by some other method):
 
 .. math::
     
-    \textrm{DEM}(T)=n_{e}^{2}\frac{\textrm{d}z}{\textrm{d}T}
+    \textrm{DEM}(T) = n_{e}^{2}\frac{\textrm{d}z}{\textrm{d}T}
 
-where :math:`n_{e}^{2}\,\textrm{d}z` is the emission measure (EM), which tells 
-us the total electron density along that LOS for all temperatures. The width of
-the DEM provides a measure of how multi-thermal the plasma is, and the peak 
-temperature is the dominant temperature, i.e.: the temperature of the majority
-of the plasma.
+where :math:`z` is the distance along the LOS and :math:`T` is electron 
+temperature.
+Determining the DEM therefore gives us an estimate of the column electron 
+density. The width of the DEM provides a measure of how multi-thermal the 
+plasma is. The temperature of peak of the DEM is the dominant temperature, i.e.: 
+the temperature of the majority of the plasma.
 
 The intensity measured by pixel x of a particular channel i on an instrument 
 can be expressed as a convolution of the DEM and the temperature response 
@@ -174,17 +177,19 @@ Preprocessing
 
 Level 1.0 AIA data were obtained using SunPy's wrappers around the Virtual 
 Solar Observatory. These data were corrected for exposure time and further 
-processed to level 1.5. This extra level of processing provides the correct spatial coalignment necessary for a quantitative comparison of the different channels. To this end, the AIA images 
-used were processed using the SunPy aiaprep() function to ensure that all 
-images used were properly rescaled and coaligned. aiaprep() rotates the images 
-so that solar north points to the top of the image, scales them so that each 
-pixel is exactly 0.6 arcsec, and recentres them so that solar centre coincides 
-with the centre of the image. This is achieved using an affine transform and 
-bi-cubic interpolation. All images were then normalised by dividing the values 
-in each pixel for each wavelength by the value in that pixel for a selected 
-wavelength, which was arbitrarily chosen as the 17.1nm channel. The value of 
-the 17.1nm image was therefore 1 in all pixels, and the images from all other 
-channels are given as a ratio of the 17.1nm intensity. 
+processed to level 1.5. This extra level of processing provides the correct 
+spatial coalignment necessary for a quantitative comparison of the different 
+channels. To this end, the AIA images used were processed using the SunPy 
+aiaprep() function to ensure that all images used were properly rescaled and 
+coaligned. aiaprep() rotates the images so that solar north points to the top 
+of the image, scales them so that each pixel is exactly 0.6 arcsec, and 
+recentres them so that solar centre coincides with the centre of the image. 
+This is achieved using an affine transform and bi-cubic interpolation. All 
+images were then normalised by dividing the values in each pixel for each 
+wavelength by the value in that pixel for a selected wavelength, which was 
+arbitrarily chosen as the 17.1nm channel. The value of the 17.1nm image was 
+therefore 1 in all pixels, and the images from all other channels are given as 
+a ratio of the 17.1nm intensity. 
 
 Temperature response functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
