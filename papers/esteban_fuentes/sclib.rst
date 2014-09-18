@@ -69,7 +69,7 @@ names of the functions to be called:
    In [1]: import SClib as sc
    In [2]: lib = sc.Clib('test.so', ['fun'])
 
-The functions are then available as a members of the library and can be called
+The functions are then available as members of the library and can be called
 with the appropriate number of arguments, which are one dimensional arrays of
 numbers.  The function returns a list containing the output arrays of the
 function:
