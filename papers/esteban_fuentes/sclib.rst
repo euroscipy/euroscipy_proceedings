@@ -453,8 +453,7 @@ where
    Fig. (a) and  :math:`E_{n=1,l=1} = 1.18789\,m` for Fig. (b).
 
 In all the applications described in this section the combination of SClib and
-the SciPy library within IPython provided a powerful interactive environment
-based entirely on open source software for solving problems that require a high
+the SciPy library within an interactive environment like IPython provided a powerful framework based entirely on open source software for solving problems that require a high
 performance and visualization tools.
 
 Application in Control Engineering
