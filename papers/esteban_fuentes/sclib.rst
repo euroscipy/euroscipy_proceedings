@@ -286,7 +286,7 @@ numbers of the operators appearing in :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}`.
 .. figure:: fig-1.png
    :align: center
    :figclass: htb
-
+   
    Reduced wavefunctions :math:`y_{n,l}(r)` for two steps in the search of the
    eigenvalue :math:`E_{n=1\,l=1}`. For each step in the process to find the
    eigenvalue the nodes of the :math:`y_{n,l}` are counted, only when the
@@ -298,6 +298,8 @@ numbers of the operators appearing in :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}`.
    values of :math:`r`. We have used the Cornell potential eq. (:ref:`cornell`)
    with parameters :math:`m = 1` :math:`a = 0.1`, :math:`k=0.5m^2`, all
    dimensions defined in terms of the mass.
+
+
 
 Applications of SClib
 ---------------------
@@ -342,18 +344,18 @@ implementations of the same algorithm.
 .. [#] Code available in <https://github.com/heedmane/schroepy/>
 
 
-.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in fig. (\ref{wavefunctions}). All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
+.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
 
    +----------+-------------------------+--------------------+-------+----------+
    | :math:`n`| :math:`E_{n,l=1}\,\,[m]`| schroe.nb [Luc98]_ | Python| SChroe.py|
    +----------+-------------------------+--------------------+-------+----------+
-   | 0        | 2.15789                 | 98.88              | 25.46 | 11.11    |
+   | 0        | 2.15789                 | 98.88              | 25.46 | 0.66     |
    +----------+-------------------------+--------------------+-------+----------+
-   | 1        | 3.10952                 | 124.14             | 30.95 | 12.65    |
+   | 1        | 3.10952                 | 124.14             | 30.95 | 0.75     |
    +----------+-------------------------+--------------------+-------+----------+
-   | 2        | 3.93850                 | 135.68             | 35.32 | 14.93    |
+   | 2        | 3.93850                 | 135.68             | 35.32 | 0.84     |
    +----------+-------------------------+--------------------+-------+----------+
-   | 20       | 13.5995                 | 370.0              | 88.04 | 32.13    |
+   | 20       | 13.5995                 | 370.0              | 88.04 | 1.99     |
    +----------+-------------------------+--------------------+-------+----------+
 
 In [Bra14]_ SChroe.py has been used to evaluate the relativistic corrections to
@@ -446,7 +448,7 @@ where
    matrix potential given in (:ref:`matrixpotential`). We have used
    :math:`m=1`, :math:`a_0=1`, :math:`b_0=0.5`, :math:`a_1=2` and
    :math:`b_1=0.1`. The eigenvalues are :math:`E_{n=0,l=1} = 1.01727\,m` for
-   fig. (a) and  :math:`E_{n=1,l=1} = 1.18789\,m` for fig. (b).
+   Fig. (a) and  :math:`E_{n=1,l=1} = 1.18789\,m` for Fig. (b).
 
 In all the applications described in this section the combination of SClib and
 the SciPy library within IPython provided a powerful interactive environment
