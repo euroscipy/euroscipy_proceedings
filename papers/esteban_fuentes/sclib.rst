@@ -10,7 +10,7 @@
 
 
 -------------------------------------------------------------------
-SClib, a hack for straightforward embedded C functions in (I)Python
+SClib, a hack for straightforward embedded C functions in Python
 -------------------------------------------------------------------
 
 .. class:: abstract
@@ -38,7 +38,7 @@ SClib, a hack for straightforward embedded C functions in (I)Python
    run simulations of the control loop a la Simulink. The use of C code not
    only boosts the speed of the simulations, but also enables to test the
    exact same code that we use in the test rig to get experimental results.
-   Again, integration with (I)Python gives us the flexibility to analyze and
+   Again, integration with IPython gives us the flexibility to analyze and
    visualize the data.
 
 .. class:: keywords
@@ -335,13 +335,15 @@ stored as NumPy arrays [NumPy]_ so when the script is run within IPython [IPy]_
 together with SciPy [SciPy]_, NumPy and Matplotlib [Mplot]_ the user can profit
 of the same or more flexibility as with the Mathematica script plus a boosted
 speed. In table 1 we compare the performance of SChroe.py against other
-implementations of the same algorithm.
+implementations of the same algorithm [#]_.
 
 .. [#] The paper describing the script ranks fifth among the most cited papers
    (91 citations) of the International Journal of Modern Physics C with the last
-   citation from  July 2014.}
+   citation from  July 2014.
 
 .. [#] Code available in <https://github.com/heedmane/schroepy/>
+
+.. [#] Although the aim of this paper is not to compare the efficiency of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that seem to offer better performance than the current version of SChroe.py, see for instance [dfatom]_.
 
 
 .. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
@@ -365,7 +367,7 @@ relativistic corrections :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}` appearing in
 regime the interaction between the quark and the antiquark can be described by
 a string. In Fig. 2 we show some of the energy levels (masses) corresponding to
 the string spectrum. It is noteworthy to mention that all the numerical
-calculations and plots of that paper were done with (I)Python using the SciPy
+calculations and plots of that paper were done with IPython using the SciPy
 library.
 
 .. figure:: fig-2.png
@@ -422,7 +424,7 @@ a large enough interval of :math:`r`. As in the one-dimensional case, if
 :math:`E_{n,l}` approached to an eigenvalue the components of
 :math:`u_{j,(n,l)}` converge for large :math:`r`. In the solution presented in
 [Ber14]_ the performance-intensive parts of the implementation rely on C
-functions linked to the (I)Python interface trough SClib.
+functions linked to the IPython interface trough SClib.
 
 As an example of the application of the method implemented in [Ber14]_, in Fig.
 3 we show the results for the search of the first two eigenvalues and
@@ -588,7 +590,7 @@ Final Remark
 ============
 
 We hope the applications of SClib scope beyond the ones listed in this paper
-since we believe it provides a simple but powerful way to boost (I)Python
+since we believe it provides a simple but powerful way to boost Python
 performance.
 
 
@@ -643,6 +645,9 @@ References
 .. [Luc98]  W. Lucha and F. F. Schoberl,
             *Solving the Schrödinger equation for bound states with Mathematica 3.0,*
             Int.  J.  Mod.  Phys.  C    10 , 607 (1999)
+
+.. [dfatom] Čertík, O., Pask, J. E., Vackář, J. (2013). dftatom: A robust and general Schrödinger and Dirac solver for atomic structure calculations. Computer Physics Communications, 184(7), 1777–1791.
+
 .. [Mat9]   Wolfram Research, Inc.
             Mathematica Version 9.0 (2012)
 .. [Bra14a] N. Brambilla, M. Groher, H. E. Martinez and A. Vairo,
@@ -656,7 +661,7 @@ References
 .. [Ber14]  M. Berwein and H. E. Martinez,
             TUM-EFT 48/14, In preparation.
 .. [Ama95]  H. Amann and P. Quittner,
-            *A nodal theorem for coupled systems of Schroedinger equations and the number of bound states,*
+            *A nodal theorem for coupled systems of Schrödinger equations and the number of bound states,*
             Journal of Mathematical Physics    36 , 4553 (1995),
             doi:10.1063/1.530907.
 .. [Mplot] John D. Hunter. Matplotlib: A 2D Graphics Environment, Computing in Science  & Engineering,    9 , 90-95 (2007)	
