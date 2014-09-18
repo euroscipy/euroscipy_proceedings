@@ -219,24 +219,24 @@ DEM-finding procedure
 
 The general method for estimating the DEM is an iterative procedure which tests
 multiple possible DEMs. Each DEM is substituted into equation 1 to produce a 
-synthetic pixel value for each AIA wavelength channel (i). This expected 
-outcome is then compared to the actual values measured for all pixel positions 
-(x) in each wavelength, giving a goodness-of-fit value for each pixel for a 
-given DEM (equation :ref:`goodness-of-fit`), defined by the difference in pixel
-values averaged over all wavelength channels:
+synthetic pixel value for each AIA wavelength channel (:math:`i`). This 
+expected outcome is then compared to the actual values measured for all pixel 
+positions (:math:`x`) in each wavelength, giving a goodness-of-fit value for 
+each pixel for a given DEM (equation :ref:`goodness-of-fit`), defined by the 
+difference in pixel values averaged over all wavelength channels:
 
 .. math::
     :label: goodness-of-fit
 
     \mathrm{fit}(x)=\frac{1}{n_{i}}\sum_{i}{|I_{measured}(x,i)-I_{synth}(x,i)|}
 
-Since the synthetic emission values do not change unless one wishes to apply 
-different assumptions which affect the temperature response (electron density, 
-ionisation equilibrium, etc.), the calculation time for the method can be 
-reduced by saving these emission values and reusing them for each comparison. 
 By repeating this calculation with a number of assumed DEMs, the DEM 
 corresponding to the smallest goodness-of-fit value provides an estimate of the
-actual plasma temperature distribution.
+actual plasma temperature distribution. The synthetic emission for each 
+wavelength will always be the same for a given DEM unless one wishes to apply 
+different assumptions which affect the temperature response (electron density, 
+ionisation equilibrium, etc.). The calculation time per comparison can therefore 
+be reduced by saving these emission values and reusing them.
 
 For this kind of iterative method to find a solution within a feasible amount 
 of time, a general DEM profile must be assumed. A Gaussian profile is a good choice for the following reasons:
