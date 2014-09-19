@@ -265,8 +265,22 @@ Though this particular study uses a Gaussian DEM, the method could also be used
 with DEMs of any other form, such as a delta function,
 top hat function, polynomial, etc. A comparison of the effect of using some of 
 these shapes can be found in [Guennou2012a]_. An active area of research is the 
-emission of plasma with a Kappa energy distribution - which approximates the 
+emission of plasma with a Kappa energy distribution, which approximates the 
 bulk Gaussian DEM with a high-energy population [Mackovjak2014]_.
+
+The code takes a simplified approach by finding only the peak temperature of 
+the DEM, and assuming the height and width to be fixed. The width was set to be 
+0.1 and since the data are normalised relative to a given wavelength, the DEM 
+height is also normalised to unity. A narrow width is selected for the DEM 
+because, as shown by [Guennou2012a]_, the greater the width of the plasma DEM, 
+the less likely it is that the inversion will correctly determine the DEM peak 
+temperature (this is also shown by the tests described in section 
+:ref:`modeltests`. With a narrow assumed width, plasmas which do have narrow 
+DEMs will at least be correctly identified, whereas plasmas with a wide DEM 
+would not necessarily be correctly identified by using a model DEM with a 
+similar width. A Gaussian with a width of ~0.1 is the narrowest multi-thermal 
+distribution which can be distinguished from an isothermal plasma [Judge2010]_, 
+so a narrower distribution would not necessarily provide meaningful results.
 
 A Fortran extension to the main code was written to iterate through each 
 DEM peak temperature value for each pixel in the image, and to calculate the
@@ -277,8 +291,8 @@ which best reproduce the observations are returned to the main Python code.
 Although the DEM inherently describes a multi-thermal distribution,
 only the temperature of the peak of the DEM is stored and displayed in the 
 temperature maps. This value is useful as it is the temperature which 
-corresponds to the bulk temperature, and expressing the
-DEM as a single value also aids visualisation.
+corresponds to the bulk temperature, and expressing the DEM as a single value 
+also aids visualisation.
 
 The DEM peak temperatures considered ranged from log(T)=5.6 - 7.0, in 
 increments of 0.01 in log temperature. Outside this range of 
@@ -286,20 +300,6 @@ temperatures, AIA has significantly lower temperature response and cannot
 provide meaningful results. Within this range, however, the temperature is well
 constrained by the response functions of the AIA channels [Guennou2012]_ and 
 can in principle be calculated to within ~0.015 [Judge2010]_.
-
-The code takes a simplified approach by finding only the peak temperature of 
-the DEM, and assuming the height and width to be fixed. The width was set to be 
-0.1 and since the data are normalised relative to a given wavelength, the DEM 
-is also normalised to unity. A narrow width is 
-selected for the DEM because, as shown by [Guennou2012a]_, the greater the width 
-of the plasma DEM, the less likely it is that the inversion will correctly 
-determine the DEM peak temperature (this is also shown by the tests described 
-in section :ref:`modeltests`. With a narrow assumed width, plasmas which do have narrow DEMs will at least be correctly identified, whereas 
-plasmas with a wide DEM would not necessarily be correctly identified by using 
-a model DEM with a similar width. A Gaussian with a width of ~0.1 
-is the narrowest multi-thermal distribution which can be distinguished from an 
-isothermal plasma [Judge2010]_, so a narrower distribution would not 
-necessarily provide meaningful results.
 
 This method is very similar in principle to the Gaussian fitting methods used 
 by, e.g.: [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency is achieved by only varying one parameter (the bulk temperature). Since the height 
