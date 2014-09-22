@@ -299,7 +299,7 @@ increments of 0.01 in log temperature. Outside this range of
 temperatures, AIA has significantly lower temperature response and cannot 
 provide meaningful results. Within this range, however, the temperature is well
 constrained by the response functions of the AIA channels [Guennou2012]_ and 
-can in principle be calculated to within ~0.015 [Judge2010]_.
+can in principle be calculated with a precision of ~0.015 [Judge2010]_.
 
 This method is very similar in principle to the Gaussian fitting methods used 
 by, e.g.: [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency is achieved by only varying one parameter (the bulk temperature). Since the height 
@@ -321,11 +321,12 @@ temperature map) by a significant margin.
 Software features
 ~~~~~~~~~~~~~~~~~
 
-This method stores the temperature maps as instances of  SunPy's Map object. As 
-such, temperature maps can easily be manipulated using any of the Map methods. 
-For example, a temperature map of the full solar disk can be cropped using 
-Map.submap() in order to focus on a smaller region of the image. The Map.plot()
-method also makes displaying the temperature maps very easy.
+The method presented in this work stores the temperature maps as instances of 
+SunPy's Map object. As such, temperature maps can easily be manipulated using 
+any of the Map methods. For example, a temperature map of the full solar disk 
+can be cropped using Map.submap() in order to focus on a smaller region of the 
+image. The Map.plot() method also makes displaying the temperature maps very 
+easy.
 
 Another advantage to using SunPy for this work is that SunPy's abilities to 
 query online databases makes it very easy to get AIA data and to search for 
