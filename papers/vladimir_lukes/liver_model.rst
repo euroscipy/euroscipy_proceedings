@@ -118,7 +118,7 @@ Segmentation
 Segmentation of the liver parenchyma from computed tomography or
 magnetic resonance data is hard to solve because of low density
 (intensity) contrast to adjacent organs like stomach or
-hearth. Moreover, big individual anatomy differences should be taken
+hearth. Moreover, large individual anatomy differences should be taken
 into account. Various methods for segmentation are compared in
 [MRMM12]_ and [Hei09]_.
 
@@ -128,7 +128,7 @@ into account. Various methods for segmentation are compared in
 
 Our segmentation approach is based on the Graph-Cut method described
 in [BVZ01]_ and [BF06]_. We use the original implementation of
-max-flow/min-cut algorithm [Kol]_ and the python wrapper by Andreas
+max-flow/min-cut algorithm [Kol]_ and the Python wrapper by Andreas
 Müller [Mül]_. Known weakness of the algorithm is great memory demand,
 memory usage is quickly increasing as the data size grows. In our case
 we define a region of interest and downsampling to suppress this
@@ -169,7 +169,7 @@ Mesh generation
 
 The result of the segmentation process is a 3-dimensional binary array
 (voxel array) together with information about the real size of the
-voxels. The marching cube algorithm [LC87]_ is used to generate
+voxels. The marching cubes algorithm [LC87]_ is used to generate
 polygonal mesh of the organ surface. To improve the quality of surface
 mesh, we apply the Taubin smoothing procedure [Tau95]_ that is able to
 preserve the total volume of the segmented organ. The smoothing
@@ -178,7 +178,7 @@ and provides meshes of good quality.
 
 The smoothed surface mesh is consequently processed by a tetrahedral
 meshing function to get the volumetric FE model of the organ. The
-marching cube algorithm is computationally expensive so we implemented
+marching cubes algorithm is computationally expensive so we implemented
 the fast mesh generator (volumetric or surface), but it produces a
 mesh with stair-step surface which can not be easily smoothed. The
 fast generator is mainly used for testing purposes or for quick
@@ -320,19 +320,19 @@ model through sources and sinks, see Refs. [RLJB12]_, [RL12]_,
 The multicompartment approach allows to respect the different
 characteristic features of perfusion hierarchies present in the tissue
 parenchyma. Each compartment is associated with a permeability tensor
-that somehow reflects the vascular structure (vessel size and
-orientation) at a given hierarchy level. The fluid exchange between
-different compartments is driven by a coupling coefficient.
+that reflects the vascular structure (vessel size and orientation) at
+a given hierarchy level. The fluid exchange between different
+compartments is driven by a coupling coefficient.
 
 
 Blood flow in vascular trees
 ============================
 
-We assume that the simple "1D" flow model gives sufficient accuracy in
-the context of our simulations. The main advantage of the "1D" model
-is the minimal computational cost compared to a full "3D" flow
+We assume that the simple 1D flow model gives sufficient accuracy in
+the context of our simulations. The main advantage of the 1D model
+is the minimal computational cost compared to a full 3D flow
 simulation which obviously would give more realistic results. A
-detailed study of "3D" and "1D" flow models can be found in [JBRV14]_.
+detailed study of 3D and 1D flow models can be found in [JBRV14]_.
 
 The mathematical model of the flow in the branching tree can be
 described by the mass conservation and Bernoulli equations:
