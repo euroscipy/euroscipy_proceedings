@@ -295,7 +295,8 @@ DEM peak temperature value for each pixel in the image, and to calculate the
 corresponding goodness-of-fit value. Since the images used are very large (six
 4096 x 4096 images for each temperature map), only the running best fit value 
 and the corresponding temperature are stored for each pixel. The temperatures 
-which best reproduce the observations are returned to the main Python code.
+which best reproduce the observations (i.e., the temperatures with the lowest
+goodness-of-fit values in each pixel) are returned to the main Python code.
 Although the DEM inherently describes a multi-thermal distribution,
 only the temperature of the peak of the DEM is stored and displayed in the 
 temperature maps. This value is useful as it is the temperature which 
@@ -438,7 +439,8 @@ failure of the method for these conditions.
     DEM temperature found by method. Middle: absolute difference between 
     solution and model DEM peak temperature as a percentage of the latter. 
     Right: goodness-of-fit values corresponding to solution temperatures, shown 
-    on a logarithmic scale. :label:`model-wid001`
+    on a logarithmic scale. Lower values indicate a better fit to the 
+    observations. :label:`model-wid001`
 
 
 Results
