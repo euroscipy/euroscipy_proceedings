@@ -390,13 +390,13 @@ accuracy of the inversions.
 
 Figure :ref:`model-wid001` demonstrates the accuracy of the temperature map 
 method when used to find model DEMs from synthesised emission. For a range of 
-model DEM peak temperatures and Gaussian widths and a fixed emission measure, 
-the plot shows (from left to right), the peak DEM temperature inferred by the 
-method, the percentage diference between the solution and the true DEM peak 
-temperature, and the goodness-of-fit values associated with the solutions. The 
-temperatures obtained using this method vary only with the peak temperature and 
-width of the model DEM; varying the emission measure of the model appears to 
-cause no change in the solution.
+model DEM peak temperatures and Gaussian widths and a fixed height, the plot
+shows (from left to right), the peak DEM temperature inferred by the method,
+the percentage diference between the solution and the true DEM peak temperature,
+and the goodness-of-fit values associated with the solutions. The temperatures
+obtained using this method vary only with the peak temperature and width of the
+model DEM; varying the height of the model DEM appears to cause no change in 
+the solution.
 
 For model DEM widths of < 0.1, model DEM peak temperatures within the range 
 considered by the temperature map method are generally found with reasonable 
@@ -434,13 +434,33 @@ failure of the method for these conditions.
     :scale: 35%
 
     Assessment of method accuracy for model DEMs with various peak temperatures
-    and widths, and with a constant emission measure (height). Results for all 
-    values of emission measure tested were found to be identical. Left: peak 
-    DEM temperature found by method. Middle: absolute difference between 
-    solution and model DEM peak temperature as a percentage of the latter. 
-    Right: goodness-of-fit values corresponding to solution temperatures, shown 
-    on a logarithmic scale. Lower values indicate a better fit to the 
-    observations. :label:`model-wid001`
+    and widths, and with a constant height. Results for all values of emission
+    measure tested were found to be identical. Left: peak DEM temperature found
+    by method. Middle: absolute difference between solution and model DEM peak
+    temperature as a percentage of the latter. Right: goodness-of-fit values
+    corresponding to solution temperatures, shown on a logarithmic scale. Lower
+    values indicate a better fit to the observations. The values of the left,
+    middle and right plots are shown for a DEM width of 0.1 in Figures
+    :ref:`solution-slice`, :ref:`diff-slice` and :ref:`fit-slice`, respectively. 
+    :label:`model-wid001`
+
+.. figure:: dataslice.png
+    :align: center
+
+    Plot of the solution temperature produced for a given input DEM peak 
+    temperature and a DEM width of 0.1. :label:`solution-slice`
+
+.. figure:: diffslice.png
+    :align: center
+
+    Plot of the percentage difference between input and solution temperatures
+    for a DEM width of 0.1. :label:`diff-slice`
+
+.. figure:: fitslice.png
+    :align: center
+
+    Plot of the goodness-of-fit values produced for a given input DEM peak 
+    temperature and a DEM width of 0.1. :label:`fit-slice`
 
 
 Results
