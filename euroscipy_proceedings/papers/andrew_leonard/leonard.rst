@@ -377,10 +377,10 @@ Similarly, the peak temperatures of the model DEMs have reduced spacing
 relative to the resolution of the method in order to determine the effect 
 this has on the output. Only Gaussian model DEMs were used because different 
 multi-thermal distributions are difficult to distinguish using only AIA data 
-[Guennou2012a]_ and other such shapes would therefore likely be reproduced with 
-similar accuracy to Gaussian DEMs. Gaussians were therefore used for 
-consistancy with the method itself. In any case, a full comparison of different 
-forms of DEM is beyond the scope of this study.
+[Guennou2012a]_. Gaussian DEMs and DEMs of other shapes would therefore likely 
+produce similar results, so Gaussians were chosen for consistancy with the 
+method itself. In any case, a full comparison of different forms of DEM is
+beyond the scope of this study.
 
 Attempting to reconstruct known DEM functions also makes it possible to 
 directly compare the input and output DEM functions, which is of course not 
