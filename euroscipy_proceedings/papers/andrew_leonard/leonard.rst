@@ -212,7 +212,15 @@ correction factor of 6.7 was applied to the 9.4nm response function for
 functions were saved and reloaded into Python for use with this method. As with 
 the AIA images, each of these response functions was normalised to the 17.1nm 
 response by dividing the value at each temperature by the corresponding value 
-for 17.1nm.
+for 17.1nm. The response functions used in this method (before normalisation)
+are shown in figure :ref:`response-plot`.
+
+.. figure:: responses.png
+    :align: center
+
+    Temperature response of each of the Fe channels on AIA. Here the empirical
+    correction to the 9.4nm response has been applied but the normalisation
+    has not (see text). :label:`response-plot`
 
 DEM-finding procedure
 ~~~~~~~~~~~~~~~~~~~~~
