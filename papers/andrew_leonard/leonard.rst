@@ -158,10 +158,11 @@ The temperature response combines the wavelength response of the instrument and
 the contribution function, which describes the emission of the plasma at a 
 given temperature based on atomic physics models. Unfortuately, equation 
 :ref:`pixelval` is an ill-posed problem and as such there exists no unique 
-solution without imposing physical contraints. Multiple schemes have therefore 
-been designed to invert this equation and infer the DEM, but such inversions 
-suffer from the prolems of ill-posed equations [Judge1997]_, which are
-amplified by the typically high errors on solar measurements.
+solution without imposing physical contraints [Judge1997]_. Multiple schemes
+have been designed to invert this equation and infer the DEM by applying
+various physical assumptions. However, these assumptions are sometimes
+difficult to justify and the accuracy of the results is also reduced by the
+typically high errors on solar measurements.
 
 This work presents an extremely fast method of estimating the temperature of 
 coronal plasma from AIA images. This method is implemented using the 
