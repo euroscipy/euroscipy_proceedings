@@ -179,13 +179,13 @@ processed to level 1.5. This extra level of processing provides the correct spat
 used were processed using the SunPy ``aiaprep()`` function to ensure that all 
 images used were properly rescaled and coaligned. ``aiaprep()`` rotates the
 images so that solar north points to the top of the image, scales them so that
-each pixel is exactly 0.6 arcsec, and recentres them so that solar centre
-coincides with the centre of the image. This is achieved using an affine
-transform and bi-cubic interpolation. All images were then normalised by
-dividing the values in each pixel for each wavelength by the value in that
-pixel for a selected wavelength, which was arbitrarily chosen as the 17.1nm
-channel. The value of the 17.1nm image was therefore 1 in all pixels, and the
-images from all other channels are given as a ratio of the 17.1nm intensity. 
+each pixel is exactly 0.6 arcsec across (in both the x and y directions), and
+recentres them so that solar centre coincides with the centre of the image.
+This is achieved using an affine transform and bi-cubic interpolation. 
+All images were then normalised by dividing the intensity measured in each
+pixel by the intensity in the corresponding pixel in the 17.1nm image. The
+17.1nm image was therefore 1 in all pixels, and the images from all other
+channels are given as a ratio of the 17.1nm intensity.
 
 Temperature response functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
