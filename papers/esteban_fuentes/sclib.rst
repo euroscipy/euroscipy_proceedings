@@ -45,6 +45,27 @@ SClib, a hack for straightforward embedded C functions in Python
 
    embedded C code, particle physics, control engineering
 
+Introduction
+============
+
+Embedding code written in oder languages is a common theme in the python
+context, the main motivation being boosting speed.
+Several alternatives exist to achieve this, such as
+Cython [Cython]_, CFFI [CFFI]_, SWIG [SWIG]_, weave [weave]_, among others.
+We present yet another alternative, which may be quite close to CFFI, than to
+the others.
+The motivation to write SClib grew out of the urge to integrate C code, which
+was already written, into the python environment, minimizing the intervention of
+the code.
+Part of the resulting work is briefly introduced later, in the engineering
+application section.
+
+Nevertheless, embedding compiled code in python will naturally have an impact in
+performance, for instance, when the compiled code takes care of computer
+intensive numerics.  The first application we introduce (in particle physics),
+leverages SClib in this sense, outsourcing the numerics to the compiled code and
+using the python environment for visualization.
+
 
 SClib
 =====
@@ -85,10 +106,10 @@ accomplished with the helper macros defined in sclib.h:
 .. code-block:: c
 
    #include <sclib.h>
-         PYO(fun, 1,   1);
-   PYO_TYPES(fun, 1, INT);
-         PYI(fun, 1,   1);
-   PYI_TYPES(fun, 1, INT);
+   SCL_OL(fun, 1,   1);   /* outputs lengths */
+   SCL_OT(fun, 1, INT);   /* outputs types */
+   SCL_IL(fun, 1,   1);   /* inputs lengths */
+   SCL_IT(fun, 1, INT);   /* inputs types */
    void fun(int * out, int * in) {
        *out = 42;
    }
@@ -99,10 +120,10 @@ An arbitrary number of inputs or outputs can be specified, for example:
 
    #include <math.h>
    #include <sclib.h>
-         PYO(fun, 2,   1,     2);
-   PYO_TYPES(fun, 2, INT, FLOAT);
-         PYI(fun, 2,   1,     2);
-   PYI_TYPES(fun, 2, INT, FLOAT);
+   SCL_OL(fun, 2,   1,     2);
+   SCL_OT(fun, 2, INT, FLOAT);
+   SCL_IL(fun, 2,   1,     2);
+   SCL_IT(fun, 2, INT, FLOAT);
    void fun(int * out0, float * out1,
             int * in0, float * in1) {
        *out0 = 42*in0[0];
@@ -111,7 +132,7 @@ An arbitrary number of inputs or outputs can be specified, for example:
    }
 
 In the function declaration, all the outputs must precede the inputs and must
-be placed in the same order as in the PY macros.
+be placed in the same order as in the SCL macros.
 
 These specifications are processed during compilation time, but only the number
 of inputs and outputs is static, the lengths of each component can be
@@ -603,6 +624,20 @@ during the realization of this work.
 References
 ==========
 
+.. [Cython] Stefan Behnel, Robert Bradshaw, Lisandro Dalcín, Mark Florisson, Vitja Makarov, Dag Sverre Seljebotn.
+            *Cython is an optimising static compiler for both the Python
+            programming language and the extended Cython programming language
+            (based on Pyrex).*
+            http://www.cython.org/
+.. [CFFI]   Armin Rigo and Maciej Fijalkowski
+            *C Foreign Function Interface for Python.*
+            http://cffi.readthedocs.org/en/release-0.8/
+.. [SWIG]   SWIG developers.
+            *SWIG: Simplified Wrapper and Interface Generator*
+            http://swig.org/
+.. [weave]  Ralf Gommers.
+            *Weave provides tools for including C/C++ code within Python code.*
+            https://github.com/scipy/weave
 .. [Hell]   Heller. *The ctypes module.*,
             https://docs.python.org/3.4/library/ctypes.html#module-ctypes
 .. [Bra14]  N. Brambilla, S. Eidelman, P. Foka, S.Gardner, A. S. Kronfeld, M. G. Alford, R. Alkofer and M. Butenschoen et al.,
