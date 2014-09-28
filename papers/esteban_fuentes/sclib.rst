@@ -53,7 +53,7 @@ context, the main motivation being boosting speed.
 Several alternatives exist to achieve this, such as
 Cython [Cython]_, CFFI [CFFI]_, SWIG [SWIG]_, weave [weave]_, among others.
 We present yet another alternative, which may be quite close to CFFI, than to
-the others.
+the others
 The motivation to write SClib grew out of the urge to integrate C code, which
 was already written, into the python environment, minimizing the intervention of
 the code.
@@ -294,7 +294,7 @@ bound-state mass reads
    M&=&2m+E_{n,l}^{(0)}+\frac{\langle nl| V^{(1/m)}(r)|nl \rangle}{m}\\ \nonumber
     &+&\frac{\langle nl| V^{(1/m^2)}(r)|nl \rangle}{m^2}+\frac{1}{m^2}\sum_{m\neq n}^{\infty}\frac{| \langle nl|V^{(1/m)} | ml \rangle|^2}{E_{n,l}^{(0)}-E_{ml}^{(0)}},
 
-where :math:`E_{il}^{(0)}` correspond to solve eq. (\ref{reduced}) with
+where :math:`E_{il}^{(0)}` correspond to solve eq. (:ref:`reduced`) with
 :math:`V(r)=V^{(0)}(r)` and
 
 .. math::
@@ -329,7 +329,7 @@ The simplest computational problem related to eq. (:ref:`reduced`) is to find
 :math:`E_{n,l}` for a given :math:`n` and :math:`l`. Methods to solve this
 problem have been implemented since long ago (see for instance [Fal85]_), in a
 nutshell, the standard method consist of applying two known constraints to the
-reduced wavefunction :math:`y_{n,l}`:
+reduced wavefunction :math:`y_{n,l}` [#]_:
 
 - The number of nodes of :math:`y_{n,l}(r)` must be equal to :math:`n`.
 - :math:`y_{n,l}(r)`  has to be normalizable
@@ -350,13 +350,16 @@ available in [Luc98]_.  This script has the advantage that the user can profit
 from the Mathematica built-in functions to plot, integrate or store the
 resulting wavefunctions, however, it has a very poor performance.  With the
 goal of mimicking the advantages of this script, but without compromising speed,
-we have developed SChroe.py [#]_, a Python script that uses SClib to implement
-the speed-critical parts of the algorithm. In this script the wavefunctions are
+we ported the algorithm in [Luc98]_ to Python. The resulting script, SChroe.py [#]_, uses SClib to implement
+the speed-critical parts of the algorithm. In Schroe.py the wavefunctions are
 stored as NumPy arrays [NumPy]_ so when the script is run within IPython [IPy]_
 together with SciPy [SciPy]_, NumPy and Matplotlib [Mplot]_ the user can profit
 of the same or more flexibility as with the Mathematica script plus a boosted
 speed. In table 1 we compare the performance of SChroe.py against other
 implementations of the same algorithm [#]_.
+
+
+.. [#] For a more detailed exaplanation of the solution method we refer the reader to [Luc98]_.
 
 .. [#] The paper describing the script ranks fifth among the most cited papers
    (91 citations) of the International Journal of Modern Physics C with the last
