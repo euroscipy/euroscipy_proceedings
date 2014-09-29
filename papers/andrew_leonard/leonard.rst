@@ -74,12 +74,12 @@ based exclusively on images of the low corona taken in Extreme Ultra-Violet
 reliable maps of the coronal temperature with very fine spatial and temporal 
 resolution.
 
-An overview of the AIA instrument is given in section :ref:`instmeth`, along 
+An overview of the AIA instrument is given in Section :ref:`instmeth`, along 
 with an introduction to the theory of estimating temperature from spectral 
 observation. The method is tested by creating synthetic AIA data created from a 
-coronal emission model in section :ref:`modeltests`. The method is applied to 
-AIA data in section :ref:`results` and the results compared to those of 
-previous studies. Discussion and Conclusions are given in section :ref:`disc`.
+coronal emission model in Section :ref:`modeltests`. The method is applied to 
+AIA data in Section :ref:`results` and the results compared to those of 
+previous studies. Discussion and Conclusions are given in Section :ref:`disc`.
 
 
 Instrumentation & Method
@@ -297,7 +297,7 @@ relative to a given wavelength, the DEM is also normalised to unity. A narrow
 width is selected for the DEM because, as shown by [Guennou2012a]_, the greater
 the width of the plasma DEM, the less likely it is that the inversion will
 correctly determine the DEM peak temperature (this is also shown by the tests
-described in section :ref:`modeltests`. With a narrow assumed width, plasmas
+described in Section :ref:`modeltests`. With a narrow assumed width, plasmas
 which do have narrow DEMs will at least be correctly identified, whereas
 plasmas with a wide DEM would not necessarily be correctly identified by using 
 a model DEM with a similar width. A Gaussian with a width of ~0.1 
@@ -460,11 +460,11 @@ isolated pixels with spurious values. The mean for this region was log(T) =
 maximum is log(T) = 6.29.
 
 In all three temperature maps the hottest temperatures are found in relatively 
-small, localised regions (which appear in red in figures :ref:`qs20110128` and 
+small, localised regions (which appear in red in Figures :ref:`qs20110128` and 
 :ref:`qs20110208`), with the temperatures changing quite sharply between these 
 regions and the cooler background plasma. These hotter regions appear to 
 consist of small loop-like structures, though none of these correspond to any 
-active region. The hot structures in the region shown in figure 
+active region. The hot structures in the region shown in Figure 
 :ref:`qs20110221` take up a slightly larger portion of the region and are more 
 strongly concentrated in one location. Temperatures of around log(T) 
 :math:`\approx` 6.15 also appear to form even smaller loops in some cases, 
@@ -500,11 +500,11 @@ Coronal holes
 
 Figures :ref:`ch20110201a`, :ref:`ch20110201b` and :ref:`ch20110214` show 
 temperature maps for coronal holes. Note that these figures are shown with 
-different colour scales to each other and to figures :ref:`qs20110128`, 
-:ref:`qs20110208` and :ref:`qs20110221`. The coronal holes shown in figures 
+different colour scales to each other and to Figures :ref:`qs20110128`, 
+:ref:`qs20110208` and :ref:`qs20110221`. The coronal holes shown in Figures 
 :ref:`ch20110201a` and :ref:`ch20110201b` (henceforth coronal holes 1 and 2), 
 were observed at 2011-02-01 00:00 in the northern and southern hemispheres 
-respectively, and the one in figure :ref:`ch20110214` (coronal hole 3) was 
+respectively, and the one in Figure :ref:`ch20110214` (coronal hole 3) was 
 observed at 201-02-14 00:00. The minimum, mean and maximum temperatures found 
 for the regions mapped were: log(T) = 5.6, 6.03 and 6.52 for coronal hole 1; 
 log(T) = 5.6, 6.02 and 6.32 for coronal hole 2; and log(T) = 5.6, 6.02 and 6.37 
@@ -524,7 +524,7 @@ coronal holes, though to a much greater extent in coronal holes 2 and 3, a
 temperature regions. Each of these consists only of a few pixels and were found
 to have temperatures of log(T) :math:`\approx` 5.6-5.7. This speckling is 
 similar to the individual low-temperature pixels found for the quiet sun region
-for 2011-02-21 (figure :ref:`qs20110221`), but is much more prominent. 
+for 2011-02-21 (Figure :ref:`qs20110221`), but is much more prominent. 
 
 All three coronal holes also contain small hotter regions (log(T) :math:`\ge` 
 6.1), which appear to be similar to quiet sun regions and in some cases seem to 
@@ -533,7 +533,7 @@ the coronal hole. In addition to these regions, coronal hole 1 contains a large
 quiet sun region.
 
 The temperature above coronal holes 2 and 3 was found to increase slightly with
-distance from the solar surface, as can be seen in figures :ref:`ch20110201b` 
+distance from the solar surface, as can be seen in Figures :ref:`ch20110201b` 
 and :ref:`ch20110214`. In both cases, the temperature is log(T) :math:`\approx` 
 6.0 at the limb and rises to log(T) :math:`\approx` 6.05 at the edge of the 
 mapped region.
@@ -552,7 +552,7 @@ mapped region.
     :align: center
 
     Temperature map of the southern coronal hole at 2011-02-01 00:00 (coronal 
-    hole 2). As with figure :ref:`ch20110201a`, the coronal hole stands out 
+    hole 2). As with Figure :ref:`ch20110201a`, the coronal hole stands out 
     against the hotter quiet sun. This region shows much more 'speckling' 
     within the coronal hole from low-temperature pixels, but contains several 
     small quiet sun like regions similar to those seen in coronal hole 1.
@@ -569,7 +569,7 @@ Active regions
 ~~~~~~~~~~~~~~
 
 Active regions show the greatest variation in temperature, as can be seen in 
-figures :ref:`ar20110122`, :ref:`ar20110201` and :ref:`ar20110219`. These 
+Figures :ref:`ar20110122`, :ref:`ar20110201` and :ref:`ar20110219`. These 
 figures show temperature maps of active regions AR11147 and AR11149 (henceforth 
 region 1), active region AR11150 (region 2) and active regions AR11161 and 
 AR11162 (region 3), respectively. Regions 1 and 3 are much more complex than 
@@ -590,10 +590,10 @@ small loops or background in AR11147. In region 2 they are found in loops which
 appear to be outside the main active region. In region 3 they are found in a 
 few relatively large loops - in contrast to the much smaller loops found to 
 have those temperatures in the other regions - and there are also several small 
-hot regions around AR11162 near the top of figure :ref:`ar20110219`.
+hot regions around AR11162 near the top of Figure :ref:`ar20110219`.
 
 All three regions also show the presence of cooler quiet sun-like plasma 
-surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and figure 
+surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and Figure 
 :ref:`ar20110201` shows a filament found to have a fairly uniform temperature of
 log(T) :math:`\approx` 6.3.
 
@@ -647,9 +647,9 @@ For some quiet sun regions and coronal holes, the method found
 low-temperature values for isolated pixels or for small groups of pixels. 
 It is possible that these isolated pixels are due to one or more channels being
 dominated by noise which is amplified by the normalisation of the images. 
-However, these pixels are also seen far more in coronal holes 2 and 3 (figures 
+However, these pixels are also seen far more in coronal holes 2 and 3 (Figures 
 :ref:`ch20110201b` and :ref:`ch20110214`), which were observed at the pole, 
-than in coronal hole 1 (figure :ref:`ch20110201a`), which ranged from near the 
+than in coronal hole 1 (Figure :ref:`ch20110201a`), which ranged from near the 
 pole to near the equator. It is therefore also possible these cold pixels are 
 at least partly due to some LOS effect.
 
@@ -671,7 +671,7 @@ filaments are poorly handled by the method. This suggests it may be unwise to
 rely too heavily on this method for temperatures of filaments or similarly 
 dense coronal structures.
 
-As discussed in section :ref:`modeltests`, narrow DEMs with are 
+As discussed in Section :ref:`modeltests`, narrow DEMs with are 
 reconstructed much more accurately than wide ones, with solutions tending
 towards ~1MK with increasing DEM width. Such results in these temperature maps 
 should therefore be treated with a certain amount of caution. Overall, however, 
