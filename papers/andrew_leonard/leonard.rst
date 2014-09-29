@@ -162,13 +162,14 @@ solution without imposing physical contraints [Judge1997]_. Multiple schemes
 have been designed to invert this equation and infer the DEM by applying
 various physical assumptions. However, these assumptions are sometimes
 difficult to justify and the accuracy of the results is also reduced by the
-typically high errors on solar measurements.
+typically high errors on solar measurements. The physical constraints assumed
+by this method are discussed in Section :ref:`DEMfinding`.
 
 This work presents an extremely fast method of estimating the temperature of 
 coronal plasma from AIA images. This method is implemented using the 
 SunPy solar physics library (www.sunpy.org_) and produces results comparable to 
 those of other methods but in a fraction of the time. The current 
-implementation of the method is designed primarily with efficiency in mind. 
+implementation of the method is designed primarily with efficiency in mind.
 
 Preprocessing
 ~~~~~~~~~~~~~
@@ -212,6 +213,7 @@ for 17.1nm.
 
 DEM-finding procedure
 ~~~~~~~~~~~~~~~~~~~~~
+:label:`DEMfinding`
 
 The general method for estimating the DEM is an iterative procedure which tests
 multiple possible DEMs. Each DEM is substituted into equation 1 to produce a 
