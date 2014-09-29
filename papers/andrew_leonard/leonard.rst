@@ -253,8 +253,8 @@ of time, a general DEM profile must be assumed. A Gaussian profile is a good cho
   the plasma in the majority of pixels. In particular, it is likely that active
   region loops have a distribution of temperature and density which makes 
   a narrow Gaussian a physically sensible choice for the shape of the plasma 
-  DEM. It is likely that the emission in pixels containing loops will be 
-  dominated by the material contained in the loop itself;
+  DEM. It is likely that emission from loops will dominate the measured
+  emission in the corresponding pixels;
 - since other studies have used a Gaussian DEM, using the same shape in this 
   work allows a direct comparison between the relative merits of the 
   methods themselves, without any disparity in the results caused by different DEM profiles.
@@ -283,16 +283,22 @@ increments of 0.01 in log temperature. Outside this range of temperatures, AIA
 has significantly lower temperature response and cannot provide meaningful
 results. Within this range, however, the temperature is well constrained by the
 response functions of the AIA channels [Guennou2012]_ and can in principle be 
-calculated to within ~0.015 [Judge2010]_.
+calculated with a precision of ~0.015 [Judge2010]_.
 
 The code takes a simplified approach by finding only the peak temperature of 
-the DEM, and assuming the height and width to be fixed. The width was set to be 
-0.1 and since the data are normalised relative to a given wavelength, the DEM 
-is also normalised to unity. A narrow width is 
-selected for the DEM because, as shown by [Guennou2012a]_, the greater the width 
-of the plasma DEM, the less likely it is that the inversion will correctly 
-determine the DEM peak temperature (this is also shown by the tests described 
-in section :ref:`modeltests`. With a narrow assumed width, plasmas which do have narrow DEMs will at least be correctly identified, whereas 
+the DEM, and assuming the height and width to be fixed. They could instead be
+found using the same iterative approach, but this would significantly increase
+the paramater space and reduce the method's efficiency. A proper comparison of
+the results of this method and of one with a larger parameter space are beyond
+the scope of this work, and will be the topic of a subsequent paper.
+
+The width of the DEM was set to be 0.1 and since the data are normalised
+relative to a given wavelength, the DEM is also normalised to unity. A narrow
+width is selected for the DEM because, as shown by [Guennou2012a]_, the greater
+the width of the plasma DEM, the less likely it is that the inversion will
+correctly determine the DEM peak temperature (this is also shown by the tests
+described in section :ref:`modeltests`. With a narrow assumed width, plasmas
+which do have narrow DEMs will at least be correctly identified, whereas
 plasmas with a wide DEM would not necessarily be correctly identified by using 
 a model DEM with a similar width. A Gaussian with a width of ~0.1 
 is the narrowest multi-thermal distribution which can be distinguished from an 
