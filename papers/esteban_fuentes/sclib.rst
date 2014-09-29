@@ -330,7 +330,7 @@ The simplest computational problem related to eq. (:ref:`reduced`) is to find
 :math:`E_{n,l}` for a given :math:`n` and :math:`l`. Methods to solve this
 problem have been implemented since long ago (see for instance [Fal85]_), in a
 nutshell, the standard method consist of applying two known constraints to the
-reduced wavefunction :math:`y_{n,l}` [#]_:
+reduced wavefunction :math:`y_{n,l}`:
 
 - The number of nodes of :math:`y_{n,l}(r)` must be equal to :math:`n`.
 - :math:`y_{n,l}(r)`  has to be normalizable
@@ -360,7 +360,6 @@ speed. In table 1 we compare the performance of SChroe.py against other
 implementations of the same algorithm [#]_.
 
 
-.. [#] For a more detailed exaplanation of the solution method we refer the reader to [Luc98]_.
 
 .. [#] The paper describing the script ranks fifth among the most cited papers
    (91 citations) of the International Journal of Modern Physics C with the last
