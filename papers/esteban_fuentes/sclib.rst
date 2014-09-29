@@ -20,12 +20,13 @@ SClib, a hack for straightforward embedded C functions in Python
    better trade-off between computation power and feature availability, such as
    visualization and existing computation routines in SciPy.
 
-   We also present two use cases for SClib.
+   We also present two cases were SClib has been used.
 
-   In the first set of applications we use SClib to implement a Python script
-   that solves efficiently the Schrödinger equation for bound states in the
-   context of particle physics. We present an introduction to the situations
-   where this script have been used. We also describe the solution to the
+   In the first set of applications we use SClib to write a port to Python of a
+   Schrodinger equation solver that has been extensivenly used the literature.
+   Our script solves efficiently the Schrödinger equation for bound states in the
+   context of particle physics. A review of the situations
+   where this script have been used is presented. We also describe the solution to the
    related problem of solving a set of coupled Schrödinger-like equations
    where SClib is used to implement the speed-critical parts of the code. We
    argue that when using SClib within IPython we can use NumPy and Matplotlib
@@ -365,9 +366,9 @@ implementations of the same algorithm [#]_.
    (91 citations) of the International Journal of Modern Physics C with the last
    citation from  July 2014.
 
-.. [#] Code available in <https://github.com/heedmane/schroepy/>
+.. [#] Code available at <https://github.com/heedmane/schroepy/>
 
-.. [#] Although the aim of this paper is not to compare the efficiency of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that seem to offer better performance than the current version of SChroe.py, see for instance [dfatom]_.
+.. [#] Although the aim of this section is not to compare performance of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that offer better performance than the current version of SChroe.py. For instance, the solver presented in [dftatom]_ implements a more sophisticated integration method and refinements in the radial mesh. These improvements allow the dftatom script to reach a speed-up of at least two orders of magnitude compared to the current version of SChroe.py.
 
 
 .. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
@@ -683,7 +684,7 @@ References
             *Solving the Schrödinger equation for bound states with Mathematica 3.0,*
             Int.  J.  Mod.  Phys.  C    10 , 607 (1999)
 
-.. [dfatom] Čertík, O., Pask, J. E., Vackář, J. (2013). dftatom: A robust and general Schrödinger and Dirac solver for atomic structure calculations. Computer Physics Communications, 184(7), 1777–1791.
+.. [dftatom] Čertík, O., Pask, J. E., Vackář, J. (2013). dftatom: A robust and general Schrödinger and Dirac solver for atomic structure calculations. Computer Physics Communications, 184(7), 1777–1791.
 
 .. [Mat9]   Wolfram Research, Inc.
             Mathematica Version 9.0 (2012)
