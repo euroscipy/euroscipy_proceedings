@@ -23,10 +23,10 @@ SClib, a hack for straightforward embedded C functions in Python
    We also present two cases were SClib has been used.
 
    In the first set of applications we use SClib to write a port to Python of a
-   Schrodinger equation solver that has been extensivenly used the literature.
-   Our script solves efficiently the Schrödinger equation for bound states in the
-   context of particle physics. A review of the situations
-   where this script have been used is presented. We also describe the solution to the
+   Schrodinger equation solver that has been extensivenly used the literature,
+   the resulting script presents a speed-up of 150x with respect to the original one.
+   A review of the situations where this script have been used is presented.
+   We also describe the solution to the
    related problem of solving a set of coupled Schrödinger-like equations
    where SClib is used to implement the speed-critical parts of the code. We
    argue that when using SClib within IPython we can use NumPy and Matplotlib
@@ -359,8 +359,6 @@ of the same or more flexibility as with the Mathematica script plus a boosted
 speed. In table 1 we compare the performance of SChroe.py against other
 implementations of the same algorithm [#]_.
 
-
-
 .. [#] The paper describing the script ranks fifth among the most cited papers
    (91 citations) of the International Journal of Modern Physics C with the last
    citation from  July 2014.
@@ -520,10 +518,10 @@ We use SClib to put together a simulator for these kind of systems.  Both the
 system derivatives :math:`f(\cdot)` and the control :math:`\pi(\cdot)` are
 written in C and are evaluated using SClib. As stated before, the system state
 represents a natural phenomena, therefore it is natural to describe it as a
-continuous time variable, as eq. \eqref{eq:dxdt} suggests. To calculate the
+continuous time variable, as eq. (:ref:`dxdt`) suggests. To calculate the
 system state we have to solve this equation. In our simulator this is achieved
 using numerical methods, namely the integration routines available in
-\verb+scipy.integrate+. On the other hand, the controller is usually
+*scipy.integrate*. On the other hand, the controller is usually
 implemented in a real-time computer, which can only sample :math:`y` at a fixed
 interval (called :math:`h`): it is a discrete-time system.  This means, that
 the simulator only needs to evaluate :math:`\pi(\cdot)` at given times.
@@ -535,9 +533,6 @@ are based on optimization methods. Time-optimal controllers, for example,
 require the solution of an usually very complex optimization problem, to find a
 control :math:`u` that leads the system state :math:`x` towards its target :math:`r` in minimum
 time [Gru11]_:
-
-
-
 
 .. math::
     :label: feedback
