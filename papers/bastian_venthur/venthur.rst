@@ -37,7 +37,7 @@ community. Projects like Numpy [Numpy]_, SciPy [SciPy]_, and Matplotlib
 [Matplotlib]_ have created a strong foundation for scientific computing in
 Python and machine learning packages like Scikit-learn [Scikit-learn]_ or
 packages for data analysis like Pandas [Pandas]_ are building on top of it.
-Although in recent years python toolboxes like SCoT for EEG source connectivity
+Although in recent years Python toolboxes like SCoT for EEG source connectivity
 [Billinger]_, or MNE-Python for MEG and EEG data analysis [Gramfort]_ were
 published, Matlab seems still to be the dominant programming language in the
 brain-computer interface (BCI) community.
