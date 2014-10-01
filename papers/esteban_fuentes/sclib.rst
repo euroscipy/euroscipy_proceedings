@@ -23,9 +23,9 @@ SClib, a hack for straightforward embedded C functions in Python
    We also present two cases were SClib has been used.
 
    In the first set of applications we use SClib to write a port to Python of a
-   Schrodinger equation solver that has been extensivenly used the literature,
+   Schrödinger equation solver that has been extensivenly used the literature,
    the resulting script presents a speed-up of 150x with respect to the original one.
-   A review of the situations where this script have been used is presented.
+   A review of the situations where the speeded-up script have been used is presented.
    We also describe the solution to the
    related problem of solving a set of coupled Schrödinger-like equations
    where SClib is used to implement the speed-critical parts of the code. We
@@ -50,7 +50,7 @@ Introduction
 ============
 
 Embedding code written in oder languages is a common theme in the python
-context, the main motivation being boosting speed.
+context, the main motivation being speed boosting.
 Several alternatives exist to achieve this, such as
 Cython [Cython]_, CFFI [CFFI]_, SWIG [SWIG]_, weave [weave]_, among others.
 We present yet another alternative, which may be quite close to CFFI, than to
@@ -156,7 +156,7 @@ Application in Quarkonium Physics
 
 Motivation
 ----------
-The Schrödinger equation is one the fundamental equations in physics for
+The Schrödinger equation is the fundamental equation for
 describing non-relativistic quantum mechanical dynamics. For the applications
 we will present in this section we will focus on the time-independent version
 which, in natural units, is given by 
@@ -170,7 +170,7 @@ It corresponds to an eigenvalue equation where the term inside the parenthesis
 in l.h.s. is called the Hamiltonian operator, the value :math:`E`, its
 eigenvalue, is the measurable quantity (the energy) associated with it,
 :math:`\mu` is the reduced mass of the system  (it correspond the mass of the particle in one-particle systems) 
-and the wavefunction, :math:`\psi(\mathbf{r})`, is the entity
+and the wavefunction, :math:`\psi(\mathbf{r})` is the entity
 containing all the information about the system, since its modulus squared
 correspond to the probability density of a given measurement, it has to be
 normalized to unity. The term :math:`V({\mathbf r})` in the Hamiltonian is
@@ -187,7 +187,7 @@ implement solutions of the computing problems associated with eq.
    [Bra14]_.
 
 Quarkonium is a bound-state composed by a quark and its corresponding
-antiquark. By heavy we mean states composed by the charm and bottom quarks,
+antiquark. By heavy we mean states composed by charm and bottom quarks,
 called charmonium and bottomonium respectively. Due to its large mass, the top
 quark decays before forming a bound state. For heavy quarkonium the relative
 velocity between the quark and antiquark inside of the bound-system is believed
@@ -223,14 +223,14 @@ function of :math:`r` and :math:`\Lambda_{\rm QCD}`, the typical hadronic scale
 overcome this issue, models based on non-relativistic reductions of
 phenomenological observations have been used to describe heavy quarkonia, one
 these being the so-called Cornell potential
-[Eich74]_, [Eich78]_, [Eich79]_)
+[Eich74]_, [Eich78]_, [Eich79]_
 
 .. math::
    :label: cornell
 
    V(r) = \frac{a}{r}+kr,
 
-where :math:`a` and :math:`k` are unknown parameters which need to be fixed by
+where :math:`a` and :math:`k` are parameters which need to be fixed by
 experimental (or lattice) data of some observable. This potential incorporates
 two of the main observed characteristics of the quark-antiquark interaction: at
 short distances it exhibits a Coulombic behavior and in the long-distance
@@ -248,10 +248,10 @@ obtained from NRQCD integrating out modes that scale like the quark momentum
     bound-system. If the relative velocity of the (anti)quark,
     :math:`v`, is small, we have that :math:`mv^2(\sim E)\ll mv(\sim p) \ll m`,
     where :math:`p` is the momentum of the particles and :math:`E` its kinetic
-    energy. If one is interested in studying a process that happen at the scale
+    energy. If one is interested in studying a phenomena that happens at the scale
     :math:`E` (like the binding) it is more suitable to integrate out degrees of
     freedoms with energies that scale like the other two higher scales, this is the
-    motivation behind pNRQCD. For a detailed analysis of the scales in heavy
+    motivation behind pNRQCD. For a detailed analysis of the scales present in heavy
     quarkonia we refer the reader to [Bra04]_.
 
 The physics of the modes that have been integrated out is encoded in Wilson
@@ -266,15 +266,15 @@ powers of :math:`1/m`, up to second order :math:`V(r)` can be written as
 
     V(r)=V^{(0)}(r)+\frac{V^{(1/m)}(r)}{m}+\frac{V^{(1/m^2)}(r)}{m^2},
 
-where :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}` are derived from QCD (through
-the matching procedure with NRQCD). The details about :math:`V^{(1/m)}` and
+where :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}` are derived from QCD through
+the matching procedure with NRQCD. The details about :math:`V^{(1/m)}` and
 :math:`V^{(1/m^2)}`  and how they are obtained are beyond the scope of this
 document, however, we can list some of their features:
 
-- They correspond to Green functions that in the short-distance regime can
+- They correspond to correlators that in the short-distance regime can
   be computed in perturbation theory.
 - In the long-distance regime they can be computed in in lattice QCD,
-  however only some of these Green functions have been already calculated.
+  however only some of these correlators have been calculated.
 - Eq. (:ref:`cornell`) correspond, at least qualitatively, to the leading
   order :math:`V^{(0)}` in eq. (:ref:`pnrqcdpot`)
 
@@ -295,7 +295,7 @@ bound-state mass reads
    M&=&2m+E_{n,l}^{(0)}+\frac{\langle nl| V^{(1/m)}(r)|nl \rangle}{m}\\ \nonumber
     &+&\frac{\langle nl| V^{(1/m^2)}(r)|nl \rangle}{m^2}+\frac{1}{m^2}\sum_{m\neq n}^{\infty}\frac{| \langle nl|V^{(1/m)} | ml \rangle|^2}{E_{n,l}^{(0)}-E_{ml}^{(0)}},
 
-where :math:`E_{il}^{(0)}` correspond to solve eq. (:ref:`reduced`) with
+where :math:`E_{il}^{(0)}` comes from solving eq. (:ref:`reduced`) with
 :math:`V(r)=V^{(0)}(r)` and
 
 .. math::
@@ -346,11 +346,11 @@ to perform a scan of values of :math:`E_{n,l}` until :math:`y_{n,l}(r)`  has
 :math:`n` nodes and converges for a large enough value of :math:`r` (see Fig.
 1). This implies that for each test value of :math:`E_{n,l}` eq.
 (:ref:`reduced`) must to be (numerically) solved.  A popular [#]_ Mathematica
-[Mat9]_ implementation of this method to solve eq. (:ref:`reduced`) has been
+[Mat9]_ implementation of this method has been
 available in [Luc98]_.  This script has the advantage that the user can profit
 from the Mathematica built-in functions to plot, integrate or store the
 resulting wavefunctions, however, it has a very poor performance.  With the
-goal of mimicking the advantages of this script, but without compromising speed,
+goal of mimicking some of the advantages of this script, but without compromising speed,
 we ported the algorithm in [Luc98]_ to Python. The resulting script, SChroe.py [#]_, uses SClib to implement
 the speed-critical parts of the algorithm. In Schroe.py the wavefunctions are
 stored as NumPy arrays [NumPy]_ so when the script is run within IPython [IPy]_
@@ -365,7 +365,7 @@ implementations of the same algorithm [#]_.
 
 .. [#] Code available at <https://github.com/heedmane/schroepy/>
 
-.. [#] Although the aim of this section is not to compare performance of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that offer better performance than the current version of SChroe.py. For instance, the solver presented in [dftatom]_ implements a more sophisticated integration method and refinements in the radial mesh. These improvements allow the dftatom script to reach a speed-up of at least two orders of magnitude compared to the current version of SChroe.py.
+.. [#] Although the aim of this section is not to compare performance of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that offer better performance than the current version of SChroe.py. For instance, the solver presented in [dftatom]_ implements a more sophisticated integration method and allows refinements in the radial mesh. With these improvements the dftatom solver can reach a speed-up of at least two orders of magnitude compared to the current version of SChroe.py.
 
 
 .. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
@@ -518,7 +518,7 @@ We use SClib to put together a simulator for these kind of systems.  Both the
 system derivatives :math:`f(\cdot)` and the control :math:`\pi(\cdot)` are
 written in C and are evaluated using SClib. As stated before, the system state
 represents a natural phenomena, therefore it is natural to describe it as a
-continuous time variable, as eq. (:ref:`dxdt`) suggests. To calculate the
+continuous time variable, as eq. (:ref:`eq:dxdt`) suggests. To calculate the
 system state we have to solve this equation. In our simulator this is achieved
 using numerical methods, namely the integration routines available in
 *scipy.integrate*. On the other hand, the controller is usually
