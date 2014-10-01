@@ -368,7 +368,7 @@ implementations of the same algorithm [#]_.
 .. [#] Although the aim of this section is not to compare performance of Schrödinger equation solvers, but to present an application in which SClib can improve the speed of a known algorithm, we must mention that there are solvers that offer better performance than the current version of SChroe.py. For instance, the solver presented in [dftatom]_ implements a more sophisticated integration method and allows refinements in the radial mesh. With these improvements the dftatom solver can reach a speed-up of at least two orders of magnitude compared to the current version of SChroe.py.
 
 
-.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without using SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
+.. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
 
    +----------+-------------------------+--------------------+-------+----------+
    | :math:`n`| :math:`E_{n,l=1}\,\,[m]`| schroe.nb [Luc98]_ | Python| SChroe.py|
@@ -402,7 +402,7 @@ library.
    correspond to eq. (:ref:`cornell`) setting :math:`a=0` and :math:`k=1` (in
    the plot labeled :math:`\sigma`) and :math:`m=3\sqrt{k}`.  This plot shows
    the relative size of the next-to-leading-order (NLO) correction (the term
-   proportional to :math:`1/m` in the r.h.s. of eq.  (:ref:`mass`) and the
+   proportional to :math:`1/m` in the r.h.s. of eq.  (:ref:`mass`)) and the
    newly computed next-to-next-to-leading-order (NNLO) corrections (the terms
    proportional :math:`1/m^2`). For more details see [Bra14a]_.
 
