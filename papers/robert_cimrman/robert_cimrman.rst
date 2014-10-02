@@ -755,7 +755,7 @@ such that:
     \underline{u} &=& \bar{\underline{u}} \quad \mbox{ on } \Gamma_D \;,
 
 where :math:`D_{ijkl} = \mu (\delta_{ik} \delta_{jl}+\delta_{il} \delta_{jk}) +
-\lambda \ \delta_{ij} \delta_{kl}` is the isotropic stiffness tensor given in
+\lambda \delta_{ij} \delta_{kl}` is the isotropic stiffness tensor given in
 terms of Lamé's coefficients :math:`\lambda`, :math:`\mu` and
 :math:`e_{ij}(\underline{u}) = \frac{1}{2}(\frac{\partial u_i}{\partial x_j} +
 \frac{\partial u_j}{\partial x_i})` is the Cauchy, or small strain, deformation
@@ -769,7 +769,7 @@ of the previous example, and again :math:`\Gamma_D` consisted of two parts
 :math:`\underline{u} = 0` and displaced on :math:`\Gamma_2`: :math:`u_1 =
 0.01`, :math:`u_2(\underline{x}) = -0.02 x_2` and :math:`u_3(\underline{x}) =
 -0.02 + (0.15 * (x_1 - 1)^2)`, for :math:`\underline{x} \in \Gamma_2`. Note
-that the Dirichlet boundary conditions on :math:`\Gamma_2`: depend on the
+that the Dirichlet boundary conditions on :math:`\Gamma_2` depend on the
 position :math:`\underline{x}`. The corresponding solution can be seen in
 Figure :ref:`elasticity`.
 
