@@ -461,6 +461,13 @@ elements, because those are interpolatory, i.e., they are in the domain or on
 its boundary, see Figures :ref:`ig-domain-grids`, :ref:`bezier-extraction`
 right.
 
+The regions serve both to specify integration domains of the terms that make up
+the equations and to define the parts of boundary, where boundary conditions
+are to be applied. SfePy supports setting the Dirichlet boundary conditions by
+user-defined functions of space (and time). To make this feature work with IGA,
+a projection of the boundary condition functions to the space spanned by the
+appropriate boundary basis functions was implemented.
+
 Notes on Code Organization
 ``````````````````````````
 
@@ -546,10 +553,6 @@ Limitations
 ```````````
 
 There are currently several limitations that will be addressed in future:
-
-- general Dirichlet boundary conditions;
-
-  - currently only constants on whole sides of the parametric mesh can be used;
 
 - projections of functions into the NURBS basis;
 - support for surface integrals;
@@ -710,9 +713,12 @@ balance, where the internal forces are described by the Cauchy stress tensor
 The 3D domain :math:`\Omega` was simply obtained by extrusion of the 2D domain
 of the previous example, and again :math:`\Gamma_D` consisted of two parts
 :math:`\Gamma_1`, :math:`\Gamma_2`. The body was clamped on :math:`\Gamma_1`:
-:math:`\underline{u} = 0` and displaced on :math:`\Gamma_2`: :math:`u_1 = 0.01`,
-:math:`u_2 = u_3 = 0.05`. The corresponding solution can be seen in Figure
-:ref:`elasticity`.
+:math:`\underline{u} = 0` and displaced on :math:`\Gamma_2`: :math:`u_1 =
+0.01`, :math:`u_2(\underline{x}) = -0.02 x_2` and :math:`u_3(\underline{x}) =
+-0.02 + (0.15 * (x_1 - 1)^2)`, for :math:`\underline{x} \in \Gamma_2`. Note
+that the Dirichlet boundary conditions on :math:`\Gamma_2`: depend on the
+position :math:`\underline{x}`. The corresponding solution can be seen in
+Figure :ref:`elasticity`.
 
 .. figure:: elasticity.png
    :scale: 30%
