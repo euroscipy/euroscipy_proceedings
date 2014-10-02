@@ -9,15 +9,17 @@ Enhancing SfePy with Isogeometric Analysis
 
 .. class:: abstract
 
-   SfePy (Simple Finite Elements in Python, http://sfepy.org) is a framework
-   for solving various kinds of problems (mechanics, physics, biology, ...)
-   described by partial differential equations in two or three space
-   dimensions. It is based on a nowadays standard and well-established
-   numerical solution technique, the finite element method. In the paper its
-   enhancement with another, much more recent, numerical method, the
-   isogeometric analysis, is presented. First the two methods are outlined,
-   then the implementation is discussed and finally numerical examples are
-   shown.
+   In the paper a recent enhancement to the open source package SfePy (Simple
+   Finite Elements in Python, http://sfepy.org) is introduced, namely the
+   addition of another numerical discretization scheme, the isogeometric
+   analysis, to the original implementation based on the nowadays standard and
+   well-established numerical solution technique, the finite element method.
+   The isogeometric removes the need of the solution domain approximation by a
+   piece-wise polygonal domain covered by the finite element mesh, and allows
+   approximation of unknown fields with a higher smoothness then the finite
+   element method, which can be advantageous in many applications. Basic
+   numerical examples illustrating the implementation and use of the
+   isogeometric analysis in SfePy are shown.
 
 .. class:: keywords
 
@@ -31,9 +33,13 @@ Many problems in physics, biology, chemistry, geology and other scientific
 disciplines can be described mathematically using a partial differential
 equation (PDE) or a system of several PDEs. The PDEs are formulated in terms of
 unknown field variables or fields, defined in some domain with a sufficiently
-smooth boundary embedded in physical space. Because only the most basic PDEs
-on simple domains (circle, square, etc.) can be solved analytically, a
-numerical solution scheme is needed, involving, typically:
+smooth boundary embedded in physical space.
+
+SfePy (Simple Finite Elements in Python, http://sfepy.org) is a framework for
+solving various kinds of problems (mechanics, physics, biology, ...) described
+by PDEs in two or three space dimensions. Because only the most basic PDEs on
+simple domains (circle, square, etc.) can be solved analytically, a numerical
+solution scheme is needed, involving, typically:
 
 - an approximation of the original domain by a polygonal domain;
 - an approximation of continuous fields by discrete fields defined by a finite
@@ -45,12 +51,32 @@ following text two discretization schemes will be briefly outlined:
 - the finite element method [FEM]_ - a long-established industry
   approved method based on piece-wise polynomial approximation,
 - the isogeometric analysis [IGA]_ - a quite recent generalization of FEM that
-  uses NURBS-based approximation.
+  uses spline- or NURBS-based approximation.
 
-Then the IGA implementation in the finite element code SfePy (http://sfepy.org)
-will be presented and illustrated using examples of PDE solutions.
+SfePy, as its name suggests, has been based on FEM from its very beginning. The
+IGA implementation has been added mainly due to the following reasons (both
+will be addressed more in the text):
 
-All computations below were done in SfePy.
+- The IGA approximation can be globally smooth on a single patch geometry. The
+  continuity is determined by a few well defined parameters. This fact was the
+  main factor in deciding to implement IGA, because the smoothness is crucial
+  in one of our research applications (ab-initio electronic structure
+  calculations - work in progress). The high smoothness is paid for by the
+  higher computational complexity of the NURBS basis evaluation and higher
+  fill-in of the sparse matrix that a problem discretization leads to.
+- IGA can work directly with the geometric description of objects used in
+  geometric modeling and computer-aided design (CAD) systems, removing thus the
+  meshing step.
+
+The paper is structured as follows. The geometric representation of objects is
+outlined in `Geometry Description using NURBS`_, because the terms defined
+there are used in the IGA part of `Outline of FEM and IGA`_. Then the
+particular choices made in SfePy are presented in `IGA Implementation in
+SfePy`_ and illustrated using examples of PDE solutions in `Examples`_. All
+computations below were done in SfePy, version 2014.3 - note that this paper is
+a short description of the state and capabilities of the code as of this
+version. The examples of numerical solutions have no particular scientific
+meaning or importance besides being an illustration of the used methods.
 
 Geometry Description using NURBS
 --------------------------------
@@ -291,12 +317,12 @@ polynomials defined on the individual elements. This approximation is (usually)
 continuous over the whole domain, but its derivatives are only piece-wise
 continuous.
 
-First we need to make a FE mesh from the NURBS description, usual in
-computer-aided design (CAD) systems. While it is easy for our domain, it is a
-difficult task in general, especially in 3D space. Here a cheat has been used
-and the mesh depicted in Figure :ref:`fe-domain` was generated from the NURBS
-description using the IGA techniques described below. Quite a fine mesh had to
-be used to capture the curved boundaries.
+First we need to make a FE mesh from the NURBS description, usual in CAD
+systems. While it is easy for our domain, it is a difficult task in general,
+especially in 3D space. Here a cheat has been used and the mesh depicted in
+Figure :ref:`fe-domain` was generated from the NURBS description using the IGA
+techniques described below. Quite a fine mesh had to be used to capture the
+curved boundaries.
 
 .. figure:: fe-domain.pdf
    :scale: 40%
