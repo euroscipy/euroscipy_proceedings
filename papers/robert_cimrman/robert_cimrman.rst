@@ -84,10 +84,15 @@ Geometry Description using NURBS
 First, let us briefly review the geometric representation of objects using
 Bézier curves, B-splines and [NURBS]_ (Non-uniform rational B-spline) curves
 and 2D (surface) or 3D (solid) bodies, to elucidate terminology used in
-subsequent sections.
+subsequent sections.  Our IGA implementation is based on the explanation and
+algorithms in [BE]_, thus below we follow its notation and definitions.
 
-Bézier curves
+Bézier Curves
 `````````````
+
+A Bézier curve is a parametric curve frequently used in computer graphics and
+related fields. We define it here because its polynomial basis is used in the
+code by means of the Bézier extraction technique, see [BE]_ and below.
 
 A degree :math:`p` Bézier curve is defined by a linear combination of
 :math:`p + 1` *Bernstein polynomial basis* functions as
@@ -102,10 +107,23 @@ where :math:`\bm{P} = \{\bm{P}_a\}_{a=1}^{p+1}` is the set of control points and
 polynomial basis functions. The Bernstein basis can be defined recursively for
 :math:`\xi \in [0, 1]` as :math:`B_{a,p}(\xi) = (1 - \xi) B_{a,p-1}(\xi) + \xi
 B_{a-1,p-1}(\xi)`, :math:`B_{1,0}(\xi) \equiv 1`, :math:`B_{a,p}(\xi) \equiv 0`
-if :math:`a < 1` or :math:`a > p + 1`.
+if :math:`a < 1` or :math:`a > p + 1`. An example of Bézier curve is shown in
+Fig. :ref:`bezier-curve`.
 
-B-splines
-`````````
+.. figure:: bezier-curve.pdf
+   :scale: 40%
+   :figclass: bht
+
+   A Bézier curve (blue) of degree three with four control points in two space
+   dimensions. :label:`bezier-curve`
+
+B-spline Curves
+```````````````
+
+A B-spline is a generalization of the Bézier curve. B-splines (and their NURBS
+generalization, see below) are used in computer graphics, geometry modeling and
+related fields as well as the Bézier curves. In IGA B-spline basis functions
+can be used for approximation of the unknown fields.
 
 A univariate B-spline curve of degree :math:`p` is defined by a linear
 combination of :math:`n` basis functions as
@@ -138,8 +156,16 @@ Note that it is possible to insert knots into a knot vector without changing
 the geometric or parametric properties of the curve by computing the new set of
 control points in a particular way, see e.g. [BE]_.
 
-NURBS
-`````
+A B-spline curve with a knot vector with no internal knots, i.e. of the form
+
+.. math::
+
+   \Xi = \{\underbrace{0, \dots, 0}_{p+1}, \underbrace{1, \dots, 1}_{p+1}\} \;,
+
+corresponds to a Bézier curve of degree :math:`p` with the same control points.
+
+NURBS Curves
+````````````
 
 B-splines can be used to approximately describe almost any geometry. Their main
 drawback is the fact, that a circular or spherical segment cannot be described
@@ -192,7 +218,8 @@ NURBS Patches
 Complex geometries cannot be described by a single NURBS outlined above, often
 called *NURBS patch* - many such patches might be needed, and special care must
 be taken to ensure required continuity along patch boundaries and to avoid
-holes. A single patch geometry will be used in the following text.
+holes. A single patch geometry will be used in the following text, see
+Fig. :ref:`domain`.
 
 Outline of FEM and IGA
 ----------------------
