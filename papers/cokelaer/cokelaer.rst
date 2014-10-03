@@ -718,7 +718,7 @@ CellNOptR (MIDAS and SIF formats amongst others). Visualisation tools are also
 provided and the package is linked to Pandas, NetworkX and Matplotlib librairies
 making user and developer experience easier and more dynamic. Note that Python 
 is also used to connect CellNOpt to Answer Set Programming (with the
-Caspo package [ASP13]) and to heuristic optimisation methods (EGE14).
+Caspo package [ASP13]_) and to heuristic optimisation methods ([EGE14]_).
 
 We also briefly introduced BioServices Python package that allows a
 programmatic access to web services used in life sciences. The main interests of
@@ -777,24 +777,20 @@ References
 .. [NUMPY] T. E. Oliphant. Python for scientific computing.
     Computing in Science & Engineering, 9(3):10-20, 2007. http://www.numpy.org
 
-
 .. [HUN07] J. D. Hunter. *Matplotlib: A 2d graphics environment.*
     Computing in Science & Engineering, 9(3):90-95, 2007. http://matplotlib.org
 
-
 .. [SCIPY] E. Jones, T. E. Oliphant, P. Peterson, et al. *SciPy: Open source
     scientific tools for Python*, 2001-. http://www.scipy.org
-
 
 .. [MCK10] W. McKinney
     *Data Structures for Statistical Computing in Python* in
     Proceedings of the 9th Python in Science Conference, p 51-56 2010
 
-
-.. [MIDAS] J. Saez-Rodriguez, A. Goldsipe, J. Muhlich, L. Alexopoulos, B. Millard, D. A.   Lauffenburger, P. K. Sorger**,
+.. [MIDAS] J. Saez-Rodriguez, A. Goldsipe, J. Muhlich, L. Alexopoulos, B. 
+   Millard, D. A.   Lauffenburger, P. K. Sorger,
    *Flexible Informatics for Linking Experimental Data to Mathematical Models via DataRail*.
    Bioinformatics, 24:6, 840-847 (2008).
-
 
 .. [SAEZ] J. Saez-Rodriguez et al.
     *Discrete logic modelling as a means to link protein signalling networks with functional analysis of mammalian signal transduction*
@@ -807,10 +803,8 @@ References
 .. [IDE01] T. Ideker, T. Galitski, L. Hood. *A new approach to decoding life: systems biology.*
    Annual Review of Genomics and Human Genetics. 2001;2:343–372.
 
-
 .. [KIT02] H. Kitano. *Systems biology: a brief overview.*
    Science. 2002;295(5560):1662–1664.
-
 
 .. [ARI08] A.A. Hagberg, D.A. Schult and P.J. Swart,
    *Exploring network structure, dynamics, and function using NetworkX*
