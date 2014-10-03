@@ -638,7 +638,8 @@ valid identifiers, just type:
 
 Note that the method *get_df* uses Pandas: it returns a dataframe. One of the
 column contains the sequence length. The sequence length distribution can then
-be fitted to a SciPy distribution (using a simple package called **fitter**,
+be fitted to a SciPy distribution [SCIPY]_ (using a simple package called 
+**fitter**,
 which is available on PyPi):
 
 .. code-block:: python
@@ -764,18 +765,12 @@ References
     *CellNOptR: a flexible toolkit to train protein signaling networks to data using multiple logic formalisms.*
     BMC Systems Biology, 2012, 6:133
 
-
 .. [CHA13] C. Chaouiya et al.
     *SBML qualitative models: a model representation format and infrastructure to foster interactions between qualitative modelling formalisms and tools*
     BMC Systems Biology 2013, 7:135
 
-
 .. [IPYTHON] F. Pérez and B. E. Granger. *IPython: A system for interactive scientific computing.*
     Computing in Science & Engineering, 9(3):21-29, 2007. http://ipython.org/
-
-
-.. [NUMPY] T. E. Oliphant. Python for scientific computing.
-    Computing in Science & Engineering, 9(3):10-20, 2007. http://www.numpy.org
 
 .. [HUN07] J. D. Hunter. *Matplotlib: A 2d graphics environment.*
     Computing in Science & Engineering, 9(3):90-95, 2007. http://matplotlib.org
