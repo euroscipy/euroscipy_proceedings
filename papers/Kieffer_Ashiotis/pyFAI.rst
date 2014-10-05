@@ -13,8 +13,7 @@ PyFAI: a Python library for high performance azimuthal integration on GPU
 .. class:: abstract
 
    The pyFAI package has been designed to reduce X-ray diffraction images
-   into powder diffraction curves to be further processed by scientists
-   (like Rietveld refinement, ...).
+   into powder diffraction curves to be further processed by scientists.
    This contribution describes how to convert an image into a radial profile
    using the Numpy package, how the process was accelerated using Cython.
    The algorithm was parallelised, needing a complete re-design to benefit
@@ -34,7 +33,7 @@ and especially in crystallography, this is why a convenient azimuthal integratio
 routine, one of the basic algorithms in crystallography, was requested by the synchrotron community.
 The advent of pixel-detectors with their very high speed (up to 3000 frames per second)
 imposed strong constraints in speed that most available programs ([FIT2D]_, [SPD]_, ...),
-written in FORTRAN or C, could not meet.
+written in Fortran or C, could not meet.
 
 The [pyFAI]_ project started in 2011 and aims at providing a convenient *Pythonic* interface
 for azimuthal integration, so that any diffractionist can adapt it to the type of experiment
@@ -43,7 +42,7 @@ This contribution describes how one of the most fundamental
 algorithms used in crystallography has been implemented in Python
 and how it was accelerated to match the readout speeds of today's fastest detectors.
 
-After describing typical experiment and explaining what is measured and how it must be transformed (section 2),
+After describing a typical experiment and explaining what is measured and how it must be transformed (section 2),
 section 3 describes how the algorithm can be vectorised using [NumPy]_ and sped up with [Cython]_.
 Section 4 highlights the accuracy enhancement recently introduced while section 5 focuses on
 the parallelisation of the azimuthal integration task on many-core systems like Graphical Processing Units (GPU) or on accelerators via [PyOpenCL]_.
@@ -52,12 +51,12 @@ In section 6, serial and parallel implementations using [OpenMP]_ and [OpenCL]_ 
 Description of the experiment
 =============================
 
-X-rays are electromagnetic waves, like light, except for their wavelengths which are much shorter,
+X-rays are electromagnetic waves, similar to visble light, except for their wavelengths which are much shorter,
 typically of the size of inter-atomic distances, making them a perfect probe to analyse atomic and molecular structures.
 X-rays can be elastically scattered (i.e. re-emitted with the same energy) by the electron cloud surrounding atoms.
 When atoms are arranged periodically, as in a crystal, scattered X-rays interfere in a constructive way
 when the difference of their optical paths is a multiple of the wavelength: :math:`2d sin(\theta) = n\lambda`.
-In this formula, known as *Bragg's law*, *d* is the distance between crystal plans, :math:`\theta` is the incidence angle and :math:`\lambda` is the wavelength.
+In this formula, known as *Bragg's law*, *d* is the distance between crystal plans, :math:`\theta` is the incidence angle, :math:`\lambda` is the wavelength and n is an integer.
 An X-ray beam crossing a powder-like sample made of many randomly oriented small crystals is then scattered along multiple concentric cones.
 In a powder diffraction experiment, one aims at measuring the intensity of X-rays as a function of the cone aperture, averaged along each ring.
 This transformation is called "azimuthal integration" as it is an averaging of the signal along the azimuthal angle.
@@ -140,7 +139,7 @@ making each integration last 40 seconds, something that is unacceptably slow. :l
 Numpy histograms
 ----------------
 
-The naive formulation in :ref:`naive` can be re-written using histograms.
+The naive formulation in section :ref:`naive` can be re-written using histograms.
 The *mean* call can be replaced with the ratio of the sum of all values divided by the number of contributing pixels:
 
 .. code-block:: python
@@ -171,7 +170,7 @@ OpenMP support in Cython
 ........................
 
 To accelerate further the code we decided to parallelise the [Cython]_ code using [OpenMP]_.
-While the implementation was fast, the results we got were wrong (by a few percent) due to
+While the implementation was fast, the results we obtained were wrong (by a few percent) due to
 write conflicts, not protected by atomic_add operations.
 Apparently the use of atomic operation is still not yet possible in [Cython]_ (summer 2014).
 Multi-threaded histogramming was made possible by having several threads running simultaneously, each working on a separate histogram,
@@ -198,8 +197,8 @@ which implies the allocation of much more memory for output arrays.
    +----------------+----------------+
 
 
-The gains in performance obtained by this method were minor, especially when using more than 2 threads,
-illustrating the limits of the parellisation scheme.
+The gains in performance obtained by this method :ref:`Cython` were minor, especially when using more than 2 threads,
+illustrating the limits of the paralellisation scheme.
 The only way to go faster is to start thinking in parallel from the beginning
 and re-design the algorithm so that it works natively with lots of threads.
 This approach is the one taken by [OpenCL]_, where thousands of threads are virtually running in parallel, and is described in paragraph 5.
@@ -283,18 +282,18 @@ More parallelisation
 For faster execution, one solution is to use many-core systems, such as
 Graphical Processing Units (GPUs) or
 accelerators, like the Xeon-Phi from Intel.
-Those chips allocate more silicon for computing (ALUs)
+Those chips allocate more silicon for computing (arithmetic logic units - ALUs)
 and less to branch prediction, memory pre-fetching and cache coherency, in comparison with CPUs.
 Our duties as programmers is to write the code that maximises the usage of ALUs
 without relying on pre-fetcher and other commodities offered by normal processors.
 
 Typical GPUs have tens (to hundreds) of compute units able to schedule and run
 dozens of threads simultaneously (in a Single Instruction Multiple Data way).
-OpenCL allows the execution of the same code on processors, graphics cards or accelerators
-but the memory access pattern is important in order to make best use of them.
+OpenCL allows the execution of the same code on processors, graphics cards or accelerators :ref:`Devices`
+but the memory access pattern is important in order to make the best use of them.
 Finally, OpenCL uses just-in-time (JIT) compilation, which looks very much
 like Python interpreted code when interfaced with [PyOpenCL]_
-(thanks to the compilation speed and the memorising of the generated binary).
+(thanks to the compilation speed and the caching of the generated binary).
 
 .. table:: Few OpenCL devices we have tested our code on. :label:`Devices`
     :class: w
@@ -356,7 +355,7 @@ and in order to exploit the sparse structure, both the index and the weight of e
 
 By making this change we switched from a “linear read / random write” forward algorithm to a
 “random read / linear write” backward algorithm which is more suitable for parallelisation.
-For optimal memory access patterns, the array of the LUT may be transposed depending on the underlying hardware (CPU vs GPU)
+For optimal memory access patterns, the array of the LUT may be transposed depending on the underlying hardware (CPU vs GPU).
 
 Optimisation of the sparse matrix multiplication
 ................................................
@@ -420,7 +419,7 @@ Choice of the algorithm
 The LUT contains pairs of an index and a coefficient, hence it is an *array of struct* pattern which is known to make best use of CPU caches.
 On the contrary, the CSR sparse matrix representation is a *struct of array* which is better adapted to GPU.
 As we can see in figure :ref:`serial-lut-csr`, both LUT and CSR outperform the serial code, and both behave similarly:
-the penalty of the *array of struct* in CSR is counter-balanced by the smaller chunk of data to be transferred from central memory to CPU
+the penalty of the *array of struct* in CSR is counter-balanced by the smaller chunk of data to be transferred from central memory to CPU.
 
 .. figure:: serial_lut_csr.png
 
@@ -433,7 +432,7 @@ OpenMP vs OpenCL
 
 The gain in portability obtained by the use of OpenCL does not mean a sacrifice in performance when the code is run on a CPU,
 as we can see in figure :ref:`openmp-opencl-intel-amda`: the OpenCL implementation outperforms the OpenMP one, in all the different CPUs it was tested on.
-This could be linked to the better use of SIMD vector units by the OpenCL.
+This could be linked to the better use of SIMD vector units by OpenCL.
 The dual Xeon E5520 (a computer from 2009), running at only 2.2 GHz shows pretty good performances compared to more recent computers when using OpenMP:
 it was the only one with activated hyper-threading.
 
@@ -453,8 +452,8 @@ On the older Intel Xeon E-5520 (Nehalem core) which lacks those extensions, the 
 GPUs and Xeon Phi
 -----------------
 
-Figure :ref:`gpusa` compares the integration speed of the LUT and CSR implementation on many-core devices.
-The CSR implementation, thanks to the multiple collaborative parallel reductions, runs much faster on all the GPUs used, compared to the LUT one.
+Figure :ref:`gpusa` compares the integration speed of the LUT and CSR implementation on two GPUs.
+The CSR implementation, thanks to the multiple collaborative parallel reductions, runs much faster on all the devices used, compared to the LUT one.
 Another benefit of the CSR implementation when it comes to GPUs is its lower memory usage.
 The ATI GPU used in this study features only 1 GB of memory usable by OpenCL, limiting the processable size of the system.
 This is the reason the benchmarks stop before reaching the largest image size.
@@ -482,19 +481,21 @@ As stated previously, the benchmark tests were performed using the *timeit* modu
 on the last line of the code snippet described in :ref:`use`.
 One may wonder what is the actual time spent in which part of the OpenCL code and how much is the Python overhead.
 Table :ref:`profile` shows the execution time on the GeForce Titan (controlled by a pair of Xeon 5520).
-The overhead of Python in around 40% compared to the total execution time, and the actual azimuthal integration
+The first entry in the table is the total exeution time of ai.integrate1d, as measured by *timeit*,
+while the rest are the results from the OpenCL profiler. D->H and H->D stand for memcopy operations from and to the device respectively and the rest are kernel calls.
+The overhead of Python is around 40% compared to the total execution time, and the actual azimuthal integration
 represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
 All vendors are currently working on an unified memory space, which will be available for OpenCL 2.0.
 It will reduce the time spent in transfers and simplify programming.
 
-If one focuses only on the timing of the integration kernel, then one could wrongly conclude that pyFAI is able to sustain the speed of the fastest detectors.
-Unfortunately, even at 2 ms processing per image, few hard-drives are able to deliver the requested Gigabytes per second of data this represents.
+If one focuses only on the timing of the integration kernel, then one could wrongly conclude that pyFAI is able to sustain the speed of the fastest detectors. For example, the 2ms of processing time for a 32bit, 1Mpixel image would correspond to a processing rate of 2GB/s. 
+Unfortunately few hard-drives are able to perform that well.
 
 
 .. table:: OpenCl profiling of the integration of a Pilatus 1M image on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
 
                                  +-----------------+---------+
-                                 |  ai.intergate1d | 2.030ms |
+                                 |  ai.integrate1d | 2.030ms |
                                  +-----------------+---------+
                                  |    OpenCL_total | 1.445ms |
                                  +-----------------+---------+
