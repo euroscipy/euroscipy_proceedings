@@ -69,17 +69,17 @@ structures, the numerical simulations of liver perfusion can be
 performed using different mathematical models of blood flow at
 different spatial scales. The question, how to obtain all the
 necessary parameters of our models (permeabilities, etc.) is out of
-the scope of this paper. More information can be found in [RL12]_ or
+the scope of this paper. More information can be found in [Roh12b]_ or
 [Coo12]_.
 
 The mathematical model of tissue perfusion presented in this paper has
 been already used for similar problems, e.g. for cardiac perfusion
-[Mich13]_. With this in mind, our modelling approach seems to be
+[Mic13]_. With this in mind, our modelling approach seems to be
 reasonable in the context of current computational biomechanics.
 
 The main part of computation is performed in SfePy, which is an open
 source Python framework for solving various problems described by
-partial differential equations, see [Cim]_, [Cim14]_. Because we
+partial differential equations, see [Cim14]_, [Cim14b]_. Because we
 participate in the development of the code, we have a full control
 over the computational process and we are able to easily modify the
 code or extend it to solve specific tasks. To extract geometrical data
@@ -99,13 +99,13 @@ is depicted in Fig. :ref:`swtools`.
 Volumetric model of liver parenchyma
 ------------------------------------
 
-We developed an application called DICOM2FEM [Luk]_ for semi-automatic
+We developed an application called DICOM2FEM [Luk14]_ for semi-automatic
 segmentation and generation of finite element meshes from CT scans
 stored in the DICOM file format. Because it is a standard format for
 storing information in medical imaging we are able to process data
 from a wide range of sources (Magnetic Resonance Imaging, Positron
 Emission Tomography, etc.). A series of the DICOM files is handled by
-the pydicom library [Mas]_. The graphical user interface of DICOM2FEM
+the pydicom library [Mas14]_. The graphical user interface of DICOM2FEM
 (Fig. :ref:`dicom2fem`) is build up using PyQt library and the
 resulting data structures are stored to the VTK (Visualization
 Toolkit) file by the help of PyVTK. Segmented bodies can be visualized
@@ -120,16 +120,16 @@ magnetic resonance data is hard to solve because of low density
 (intensity) contrast to adjacent organs like stomach or
 hearth. Moreover, large individual anatomy differences should be taken
 into account. Various methods for segmentation are compared in
-[MRMM12]_ and [Hei09]_.
+[Mha12]_ and [Hei09]_.
 
 ..
     and Graph-Cut. Based on evaluation system described in
     second cited source our algorithm achieved 61 points.
 
 Our segmentation approach is based on the Graph-Cut method described
-in [BVZ01]_ and [BF06]_. We use the original implementation of
-max-flow/min-cut algorithm [Kol]_ and the Python wrapper by Andreas
-Müller [Mül]_. Known weakness of the algorithm is great memory demand,
+in [Boy01]_ and [Boy06]_. We use the original implementation of
+max-flow/min-cut algorithm [Kol14]_ and the Python wrapper by Andreas
+Müller [Mül14]_. Known weakness of the algorithm is great memory demand,
 memory usage is quickly increasing as the data size grows. In our case
 we define a region of interest and downsampling to suppress this
 disadvantage. The Graph-Cut method combines advantages of region and
@@ -149,27 +149,29 @@ specifies weight of the region :math:`R(A)` and the boundary term
 
 For our purpose, the main benefit of this algorithm is a precise
 control of the segmentation process. As it is shown in
-Fig. :ref:`dicom2fem`, the user interactively selects the liver tissue
-with the left mouse button (green seeds) and the regions out of the
-liver with the right mouse button (red seeds). Based on the seeds the
-density three component Gaussian mixture model is estimated for the
-liver and the outer region. Using the Gaussian model a graph
-representing input data and seeds is constructed. By minimizing the
-cost function using the max-flow/min-cut algorithm, the segmentation
-of the CT scans is computed.
+Fig. :ref:`dicom2fem`, the user (experienced in human anatomy) interactively
+selects the liver tissue with the left mouse button (green seeds) and
+the regions out of the liver with the right mouse button (red
+seeds). Based on the seeds the density three component Gaussian
+mixture model is estimated for the liver and the outer region. Using
+the Gaussian model a graph representing input data and seeds is
+constructed. By minimizing the cost function using the
+max-flow/min-cut algorithm, the segmentation of the CT scans is
+computed.
 
 .. figure:: dicom2fem_seg4.png
 
    Segmentation editor for semi-automated segmentation of CT scans;
    region of interest marked by green, region out of interest marked
-   by red. :label:`dicom2fem`
+   by red. The selection should be made by a user experienced in the
+   anatomy. :label:`dicom2fem`
 
 Mesh generation
 ===============
 
 The result of the segmentation process is a 3-dimensional binary array
 (voxel array) together with information about the real size of the
-voxels. The marching cubes algorithm [LC87]_ is used to generate
+voxels. The marching cubes algorithm [Lor87]_ is used to generate
 polygonal mesh of the organ surface. To improve the quality of surface
 mesh, we apply the Taubin smoothing procedure [Tau95]_ that is able to
 preserve the total volume of the segmented organ. The smoothing
@@ -204,7 +206,7 @@ Reconstruction of vascular structures
 =====================================
 
 We obtain real vascular trees from CT scans using LISA (LIver Surgery
-Analyser) [Jir]_. It was developed as a tool for surgeons to help them
+Analyser) [Jir14]_. It was developed as a tool for surgeons to help them
 in a preoperative planning of liver resections. To be able to analyze
 and detect the vascular structure, we need data form perfusion CT
 examinations, when a contrast fluid is injected into the blood system
@@ -251,7 +253,7 @@ so the automated algorithm generates disconnected trees or trees with
 various non-physiological artifacts. To avoid problems in further
 simulation steps, we propose to take just a part of the reconstructed
 tree and to generate the rest artificially using the constructive
-optimization method [GPH]_. This method is based on minimization of
+optimization method [Geo10]_. This method is based on minimization of
 intravascular blood volume and energy lost to friction. For global
 optimization, a multilevel strategy with topological changes is used.
 
@@ -264,7 +266,7 @@ together. During the smoothing operation, the branching points are
 tested for splitting, this operation splits single branching into two
 smaller to minimize the global cost. The splitting operation is
 crucial step in the optimization process but also very computationally
-expensive. In [GPH]_, an efficient algorithm reducing this complexity
+expensive. In [Geo10]_, an efficient algorithm reducing this complexity
 is proposed. The smoothing loop is repeated until the global cost is
 minimized and further minimization can be achieved only by changing
 the tree topology. Branches in a certain hierarchy, see
@@ -314,8 +316,8 @@ flows in a 3D porous media governed by the Darcy's equation. Spatially
 co-existing domains are referred as compartments, each of them
 reflects a certain hierarchy of the tissue vascularity. The
 compartments are coupled together and communicate with the 1D flow
-model through sources and sinks, see Refs. [RLJB12]_, [RL12]_,
-[Mich13]_, [JRLB14]_.
+model through sources and sinks, see Refs. [Roh12]_, [Roh12b]_,
+[Mic13]_, [Joa14]_.
 
 The multicompartment approach allows to respect the different
 characteristic features of perfusion hierarchies present in the tissue
@@ -332,7 +334,7 @@ We assume that the simple 1D flow model gives sufficient accuracy in
 the context of our simulations. The main advantage of the 1D model
 is the minimal computational cost compared to a full 3D flow
 simulation which obviously would give more realistic results. A
-detailed study of 3D and 1D flow models can be found in [JBRV14]_.
+detailed study of 3D and 1D flow models can be found in [Joa14b]_.
 
 The mathematical model of the flow in the branching tree can be
 described by the mass conservation and Bernoulli equations:
@@ -417,8 +419,8 @@ take coupling parameters :math:`G_1^2`, :math:`G_2^3` (and also
 0`.
 
 The discretized perfusion model is based on the weak formulation of
-(:ref:`darcy1`)-(:ref:`darcy2`): Find :math:`p_i \in V^i` such that
-for all :math:`q_i \in V^i_0`:
+(:ref:`darcy1`) and (:ref:`darcy2`): Find :math:`p_i \in V^i` such
+that for all :math:`q_i \in V^i_0`:
 
 .. math::
    :label: darcy3
@@ -429,16 +431,16 @@ for all :math:`q_i \in V^i_0`:
 
 for all compartments :math:`i = 1,\dots,N`, where :math:`V^i`,
 :math:`V^i_0` are admissible sets, for more details see
-Ref. [RLJB12]_.
+Ref. [Roh12]_.
 
 
 The multicompartment Darcy flow model is implemented in SfePy (Simple
-Finite Elements in Python), see [Cim]_, [Cim14]_. SfePy is a framework
+Finite Elements in Python), see [Cim14]_, [Cim14b]_. SfePy is a framework
 for solving various kinds of problems (mechanics, physics, biology, ...)
 described by partial differential equations in two or three
 space dimensions by the finite element method. The code is written
 mostly in Python (C and Cython are used in some places due to
-speed). Solvers and algorithms from SciPy [JOP]_ are used as well.
+speed). Solvers and algorithms from SciPy [Jon14]_ are used as well.
 
 
 Transport of contrast fluid
@@ -454,7 +456,7 @@ transport of the contrast fluid within one compartment, but also its
 exchange between several compartments are numerically solved using an
 upwind cell-centered finite volume scheme formulated for unstructured
 grids in combination with the second-order accurate two-stage
-Runge-Kutta method [JRLB14]_.
+Runge-Kutta method [Joa14]_.
 
 
 Numerical results
@@ -528,33 +530,31 @@ CZ.1.05/1.1.00/02.0090.
 References
 ----------
 
-.. [BVZ01] Y. Boykov, O. Veksler, R. Zabih. *Fast approximate energy
+.. [Boy01] Y. Boykov, O. Veksler, R. Zabih. *Fast approximate energy
            minimization via graph cuts.* In Pattern Analysis and
            Machine Intelligence, 23(11):1222-1239, 2001.
 
-.. [BF06] Y. Boykov, G. Funka-Lea. *Graph Cuts and Efficient N-D Image
-          Segmentation.* In International Journal of Computer Vision,
-          70:109–131, 2006.
+.. [Boy06] Y. Boykov, G. Funka-Lea. *Graph Cuts and Efficient N-D Image Segmentation.*
+           In International Journal of Computer Vision, 70:109–131, 2006.
 
-.. [Cim] R. Cimrman, et al. *SfePy, finite element code and
-         applications.* Home page: `<http://sfepy.org>`_.
+.. [Cim14] R. Cimrman, et al. *SfePy, finite element code and applications.*
+           Home page: `<http://sfepy.org>`_ [Accessed 2014-08-20].
 
-.. [Cim14] R. Cimrman. *SfePy - Write Your Own {FE} Application.* In
-           Proceedings of the 6th European Conference on Python in
-           Science (EuroSciPy 2013), pages 65-70, 2014. `<http://arxiv.org/abs/1404.6391>`_.
+.. [Cim14b] R. Cimrman. *SfePy - Write Your Own {FE} Application.*
+            In Proceedings of the 6th European Conference on Python in
+            Science (EuroSciPy 2013), pages 65-70, 2014. `<http://arxiv.org/abs/1404.6391>`_.
 
 .. [Coo12] A. N. Cookson, J. Lee, C. Michler, R. Chabiniok, E. Hyde,
-           D. A. Nordsletten, M. Sinclair, M. Siebes, N. P. Smith. *A
-           novel porous mechanical framework for modelling the
+           D. A. Nordsletten, M. Sinclair, M. Siebes, N. P. Smith.
+           *A novel porous mechanical framework for modelling the
            interaction between coronary perfusion and myocardial
-           mechanics.* In Journal of Biomechanics,
-           45(5):850-855, 2012.
+           mechanics.* In Journal of Biomechanics, 45(5):850-855, 2012.
 
-.. [GPH] M. Georg, T. Preusser, H. K. Hahn. *Global Constructive
-         Optimization of Vascular Systems.* Technical Report:
-         Washington University in
-         St. Louis. `<http://cse.wustl.edu/Research/Lists/Technical
-         Reports/Attachments/910/idealvessel_1.pdf>`_.
+.. [Geo10] M. Georg, T. Preusser, H. K. Hahn. *Global Constructive
+           Optimization of Vascular Systems.* Technical Report:
+           Washington University in
+           St. Louis. `<http://cse.wustl.edu/Research/Lists/Technical
+           Reports/Attachments/910/idealvessel_1.pdf>`_.
 
 .. [Hei09] Heimann et al. *Comparison and evaluation of methods for
            liver segmentation from CT datasets.* In IEEE Transactions
@@ -563,56 +563,56 @@ References
 .. [Hom07] H. Homann. *Implementation of a 3D thinning algorithm.* In
            Insight Journal, July - December, 2007.
 
-.. [Jir] M. Jiřík. *LISA - LIver Surgery Analyser.* Home page:
-         `<https://github.com/mjirik/lisa>`_.
+.. [Jir14] M. Jiřík. *LISA - LIver Surgery Analyser.* Home page:
+           `<https://github.com/mjirik/lisa>`_ [Accessed 2014-08-20].
 
-.. [JRLB14] A. Jonášová, E. Rohan, V. Lukeš, O. Bublík. *Complex
-            hierarchical modeling of the dynamic perfusion test:
-            application to liver.* In Proceedings of 11th World Congres
-            of Computational Mechanics, 2014.
+.. [Joa14] A. Jonášová, E. Rohan, V. Lukeš, O. Bublík. *Complex
+           hierarchical modeling of the dynamic perfusion test:
+           application to liver.* In Proceedings of 11th World Congres
+           of Computational Mechanics, 2014.
 
-.. [JBRV14] A. Jonanášová, O. Bublík, E. Rohan, J. Vimmr. *Simulation
-            of contrast medium propagation based on 1D and 3D portal
+.. [Joa14b] A. Jonášová, O. Bublík, E. Rohan, J. Vimmr. *Simulation of
+            contrast medium propagation based on 1D and 3D portal
             hemodynamics.* In: Proc. of the 20th International
             Conference Engineering Mechanics, Svratka, Czech
             Republic, 2014.
 
-.. [JOP] E. Jones, T. E. Oliphant, P. Peterson, et al. *SciPy: Open
-         source scientific tools for Python.* Home page:
-         `<http://www.scipy.org>`_.
+.. [Jon14] E. Jones, T. E. Oliphant, P. Peterson, et al. *SciPy: Open
+            source scientific tools for Python.* Home page:
+            `<http://www.scipy.org>`_ [Accessed 2014-08-20].
 
-.. [Kol] V. Kolmogorov. *Max-flow/min-cut.* Home page:
-         `<http://vision.csd.uwo.ca/code/>`_.
+.. [Kol14] V. Kolmogorov. *Max-flow/min-cut.* Home page:
+           `<http://vision.csd.uwo.ca/code/>`_ [Accessed 2014-08-20].
 
-.. [LC87] W. E. Lorensen, H. E. Cline. *Marching Cubes: A high
-          resolution 3D surface construction algorithm.* Computer
-          Graphics, Vol. 21, Nr. 4, 1987.
+.. [Lor87] W. E. Lorensen, H. E. Cline. *Marching Cubes: A high
+           resolution 3D surface construction algorithm.* Computer
+           Graphics, Vol. 21, Nr. 4, 1987.
 
-.. [Luk] V. Lukeš. *DICOM2FEM - application for semi-automatic
-         generation of finite element meshes.* Home page:
-         `<http://sfepy.org/dicom2fem>`_.
+.. [Luk14] V. Lukeš. *DICOM2FEM - application for semi-automatic
+           generation of finite element meshes.* Home page:
+           `<http://sfepy.org/dicom2fem>`_ [Accessed 2014-08-20].
 
-.. [Mas] D. Mason. *pydicom*, available at
-         `<https://code.google.com/p/pydicom/>`_.
+.. [Mas14] D. Mason. *pydicom*, available at
+           `<https://code.google.com/p/pydicom/>`_ [Accessed 2014-08-20].
 
-.. [MRMM12] A. M. Mharib, A. R. Ramli, S. Mashohor, R. B. Mahmood. *Survey
-            on liver CT image segmentation methods.* In Artificial
-            Intelligence Review, 37(2):83-95, 2012.
+.. [Mha12] A. M. Mharib, A. R. Ramli, S. Mashohor, R. B. Mahmood. *Survey
+           on liver CT image segmentation methods.* In Artificial
+           Intelligence Review, 37(2):83-95, 2012.
 
-.. [Mich13] C. Michler, A. Cookson, R. Chabiniok, E. Hyde, J. Lee,
-            M. Sinclair, T. Sochi, A. Goyal, G. Vigueras, D. Nordsletten, N. Smith. *A
-            computationally efficient framework for the simulation of
-            cardiac perfusion using a multi-compartment Darcy
-            porous-media flow model.* Int. Journal for Numerical
-            Methods in Biomedical Engineering, 29(2):217-32, 2013.
+.. [Mic13] C. Michler, A. Cookson, R. Chabiniok, E. Hyde, J. Lee,
+           M. Sinclair, T. Sochi, A. Goyal, G. Vigueras, D. Nordsletten, N. Smith.
+           *A computationally efficient framework for the simulation
+           of cardiac perfusion using a multi-compartment Darcy
+           porous-media flow model.* Int. Journal for Numerical
+           Methods in Biomedical Engineering, 29(2):217-32, 2013.
 
-.. [Mül] A. Müller. *Python wrappers for GCO alpha-expansion and
-          alpha-beta-swaps.* Home page:
-          `<https://github.com/amueller/gco_python>`_.
+.. [Mül14] A. Müller. *Python wrappers for GCO alpha-expansion and
+           alpha-beta-swaps.* Home page:
+           `<https://github.com/amueller/gco_python>`_ [Accessed 2014-08-20].
 
 .. [Oli07] T. E. Oliphant. *Python for scientific computing.* In
            Computing in Science & Engineering,
-           9(3):10-20, 2007. `<http://www.numpy.org>`_.
+           9(3):10-20, 2007. Home page: `<http://www.numpy.org>`_.
 
 .. [Tau95] G. Taubin. *A signal processing approach to fair surface
            design.* In Siggraph'95 Conference Proceedings, pages
@@ -621,16 +621,15 @@ References
 .. [Tau00] G. Taubin. *Geometric Signal Processing on Polygonal
            Meshes.*, In EUROGRAPHICS 2000, 2000.
 
-.. [RLJB12] E. Rohan, V. Lukeš, A. Jonášová, O. Bublík. *Towards
-            microstructure based tissue perfusion reconstruction from
-            CT using multiscale modeling.* In Proc. of the 10th World
-            Congress on Computational Mechanics, Sao Paulo, Brasil,
-            2012.
+.. [Roh12] E. Rohan, V. Lukeš, A. Jonášová, O. Bublík. *Towards
+           microstructure based tissue perfusion reconstruction from
+           CT using multiscale modeling.* In Proc. of the 10th World
+           Congress on Computational Mechanics, Sao Paulo, Brasil, 2012.
 
-.. [RL12] E. Rohan, V. Lukeš. *Modeling tissue perfusion using a
-          homogenized model with layer-wise decomposition.* In
-          Preprints MATHMOD 2012, Vienna University of Technology,
-          Austria, (2012).
+.. [Roh12b] E. Rohan, V. Lukeš. *Modeling tissue perfusion using a
+            homogenized model with layer-wise decomposition.*
+            In Preprints MATHMOD 2012, Vienna University of Technology,
+            Austria, (2012).
 
 .. [Sel02] D. Selle, B. Preim, A. Schenk, H. O. Peitgen. *Analysis of
            vasculature for liver surgical planning.* In IEEE
