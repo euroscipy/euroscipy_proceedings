@@ -51,7 +51,7 @@ In section 6, serial and parallel implementations using [OpenMP]_ and [OpenCL]_ 
 Description of the experiment
 =============================
 
-X-rays are electromagnetic waves, similar to visble light, except for their wavelengths which are much shorter,
+X-rays are electromagnetic waves, similar to visible light, except for their wavelengths which are much shorter,
 typically of the size of inter-atomic distances, making them a perfect probe to analyse atomic and molecular structures.
 X-rays can be elastically scattered (i.e. re-emitted with the same energy) by the electron cloud surrounding atoms.
 When atoms are arranged periodically, as in a crystal, scattered X-rays interfere in a constructive way
@@ -103,13 +103,13 @@ Test case
 To let the reader have an idea of the scale of the problem and the performances needed, we will work on
 the simulated image of gold powder diffracting an X-ray beam of wavelength = 1.0e-10m (the intensity of all rings is the same).
 The detector, which has a pixel size of 1e-4m (2048x2048 pixels), is placed at a distance of 0.1 m from the sample, orthogonal to the incident beam, which coincides with the centre of the rings.
-Figure :ref:`rings` represents the input diffraction image (left-hand side) and the integrated profile along the azimuthal angle (right-hand side).
+Figure :ref:`rings` represents the input diffraction image (upper part) and the integrated profile along the azimuthal angle (lower part).
 The radial unit in this case is simply the radius calculated from :math:`r=\sqrt{(x - x_c)^2 + (y - y_c)^2}`,
-while crystallographers would have preferred :math:`2\theta` or the scattering vector norm *q*.
+while crystallographers would have preferred :math:`2\theta` or the scattering vector length *q*.
 
 .. figure:: rings2.png
 
-   Simulated powder diffraction image (left) and integrated profile (right).  :label:`rings`
+   Simulated powder diffraction image (top) and integrated profile (bottom).  :label:`rings`
 
 
 Naive implementation
@@ -176,7 +176,7 @@ Apparently the use of atomic operation is still not yet possible in [Cython]_ (s
 Multi-threaded histogramming was made possible by having several threads running simultaneously, each working on a separate histogram,
 which implies the allocation of much more memory for output arrays.
 
-.. table:: Azimuthal integration time for a 4 Mpix image measured on two Xeon E5520 (2x 4-core hyperthreaded at 2.2 GHz) :label:`Cython`
+.. table:: Azimuthal integration time for a 4 Mpix image measured on two Xeon E5520 (2x 4-core hyper-threaded at 2.2 GHz) :label:`Cython`
 
    +----------------+----------------+
    | Implement.     | Exec. time (ms)|
@@ -214,9 +214,9 @@ results obtained this way ought to be less noisy than the case where pixel split
 This becomes more apparent when the number of pixels falling into each bin
 is small like for example for 2D integration.
 Figure :ref:`bidimentional` presents the results of such an integration, performed using histograms
-on the left-hand side, i.e. without pixel splitting: some
-high frequency patterns are visible near the beam center on the left-hand side of the figure.
-The right-hand side image was produced using pixel splitting and is
+on the top image, i.e. without pixel splitting.
+Some high frequency patterns are visible near the beam center on the left-hand side of this figure.
+The bottom image was produced using pixel splitting and is
 unharmed by such defects, which are related to low statistics.
 Note that for 2D integration, this transformation looks like an interpolation,
 but interpolation neither guarantees the conservation of the signal :math:`\sum{image} = \sum{ weighted\ histogram }`
@@ -266,7 +266,7 @@ Taking the absolute value of the sum of all these integrals
 will yield the area of the pixel segment.
 Now, the contributions to the histograms are calculated using these areas.
 The difficult part here was the definition of the limits of each of the integrals in a
-way that wouldn’t hinder the performance by adding many conditionals.
+way that would not hinder the performance by adding many conditionals.
 
 Discussion on the statistics
 ----------------------------
@@ -478,43 +478,47 @@ Kernel timings
 --------------
 
 As stated previously, the benchmark tests were performed using the *timeit* module from Python
-on the last line of the code snippet described in :ref:`use`.
+on the last line of the code snippet described in section :ref:`use`.
 One may wonder what is the actual time spent in which part of the OpenCL code and how much is the Python overhead.
-Table :ref:`profile` shows the execution time on the GeForce Titan (controlled by a pair of Xeon 5520).
-The first entry in the table is the total exeution time of ai.integrate1d, as measured by *timeit*,
-while the rest are the results from the OpenCL profiler. D->H and H->D stand for memcopy operations from and to the device respectively and the rest are kernel calls.
-The overhead of Python is around 40% compared to the total execution time, and the actual azimuthal integration
-represents only 20% of the time, while 40% is spent in transfers from central memory to device memory.
-All vendors are currently working on an unified memory space, which will be available for OpenCL 2.0.
-It will reduce the time spent in transfers and simplify programming.
+This analysis has been done using the profiling tools of OpenCL which measured the execution of every action put in queue.
+To be able to perform the azimuthal integration, the image is first transfered to the device (GPU), then casted from integer to float.
+All pixel-wise correction (dark current subtraction, flat field normalization, solid-angle and polarization factor correction) are applied in a single pass over each pixel of the image.
+Output arrays are initialised to zero, by a separate kernel (memset) before the actual sparse-matrix-dense-vector multiplication.
+Finally the three output buffers are retrieved from the device.
 
-If one focuses only on the timing of the integration kernel, then one could wrongly conclude that pyFAI is able to sustain the speed of the fastest detectors. For example, the 2ms of processing time for a 32bit, 1Mpixel image would correspond to a processing rate of 2GB/s. 
-Unfortunately few hard-drives are able to perform that well.
+Table :ref:`profile` shows the execution time measured on the GeForce Titan (controlled by a pair of Xeon 5520).
+The first entry in the table is the total execution time at the Python level, as measured by *timeit*: 2 ms,
+while the second is the sum of all of the execution times measured by the OpenCL profiler: 1.4 ms, which highlights how little the Python overhead can be (<40%).
+The most time-consuming part of the whole process is by far the memory transfer of the image (H->D meaning Host to Device, 0.8ms).
+All vendors are currently working on an unified memory space, which will be available for OpenCL 2.0, which will reduce the time spent in transfers and simplify programming.
+Finally the azimuthal integration takes up only 0.4 ms, that is, 20% of the total run time.
+If one focuses only on the timing of the integration kernel, then he would wrongly conclude that pyFAI is able to match the speed of the fastest detectors.
+For example, the 2 ms of processing time for a 1 Mpixel image of 32 bit integers, correspond to a processing rate of 2 GB/s, while our fastest storage solutions (solid-state drives)
+are currently only able to provide half of that.
 
+.. table:: OpenCl profiling of the integration of a Pilatus 1M image (981x1043 pixels of signed 32 bits integers) on a GeForce Titan, running on a dual Xeon 5520. :label:`profile`
 
-.. table:: OpenCl profiling of the integration of a Pilatus 1M image on a GeForce Titan running on a dual Xeon 5520. :label:`profile`
-
-                                 +-----------------+---------+
-                                 |  ai.integrate1d | 2.030ms |
-                                 +-----------------+---------+
-                                 |    OpenCL_total | 1.445ms |
-                                 +-----------------+---------+
-                                 |      H->D image | 0.762ms |
-                                 +-----------------+---------+
-                                 |            cast | 0.108ms |
-                                 +-----------------+---------+
-                                 |          memset | 0.009ms |
-                                 +-----------------+---------+
-                                 |     corrections | 0.170ms |
-                                 +-----------------+---------+
-                                 |       integrate | 0.384ms |
-                                 +-----------------+---------+
-                                 |     D->H  ratio | 0.004ms |
-                                 +-----------------+---------+
-                                 |     D->H u_hist | 0.004ms |
-                                 +-----------------+---------+
-                                 |     D->H w_hist | 0.004ms |
-                                 +-----------------+---------+
+         +-----------------+---------+
+         |   Python  total | 2.030ms |
+         +-----------------+---------+
+         |          OpenCL | 1.445ms |
+         +-----------------+---------+
+         |      H->D image | 0.762ms |
+         +-----------------+---------+
+         |            cast | 0.108ms |
+         +-----------------+---------+
+         |          memset | 0.009ms |
+         +-----------------+---------+
+         |       correction| 0.170ms |
+         +-----------------+---------+
+         |       integrate | 0.384ms |
+         +-----------------+---------+
+         |     D->H  ratio | 0.004ms |
+         +-----------------+---------+
+         |     D->H u_hist | 0.004ms |
+         +-----------------+---------+
+         |     D->H w_hist | 0.004ms |
+         +-----------------+---------+
 
 Configuration and Drivers used
 ------------------------------
