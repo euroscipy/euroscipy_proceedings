@@ -64,18 +64,20 @@ The aim of the temporal calibration is to estimate the time delay between US and
 US probe spatial calibration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The probe spatial calibration is an essential procedure for image reconstruction which allows to determine the *pose* (position and orientation) of the US images with respect to the POS device. The corresponding results take the form of six parameters, three for position and three for orientation. The quality of this step mainly influences the reconstruction quality of the anatomical shape. To perform the probe calibration we used two different steps. First we applied an established procedure already published in the literature [Prager98]_ and later we tuned the results by using an image compounding algorithm [Wein08]_. The established procedure was proposed by Prager et al. [Prager98]_ and improved by Hsu [Hsu06]_, with the idea of scanning the floor of a water tank by covering all the degrees of freedom (:ref:`calib`); this scanning modality produces clear and consistent edge lines (between water and tank bottom) in the US images (B-scans). All the pixels lying on the visible line in the B-scan should satisfy equations that come from the different spatial transformations, which leave to solve 11 identifiable parameters. Each B-scan can be used to write 2 equations. The overdetermined set of equations is solved using the Levenberg-Marquardt algorithm. We found that it is essential to move the US transducers following the sequence of movements suggested in [Prager98]_, in order to have reasonable results.
+The probe spatial calibration is an essential procedure for image reconstruction which allows to determine the *pose* (position and orientation) of the US images with respect to the POS device. The corresponding results take the form of six parameters, three for position and three for orientation. The quality of this step mainly influences the reconstruction quality of the anatomical shape. To perform the probe calibration we used two different steps. First we applied an established procedure already published in the literature [Prager98]_ and later we tuned the results by using an image compounding algorithm [Wein08]_. The established procedure was proposed by Prager et al. [Prager98]_ and improved by Hsu [Hsu06]_, with the idea of scanning the floor of a water tank by covering all the degrees of freedom (see Figure :ref:`calib`); this scanning modality produces clear and consistent edge lines (between water and tank bottom) in the US images (B-scans). All the pixels lying on the visible line in the B-scan should satisfy equations that come from the different spatial transformations, which leave to solve 11 identifiable parameters. Each B-scan can be used to write 2 equations. The overdetermined set of equations is solved using the Levenberg-Marquardt algorithm. We found that it is essential to move the US transducers following the sequence of movements suggested in [Prager98]_, in order to have reasonable results. The equation that a pixel with image coordinates :math:`(u,v)` must satisfy (see [Prager98]_ for details) is as follows:
+
+| 
+
+:math:`\begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} =\ ^{C}T_{T}\ ^{T}T_{R}\ ^{R}T_{P} \begin{pmatrix} s_{x}u \\ s_{y}v \\ 0 \\ 1 \end{pmatrix}`
+
+| 
+ 
+where :math:`s_{x}` and :math:`s_{y}` are conversion factors from *pixel* to *mm*.
 
 .. figure:: probe_calib.png
 
    The aim of the US probe spatial calibration is to find the roto-translation matrix :math:`^{R}T_{P}` from the image reference frame (P) to the transducer reference frame (R). The other two roto-translation matrices :math:`^{T}T_{R}` and :math:`^{C}T_{T}` (respectively, from transducer to optoelectronic system and from optoelectronic system to calibration phantom) are known for every time frame of the calibration acquisition. :label:`calib`
-
-
-Below the equation that a pixel with image coordinates :math:`(u,v)` must satisfy (see [Prager98]_ for details). :math:`s_{x}` and :math:`s_{y}` are conversion factors from *pixel* to *mm*.
-
-|
-
-:math:`\begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} = ^{C}T_{T} ^{T}T_{R} ^{R}T_{P} \begin{pmatrix} s_{x}u \\ s_{y}v \\ 0 \\ 1 \end{pmatrix}`
+   
  
 This is the code snippet for the equation creation: 
 
@@ -128,7 +130,6 @@ This is the code snippet for the equation creation:
     gamma1, x2, y2, z2, alpha2, beta2, gamma2])
     J = Pph.jacobian(x)
 
-| 
 
 The equations system was solved by using the function ``scipy.optimize.root`` with ``method='lm'``.
 
@@ -173,7 +174,7 @@ A calibration quality assessment was also implemented in terms of precision and 
 3D voxel array reconstruction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The 3D reconstruction is performed by positioning the 2D US scans in the 3D space by using the corresponding pose. The first step is to import the images (DICOM file, standard format for medical imaging) and the synchronized kinematics files (C3D format) containing pose data. A 3D voxel array is then initialized. The 3D voxel array (a parallelepipedon) should be the smallest one containing the sequence of all the repositioned scans (:ref:`voxarrsmall`), in order to avoid RAM waste. To face this issue, in the present package two options are presented: reorienting manually the global reference frame in order to be approximately aligned with the scan direction during the acquisition; on the other hand, by using the Principal Component Analysis (PCA), it is also possible to find the scan direction and thereby realigning the voxel array according to this direction.
+The 3D reconstruction is performed by positioning the 2D US scans in the 3D space by using the corresponding pose. The first step is to import the images (DICOM file, standard format for medical imaging) and the synchronized kinematics files (C3D format) containing pose data. A 3D voxel array is then initialized. The 3D voxel array (a parallelepipedon) should be the smallest one containing the sequence of all the repositioned scans, as seen in Figure :ref:`voxarrsmall`, in order to avoid RAM waste. To face this issue, in the present package two options are presented: reorienting manually the global reference frame in order to be approximately aligned with the scan direction during the acquisition; on the other hand, by using the Principal Component Analysis (PCA), it is also possible to find the scan direction and thereby realigning the voxel array according to this direction.
 
 .. figure:: diag_scan_direction.png
 
@@ -206,11 +207,11 @@ The grey values of the original pixels in the 2D slices are then copied in the n
 | 
 
 Only 2 outer loops exist, one for the DICOM file number and one for the scan number.
-After all the scans are correctly positioned in the 3D space, gaps can occur in the voxel array when the voxel size is small compared to the distance between the acquired images (e.g. scanning velocity significantly different from 0). Therefore interpolation methods are applied for filling these empty voxels. For optimizing this process, a robust method was also used, i.e. convex hull (:ref:`convhull`), for restricting the gap filling operation only to the voxels contained between 2 consecutive slices:
+After all the scans are correctly positioned in the 3D space, gaps can occur in the voxel array when the voxel size is small compared to the distance between the acquired images (e.g. scanning velocity significantly different from 0). Therefore interpolation methods are applied for filling these empty voxels. For optimizing this process, a robust method was also used, i.e. convex hull (see Figure :ref:`convhull`), for restricting the gap filling operation only to the voxels contained between 2 consecutive slices:
 
 .. figure:: parall_vs_convexhull.png
 
-   Cosdering 2 US images consecutive in time, the convex hull is the smaller object able to contain them. An easier shape can be created, such as the parallelepipedon, but this si always bigger in volume. :label:`convhull`
+   Considering 2 US images consecutive in time, the convex hull is the smaller object able to contain them. An easier shape can be created, such as the parallelepipedon, but this is always bigger in volume. :label:`convhull`
 
 The quick-and-dirty way, known as VNN (Voxel Nearest Neighbour), consists of filling a gap by using the closest voxel having an assigned grey value. We also implemented another (average cube) solution which consist of the following steps:
 
@@ -231,7 +232,7 @@ Finally, both the voxel array scans silhouette (previously created with the wrap
 Preliminary results
 ~~~~~~~~~~~~~~~~~~~
 
-The calibration quality assessments were 1.9 mm and 3.9 mm for the distance accuracy and reconstruction precision, respectively. The average data processing time (calibration + reconstruction + gap filling) over 3 trials on a human calf (:ref:`calf`) was 5.9 min, on a 16 GB RAM Intel i7 2.7 GHz machine.
+The calibration quality assessments were 1.9 mm and 3.9 mm for the distance accuracy and reconstruction precision, respectively. The average data processing time (calibration + reconstruction + gap filling) over 3 trials on a human calf, shown in Figure :ref:`calf`, was 5.9 min, on a 16 GB RAM Intel i7 2.7 GHz machine.
 
 .. figure:: calf.png
 
