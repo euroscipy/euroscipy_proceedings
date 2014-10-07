@@ -129,12 +129,12 @@ pyFRET requires three further Python libraries,  namely numpy [numpy]_ and scipy
 Installation of pyFRET using the pip install method supported by PyPI will facilitate automatic installation of these packages if they are not already included in your Python build. 
 
 The lack of open source software in the smFRET community has led to a proliferation of esoteric file-types used for data collection and storage. 
-To make pyFRET as usable as possible for a wide range of smFRET researchers, the pyFRET data structures can be initialised using arrays of time-binned photons. The tutorial also demonstrates using pyFRET's file-parsing functions scripts to create pyFRET objects from common filetypes .
+To make pyFRET as usable as possible for a wide range of smFRET researchers, the pyFRET data structures can be initialised using arrays of time-binned photons. The tutorial also demonstrates using pyFRET's file-parsing functions scripts to create pyFRET objects from common filetypes.
 
 pyFRET currently provides basic tools for analysis and visualisation of smFRET data. 
 In the interest of providing the pyFRET infrastructure to smFRET researchers at an early stage, we are choosing to release our software at a relatively early stage of development. 
 pyFRET provides a complete tool-chain for analysis of time-binned smFRET data, but does not currently include a burst-search algorithm for identification of fluorescent bursts from photon arrival times [nir06]_. Fluorescent bursts identified using a burst search algorithm can be analysed using pyFRET by initialising a pyFRET data object from the paired burst photon frequencies.   Denoising and cross-talk correction is achieved in exactly the same manner as for time-binned data, but thresholding is not required. 
-We encourage researchers who wish to use pyFRET in its current implementation for data visualisation and analysis, but whose data consists of time-stamped photon arrivals to apply their own burst selection algorithms to generate arrays of fluorescent bursts that can be manipulated using pyFRET methods. We also welcome pull requests and contribuitions to the bitbucket repository.   
+We encourage researchers who wish to use pyFRET in its current implementation for data visualisation and analysis, but whose data consists of time-stamped photon arrivals to apply their own burst selection algorithms to generate arrays of fluorescent bursts that can be manipulated using pyFRET methods. We also welcome pull requests and contributions to the bitbucket repository.   
 
 
 Experimental Methods
@@ -174,7 +174,7 @@ ALEX data were then binned in intervals of 1 ms. The scripts and configuration f
 Results
 -------
 As an example of the analysis that can be performed using pyFRET, we collected data from dual-labelled DNA duplexes with various dye-dye separation distances, using both FRET and ALEX excitation patterns. 
-We then analysed the data using the pyFRET analsyis pipeline. 
+We then analysed the data using the pyFRET analysis pipeline. 
 Timebins were background corrected and events were selected using a fixed threshold. 
 FRET efficiency histograms were constructed and fitted to a single gaussian distribution. 
 The mean FRET efficiencies were then plotted against the dye separation distance to show the characteristic sigmoidal curve. 
