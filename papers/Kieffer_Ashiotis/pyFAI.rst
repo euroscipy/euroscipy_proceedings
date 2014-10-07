@@ -410,8 +410,9 @@ All benchmarks were performed using the same bounding box pixel splitting scheme
 Execution speed has been measured using the *timeit* module, averaged over 10 iterations (best of 3).
 The processing is performed on 1, 2, 4, 6, 12 and 16 Mpixel images, with pixel ranges of either 16 or 32 bits (int or uint), taken from actual diffraction experiments, which are part of the pyFAI test suite.
 
-The data come from various detectors and differ in the geometry used as well as in the input data type,
-which explains why processing the 16 Mpixel image is faster than the 12 Mpixel image in this benchmark.
+One small note on the benchmarks that follow. The casting for the 12 Mpixel image is done by one thread on the CPU.
+That is why the processing time of the 16 Mpixel image appears to be shorter than that of the 12 Mpixel one.
+
 
 Choice of the algorithm
 -----------------------
