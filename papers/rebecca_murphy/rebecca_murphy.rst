@@ -75,7 +75,7 @@ Furthermore, the lack of available open source software often requires new resea
 Secondly, the need for many researchers to develop and maintain their own analyis tools has significant impact on research productivity. 
 The requirement to reimplement standard analysis techniques consumes valuable time that could better be used in experimental research or in developing and benchmarking improved analysis tools. 
 Furthermore, most researchers have no formal training in software engineering, with the result that analysis software can vary hugely in quality and is frequently poorly documented and maintained, making it difficult for other researchers to understand and use. 
-New analysis scipts are often added in an ad hoc manner, with the result that straighforward tasks are performed using an unweildy mess of spaghetti code, transforming simple modifications into complex undertakings requiring significant time investmeent. 
+New analysis scipts are often added in an ad hoc manner, with the result that straighforward tasks are performed using an unwieldy mess of spaghetti code, transforming simple modifications into complex undertakings requiring significant time investment. 
 Poorly maintained code adds an additional barrier to open sharing of resources as groups are embarrassed to share low-quality software.  
 
 Finally, there is the issue of research reproducibility. Different research groups use widely differing tools to complete similar tasks. 
