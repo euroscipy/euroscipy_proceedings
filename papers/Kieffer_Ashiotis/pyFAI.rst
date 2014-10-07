@@ -197,7 +197,7 @@ which implies the allocation of much more memory for output arrays.
    +----------------+----------------+
 
 
-The gains in performance obtained by this method :ref:`Cython` were minor, especially when using more than 2 threads,
+The gains in performance obtained by this method (see table :ref:`Cython`) were minor, especially when using more than 2 threads,
 illustrating the limits of the paralellisation scheme.
 The only way to go faster is to start thinking in parallel from the beginning
 and re-design the algorithm so that it works natively with lots of threads.
@@ -273,7 +273,7 @@ Discussion on the statistics
 
 Using either of the two pixel splitting algorithms results in some side effects that the user should be aware of:
 The fact that pixels contributing to neighbouring bins in the histogram creates some cross-correlation between those bins,
-affecting, this way, the statistics of the results in a potentially unwanted manner.
+affecting, this way, the statistics of the results in a potentially unwanted manner [Stat]_.
 
 
 More parallelisation
@@ -289,7 +289,7 @@ without relying on pre-fetcher and other commodities offered by normal processor
 
 Typical GPUs have tens (to hundreds) of compute units able to schedule and run
 dozens of threads simultaneously (in a Single Instruction Multiple Data way).
-OpenCL allows the execution of the same code on processors, graphics cards or accelerators :ref:`Devices`
+OpenCL allows the execution of the same code on processors, graphics cards or accelerators (see table :ref:`Devices`)
 but the memory access pattern is important in order to make the best use of them.
 Finally, OpenCL uses just-in-time (JIT) compilation, which looks very much
 like Python interpreted code when interfaced with [PyOpenCL]_
@@ -614,3 +614,6 @@ References
 .. [SPD] P. Bösecke.
          *Reduction of two-dimensional small- and wide-angle X-ray scattering data*,
          J. Appl. Cryst., 40:s423–s427, 2007.
+.. [Stat] X. Yang, P. Juhás and S. J. L. Billinge. 
+          *On the estimation of statistical uncertainties on powder diffraction and small-angle scattering data from two-dimensional X-ray detectors*,
+          J. Appl. Cryst., 47:1273-1283, 2014.
