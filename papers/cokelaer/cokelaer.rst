@@ -169,7 +169,7 @@ Network and logic model
 
 
 
-The PKNs gives a list of known relationship between proteins. It is built from
+The PKNs gives a list of known relationships between proteins. It is built from
 literature or expertise from experimentalists.  One way to store the PKNs is to
 use  the SIF format, which list relationships between proteins within a
 tabulated-separated values file. Consider this example::
@@ -714,7 +714,7 @@ Conclusions
 In this paper, we presented **cellnopt.wrapper** that provides a Python
 interface to CellNOptR software. We discussed how and why RPy2 was used to
 develop this wrapper. We then presented **cellnopt.core** that
-provides a set of tools to manipulate input data structures requires by
+provides a set of tools to manipulate input data structures required by
 CellNOptR (MIDAS and SIF formats amongst others). Visualisation tools are also
 provided and the package is linked to Pandas, NetworkX and Matplotlib librairies
 making user and developer experience easier and more dynamic. Note that Python 
