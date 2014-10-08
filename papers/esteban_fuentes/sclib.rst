@@ -205,7 +205,7 @@ one-dimensional equation given by
 
 where :math:`r` is the relative distance between the quark and the antiquark,
 :math:`l` is the angular momentum quantum number, :math:`m` is the (anti)quark
-mass, :math:`y_{n,l}` is called the reduced wavefunction and the eigenvalue
+mass (for equal mass :math:`2\mu=m`), :math:`y_{n,l}` is called the reduced wavefunction and the eigenvalue
 :math:`E_{n,l}` is interpreted as the binding energy of the bound-system, where
 :math:`n=0,1,2,\dots` accounts for the number of nodes (radial excitations) of
 the wavefunction. The total mass of the quarkonium is then given by 
