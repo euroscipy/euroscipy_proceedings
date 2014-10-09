@@ -206,7 +206,7 @@ Implying that the standard deviation of our events should be proportional to the
 
 Equation (:ref:`jitter3`) tells us that our cluster centres estimated as point-wise median are likely to be "good" (in other words their error should be dominated by sampling variance, not by bias). Using the same argument, we can get first an estimate of the time derivative of the raw data by using the central difference (divided by two), then we can make cuts at the same locations and in exactly the same way as our original cuts and compute cluster specific point-wise medians giving us reasonable estimates of the time derivatives of the cluster centres (the :math:`f'(t)` above). We can iterate this procedure one step further to get estimates of the second derivatives of the cluster centres (the :math:`f''(t)` above).
 
-We now have the required elements to go back to our jitter (:math:`\delta`) estimation problem using Eq. (:ref:`jitter2`). We don't have :math:`g(t)`, :math:`f(t)`, :math:`f'(t)` or :math:`f''(t)` directly but only sampled versions of those, that is: :math:`\left(g_1=g(t_1),\ldots,g_w=g(t_w)\right)`, where :math:`w` is the width of one of our cuts (45 sampling points). Starting with the first order in :math:`\delta`, we can get an estimate :math:`\tilde{\delta}` of :math:`\delta` by minimising the residual sum of squares (RSS) criterion:
+We now have the required elements to go back to our jitter (:math:`\delta`) estimation problem using Eq. (:ref:`jitter2`). We don't have :math:`g(t)`, :math:`f(t)`, :math:`f'(t)` or :math:`f''(t)` directly but only sampled versions of those, that is: :math:`g_i=\left[g(t_i)\right]_{i = 1,\ldots,t_w}`, :math:`f_i=\left[f(t=i)\right]_{i=1,\ldots,t_w}` and :math:`f'_i=\left[f'(t=i)\right]_{i=1,\ldots,t_w}` where :math:`w` is the width of one of our cuts (45 sampling points). Starting with the first order in :math:`\delta`, we can get an estimate :math:`\tilde{\delta}` of :math:`\delta` by minimising the residual sum of squares (RSS) criterion:
 
 .. math::
    :label: jitter5
@@ -246,8 +246,8 @@ Spikes "peeling"
 
 We have almost reached the end of our journey. The clustering step gave us a catalogue of waveforms: the cluster centre, its first and second derivative for each of the :math:`K` neurons / clusters on each site. We now go back to the raw data and for each detected event we do:
 
-1. Compute the sum of squares of the amplitudes defining the event (over the 4 cuts corresponding to the 4 electrodes) to get :math:`R^2`.
-2. For each of the :math:`K` neurons, align the centre's waveform on the event (as described in the previous section) and subtract it from the event. Compute the sum of the squares of the (residual) amplitudes to get :math:`R_j^2` where :math:`j=1,\ldots,K`.
+1. Compute the squared Euclidean norm of event (over the 4 cuts corresponding to the 4 electrodes) to get :math:`R^2`.
+2. For each of the :math:`K` neurons, align the centre's waveform on the event (as described in the previous section) and subtract it from the event. Compute the squared norm of this residual to get :math:`R_j^2` where :math:`j=1,\ldots,K`.
 3. Find :math:`\hat{j} =\arg \min_j R_j^2` and if :math:`R_{\hat{j}}^2 < R^2` then:
 
    * Keep the jitter corrected time for :math:`\hat{j}` in the list of spikes and keep :math:`\hat{j}` as the neuron of origin.
