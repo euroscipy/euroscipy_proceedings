@@ -51,7 +51,7 @@ the context of general astronomy, in understanding other stars and the
 mechanisms which heat the corona - considered one of the major unanswered 
 questions in astronomy. On a more practical level, with our society's 
 growing reliance on space-based technology, we are increasingly prone to the
-effects of geoeffective solar phenomena such as flares and Coronal Mass 
+effects of geo-effective solar phenomena such as flares and Coronal Mass 
 Ejections (CMEs). These can damage the electronic infrastructure which plays an
 essential role in our modern society. In order to be able to predict these
 phenomena, we must first understand their formation and development. The
@@ -177,17 +177,19 @@ Preprocessing
 
 Level 1.0 AIA data were obtained using SunPy's wrappers around the Virtual 
 Solar Observatory. These data were corrected for exposure time and further 
-processed to level 1.5. This extra level of processing provides the correct spatial coalignment necessary for a quantitative comparison of the different channels. To this end, the AIA images 
-used were processed using the SunPy ``aiaprep()`` function to ensure that all 
-images used were properly rescaled and coaligned. ``aiaprep()`` rotates the
-images so that solar north points to the top of the image, scales them so that
-each pixel is exactly 0.6 arcsec across (in both the x and y directions), and
-recentres them so that solar centre coincides with the centre of the image.
-This is achieved using an affine transform and bi-cubic interpolation. 
-All images were then normalised by dividing the intensity measured in each
-pixel by the intensity in the corresponding pixel in the 17.1nm image. The
-17.1nm image was therefore 1 in all pixels, and the images from all other
-channels are given as a ratio of the 17.1nm intensity.
+processed to level 1.5. This extra level of processing provides the correct 
+spatial co-alignment necessary for a quantitative comparison of the different 
+channels. To this end, the AIA images used were processed using the SunPy
+``aiaprep()`` function to ensure that all images used were properly rescaled
+and coaligned. ``aiaprep()`` rotates the images so that solar north points to
+the top of the image, scales them so that each pixel is exactly 0.6 arcsec
+across (in both the x and y directions), and recentres them so that solar
+centre coincides with the centre of the image. This is achieved using an affine
+transform and bi-cubic interpolation. All images were then normalised by
+dividing the intensity measured in each pixel by the intensity in the
+corresponding pixel in the 17.1nm image. The 17.1nm image was therefore 1 in
+all pixels, and the images from all other channels are given as a ratio of the
+17.1nm intensity.
 
 Temperature response functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -216,13 +218,14 @@ DEM-finding procedure
 ~~~~~~~~~~~~~~~~~~~~~
 :label:`DEMfinding`
 
-The general method for estimating the DEM is an iterative procedure which tests
-multiple possible DEMs. Each DEM is substituted into equation 1 to produce a 
-synthetic pixel value for each AIA wavelength channel (i). This expected 
-outcome is then compared to the actual values measured for all pixel positions 
-(x) in each wavelength, giving a goodness-of-fit value for each pixel for a 
-given DEM (equation :ref:`goodness-of-fit`), defined by the difference in pixel
-values averaged over all wavelength channels:
+The general method for estimating the DEM is an iterative procedure which
+systematically tests a range of possible DEMs. Each DEM is substituted into
+equation 1 to produce a synthetic pixel value for each AIA wavelength channel
+(:math:`i`). This expected outcome is then compared to the actual values
+measured for all pixel positions (:math:`x`) in each wavelength, giving a
+goodness-of-fit value for each pixel for a given DEM (equation
+:ref:`goodness-of-fit`), defined by the difference in pixel values averaged
+over all wavelength channels:
 
 .. math::
     :label: goodness-of-fit
@@ -237,16 +240,17 @@ By repeating this calculation with a number of assumed DEMs, the DEM
 corresponding to the smallest goodness-of-fit value provides an estimate of the
 actual plasma temperature distribution.
 
-For this kind of iterative method to find a solution within a feasible amount 
-of time, a general DEM profile must be assumed. A Gaussian profile is a good choice for the following reasons:
+For this kind of iterative method to find a solution within a feasible amount
+of time, a general DEM profile must be assumed. A Gaussian profile is a good
+choice for the following reasons:
 
-- it can be fully described 
-  by only three parameters, i.e.: the mean, width and height of the Gaussian, 
-  which correspond to the dominant temperature, the degree of multithermality 
-  and the EM respectively. Because of this parameterisation, a Gaussian is 
-  well-suited to this type of method and is also a useful way to describe 
-  important properties of the plasma even if it does not perfectly represent 
-  the actual distribution of temperatures;
+- it can be fully described by only three parameters, i.e.: the mean, variance
+  and amplitude of the Gaussian (henceforth the mean, width and height of the
+  DEM), which correspond to the dominant temperature, the degree of
+  multithermality and the EM respectively. Because of this parameterisation, a
+  Gaussian is well-suited to this type of method and is also a useful way to
+  describe important properties of the plasma even if it does not perfectly
+  represent the actual distribution of temperatures;
 - other authors have typically found multithermal DEMs, but with relatively 
   narrow widths ([Warren2008]_). [Aschwanden2011b]_ found that a narrow 
   Gaussian DEM fit the observations with :math:`\chi^{2}\leq 2` for 66% of 
@@ -258,7 +262,8 @@ of time, a general DEM profile must be assumed. A Gaussian profile is a good cho
   emission in the corresponding pixels;
 - since other studies have used a Gaussian DEM, using the same shape in this 
   work allows a direct comparison between the relative merits of the 
-  methods themselves, without any disparity in the results caused by different DEM profiles.
+  methods themselves, without any disparity in the results caused by different
+  DEM profiles.
 
 Though this particular study uses a Gaussian DEM, the method could also be used
 with DEMs of any other form, such as a delta function,
