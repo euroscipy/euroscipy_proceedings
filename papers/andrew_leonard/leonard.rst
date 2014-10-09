@@ -15,7 +15,8 @@ Temperature diagnostics of the solar atmosphere using SunPy
 
     The solar atmosphere is a hot (~1MK), magnetised plasma of great 
     interest to physicists. There have been many previous studies of the 
-    temperature of the Sun's atmosphere. Almost all of these studies use the 
+    temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012],
+    [Hannah2012], [Ashwanden2011]_, etc.). Almost all of these studies use the
     SolarSoft software package written in the commercial Interactive Data 
     Language (IDL), which has been the standard language for solar physics.
     The SunPy project aims to provide an open-source library for solar physics. 
