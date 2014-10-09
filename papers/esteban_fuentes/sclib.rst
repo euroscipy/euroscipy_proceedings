@@ -16,16 +16,16 @@ SClib, a hack for straightforward embedded C functions in Python
 .. class:: abstract
 
    We present SClib, a simple hack that allows easy and straightforward
-   evaluation of C functions within python code, boosting flexibility for
+   evaluation of C functions within Python code, boosting flexibility for
    better trade-off between computation power and feature availability, such as
    visualization and existing computation routines in SciPy.
 
    We also present two cases were SClib has been used.
 
    In the first set of applications we use SClib to write a port to Python of a
-   Schrödinger equation solver that has been extensivenly used the literature,
-   the resulting script presents a speed-up of 150x with respect to the original one.
-   A review of the situations where the speeded-up script have been used is presented.
+   Schrödinger equation solver that has been extensively used the literature,
+   the resulting script presents a speed-up of about 150x with respect to the original one.
+   A review of the situations where the speeded-up script has been used is presented.
    We also describe the solution to the
    related problem of solving a set of coupled Schrödinger-like equations
    where SClib is used to implement the speed-critical parts of the code. We
@@ -49,23 +49,23 @@ SClib, a hack for straightforward embedded C functions in Python
 Introduction
 ============
 
-Embedding code written in oder languages is a common theme in the python
+Embedding code written in oder languages is a common theme in the Python
 context, the main motivation being speed boosting.
 Several alternatives exist to achieve this, such as
 Cython [Cython]_, CFFI [CFFI]_, SWIG [SWIG]_, weave [weave]_, among others.
-We present yet another alternative, which may be quite close to CFFI, than to
-the others
+We present yet another alternative, which may be quite close to CFFI than to
+the others.
 The motivation to write SClib grew out of the urge to integrate C code, which
-was already written, into the python environment, minimizing the intervention of
+was already written, into the Python environment, minimizing the intervention of
 the code.
 Part of the resulting work is briefly introduced later, in the engineering
 application section.
 
-Nevertheless, embedding compiled code in python will naturally have an impact in
+Nevertheless, embedding compiled code in Python will naturally have an impact in
 performance, for instance, when the compiled code takes care of computer
 intensive numerics.  The first application we introduce (in particle physics),
 leverages SClib in this sense, outsourcing the numerics to the compiled code and
-using the python environment for visualization.
+using the Python environment for visualization.
 
 
 SClib
@@ -83,7 +83,7 @@ numbers of arbitrary type and size and return the output of the function, again
 of arbitrary type and size.
 
 The resulting interface is also very simple: A library is initialized in the
-python side with the path to the DLL (or shared library) and a list with the
+Python side with the path to the DLL (or shared library) and a list with the
 names of the functions to be called:
 
 .. code-block:: python
@@ -189,12 +189,12 @@ implement solutions of the computing problems associated with eq.
 Quarkonium is a bound-state composed by a quark and its corresponding
 antiquark. By heavy we mean states composed by charm and bottom quarks,
 called charmonium and bottomonium respectively. Due to its large mass, the top
-quark decays before forming a bound state. For heavy quarkonium the relative
+quark decays before forming a bound state. In heavy quarkonium the relative
 velocity between the quark and antiquark inside of the bound-system is believed
 to be small enough for the system to be considered, at least in a first
 approximation, non-relativistic, making it suitable for being described by eq.
 (:ref:`schroe`). Considering the equal mass case with a spherically symmetric
-potential, the angular part can be neglected (it correspond to the spherical
+potential the angular part can be neglected (it correspond to the spherical
 harmonics) and the relevant part of eq. (:ref:`schroe`) reduces to the
 one-dimensional equation given by
 
@@ -208,7 +208,7 @@ where :math:`r` is the relative distance between the quark and the antiquark,
 mass (for equal mass :math:`2\mu=m`), :math:`y_{n,l}` is called the reduced wavefunction and the eigenvalue
 :math:`E_{n,l}` is interpreted as the binding energy of the bound-system, where
 :math:`n=0,1,2,\dots` accounts for the number of nodes (radial excitations) of
-the wavefunction. The total mass of the quarkonium is then given by 
+the wavefunction. The mass of the quarkonium is then given by 
 
 .. math::
    :label: lomass
@@ -259,7 +259,7 @@ coefficients that must be calculated comparing at the same  scale the results
 (observables, Green functions) of the EFT, with the ones of QCD (for NRQCD) or
 NRQCD (for pNRQCD). A key feature of pNRQCD is that it allows the relativistic
 corrections to the quark-antiquark potential to be organized as an expansion in
-powers of :math:`1/m`, up to second order :math:`V(r)` can be written as
+powers of :math:`1/m`. Up to second order :math:`V(r)` can be written as
 
 .. math::
     :label: pnrqcdpot
@@ -273,19 +273,19 @@ document, however, we can list some of their features:
 
 - They correspond to correlators that in the short-distance regime can
   be computed in perturbation theory.
-- In the long-distance regime they can be computed in in lattice QCD,
+- In the long-distance regime they can be computed in lattice QCD,
   however only some of these correlators have been calculated.
 - Eq. (:ref:`cornell`) correspond, at least qualitatively, to the leading
   order :math:`V^{(0)}` in eq. (:ref:`pnrqcdpot`)
 
 For the details about the derivation of the terms present in eq.
-(:ref:`pnrqcdpot`) we refer the reader to refs. [Bra00]_ and
+(:ref:`pnrqcdpot`) we refer the reader to [Bra00]_ and
 [Pin00]_. It is important to recall that, although it can not be
 evaluated analytically in the whole range of :math:`r`, eq. (:ref:`pnrqcdpot`)
-represents a definite model-independent expression for the quark-antiquark
+represents a model-independent expression for the quark-antiquark
 potential, contrary to models like the one presented in eq. (:ref:`cornell`).
 
-Including the relativistic corrections to the potential the expression for the
+Using perturbation theory to include the relativistic corrections to the potential, the expression for the
 bound-state mass reads
 
 .. math::
@@ -345,7 +345,7 @@ corresponds to an eigenvalue. The procedure to find the eigenvalue consists in
 to perform a scan of values of :math:`E_{n,l}` until :math:`y_{n,l}(r)`  has
 :math:`n` nodes and converges for a large enough value of :math:`r` (see Fig.
 1). This implies that for each test value of :math:`E_{n,l}` eq.
-(:ref:`reduced`) must to be (numerically) solved.  A popular [#]_ Mathematica
+(:ref:`reduced`) must be (numerically) solved.  A popular [#]_ Mathematica
 [Mat9]_ implementation of this method has been
 available in [Luc98]_.  This script has the advantage that the user can profit
 from the Mathematica built-in functions to plot, integrate or store the
@@ -370,17 +370,17 @@ implementations of the same algorithm [#]_.
 
 .. table:: Time in seconds taken to compute the eigenvalues and reduced wavefunctions for the Cornell potential eq. (:ref:`cornell`). The column Python correspond to the implementation of the algorithm in Python without SClib. The parameters of the potential are the same as in Fig. 1. All the scripts were tested in the same machine, a notebook with a 2.4 Ghz core i5 processor (dual core) and 8 GB of RAM.
 
-   +----------+-------------------------+--------------------+-------+----------+
-   | :math:`n`| :math:`E_{n,l=1}\,\,[m]`| schroe.nb [Luc98]_ | Python| SChroe.py|
-   +----------+-------------------------+--------------------+-------+----------+
-   | 0        | 2.15789                 | 98.88              | 25.46 | 0.66     |
-   +----------+-------------------------+--------------------+-------+----------+
-   | 1        | 3.10952                 | 124.14             | 30.95 | 0.75     |
-   +----------+-------------------------+--------------------+-------+----------+
-   | 2        | 3.93850                 | 135.68             | 35.32 | 0.84     |
-   +----------+-------------------------+--------------------+-------+----------+
-   | 20       | 13.5995                 | 370.0              | 88.04 | 1.99     |
-   +----------+-------------------------+--------------------+-------+----------+
+   +----------+-------------------------+--------------------+-------+------------+
+   | :math:`n`| :math:`E_{n,l=1}\,\,[m]`| schroe.nb [Luc98]_ | Python| SChroe.py  |
+   +----------+-------------------------+--------------------+-------+------------+
+   | 0        | 2.15789                 | 98.88              | 25.46 | 0.66       |
+   +----------+-------------------------+--------------------+-------+------------+
+   | 1        | 3.10952                 | 124.14             | 30.95 | 0.75       |
+   +----------+-------------------------+--------------------+-------+------------+
+   | 2        | 3.93850                 | 135.68             | 35.32 | 0.84       |
+   +----------+-------------------------+--------------------+-------+------------+
+   | 20       | 13.5995                 | 370.0              | 88.04 | 1.99       |
+   +----------+-------------------------+--------------------+-------+------------+
 
 In [Bra14]_ SChroe.py has been used to evaluate the relativistic corrections to
 the mass spectrum of quarkonium in the long-distance regime. In that paper the
@@ -404,7 +404,7 @@ library.
    the relative size of the next-to-leading-order (NLO) correction (the term
    proportional to :math:`1/m` in the r.h.s. of eq.  (:ref:`mass`)) and the
    newly computed next-to-next-to-leading-order (NNLO) corrections (the terms
-   proportional :math:`1/m^2`). For more details see [Bra14a]_.
+   proportional to :math:`1/m^2`). For more details see [Bra14a]_.
 
 An application in which the speed of SChroe.py plays an important role is
 fixing the parameters of the potential given some experimental input. For
@@ -595,7 +595,7 @@ strategy and random initial conditions.
    conditions.
 
 These results were obtained using SClib and the devised simulator. The example
-code is ready to reproduce them.
+code provided with SClib is ready to reproduce them.
 
 The main advantage we obtained from this work was that, since we were using a
 Linux based real time system in our test rig, we could use exactly the same
