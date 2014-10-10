@@ -289,7 +289,7 @@ increments of 0.01 in log temperature. Outside this range of temperatures, AIA
 has significantly lower temperature response and cannot provide meaningful
 results. Within this range, however, the temperature is well constrained by the
 response functions of the AIA channels [Guennou2012]_ and can in principle be 
-calculated with a precision of ~0.015 [Judge2010]_.
+calculated with a precision of ~0.015 in log(T) [Judge2010]_.
 
 The code takes a simplified approach by finding only the peak temperature of 
 the DEM, and assuming the height and width to be fixed. They could instead be
@@ -298,18 +298,17 @@ the paramater space and reduce the method's efficiency. A proper comparison of
 the results of this method and of one with a larger parameter space are beyond
 the scope of this work, and will be the topic of a subsequent paper.
 
-The width of the DEM was set to be 0.1 and since the data are normalised
-relative to a given wavelength, the DEM is also normalised to unity. A narrow
-width is selected for the DEM because, as shown by [Guennou2012a]_, the greater
-the width of the plasma DEM, the less likely it is that the inversion will
-correctly determine the DEM peak temperature (this is also shown by the tests
-described in Section :ref:`modeltests`. With a narrow assumed width, plasmas
-which do have narrow DEMs will at least be correctly identified, whereas
-plasmas with a wide DEM would not necessarily be correctly identified by using 
-a model DEM with a similar width. A Gaussian with a width of ~0.1 
-is the narrowest multi-thermal distribution which can be distinguished from an 
-isothermal plasma [Judge2010]_, so a narrower distribution would not 
-necessarily provide meaningful results.
+As shown by [Guennou2012a]_, the greater the width of the plasma DEM, the less
+likely it is that the inversion will correctly determine the DEM peak
+temperature (this is also shown by the tests described in Section
+:ref:`modeltests`). This means that a wide assumed DEM will not necessarily
+identify the peak of the plasma DEM, even if the widths are similar. A narrow
+assumed DEM may not provide accurate results for wide plasma DEMs either, but
+will at least do so if the plasma DEM is narrow, which is likely to be true in
+many cases, as already discussed. A multi-thermal distribution can only be
+distinguished from an isothermal plasma if it has a width of ~0.1 or greater
+[Judge2010]_. The width of the assumed DEMs was therefore set at 0.1 as this
+is the narrowest distribution which will provide meaningful results.
 
 This method is very similar in principle to the Gaussian fitting methods used 
 by [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency
