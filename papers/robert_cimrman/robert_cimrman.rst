@@ -665,7 +665,8 @@ mesh depicted in Figure :ref:`fe-domain` was used for the FEM computation.
    A solution of the 2D Laplace equation by FEM. :label:`laplace-fem`
 
 Next we added a negative source term to the Laplace equation in region
-:math:`\Omega_0` (see Figure :ref:`domain-regions` right):
+:math:`\Omega_0` (see Figure :ref:`domain-regions` right) to obtain the Poisson
+equation:
 
 .. math::
    :label: weak-vf
@@ -676,15 +677,15 @@ Next we added a negative source term to the Laplace equation in region
     \;, \quad \forall s \in H^1_0(\Omega) \;, \\
     T &=& \bar{T} \quad \mbox{ on } \Gamma_D \;,
 
-The corresponding solution can be seen in Figure :ref:`laplace-vf`. The boundary
+The corresponding solution can be seen in Figure :ref:`poisson`. The boundary
 conditions stayed the same as in the previous case.
 
-.. figure:: laplace-vf.png
+.. figure:: poisson.png
    :scale: 30%
    :figclass: bht
 
-   A solution of the 2D Laplace equation with volume source in a
-   subdomain. :label:`laplace-vf`
+   A solution of the 2D Poisson equation with volume source in a
+   subdomain. :label:`poisson`
 
 The complete problem description file for computing (:ref:`weak-vf`) is shown
 below. See [SfePy]_ or http://sfepy.org for explanation.
@@ -736,7 +737,6 @@ below. See [SfePy]_ or http://sfepy.org for explanation.
             'eps_a'      : 1e-10,
         }),
     }
-
 
 Elastic Deformation
 ```````````````````
