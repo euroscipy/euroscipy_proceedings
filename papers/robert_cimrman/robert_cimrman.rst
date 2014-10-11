@@ -622,7 +622,10 @@ There are currently several limitations that will be addressed in future:
 Examples
 --------
 
-Numerical examples illustrating the IGA calculations are presented below.
+Numerical examples illustrating the IGA calculations are presented below. The
+corresponding problem description files for SfePy (version 2014.3) can be
+downloaded from https://github.com/sfepy/euroscipy2014-iga-examples, revision
+28b1fe9bff7043da6fd159c20b9f244337a17e82.
 
 Temperature Distribution
 ````````````````````````
