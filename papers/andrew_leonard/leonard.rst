@@ -470,12 +470,12 @@ Results
 :label:`results`
 
 The temperature maps calculated using the proposed method and the method
-described in [Aschwanden2011] are shown in Figures :ref:`mytemps` and
+described in [Aschwanden2011]_ are shown in Figures :ref:`mytemps` and
 :ref:`aschtemps` respectively. The Aschwanden method is used for this
 comparison because it is recent and similar to the propsed method, and because
 few other papers present full-disk temperature maps. For ease of comparison,
 the results of this work are plotted using a similar colour map to the one used
-by [Aschwanden2011] and with the same upper and lower temperature limits.
+by [Aschwanden2011]_ and with the same upper and lower temperature limits.
 
 The two methods find similar temperatures for the majority of the corona,
 though regions found to have extreme hot or cool temperatures using
@@ -489,42 +489,48 @@ into 4x4 macropixels (i.e. 1024x1024 images).
 
     Temperature map for the full-disk corona on 2011-02-15 00:00, calculated
     using the proposed method. The colour map and temperature limits were
-    chosen to match those in Figure :ref:`aschtemps`. :label:`mytemps`
+    chosen to match those in Figure :ref:`aschtemps`. The X-position and
+    Y-position of the axis refer to arc seconds from solar disk centre in the
+    observer's frame of reference, with the Y-position aligned to solar north.
+    :label:`mytemps`
 
 .. figure:: aschwanden_tempmap.png
     :align: center
 
     Temperature map for the full-disk corona on 2011-02-15 00:00. Image from
-    [Aschwanden2011]. :label:`aschtemps`
+    [Aschwanden2011]_. :label:`aschtemps`
 
-The remaining results have been sectioned to three general regions of the
-corona - quiet sun, coronal holes and active regions.
+The remaining results have been sectioned into three general regions of the
+corona - quiet sun, coronal holes and active regions. All regions studied were
+selected from January and February 2011.
 
 Quiet sun
 ~~~~~~~~~
-Three large regions of quiet sun were selected during Carrington rotations (CR) 
-2106-2107. The criteria for selection was simply a nondescript region of the 
-disk near disk centre not containing active regions, coronal holes or dynamic 
-events (e.g. coronal jets). Figures :ref:`qs20110128`, :ref:`qs20110208` and 
-:ref:`qs20110221` show three regions on 2011-01-28 00:00, 2011-02-08 00:00 
-and 2011-02-21 00:00 respectively (these figures have all been plotted to the 
-same colour scale for ease of comparison). The quiet sun regions on 2011-01-28 
-and 2011-02-08 were found to have very similar temperature distributions, with 
-minima of log(T) = 5.97 and 5.99, means of log(T) = 6.08 and 6.09, and maxima 
-of log(T) = 6.31 and 6.31 respectively. The temperature map for 2011-02-21 
-found mostly similar temperatures to the previous two regions, apart from a few 
-isolated pixels with spurious values. The mean for this region was log(T) = 
-6.08. The minimum value, excluding spurious pixels, is log(T) = 5.96 and the 
-maximum is log(T) = 6.29.
+
+The term 'quiet sun' refers to the portions of the Sun in which there is little
+or no activity. In many cases this will be the majority of the solar disk.
+Three large regions of quiet sun were selected. The criterion for selection was
+simply a nondescript region of the disk near disk centre not containing active
+regions, coronal holes or dynamic events (e.g. coronal jets). Figures
+:ref:`qs20110128`, :ref:`qs20110208` and :ref:`qs20110221` show three regions
+on 2011-01-28 00:00, 2011-02-08 00:00 and 2011-02-21 00:00 respectively (these
+figures have all been plotted to the same colour scale for ease of comparison).
+The quiet sun regions on 2011-01-28 and 2011-02-08 were found to have very
+similar temperature distributions, with minima of log(T) = 5.97 and 5.99, means
+of log(T) = 6.08 and 6.09, and maxima of log(T) = 6.31 and 6.31 respectively.
+The temperature map for 2011-02-21 found mostly similar temperatures to the
+previous two regions, apart from a few isolated pixels with spurious values.
+The mean for this region was log(T) = 6.08. The minimum value, excluding
+spurious pixels, is log(T) = 5.96 and the maximum is log(T) = 6.29.
 
 In all three temperature maps the hottest temperatures are found in relatively 
 small, localised regions (which appear in red in figures :ref:`qs20110128` and 
 :ref:`qs20110208`), with the temperatures changing quite sharply between these 
 regions and the cooler background plasma. These hotter regions appear to 
 consist of small loop-like structures, though none of these correspond to any 
-active region. The hot structures in the region shown in figure 
-:ref:`qs20110221` take up a slightly larger portion of the region and are more 
-strongly concentrated in one location. Temperatures of around log(T) 
+active region (see section :ref:`ARs`). The hot structures in the region shown
+in figure :ref:`qs20110221` take up a slightly larger portion of the region and
+are more strongly concentrated in one location. Temperatures of around log(T)
 :math:`\approx` 6.15 also appear to form even smaller loops in some cases, 
 which are more evenly distributed than the hotter regions. Temperatures below 
 this are more uniform and have no clearly visible structure.
@@ -533,10 +539,7 @@ this are more uniform and have no clearly visible structure.
     :align: center
 
     :label:`qs20110128`
-    Temperature map for quiet sun region on 2011-01-28 00:00.
-    The X-position and 
-    Y-position of the axis refer to arc seconds from solar disk centre in the 
-    observer's frame of reference, with the Y-position aligned to solar north. 
+    Temperature map for quiet sun region on 2011-01-28 00:00. 
 
 .. figure:: qs_2011-02-08T0000.png
     :align: center
@@ -556,20 +559,22 @@ this are more uniform and have no clearly visible structure.
 Coronal holes
 ~~~~~~~~~~~~~
 
-Figures :ref:`ch20110201a`, :ref:`ch20110201b` and :ref:`ch20110214` show 
-temperature maps for coronal holes. Note that these figures are shown with 
-different colour scales to each other and to figures :ref:`qs20110128`, 
-:ref:`qs20110208` and :ref:`qs20110221`. In Figures :ref:`ch20110201b` and
-:ref:`ch20110214` the solar limb is marked with a blck line. Figure
-:ref:`limbtemps` shows the temperatures along the vertical line shown in Figure
-:ref:`ch20110214`. The coronal holes shown in figures :ref:`ch20110201a` and
-:ref:`ch20110201b` (henceforth coronal holes 1 and 2), were observed at
-2011-02-01 00:00 in the northern and southern hemispheres respectively, and the
-one in figure :ref:`ch20110214` (coronal hole 3) was observed at 2011-02-14
-00:00. The minimum, mean and maximum temperatures found for the regions mapped
-were: log(T) = 5.6, 6.03 and 6.52 for coronal hole 1; log(T) = 5.6, 6.02 and
-6.32 for coronal hole 2; and log(T) = 5.6, 6.02 and 6.37 for coronal hole 3.
-The somewhat higher maximum temperature for coronal hole 1 appears to be due to
+Coronal holes are regions of effectively open magnetic field which exhibit very
+low levels of emission in EUV and X-ray wavelengths. Figures :ref:`ch20110201a`,
+:ref:`ch20110201b` and :ref:`ch20110214` show temperature maps for coronal
+holes. Note that these figures are shown with different colour scales to each
+other and to figures :ref:`qs20110128`, :ref:`qs20110208` and :ref:`qs20110221`.
+In Figures :ref:`ch20110201b` and :ref:`ch20110214` the solar limb (the edge of
+the disk of the Sun) is marked with a blck line. Figure :ref:`limbtemps` shows
+the temperatures along the vertical line shown in Figure :ref:`ch20110214`. The
+coronal holes shown in figures :ref:`ch20110201a` and :ref:`ch20110201b`
+(henceforth coronal holes 1 and 2), were observed at 2011-02-01 00:00 in the
+northern and southern hemispheres respectively, and the one in figure
+:ref:`ch20110214` (coronal hole 3) was observed at 2011-02-14 00:00. The
+minimum, mean and maximum temperatures found for the regions mapped were:
+log(T) = 5.6, 6.03 and 6.52 for coronal hole 1; log(T) = 5.6, 6.02 and 6.32 for
+coronal hole 2; and log(T) = 5.6, 6.02 and 6.37 for coronal hole 3. The
+somewhat higher maximum temperature for coronal hole 1 appears to be due to
 hotter material above the solar limb over the quiet sun regions. Such
 unavoidable contamination of the coronal hole data by other non-coronal hole
 structures along the line of sight can, in principle, be reduced using
@@ -577,11 +582,11 @@ tomographical reconstruction techniques such as the one described by
 [Kramar2014]_.
 
 In all three figures, the coronal hole region is clearly visible as a region of
-significantly cooler plasma than the surrounding quiet sun regions, with the former 
-mostly exhibiting temperatures in the range log(T) :math:`\approx` 5.9 - 6.05,
-and the latter being mostly above log(T) :math:`\approx` 6.1. In all three 
-coronal holes, though to a much greater extent in coronal holes 2 and 3, a 
-'speckling' effect is observed, which is caused by numerous very small low 
+significantly cooler plasma than the surrounding quiet sun regions, with the
+former mostly exhibiting temperatures in the range log(T) :math:`\approx`
+5.9 - 6.05, and the latter being mostly above log(T) :math:`\approx` 6.1. In
+all three coronal holes, though to a much greater extent in coronal holes 2 and
+3, a 'speckling' effect is observed, which is caused by numerous very small low
 temperature regions. Each of these consists only of a few pixels and were found
 to have temperatures of log(T) :math:`\approx` 5.6-5.7. This speckling is 
 similar to the individual low-temperature pixels found for the quiet sun region
@@ -595,10 +600,10 @@ quiet sun region.
 
 The temperature over coronal holes 2 and 3 (i.e. below the limb in Figures
 :ref:`ch20110201b` and :ref:`ch20110214`) was found to increase slightly with
-distance from the centre of the image, as can be seen in figures
-:ref:`ch20110201b`, :ref:`ch20110214` and :ref:`limbtemps`. In both cases, the
-temperature is log(T) :math:`\approx` 6.0 at the limb and rises to log(T)
-:math:`\approx` 6.05 at the edge of the mapped region.
+distance from the centre of the image. This temperature gradient is plotted for
+coronal hole 3 in Figure :ref:`limbtemps`. In both cases, the temperature is
+log(T) :math:`\approx` 6.0 at the limb and rises to log(T) :math:`\approx` 6.05
+at the edge of the mapped region.
 
 .. figure:: ch_2011-02-01T0000a_cropped.png
     :align: center
@@ -632,34 +637,40 @@ temperature is log(T) :math:`\approx` 6.0 at the limb and rises to log(T)
 
     Plot of temperatures along the vertical line show in Figure
     :ref:`ch_2011-02-14T0000_cropped.png`. Note that these temperatures have
-    been smoothed.
+    been smoothed to more clearly show the overall trend.
 
 Active regions
 ~~~~~~~~~~~~~~
+:label:`ARs`
+
+Active regions are areas of concentrated magnetic field, and consist of many
+magnetic field lines ('coronal loops', or often simply 'loops') which are
+seen in EUV and X-rays as strands of bright material. The points at which these
+loops are rooted in the lower corona are called footpoints.
 
 Active regions show the greatest variation in temperature, as can be seen in 
 figures :ref:`ar20110122`, :ref:`ar20110201` and :ref:`ar20110219`. These 
 figures show temperature maps of active regions AR11147 and AR11149 (henceforth 
 region 1), active region AR11150 (region 2) and active regions AR11161 and 
 AR11162 (region 3), respectively. Regions 1 and 3 are much more complex than 
-region 2, as each consists of a larger main active reigon and a smaller region 
+region 2, as each consists of a larger main active region and a smaller region 
 which has emerged nearby. The minimum, mean and maximum temperatures found were: 
 log(T) = 6.03, 6.2 and 6.54 for region 1; log(T) = 6.05, 6.22 and 6.41 for 
 region 2; and log(T) = 6.01, 6.22 and 6.57 for region 3.
 
 In each of these regions, the coolest temperatures are found in the largest 
-loops (or possibly open field lines) with footpoints at the edges of the active
-region, which were found to have temperatures between log(T) = 6.05 and 
-log(T) = 6.1. Smaller loops with footpoints closer to the centre of the active
-region show higher temperatures (log(T) :math:`\approx` 6.1 - 6.3). Hotter 
-temperatures again (log(T) :math:`\ge` 6.3) were also found in all three active
-regions, though in different locations. In region 1 these temperatures can be 
-seen in parts of the very small loops in AR11149, as well as in what may be 
-small loops or background in AR11147. In region 2 they are found in loops which
-appear to be outside the main active region. In region 3 they are found in a 
-few relatively large loops - in contrast to the much smaller loops found to 
-have those temperatures in the other regions - and there are also several small 
-hot regions around AR11162 near the top of figure :ref:`ar20110219`.
+loops with footpoints at the edges of the active region, which were found to
+have temperatures between log(T) = 6.05 and log(T) = 6.1. Smaller loops with
+footpoints closer to the centre of the active region show higher temperatures
+(log(T) :math:`\approx` 6.1 - 6.3). Hotter temperatures again (log(T)
+:math:`\ge` 6.3) were also found in all three active regions, though in
+different locations. In region 1 these temperatures can be seen in parts of the
+very small loops in AR11149, as well as in what may be small loops or
+background in AR11147. In region 2 they are found in loops which appear to be
+outside the main active region. In region 3 they are found in a few relatively
+large loops - in contrast to the much smaller loops found to have those
+temperatures in the other regions - and there are also several small hot
+regions around AR11162 near the top of figure :ref:`ar20110219`.
 
 All three regions also show the presence of cooler quiet sun-like plasma 
 surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and figure 
