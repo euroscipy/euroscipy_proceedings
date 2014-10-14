@@ -311,21 +311,23 @@ constrained by the response functions of the AIA channels [Guennou2012]_ and
 can in principle be calculated with a precision of ~0.015 [Judge2010]_.
 
 This method is very similar in principle to the Gaussian fitting methods used 
-by, e.g.: [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency is achieved by only varying one parameter (the bulk temperature). Since the height 
-and width of the DEM are not investigated, this method may be less accurate 
-than a full parameter search would be and does not provide a full DEM which 
-could be used to estimate the emission measure. The width and height of the 
-Gaussian would need to be taken into account for a more formal determination of 
-the thermal structure, but this approach aims only to estimate the dominant 
-temperature along the LOS. The introduction of a full parameter search will be investigated in a future 
-work by comparing the temperature maps produced using this implementation with 
-those of a multi-parameter version. The simpler implementation means that full AIA resolution 
-temperature maps (4096 x 4096 pixels) can be calculated within ~2 minutes.
-This is extremely fast when compared to, for example, the multi-Gaussian 
-fitting method used by [DelZanna2013]_ (which took ~40 minutes to compute 
-temperatures for 9600 pixels), and even beats the fast DEM inversion of 
-[Plowman2012]_ (estimated ~1 hour for a full AIA-resolution 
-temperature map) by a significant margin.
+by, e.g.: [Warren2008]_ and [Aschwanden2011]_. However, great computational
+efficiency is achieved by only varying one parameter (the bulk temperature).
+Since the height and width of the DEM are not investigated, this method may be
+less accurate than a full parameter search would be and does not provide a full
+DEM which could be used to estimate the emission measure. The width and height
+of the Gaussian would need to be taken into account for a more formal
+determination of the thermal structure, but this approach aims only to
+estimate the dominant temperature along the LOS. The introduction of a full
+parameter search will be investigated in a future work by comparing the
+temperature maps produced using this implementation with those of a
+multi-parameter version. The simpler implementation means that full AIA
+resolution temperature maps (4096 x 4096 pixels) can be calculated within ~2
+minutes. This is extremely fast when compared to, for example, the
+multi-Gaussian fitting method used by [DelZanna2013]_ (which took ~40 minutes
+to compute temperatures for 9600 pixels), and even beats the fast DEM inversion
+of [Plowman2012]_ (estimated ~1 hour for a full AIA-resolution temperature map)
+by a significant margin.
 
 Software features
 ~~~~~~~~~~~~~~~~~
@@ -467,8 +469,36 @@ Results
 -------
 :label:`results`
 
-The results have been sectioned to three general regions of the quiet corona - 
-quiet sun, coronal holes and active regions.
+The temperature maps calculated using the proposed method and the method
+described in [Aschwanden2011] are shown in Figures :ref:`mytemps` and
+:ref:`aschtemps` respectively. The Aschwanden method is used for this
+comparison because it is recent and similar to the propsed method, and because
+few other papers present full-disk temperature maps. For ease of comparison,
+the results of this work are plotted using a similar colour map to the one used
+by [Aschwanden2011] and with the same upper and lower temperature limits.
+
+The two methods find similar temperatures for the majority of the corona,
+though regions found to have extreme hot or cool temperatures using
+Aschwanden's method were closer to average in the map calculated with the
+proposed method. Also note that Figure :ref:`mytemps` was calculated using
+full-resolution AIA data, whereas Aschwanden's method rebins the original data
+into 4x4 macropixels (i.e. 1024x1024 images).
+
+.. figure:: fulldisk.png
+    :align: center
+
+    Temperature map for the full-disk corona on 2011-02-15 00:00, calculated
+    using the proposed method. The colour map and temperature limits were
+    chosen to match those in Figure :ref:`aschtemps`. :label:`mytemps`
+
+.. figure:: aschwanden_tempmap.png
+    :align: center
+
+    Temperature map for the full-disk corona on 2011-02-15 00:00. Image from
+    [Aschwanden2011]. :label:`aschtemps`
+
+The remaining results have been sectioned to three general regions of the
+corona - quiet sun, coronal holes and active regions.
 
 Quiet sun
 ~~~~~~~~~
@@ -714,8 +744,8 @@ As discussed in section :ref:`modeltests`, narrow DEMs widths are
 reconstructed much more accurately than wide ones, with solutions tending
 towards ~1MK with increasing DEM width. Such results in these temperature maps 
 should therefore be treated with a certain amount of caution. Overall, however, 
-the temperature map method performs very well and produces temperatures which are 
-consistent with the results of previous studies. A slower but more complete 
+the temperature map method performs very well and produces temperatures which
+are consistent with the results of previous studies. A slower but more complete
 version which fits a full DEM to the observations will be the focus of a later 
 work and will provide more information on the corona's thermal structure. 
 
