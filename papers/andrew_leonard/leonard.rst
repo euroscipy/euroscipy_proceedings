@@ -16,7 +16,7 @@ Temperature diagnostics of the solar atmosphere using SunPy
     The solar atmosphere is a hot (~1MK), magnetised plasma of great 
     interest to physicists. There have been many previous studies of the 
     temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012],
-    [Hannah2012], [Ashwanden2011]_, etc.). Almost all of these studies use the
+    [Hannah2012], [Aschwanden2011]_, etc.). Almost all of these studies use the
     SolarSoft software package written in the commercial Interactive Data 
     Language (IDL), which has been the standard language for solar physics.
     The SunPy project aims to provide an open-source library for solar physics. 
@@ -181,7 +181,7 @@ processed to level 1.5. This extra level of processing provides the correct
 spatial co-alignment necessary for a quantitative comparison of the different 
 channels. To this end, the AIA images used were processed using the SunPy
 ``aiaprep()`` function to ensure that all images used were properly rescaled
-and coaligned. ``aiaprep()`` rotates the images so that solar north points to
+and co-aligned. ``aiaprep()`` rotates the images so that solar north points to
 the top of the image, scales them so that each pixel is exactly 0.6 arcsec
 across (in both the x and y directions), and recentres them so that solar
 centre coincides with the centre of the image. This is achieved using an affine
@@ -245,10 +245,10 @@ of time, a general DEM profile must be assumed. A Gaussian profile is a good
 choice for the following reasons:
 
 - it can be fully described by only three parameters, i.e.: the mean, variance
-  and amplitude of the Gaussian (henceforth the mean, width and height of the
-  DEM), which correspond to the dominant temperature, the degree of
-  multithermality and the EM respectively. Because of this parameterisation, a
-  Gaussian is well-suited to this type of method and is also a useful way to
+  and amplitude of the Gaussian (henceforth the peak temperature, width and
+  height of the DEM), which correspond to the dominant temperature, the degree
+  of multithermality and the EM respectively. Because of this parameterisation,
+  a Gaussian is well-suited to this type of method and is also a useful way to
   describe important properties of the plasma even if it does not perfectly
   represent the actual distribution of temperatures;
 - other authors have typically found multithermal DEMs, but with relatively 
