@@ -247,15 +247,15 @@ ionisation equilibrium, etc.). The calculation time per comparison can
 therefore be reduced by saving these emission values and reusing them.
 
 For this kind of iterative method to find a solution within a feasible amount 
-of time, a general DEM profile must be assumed. A Gaussian profile is a good choice for the following reasons:
+of time, a general DEM profile must be assumed. A Gaussian profile is a good
+choice for the following reasons:
 
-- it can be fully described 
-  by only three parameters, i.e.: the mean, width and height of the Gaussian, 
-  which correspond to the dominant temperature, the degree of multithermality 
-  and the EM respectively. Because of this parameterisation, a Gaussian is 
-  well-suited to this type of method and is also a useful way to describe 
-  important properties of the plasma even if it does not perfectly represent 
-  the actual distribution of temperatures;
+- it can be fully described by only three parameters, i.e.: the mean, width and
+  height of the Gaussian, which correspond to the dominant temperature, the
+  degree of multithermality and the peak emission measure respectively. Because
+  of this parameterisation, a Gaussian is well-suited to this type of method
+  and is also a useful way to describe important properties of the plasma even
+  if it does not perfectly represent the actual distribution of temperatures;
 - other authors have typically found multithermal DEMs, but with relatively 
   narrow widths (e.g.: [Warren2008]_). [Aschwanden2011b]_ found that a narrow 
   Gaussian DEM fit the observations with :math:`\chi^{2}\leq 2` for 66% of 
@@ -267,14 +267,15 @@ of time, a general DEM profile must be assumed. A Gaussian profile is a good cho
   dominated by the material contained in the loop itself;
 - since other studies have used a Gaussian DEM, using the same shape in this 
   work allows a direct comparison between the relative merits of the 
-  methods themselves, without any disparity in the results caused by different DEM profiles.
+  methods themselves, without any disparity in the results caused by different
+  DEM profiles.
 
 Though this particular study uses a Gaussian DEM, the method could also be used
-with DEMs of any other form, such as a delta function,
-top hat function, polynomial, etc. A comparison of the effect of using some of 
-these shapes can be found in [Guennou2012a]_. An active area of research is the 
-emission of plasma with a Kappa energy distribution, which approximates the 
-bulk Gaussian DEM with a high-energy population [Mackovjak2014]_.
+with DEMs of any other form, such as a delta function, top hat function,
+polynomial, etc. A comparison of the effect of using some of these shapes can
+be found in [Guennou2012a]_. An active area of research is the emission of
+plasma with a Kappa energy distribution, which approximates the bulk Gaussian
+DEM with a high-energy population [Mackovjak2014]_.
 
 The code takes a simplified approach by finding only the peak temperature of 
 the DEM, and assuming the height and width to be fixed. The width was set to be 
