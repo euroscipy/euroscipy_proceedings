@@ -681,16 +681,17 @@ log(T) :math:`\approx` 6.3.
     :align: center
 
     Temperature map of active region AR11147 and AR11149 at 2011-01-22 00:00. 
-    AR11147 is the region seen in most of the figure, and AR11149 is the much 
-    smaller region in the bottom right quarter of the image. Large, cool loops 
-    appear in dark blue, with loop temperatures generally increasing as the 
-    loop size decreases. Quiet sun-like plasma is also visible around the 
-    active region in shades of light blue. :label:`ar20110122`
+    The large and small circles indicate the general areas of AR11147 and
+    AR11149 respectively. Large, cool loops appear in dark blue, with loop
+    temperatures generally increasing as the loop size decreases. Quiet
+    sun-like plasma is also visible around the active region in shades of light
+    blue. :label:`ar20110122`
 
 .. figure:: ar_2011-02-01T0000.png
     :align: center
 
-    Temperature map of active region AR11147 at 2011-02-01 00:00. As in figure
+    Temperature map of active region AR11147 at 2011-02-01 00:00. The circle
+    indicates the general area of the active region. As in figure
     :ref:`ar20110122`, the largest loops exhibit the lowest temperatures and 
     cool quiet sun plasma surrounds the region. Also seen is a filament with a 
     roughly uniform temperature of log(T) ~6.3. :label:`ar20110201`
@@ -699,13 +700,12 @@ log(T) :math:`\approx` 6.3.
     :align: center
 
     Temperature map of active region AR11161 and AR 11162 at 2011-02-19 00:00. 
-    AR11161 is the region seen in most of the figure, and AR11162 is the much 
-    smaller region in the top right quarter of the image. Again, low 
-    temperatures are found in large loops and quiet sun like plasma is seen 
-    around AR11161. However, uinlike regions 1 and 2, the hottest temperatures 
-    here are found in some relatively large loops and in small patches around 
-    AR11162 where one would expect to find much cooler plasma.
-    :label:`ar20110219`
+    The large and small circles indicate the general areas of AR11161 and
+    AR11162 respectively. Again, low temperatures are found in large loops and
+    quiet sun like plasma is seen around AR11161. However, uinlike regions 1
+    and 2, the hottest temperatures here are found in some relatively large
+    loops and in small patches around AR11162 where one would expect to find
+    much cooler plasma. :label:`ar20110219`
 
 Discussion
 ----------
