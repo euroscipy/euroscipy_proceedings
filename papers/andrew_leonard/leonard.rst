@@ -15,7 +15,8 @@ Temperature diagnostics of the solar atmosphere using SunPy
 
     The solar atmosphere is a hot (~1MK), magnetised plasma of great 
     interest to physicists. There have been many previous studies of the 
-    temperature of the Sun's atmosphere. Almost all of these studies use the 
+    temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012],
+    [Hannah2012], [Aschwanden2011]_, etc.). Almost all of these studies use the
     SolarSoft software package written in the commercial Interactive Data 
     Language (IDL), which has been the standard language for solar physics.
     The SunPy project aims to provide an open-source library for solar physics. 
@@ -44,23 +45,23 @@ Introduction
 ------------
 
 The solar corona is a hot (~1MK) magnetised plasma. Such an environment, 
-difficult to reproduce in a laboratory, is of great interest to physics (e.g. 
+difficult to reproduce in a laboratory, is of great importance in physics (e.g. 
 basic plasma physics, development of nuclear fusion). It is important also in 
 the context of general astronomy, in understanding other stars and the 
 mechanisms which heat the corona - considered one of the major unanswered 
 questions in astronomy. On a more practical level, with our society's 
-increasing reliance on space-based technology, we are increasingly prone to the 
-effects of geoeffective solar phenomena such as flares and Coronal Mass 
-Ejections (CMEs). These can damage electronic infrastructure essential for our 
-modern society. In order to be able to predict these phenomena, we must first 
-understand their formation and development. The sources of energy for these 
-events can cause localised heating in the corona, and coronal temperature 
-distributions are therefore a widely studied topic within solar physics. Active 
-regions, which are regions of newly-emerged magnetic flux from the solar 
-interior associated with sunspots, are of particular interest since they are 
-often the source regions for the most damaging eruptive events and the 
-distribution of temperatures can give us unique and valuable information on the 
-initial conditions of eruptions.
+growing reliance on space-based technology, we are increasingly prone to the
+effects of geo-effective solar phenomena such as flares and Coronal Mass 
+Ejections (CMEs). These can damage the electronic infrastructure which plays an
+essential role in our modern society. In order to be able to predict these
+phenomena, we must first understand their formation and development. The
+sources of energy for these events can cause localised heating in the corona,
+and coronal temperature distributions are therefore a widely studied topic
+within solar physics. Active regions, which are regions of newly-emerged
+magnetic flux from the solar interior associated with sunspots, are of
+particular interest since they are often the source regions for the most
+damaging eruptive events and the distribution of temperatures can give us
+unique and valuable information on the initial conditions of eruptions.
 
 It is not yet technologically feasible to send probes into the low coronal 
 environment. Our current understanding of the corona is based on remote-sensing 
@@ -68,18 +69,18 @@ observations across the electromagnetic spectrum from radio to X-ray. Previous
 studies have found coronal temperatures ranging from ~0.8MK in coronal hole 
 regions, ~1MK in quiet Sun regions and from 1-3MK within active regions. 
 Eruptive events and flares can produce even higher temperatures in small 
-regions for a short period of time (see, e.g.: [Awasthi2014]_). This work is 
+regions for a short period of time (see, e.g., [Awasthi2014]_). This work is 
 based exclusively on images of the low corona taken in Extreme Ultra-Violet 
 (EUV) using AIA/SDO [Lemen2011]_. AIA allows us, for the first time, to produce 
 reliable maps of the coronal temperature with very fine spatial and temporal 
 resolution.
 
-An overview of the AIA instrument is given in section :ref:`instmeth`, along 
+An overview of the AIA instrument is given in Section :ref:`instmeth`, along 
 with an introduction to the theory of estimating temperature from spectral 
 observation. The method is tested by creating synthetic AIA data created from a 
-coronal emission model in section :ref:`modeltests`. The method is applied to 
-AIA data in section :ref:`results` and the results compared to those of 
-previous studies. Discussion and Conclusions are given in section :ref:`disc`.
+coronal emission model in Section :ref:`modeltests`. The method is applied to 
+AIA data in Section :ref:`results` and the results compared to those of 
+previous studies. Discussion and Conclusions are given in Section :ref:`disc`.
 
 
 Instrumentation & Method
@@ -148,9 +149,9 @@ density. The width of the DEM provides a measure of how multi-thermal the
 plasma is. The temperature of peak of the DEM is the dominant temperature, i.e.: 
 the temperature of the majority of the plasma.
 
-The intensity measured by pixel x of a particular channel i on an instrument 
-can be expressed as a convolution of the DEM and the temperature response 
-function :math:`K_{i}` of the instrument:
+The intensity measured by pixel :math:`x` of a particular channel :math:`i` on
+an instrument can be expressed as a convolution of the DEM and the temperature
+response function :math:`K_{i}` of the instrument:
 
 .. math::
     :label: pixelval
@@ -161,16 +162,18 @@ The temperature response combines the wavelength response of the instrument and
 the contribution function, which describes the emission of the plasma at a 
 given temperature based on atomic physics models. Unfortuately, equation 
 :ref:`pixelval` is an ill-posed problem and as such there exists no unique 
-solution without imposing physical contraints. Multiple schemes have therefore 
-been designed to invert this equation and infer the DEM, but such inversions 
-suffer from the prolems of ill-posed equations [Judge1997], which are amplified 
-by the typically high errors on solar measurements.
+solution without imposing physical contraints [Judge1997]_. Multiple schemes
+have been designed to invert this equation and infer the DEM by applying
+various physical assumptions. However, these assumptions are sometimes
+difficult to justify and the accuracy of the results is also reduced by the
+typically high errors on solar measurements. The physical constraints assumed
+by this method are discussed in Section :ref:`DEMfinding`.
 
 This work presents an extremely fast method of estimating the temperature of 
 coronal plasma from AIA images. This method is implemented using the 
 SunPy solar physics library (www.sunpy.org_) and produces results comparable to 
 those of other methods but in a fraction of the time. The current 
-implementation of the method is designed primarily with efficiency in mind. 
+implementation of the method is designed primarily with efficiency in mind.
 
 Preprocessing
 ~~~~~~~~~~~~~
@@ -178,18 +181,18 @@ Preprocessing
 Level 1.0 AIA data were obtained using SunPy's wrappers around the Virtual 
 Solar Observatory. These data were corrected for exposure time and further 
 processed to level 1.5. This extra level of processing provides the correct 
-spatial coalignment necessary for a quantitative comparison of the different 
-channels. To this end, the AIA images used were processed using the SunPy 
-aiaprep() function to ensure that all images used were properly rescaled and 
-coaligned. aiaprep() rotates the images so that solar north points to the top 
-of the image, scales them so that each pixel is exactly 0.6 arcsec, and 
-recentres them so that solar centre coincides with the centre of the image. 
-This is achieved using an affine transform and bi-cubic interpolation. All 
-images were then normalised by dividing the values in each pixel for each 
-wavelength by the value in that pixel for a selected wavelength, which was 
-arbitrarily chosen as the 17.1nm channel. The value of the 17.1nm image was 
-therefore 1 in all pixels, and the images from all other channels are given as 
-a ratio of the 17.1nm intensity. 
+spatial co-alignment necessary for a quantitative comparison of the different 
+channels. To this end, the AIA images used were processed using the SunPy
+``aiaprep()`` function to ensure that all images used were properly rescaled
+and co-aligned. ``aiaprep()`` rotates the images so that solar north points to
+the top of the image, scales them so that each pixel is exactly 0.6 arcsec
+across (in both the x and y directions), and recentres them so that solar
+centre coincides with the centre of the image. This is achieved using an affine
+transform and bi-cubic interpolation. All images were then normalised by
+dividing the intensity measured in each pixel by the intensity in the
+corresponding pixel in the 17.1nm image. The 17.1nm image was therefore 1 in
+all pixels, and the images from all other channels are given as a ratio of the
+17.1nm intensity.
 
 Temperature response functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -224,47 +227,50 @@ are shown in figure :ref:`response-plot`.
 
 DEM-finding procedure
 ~~~~~~~~~~~~~~~~~~~~~
+:label:`DEMfinding`
 
-The general method for estimating the DEM is an iterative procedure which tests
-multiple possible DEMs. Each DEM is substituted into equation :ref:`pixelval`
-to produce a synthetic pixel value for each AIA wavelength channel (:math:`i`).
-This expected outcome is then compared to the actual values measured for all
-pixel positions (:math:`x`) in each wavelength, giving a goodness-of-fit value
-for each pixel for a given DEM (equation :ref:`goodness-of-fit`), defined by
-the difference in pixel values averaged over all wavelength channels:
+The general method for estimating the DEM is an iterative procedure which
+systematically tests a range of possible DEMs. Each DEM is substituted into
+equation :ref:`pixelval` to produce a synthetic pixel value for each AIA wavelength channel
+(:math:`i`). This expected outcome is then compared to the actual values
+measured for all pixel positions (:math:`x`) in each wavelength, giving a
+goodness-of-fit value for each pixel for a given DEM (equation
+:ref:`goodness-of-fit`), defined by the difference in pixel values averaged
+over all wavelength channels:
 
 .. math::
     :label: goodness-of-fit
 
     \mathrm{fit}(x)=\frac{1}{n_{i}}\sum_{i}{|I_{measured}(x,i)-I_{synth}(x,i)|}
 
+Since the synthetic emission values do not change unless one wishes to apply 
+different assumptions which affect the temperature response (electron density, 
+ionisation equilibrium, etc.), the calculation time for the method can be 
+reduced by saving these emission values and reusing them for each comparison. 
 By repeating this calculation with a number of assumed DEMs, the DEM 
 corresponding to the smallest goodness-of-fit value provides an estimate of the
-actual plasma temperature distribution. The synthetic emission for each 
-wavelength will always be the same for a given DEM unless one wishes to apply 
-different assumptions which affect the temperature response (electron density, 
-ionisation equilibrium, etc.). The calculation time per comparison can
-therefore be reduced by saving these emission values and reusing them.
+actual plasma temperature distribution.
 
-For this kind of iterative method to find a solution within a feasible amount 
+For this kind of iterative method to find a solution within a feasible amount
 of time, a general DEM profile must be assumed. A Gaussian profile is a good
 choice for the following reasons:
 
-- it can be fully described by only three parameters, i.e.: the mean, width and
-  height of the Gaussian, which correspond to the dominant temperature, the
-  degree of multithermality and the peak emission measure respectively. Because
+- it can be fully described by only three parameters, i.e.: the mean, variance
+  and amplitude of the Gaussian (henceforth the peak temperature, width and
+  height of the DEM), which correspond to the dominant temperature, the degree
+  of multithermality and the peak emission measure respectively. Because
   of this parameterisation, a Gaussian is well-suited to this type of method
   and is also a useful way to describe important properties of the plasma even
   if it does not perfectly represent the actual distribution of temperatures;
 - other authors have typically found multithermal DEMs, but with relatively 
-  narrow widths (e.g.: [Warren2008]_). [Aschwanden2011b]_ found that a narrow 
+  narrow widths ([Warren2008]_). [Aschwanden2011b]_ found that a narrow 
   Gaussian DEM fit the observations with :math:`\chi^{2}\leq 2` for 66% of 
   cases studied, so this distribution should provide a good approximation for 
   the plasma in the majority of pixels. In particular, it is likely that active
   region loops have a distribution of temperature and density which makes 
   a narrow Gaussian a physically sensible choice for the shape of the plasma 
-  DEM. It is likely that the emission in pixels containing loops will be 
-  dominated by the material contained in the loop itself;
+  DEM. It is likely that emission from loops will dominate the measured
+  emission in the corresponding pixels;
 - since other studies have used a Gaussian DEM, using the same shape in this 
   work allows a direct comparison between the relative merits of the 
   methods themselves, without any disparity in the results caused by different
@@ -274,7 +280,7 @@ Though this particular study uses a Gaussian DEM, the method could also be used
 with DEMs of any other form, such as a delta function, top hat function,
 polynomial, etc. A comparison of the effect of using some of these shapes can
 be found in [Guennou2012a]_. An active area of research is the emission of
-plasma with a Kappa energy distribution, which approximates the bulk Gaussian
+plasma with a Kappa energy distribution |---| which approximates the bulk Gaussian
 DEM with a high-energy population [Mackovjak2014]_.
 
 The code takes a simplified approach by finding only the peak temperature of 
@@ -304,31 +310,30 @@ temperature maps. This value is useful as it is the temperature which
 corresponds to the bulk temperature, and expressing the DEM as a single value 
 also aids visualisation.
 
-The DEM peak temperatures considered ranged from log(T)=5.6 - 7.0, in 
-increments of 0.01 in log temperature. Outside this range of 
-temperatures, AIA has significantly lower temperature response and cannot 
-provide meaningful results. Within this range, however, the temperature is well
-constrained by the response functions of the AIA channels [Guennou2012]_ and 
-can in principle be calculated with a precision of ~0.015 [Judge2010]_.
+The DEM peak temperatures considered ranged from :math:`\log T = 5.6 - 7.0`, in
+increments of 0.01 in log temperature. Outside this range of temperatures, AIA
+has significantly lower temperature response and cannot provide meaningful
+results. Within this range, however, the temperature is well constrained by the
+response functions of the AIA channels [Guennou2012]_ and can in principle be 
+calculated with a precision of ~0.015 in log(T) [Judge2010]_.
 
 This method is very similar in principle to the Gaussian fitting methods used 
-by, e.g.: [Warren2008]_ and [Aschwanden2011]_. However, great computational
-efficiency is achieved by only varying one parameter (the bulk temperature).
-Since the height and width of the DEM are not investigated, this method may be
-less accurate than a full parameter search would be and does not provide a full
-DEM which could be used to estimate the emission measure. The width and height
-of the Gaussian would need to be taken into account for a more formal
-determination of the thermal structure, but this approach aims only to
-estimate the dominant temperature along the LOS. The introduction of a full
-parameter search will be investigated in a future work by comparing the
-temperature maps produced using this implementation with those of a
-multi-parameter version. The simpler implementation means that full AIA
-resolution temperature maps (4096 x 4096 pixels) can be calculated within ~2
-minutes. This is extremely fast when compared to, for example, the
-multi-Gaussian fitting method used by [DelZanna2013]_ (which took ~40 minutes
-to compute temperatures for 9600 pixels), and even beats the fast DEM inversion
-of [Plowman2012]_ (estimated ~1 hour for a full AIA-resolution temperature map)
-by a significant margin.
+by [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency
+is achieved by only varying one parameter (the bulk temperature). Since the
+height and width of the DEM are not investigated, this method may be less
+accurate than a full parameter search would be and does not provide a full DEM
+which could be used to estimate the emission measure. The width and height of
+the Gaussian would need to be taken into account for a more formal
+determination of the thermal structure, but this approach aims only to estimate
+the dominant temperature along the LOS. The introduction of a full parameter
+search will be investigated in a future work by comparing the temperature maps
+produced using this implementation with those of a multi-parameter version. The
+simpler implementation means that full AIA resolution temperature maps (4096 x
+4096 pixels) can be calculated within ~2 minutes. This is extremely fast when
+compared to, for example, the multi-Gaussian fitting method used by
+[DelZanna2013]_ (which took ~40 minutes to compute temperatures for 9600 pixels),
+and even beats the fast DEM inversion of [Plowman2012]_ (estimated ~1 hour for
+a full AIA-resolution temperature map) by a significant margin.
 
 Software features
 ~~~~~~~~~~~~~~~~~
@@ -381,10 +386,10 @@ Similarly, the peak temperatures of the model DEMs have reduced spacing
 relative to the resolution of the method in order to determine the effect 
 this has on the output. Only Gaussian model DEMs were used because different 
 multi-thermal distributions are difficult to distinguish using only AIA data 
-[Guennou2012a]_. Gaussian DEMs and DEMs of other shapes would therefore likely 
-produce similar results, so Gaussians were chosen for consistancy with the 
-method itself. In any case, a full comparison of different forms of DEM is
-beyond the scope of this study.
+[Guennou2012a]_ and other such shapes would therefore likely be reproduced with 
+similar accuracy to Gaussian DEMs. Gaussians were therefore used for 
+consistancy with the method itself. In any case, a full comparison of different 
+forms of DEM is beyond the scope of this study.
 
 Attempting to reconstruct known DEM functions also makes it possible to 
 directly compare the input and output DEM functions, which is of course not 
@@ -525,12 +530,12 @@ The mean for this region was log(T) = 6.08. The minimum value, excluding
 spurious pixels, is log(T) = 5.96 and the maximum is log(T) = 6.29.
 
 In all three temperature maps the hottest temperatures are found in relatively 
-small, localised regions (which appear in red in figures :ref:`qs20110128` and 
+small, localised regions (which appear in red in Figures :ref:`qs20110128` and 
 :ref:`qs20110208`), with the temperatures changing quite sharply between these 
 regions and the cooler background plasma. These hotter regions appear to 
 consist of small loop-like structures, though none of these correspond to any 
 active region (see section :ref:`ARs`). The hot structures in the region shown
-in figure :ref:`qs20110221` take up a slightly larger portion of the region and
+in Figure :ref:`qs20110221` take up a slightly larger portion of the region and
 are more strongly concentrated in one location. Temperatures of around log(T)
 :math:`\approx` 6.15 also appear to form even smaller loops in some cases, 
 which are more evenly distributed than the hotter regions. Temperatures below 
@@ -591,7 +596,7 @@ all three coronal holes, though to a much greater extent in coronal holes 2 and
 temperature regions. Each of these consists only of a few pixels and were found
 to have temperatures of log(T) :math:`\approx` 5.6-5.7. This speckling is 
 similar to the individual low-temperature pixels found for the quiet sun region
-for 2011-02-21 (figure :ref:`qs20110221`), but is much more prominent. 
+for 2011-02-21 (Figure :ref:`qs20110221`), but is much more prominent. 
 
 All three coronal holes also contain small hotter regions (log(T) :math:`\ge` 
 6.1), which appear to be similar to quiet sun regions and in some cases seem to 
@@ -620,7 +625,7 @@ at the edge of the mapped region.
     :align: center
 
     Temperature map of the southern coronal hole at 2011-02-01 00:00 (coronal 
-    hole 2). As with figure :ref:`ch20110201a`, the coronal hole stands out 
+    hole 2). As with Figure :ref:`ch20110201a`, the coronal hole stands out 
     against the hotter quiet sun. This region shows much more 'speckling' 
     within the coronal hole from low-temperature pixels, but contains several 
     small quiet sun like regions similar to those seen in coronal hole 1.
@@ -650,7 +655,7 @@ seen in EUV and X-rays as strands of bright material. The points at which these
 loops are rooted in the lower corona are called footpoints.
 
 Active regions show the greatest variation in temperature, as can be seen in 
-figures :ref:`ar20110122`, :ref:`ar20110201` and :ref:`ar20110219`. These 
+Figures :ref:`ar20110122`, :ref:`ar20110201` and :ref:`ar20110219`. These 
 figures show temperature maps of active regions AR11147 and AR11149 (henceforth 
 region 1), active region AR11150 (region 2) and active regions AR11161 and 
 AR11162 (region 3), respectively. Regions 1 and 3 are much more complex than 
@@ -671,10 +676,13 @@ background in AR11147. In region 2 they are found in loops which appear to be
 outside the main active region. In region 3 they are found in a few relatively
 large loops - in contrast to the much smaller loops found to have those
 temperatures in the other regions - and there are also several small hot
-regions around AR11162 near the top of figure :ref:`ar20110219`.
+regions around AR11162 near the top of Figure :ref:`ar20110219`. The noisy
+nature of the hot regions in this figure appears to be due to unusually high
+relative values in the typically noisy 9.4nm and 13.1nm channels, which
+correspond to high temperature plasma.
 
 All three regions also show the presence of cooler quiet sun-like plasma 
-surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and figure 
+surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and Figure 
 :ref:`ar20110201` shows a filament found to have a fairly uniform temperature of
 log(T) :math:`\approx` 6.3.
 
@@ -712,25 +720,25 @@ Discussion
 ----------
 :label:`disc`
 
-This method produces results many times faster than typical DEM methods, with a 
-full-resolution temperature map being produced in ~2 minutes. The 
-great efficiency of the method makes it well suited for realtime monitoring of 
-the Sun. The challenge lies in finding connections between changes of 
-temperature with time, or between changes in the spatial distribution of 
-temperature, with events of interest (e.g. large flares). The realtime 
-prediction of large events  would be a very desirable goal. This is work we 
-are currently undertaking.  Results over the whole solar disk with reasonably 
-high time resolution also allows us to make statistical studies of the way 
-temperature changes within certain regions over long time periods. This is 
-another approach we are currently using to study active regions in particular.
+The proposed method produces results many times faster than typical DEM methods,
+with a full-resolution temperature map being produced in ~2 minutes. The great
+efficiency of the method makes it well suited for realtime monitoring of the 
+Sun. The challenge lies in finding connections between changes of temperature
+with time, or between changes in the spatial distribution of temperature, with
+events of interest (e.g. large flares). The realtime prediction of large events
+would be a very desirable goal. This is work we are currently undertaking.
+Results over the whole solar disk with reasonably high time resolution also
+allows us to make statistical studies of the way temperature changes within
+certain regions over long time periods. This is another approach we are
+currently using to study active regions in particular.
 
 For some quiet sun regions and coronal holes, the method found 
 low-temperature values for isolated pixels or for small groups of pixels. 
 It is possible that these isolated pixels are due to one or more channels being
 dominated by noise which is amplified by the normalisation of the images. 
-However, these pixels are also seen far more in coronal holes 2 and 3 (figures 
+However, these pixels are also seen far more in coronal holes 2 and 3 (Figures 
 :ref:`ch20110201b` and :ref:`ch20110214`), which were observed at the pole, 
-than in coronal hole 1 (figure :ref:`ch20110201a`), which ranged from near the 
+than in coronal hole 1 (Figure :ref:`ch20110201a`), which ranged from near the 
 pole to near the equator. It is therefore also possible these cold pixels are 
 at least partly due to some LOS effect.
 
