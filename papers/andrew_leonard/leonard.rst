@@ -15,9 +15,9 @@ Temperature diagnostics of the solar atmosphere using SunPy
 
     The solar atmosphere is a hot (~1MK), magnetised plasma of great 
     interest to physicists. There have been many previous studies of the 
-    temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012],
-    [Hannah2012], [Aschwanden2011]_, etc.). Almost all of these studies use the
-    SolarSoft software package written in the commercial Interactive Data 
+    temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012]_,
+    [Hannah2012]_, [Aschwanden2011]_, etc.). Almost all of these studies use
+    the SolarSoft software package written in the commercial Interactive Data
     Language (IDL), which has been the standard language for solar physics.
     The SunPy project aims to provide an open-source library for solar physics. 
     This work presents (to the authors' knowledge) the first study of its type 
@@ -205,18 +205,18 @@ using the equation:
 
     K_{i}(\mathrm{T})=\int_{0}^{\infty}G(\lambda,\mathrm{T})\, R_{i}(\lambda)\,\mathrm{d}\lambda
 
-where :math:`\lambda` is the wavelength, :math:`R_{i}(\lambda)` is the wavelength response of each channel 
-:math:`i` and :math:`G(\lambda,\mathrm{T})` is the contribution function 
-describing how radiation is emitted by the coronal plasma. For this work the 
-AIA temperature response functions were obtained using the IDL aia_get_response
-function (for which no equivalent exists yet in SunPy) and an empirical 
-correction factor of 6.7 was applied to the 9.4nm response function for 
-:math:`log(T)\le 6.3`, following the work of [Aschwanden2011b]_. These response 
-functions were saved and reloaded into Python for use with this method. As with 
-the AIA images, each of these response functions was normalised to the 17.1nm 
-response by dividing the value at each temperature by the corresponding value 
-for 17.1nm. The response functions used in this method (before normalisation)
-are shown in figure :ref:`response-plot`.
+where :math:`\lambda` is the wavelength, :math:`R_{i}(\lambda)` is the
+wavelength response of each channel :math:`i` and :math:`G(\lambda,\mathrm{T})`
+is the contribution function describing how radiation is emitted by the coronal
+plasma. For this work the AIA temperature response functions were obtained
+using the IDL aia_get_response function (for which no equivalent exists yet in
+SunPy) and an empirical correction factor of 6.7 was applied to the 9.4nm
+response function for :math:`log(T)\le 6.3`, following the work of
+[Aschwanden2011b]_. These response functions were saved and reloaded into
+Python for use with this method. As with the AIA images, each of these response
+functions was normalised to the 17.1nm response by dividing the value at each
+temperature by the corresponding value for 17.1nm. The response functions used
+in this method (before normalisation) are shown in figure :ref:`response-plot`.
 
 .. figure:: responses.png
     :align: center
@@ -231,10 +231,10 @@ DEM-finding procedure
 
 The general method for estimating the DEM is an iterative procedure which
 systematically tests a range of possible DEMs. Each DEM is substituted into
-equation :ref:`pixelval` to produce a synthetic pixel value for each AIA wavelength channel
-(:math:`i`). This expected outcome is then compared to the actual values
-measured for all pixel positions (:math:`x`) in each wavelength, giving a
-goodness-of-fit value for each pixel for a given DEM (equation
+equation :ref:`pixelval` to produce a synthetic pixel value for each AIA
+wavelength channel (:math:`i`). This expected outcome is then compared to the
+actual values measured for all pixel positions (:math:`x`) in each wavelength,
+giving a goodness-of-fit value for each pixel for a given DEM (equation
 :ref:`goodness-of-fit`), defined by the difference in pixel values averaged
 over all wavelength channels:
 
@@ -280,8 +280,8 @@ Though this particular study uses a Gaussian DEM, the method could also be used
 with DEMs of any other form, such as a delta function, top hat function,
 polynomial, etc. A comparison of the effect of using some of these shapes can
 be found in [Guennou2012a]_. An active area of research is the emission of
-plasma with a Kappa energy distribution |---| which approximates the bulk Gaussian
-DEM with a high-energy population [Mackovjak2014]_.
+plasma with a Kappa energy distribution |---| which approximates the bulk
+Gaussian DEM with a high-energy population [Mackovjak2014]_.
 
 The code takes a simplified approach by finding only the peak temperature of 
 the DEM, and assuming the height and width to be fixed. The width was set to be 
@@ -500,7 +500,7 @@ into 4x4 macropixels (i.e. 1024x1024 images).
     observer's frame of reference, with the Y-position aligned to solar north.
     :label:`mytemps`
 
-.. figure:: aschwanden_tempmap.png
+.. figure:: aschwanden_tempmap.jpg
     :align: center
 
     Temperature map for the full-disk corona on 2011-02-15 00:00. Image from
@@ -683,8 +683,8 @@ correspond to high temperature plasma.
 
 All three regions also show the presence of cooler quiet sun-like plasma 
 surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and Figure 
-:ref:`ar20110201` shows a filament found to have a fairly uniform temperature of
-log(T) :math:`\approx` 6.3.
+:ref:`ar20110201` shows a filament found to have a fairly uniform temperature
+of log(T) :math:`\approx` 6.3.
 
 .. figure:: ar_2011-01-22T0000.png
     :align: center
@@ -868,5 +868,9 @@ References
    Limitations of Emission-Line Spectra as Diagnostics of Plasma Temperature 
    and Density Structure", The Astrophysical Journal, vol. 475, pp. 275-290, 
    Jan. 1997.
+
+.. [Wit2012]
+
+.. [Hannah2012]
 
 .. _www.sunpy.org: http://www.sunpy.org/
