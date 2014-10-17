@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{{proceedings['title']['full']}}</title>
+</head>
+<body>
+<h1>{{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}})</h1>
+
+<p>Editors: {{', '.join(proceedings['editor'])}}<br />
+{{proceedings['location']}}, {{proceedings['dates']}}
+</p>
+
+<h2>Articles</h2>
+
+{{if preface}}
+<dl>
+<dt> <span class="list-identifier"><a href="#preface">Preface</a></span></dt>
+<dd>
+<div class="meta">
+<div class="list-authors">
+<span class="descriptor">Authors:</span> {{', '.join(proceedings['editor'])}}
+</div>
+</div>
+</dd>
+</dl>
+{{endif}}
+
+{{for line in toc}}
+{{if not 'preface' in line['paper_id']}}
+<!-- {{html_quote(line['authors']) | html}} - {{html_quote(line['title']) | html}}, p. {{html_quote(line['page']['start']) | html}} -->
+LIST:arXiv:{{line['arxiv_identifier']}}
+{{endif}}
+
+{{endfor}}
+
+{{if preface}}
+{{preface}}
+{{endif}}
+
+<p>
+Copyright &copy; {{ proceedings['copyright_year']}}.
+{{for line in proceedings['copyright']['proceedings']}}
+{{line}}
+{{endfor}}
+</p>
+
+<h2>Organizers of the conference</h2>
+
+{{for committee in organization}}
+
+  <h3>{{html_quote(committee['name']) | html}}</h3>
+
+  <ul>
+    {{for member in committee['members'] }}
+      <li>{{html_quote(member['name']) | html}} ({{html_quote(member['org']) | html}})</li>
+    {{endfor}}
+  </ul>
+
+{{endfor}}
+
+<h2>BibTex data</h2>
+<h3>Proceedings volume</h3>
+<pre>
+@Proceedings{ {{proceedings['citation_key']}},
+  title     = { {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}) },
+  year      = { {{proceedings['copyright_year']}} },
+  editor    = { {{' and '.join(proceedings['editor'])}} },
+}
+</pre>
+<h3>Individual papers</h3>
+<pre>
+{{for article in toc}}
+@InProceedings{ {{'-'.join([article['paper_id'],
+                                  proceedings['citation_key']])}},
+  author    = { {{' and '.join(article['author'])}} },
+  title     = { {{html_quote(article['title'])}} },
+  booktitle = { {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}) },
+  pages     = { {{' - '.join([str(article['page']['start']), str(article['page']['stop'])])}} },
+  year      = { {{proceedings['copyright_year']}} },
+  editor    = { {{' and '.join(proceedings['editor'])}} },
+{{if article['arxiv_identifier']}}
+  archivePrefix = "arXiv",
+  eprint    = { {{article['arxiv_identifier']}} },
+{{endif}}
+}
+{{endfor}}
+</pre>
+</body>
+</html>
