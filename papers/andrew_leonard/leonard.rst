@@ -595,7 +595,10 @@ small loops or background in AR11147. In region 2 they are found in loops which
 appear to be outside the main active region. In region 3 they are found in a 
 few relatively large loops - in contrast to the much smaller loops found to 
 have those temperatures in the other regions - and there are also several small 
-hot regions around AR11162 near the top of Figure :ref:`ar20110219`.
+hot regions around AR11162 near the top of Figure :ref:`ar20110219`. The noisy
+nature of the hot regions in this figure appears to be due to unusually high
+relative values in the typically noisy 9.4nm and 13.1nm channels, which
+correspond to high temperature plasma.
 
 All three regions also show the presence of cooler quiet sun-like plasma 
 surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and Figure 
