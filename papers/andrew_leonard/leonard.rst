@@ -140,7 +140,7 @@ Measure (DEM). The DEM is usally expressed in terms of the electron density,
 
 .. math::
     
-    \textrm{DEM}(T) = n_{e}^{2}\frac{\textrm{d}z}{\textrm{d}T}
+    \textrm{DEM}(T)=n_{e}^{2}\frac{\textrm{d}z}{\textrm{d}T}
 
 where :math:`z` is the distance along the LOS and :math:`T` is electron 
 temperature.
@@ -216,7 +216,7 @@ response function for :math:`log(T)\le 6.3`, following the work of
 Python for use with this method. As with the AIA images, each of these response
 functions was normalised to the 17.1nm response by dividing the value at each
 temperature by the corresponding value for 17.1nm. The response functions used
-in this method (before normalisation) are shown in figure :ref:`response-plot`.
+in this method (before normalisation) are shown in Figure :ref:`response-plot`.
 
 .. figure:: responses.png
     :align: center
@@ -560,8 +560,6 @@ this are more uniform and have no clearly visible structure.
     Temperature map for quiet sun region on 2011-02-21 00:00. Spurious 
     low-temperature pixels have been removed.
 
-    
-
 Coronal holes
 ~~~~~~~~~~~~~
 
@@ -571,7 +569,7 @@ low levels of emission in EUV and X-ray wavelengths. Figures :ref:`ch20110201a`,
 holes. Note that these figures are shown with different colour scales to each
 other and to figures :ref:`qs20110128`, :ref:`qs20110208` and :ref:`qs20110221`.
 In Figures :ref:`ch20110201b` and :ref:`ch20110214` the solar limb (the edge of
-the disk of the Sun) is marked with a blck line. Figure :ref:`limbtemps` shows
+the disk of the Sun) is marked with a black line. Figure :ref:`limbtemps` shows
 the temperatures along the vertical line shown in Figure :ref:`ch20110214`. The
 coronal holes shown in figures :ref:`ch20110201a` and :ref:`ch20110201b`
 (henceforth coronal holes 1 and 2), were observed at 2011-02-01 00:00 in the
@@ -642,8 +640,8 @@ at the edge of the mapped region.
     :align: center
 
     Plot of temperatures along the vertical line show in Figure
-    :ref:`ch_2011-02-14T0000_cropped.png`. Note that these temperatures have
-    been smoothed to more clearly show the overall trend.
+    :ref:`ch20110214`. Note that these temperatures have been smoothed to more
+    clearly show the overall trend. :label:`limbtemps`
 
 Active regions
 ~~~~~~~~~~~~~~
@@ -711,10 +709,11 @@ of log(T) :math:`\approx` 6.3.
     Temperature map of active region AR11161 and AR 11162 at 2011-02-19 00:00. 
     The large and small circles indicate the general areas of AR11161 and
     AR11162 respectively. Again, low temperatures are found in large loops and
-    quiet sun like plasma is seen around AR11161. However, uinlike regions 1
+    quiet sun like plasma is seen around AR11161. However, unlike regions 1
     and 2, the hottest temperatures here are found in some relatively large
     loops and in small patches around AR11162 where one would expect to find
     much cooler plasma. :label:`ar20110219`
+
 
 Discussion
 ----------
@@ -760,7 +759,7 @@ filaments are poorly handled by the method. This suggests it may be unwise to
 rely too heavily on this method for temperatures of filaments or similarly 
 dense coronal structures.
 
-As discussed in section :ref:`modeltests`, narrow DEMs widths are 
+As discussed in Section :ref:`modeltests`, narrow DEMs widths are 
 reconstructed much more accurately than wide ones, with solutions tending
 towards ~1MK with increasing DEM width. Such results in these temperature maps 
 should therefore be treated with a certain amount of caution. Overall, however, 
@@ -787,7 +786,6 @@ This work is funded by an STFC student grant.
 This research has made use of SunPy, an open-source and free 
 community-developed solar data analysis package written in Python 
 [Mumford2013]_.
-
 
 References
 ----------
