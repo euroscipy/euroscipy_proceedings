@@ -16,7 +16,7 @@ Temperature diagnostics of the solar atmosphere using SunPy
     The solar atmosphere is a hot (~1MK), magnetised plasma of great 
     interest to physicists. There have been many previous studies of the 
     temperature of the Sun's atmosphere ([Plowman2012]_, [Wit2012]_,
-    [Hannah2012]_, [Aschwanden2011]_, etc.). Almost all of these studies use
+    [Hannah2012]_, [Aschwanden2013]_, etc.). Almost all of these studies use
     the SolarSoft software package written in the commercial Interactive Data
     Language (IDL), which has been the standard language for solar physics.
     The SunPy project aims to provide an open-source library for solar physics. 
@@ -106,7 +106,7 @@ channels observing simultaneously means that the temperature of the corona can
 be effectively constrained [Guennou2012]_. Another advantage is that relative 
 elemental abundances do not need to be considered when using emission from only 
 one element, thus reducing the associated errors. AIA is therefore beginning to 
-be widely used for this type of study (e.g. [Aschwanden2011]_), as its very 
+be widely used for this type of study (e.g. [Aschwanden2013]_), as its very 
 high spatial, temporal and thermal resolution make it an excellent source of 
 data for investigating the temperatures of small-scale and/or dynamic features 
 in the corona, as well as for looking at global and long-term temperature 
@@ -212,7 +212,7 @@ plasma. For this work the AIA temperature response functions were obtained
 using the IDL aia_get_response function (for which no equivalent exists yet in
 SunPy) and an empirical correction factor of 6.7 was applied to the 9.4nm
 response function for :math:`log(T)\le 6.3`, following the work of
-[Aschwanden2011b]_. These response functions were saved and reloaded into
+[Aschwanden2011]_. These response functions were saved and reloaded into
 Python for use with this method. As with the AIA images, each of these response
 functions was normalised to the 17.1nm response by dividing the value at each
 temperature by the corresponding value for 17.1nm. The response functions used
@@ -263,7 +263,7 @@ choice for the following reasons:
   and is also a useful way to describe important properties of the plasma even
   if it does not perfectly represent the actual distribution of temperatures;
 - other authors have typically found multithermal DEMs, but with relatively 
-  narrow widths ([Warren2008]_). [Aschwanden2011b]_ found that a narrow 
+  narrow widths ([Warren2008]_). [Aschwanden2011]_ found that a narrow 
   Gaussian DEM fit the observations with :math:`\chi^{2}\leq 2` for 66% of 
   cases studied, so this distribution should provide a good approximation for 
   the plasma in the majority of pixels. In particular, it is likely that active
@@ -318,7 +318,7 @@ response functions of the AIA channels [Guennou2012]_ and can in principle be
 calculated with a precision of ~0.015 in log(T) [Judge2010]_.
 
 This method is very similar in principle to the Gaussian fitting methods used 
-by [Warren2008]_ and [Aschwanden2011]_. However, great computational efficiency
+by [Warren2008]_ and [Aschwanden2013]_. However, great computational efficiency
 is achieved by only varying one parameter (the bulk temperature). Since the
 height and width of the DEM are not investigated, this method may be less
 accurate than a full parameter search would be and does not provide a full DEM
@@ -476,12 +476,12 @@ Results
 :label:`results`
 
 The temperature maps calculated using the proposed method and the method
-described in [Aschwanden2011]_ are shown in Figures :ref:`mytemps` and
+described in [Aschwanden2013]_ are shown in Figures :ref:`mytemps` and
 :ref:`aschtemps` respectively. The Aschwanden method is used for this
 comparison because it is recent and similar to the propsed method, and because
 few other papers present full-disk temperature maps. For ease of comparison,
 the results of this work are plotted using a similar colour map to the one used
-by [Aschwanden2011]_ and with the same upper and lower temperature limits.
+by [Aschwanden2013]_ and with the same upper and lower temperature limits.
 
 The two methods find similar temperatures for the majority of the corona,
 though regions found to have extreme hot or cool temperatures using
@@ -504,7 +504,7 @@ into 4x4 macropixels (i.e. 1024x1024 images).
     :align: center
 
     Temperature map for the full-disk corona on 2011-02-15 00:00. Image from
-    [Aschwanden2011]_. :label:`aschtemps`
+    [Aschwanden2013]_. :label:`aschtemps`
 
 The remaining results have been sectioned into three general regions of the
 corona - quiet sun, coronal holes and active regions. All regions studied were
@@ -790,6 +790,31 @@ community-developed solar data analysis package written in Python
 References
 ----------
 
+.. [Plowman2012] J. Plowman, C. Kankelborg, and P. Martens, "Fast Differential 
+   Emission Measure Inversion of Solar Coronal Data", arXiv preprint 
+   arXiv: . . . , 2012.
+
+.. [Wit2012] T. D. D. Wit, S. Moussaoui, C. Guennou, F. Auchere, G. Cessateur,
+   M. Kretzschmar, L. Vieira, and F. Goryaev, “Coronal Temperature Maps from
+   Solar EUV images: a Blind Source Separation Approach,” Solar Physics, 2012.
+
+.. [Hannah2012] I. G. Hannah and E. P. Kontar, “Differential emission measures
+   from the regularized inversion of Hinode and SDO data,” Astronomy &
+   Astrophysics, vol. 539, p. A146, Mar. 2012.
+
+.. [Aschwanden2013] M. J. Aschwanden, P. Boerner, C. J. Schrijver, and A.
+   Malanushenko, “Automated Temperature and Emission Measure Analysis of
+   Coronal Loops and Active Regions Observed with the Atmospheric Imaging
+   Assembly on the Solar Dynamics Observatory (SDO/AIA),” Solar Physics, vol.
+   283, pp. 5–30, Nov. 2013.
+
+.. [Awasthi2014] A. K. Awasthi, R. Jain, P. D. Gadhiya, M. J. Aschwanden, 
+   W. Uddin, A. K. Srivastava, R. Chandra, N. Gopalswamy, N. V. Nitta, 
+   S. Yashiro, P. K. Manoharan, D. P. Choudhary, N. C. Joshi, V. C. Dwivedi, 
+   and K. Mahalakshmi, "Multiwavelength diagnostics of the precursor and main 
+   phases of an M1.8 flare on 2011 April 22", Monthly Notices of the Royal 
+   Astronomical Society, vol. 437, pp. 2249-2262, Nov. 2014.
+
 .. [Lemen2011] J. R. Lemen, A. M. Title, D. J. Akin, P. F. Boerner, C. Chou, 
    J. F. Drake, D. W. Duncan, C. G. Edwards, F. M. Friedlaender, G. F. Heyman, 
    N. E. Hurlburt, N. L. Katz, G. D. Kushner, M. Levay, R. W. Lindgren, 
@@ -802,35 +827,28 @@ References
    Assembly (AIA) on the Solar Dynamics Observatory (SDO)", Solar
    Physics, vol. 275, pp. 17-40, June 2011.
 
-.. [Aschwanden2011b] M. J. Aschwanden and P. Boerner, "Solar Corona Loop 
-   Studies With the Atmospheric Imaging Assembly. I. Cross-Sectional 
-   Temperature Structure", The Astrophysical Journal, vol. 732, p. 81, May 2011.
+.. [Morgan2014] H. Morgan and M. Druckmüller, "Multi-Scale Gaussian 
+   Normalization for Solar Image Processing", Solar Physics, vol. 289, pp. 
+   2945-2955, Apr. 2014.
 
 .. [Guennou2012] C. Guennou, F. Auchère, E. Soubrié, K. Bocchialini, S. Parenti, 
    and N. Barbey, "On the Accuracy of the Differential Emission Measure 
    Diagnostics of Solar Plasmas. Application To Sdo /Aia. I. Isothermal Plasmas", 
    The Astrophysical Journal Supplement Series, vol. 203, p. 25, Dec. 2012.
 
-.. [Judge2010] P. G. Judge, "Coronal Emission Lines As Thermometers", The 
-   Astrophysical Journal, vol. 708, pp. 1238-1240, Jan. 2010.
+.. [Judge1997] P. G. Judge, V. Hubeny, and J. C. Brown, "Fundamental 
+   Limitations of Emission-Line Spectra as Diagnostics of Plasma Temperature 
+   and Density Structure", The Astrophysical Journal, vol. 475, pp. 275-290, 
+   Jan. 1997.
+
+.. [Aschwanden2011] M. J. Aschwanden and P. Boerner, "Solar Corona Loop 
+   Studies With the Atmospheric Imaging Assembly. I. Cross-Sectional 
+   Temperature Structure", The Astrophysical Journal, vol. 732, p. 81, May 2011.
 
 .. [Warren2008] H. P. Warren, I. Ugarte-Urra, G. a. Doschek, D. H. Brooks, and 
    D. R. Williams, "Observations of Active Region Loops with the EUV Imaging 
    Spectrometer on Hinode", The Astrophysical Journal, vol. 686, pp. L131-L134, 
    Oct. 2008.
-
-.. [Aschwanden2011] M. J. Aschwanden, P. Boerner, C. J. Schrijver, and 
-   A. Malanushenko, "Automated Temperature and Emission Measure Analysis of 
-   Coronal Loops and Active Regions Observed with the Atmospheric Imaging 
-   Assembly on the Solar Dynamics Observatory (SDO/AIA)", Solar Physics, Nov. 
-   2011.
-
-.. [DelZanna2013] G. Del Zanna, "The multi-thermal emission in solar active 
-   regions", Astronomy & Astrophysics, vol. 558, p. A73, Oct. 2013.
-
-.. [Plowman2012] J. Plowman, C. Kankelborg, and P. Martens, "Fast Differential 
-   Emission Measure Inversion of Solar Coronal Data", arXiv preprint 
-   arXiv: . . . , 2012.
 
 .. [Guennou2012a] C. Guennou, F. Auchère, E. Soubrié, K. Bocchialini, 
    S. Parenti, and N. Barbey, "On the Accuracy of the Differential Emission 
@@ -838,37 +856,23 @@ References
    Multithermal Plasmas", The Astrophysical Journal Supplement Series, vol. 203, 
    p. 26, Dec. 2012.
 
-.. [Mumford2013] S. Mumford, D. Pérez-suárez, S. Christe, F. Mayer, and 
-   R. J. Hewett, "SunPy : Python for Solar Physicists", no. Scipy, pp. 74.77, 
-   2013.
-
-.. [Morgan2014] H. Morgan and M. Druckmüller, "Multi-Scale Gaussian 
-   Normalization for Solar Image Processing", Solar Physics, vol. 289, pp. 
-   2945-2955, Apr. 2014.
-
 .. [Mackovjak2014] S. Mackovjak, E. Dzifcáková, and J. Dudík, "Differential 
    emission measure analysis of active region cores and quiet Sun for the 
    non-Maxwellian :math:`\kappa`-distributions", Astronomy & Astrophysics, vol. 
    564, p. A130, Apr. 2014.
 
-.. [Awasthi2014] A. K. Awasthi, R. Jain, P. D. Gadhiya, M. J. Aschwanden, 
-   W. Uddin, A. K. Srivastava, R. Chandra, N. Gopalswamy, N. V. Nitta, 
-   S. Yashiro, P. K. Manoharan, D. P. Choudhary, N. C. Joshi, V. C. Dwivedi, 
-   and K. Mahalakshmi, "Multiwavelength diagnostics of the precursor and main 
-   phases of an M1.8 flare on 2011 April 22", Monthly Notices of the Royal 
-   Astronomical Society, vol. 437, pp. 2249-2262, Nov. 2014.
+.. [Judge2010] P. G. Judge, "Coronal Emission Lines As Thermometers", The 
+   Astrophysical Journal, vol. 708, pp. 1238-1240, Jan. 2010.
+
+.. [DelZanna2013] G. Del Zanna, "The multi-thermal emission in solar active 
+   regions", Astronomy & Astrophysics, vol. 558, p. A73, Oct. 2013.
 
 .. [Kramar2014] M. Kramar, V. Airapetian, Z. Mikic, and J. Davila, "3D Coronal 
    Density Reconstruction and Retrieving the Magnetic Field Structure during 
    Solar Minimum", Solar Physics, pp. 1-22, 2014.
 
-.. [Judge1997] P. G. Judge, V. Hubeny, and J. C. Brown, "Fundamental 
-   Limitations of Emission-Line Spectra as Diagnostics of Plasma Temperature 
-   and Density Structure", The Astrophysical Journal, vol. 475, pp. 275-290, 
-   Jan. 1997.
-
-.. [Wit2012]
-
-.. [Hannah2012]
+.. [Mumford2013] S. Mumford, D. Pérez-suárez, S. Christe, F. Mayer, and 
+   R. J. Hewett, "SunPy : Python for Solar Physicists", no. Scipy, pp. 74.77, 
+   2013.
 
 .. _www.sunpy.org: http://www.sunpy.org/
