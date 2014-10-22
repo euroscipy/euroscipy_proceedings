@@ -68,7 +68,7 @@ The probe spatial calibration is an essential procedure for image reconstruction
 
 | 
 
-:math:`\begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} =\ ^{C}T_{T}\ ^{T}T_{R}\ ^{R}T_{P} \begin{pmatrix} s_{x}u \\ s_{y}v \\ 0 \\ 1 \end{pmatrix}`
+:math:`\begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} =\ ^{C}T_{T}\ ^{T}T_{R}\ ^{R}T_{P} \begin{pmatrix} s_{x}u \\ s_{y}v \\ 0 \\ 1 \end{pmatrix}`,
 
 | 
  
@@ -88,26 +88,26 @@ This is the code snippet for the equation creation:
     from sympy import Matrix, Symbol, var
     from sympy import cos as c, sin as s
 
-    # Pi
+    # Pp
     sx = Symbol('sx')
     sy = Symbol('sy')
     u = Symbol('u')
     v = Symbol('v')
-    Pi = Matrix(([sx * u],\
+    Pp = Matrix(([sx * u],\
                  [sy * v],\
                  [0],\
                  [1]\
     ))
     
-    # prTi
-    prTi, syms = creatCalibMatrix()
+    # rTp
+    rTp, syms = creatCalibMatrix()
     [x1, y1, z1, alpha1, beta1, gamma1] = syms
     
-    # wTpr
-    wTpr = MatrixOfMatrixSymbol('wTpr', 4, 4)
-    wTpr[3, 0:4] = np.array([0,0,0,1])
+    # tTr
+    tTr = MatrixOfMatrixSymbol('tTr', 4, 4)
+    tTr[3, 0:4] = np.array([0,0,0,1])
     
-    # phTw
+    # cTt
     x2 = Symbol('x2')
     y2 = Symbol('y2')
     z2 = Symbol('z2')
@@ -115,20 +115,20 @@ This is the code snippet for the equation creation:
     beta2 = Symbol('beta2')
     gamma2 = Symbol('gamma2')
     
-    phTw = Matrix(([c(alpha2)*c(beta2), ...
+    cTt = Matrix(([c(alpha2)*c(beta2), ...
                    [s(alpha2)*c(beta2), ...
                    [-s(beta2), c(beta2)*s(gamma2), ...
                    [0, 0, 0, 1]\
     )) # see [Prager98] for full expressions
     
     # Calculate full equations
-    Pph = phTw * wTpr * prTi * Pi
-    Pph = Pph[0:3,:]
+    Pc = cTt * tTr * rTp * Pp
+    Pc = Pc[0:3,:]
     
     # Calculate full Jacobians 
     x = Matrix([sx, sy, x1, y1, z1, alpha1, beta1,
     gamma1, x2, y2, z2, alpha2, beta2, gamma2])
-    J = Pph.jacobian(x)
+    J = Pc.jacobian(x)
 
 
 The equations system was solved by using the function ``scipy.optimize.root`` with ``method='lm'``.
