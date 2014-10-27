@@ -160,8 +160,8 @@ response function :math:`K_{i}` of the instrument:
 
 The temperature response combines the wavelength response of the instrument and
 the contribution function, which describes the emission of the plasma at a 
-given temperature based on atomic physics models. Unfortuately, equation 
-:ref:`pixelval` is an ill-posed problem and as such there exists no unique 
+given temperature based on atomic physics models. Unfortuately,
+(:ref:`pixelval`) is an ill-posed problem and as such there exists no unique
 solution without imposing physical contraints [Judge1997]_. Multiple schemes
 have been designed to invert this equation and infer the DEM by applying
 various physical assumptions. However, these assumptions are sometimes
@@ -231,7 +231,7 @@ DEM-finding procedure
 
 The general method for estimating the DEM is an iterative procedure which
 systematically tests a range of possible DEMs. Each DEM is substituted into
-equation :ref:`pixelval` to produce a synthetic pixel value for each AIA
+(:ref:`pixelval`) to produce a synthetic pixel value for each AIA
 wavelength channel (:math:`i`). This expected outcome is then compared to the
 actual values measured for all pixel positions (:math:`x`) in each wavelength,
 giving a goodness-of-fit value for each pixel for a given DEM (equation
