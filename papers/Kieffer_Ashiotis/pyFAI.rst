@@ -224,7 +224,7 @@ nor that of the pixels :math:`\sum{ unweighted\ histogram } = number\ of\  pixel
 
 .. figure:: integrate2d.png
 
-   Bi-dimensional azimuthal integration of the gold diffraction image using (right) or not (left) pixel splitting :label:`bidimentional`
+   Bi-dimensional azimuthal integration of the gold diffraction image using (bottom) or not (top) pixel splitting :label:`bidimentional`
 
 Bounding Box
 ------------
@@ -497,7 +497,7 @@ If one focuses only on the timing of the integration kernel, then he would wrong
 For example, the 2 ms of processing time for a 1 Mpixel image of 32 bit integers, correspond to a processing rate of 2 GB/s, while our fastest storage solutions (solid-state drives)
 are currently only able to provide half of that.
 
-.. table:: OpenCl profiling of the integration of a Pilatus 1M image (981x1043 pixels of signed 32 bits integers) on a GeForce Titan, running on a dual Xeon 5520. :label:`profile`
+.. table:: OpenCL  profiling of the integration of a Pilatus 1M image (981x1043 pixels of signed 32 bits integers) on a GeForce Titan, running on a dual Xeon 5520. :label:`profile`
 
          +-----------------+---------+
          |   Python  total | 2.030ms |
