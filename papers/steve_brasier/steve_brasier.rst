@@ -16,9 +16,9 @@ A Python-based Post-processing Toolset For Seismic Analyses
     toolset to aid in assessing the response of the UK's Advanced Gas
     Reactor nuclear power stations to earthquakes. The seismic analyses
     themselves are carried out with a commercial Finite Element solver, but
-    understanding the raw data this produces requires customised post-processing
-    and visualisation tools. Extending the existing tools had become
-    increasingly difficult and a decision was made to develop a new,
+    understanding the raw model ouput this produces requires customised
+    post-processing and visualisation tools. Extending the existing tools had
+    become increasingly difficult and a decision was made to develop a new,
     Python-based toolset. This comprises of a post-processing framework
     (``aftershock``) which includes an embedded Python interpreter, and a
     plotting package (``afterplot``) based on ``numpy`` and ``matplotlib``.
@@ -41,19 +41,19 @@ Nuclear power in the UK is provided by a fleet of Advanced Gas-cooled Reactors (
 
 The response of the graphite core to an earthquake is extremely complex and a series of computer models have been developed to simulate the behaviour. These models are regularly upgraded and extended as the cores change over their lives to ensure that the relevant behaviours are included. The models are analysed using the commercial Finite Element Analysis code LS-DYNA. This provides predicted positions and velocities for the thousands of graphite bricks in the core during the simulated earthquake.
 
-By itself this raw data is not particularly informative, and a complex set of post-processing calculations is required to help engineers to assess aspects such as:
+By itself this raw model output is not particularly informative, and a complex set of post-processing calculations is required to help engineers to assess aspects such as:
 
 - Can the control rods still enter the core?
 - Is the integrity of the fuel maintained?
 
-This post-processing converts the raw position and velocity data into parameters describing the seismic performance of the core, assesses these parameters against acceptable limits, and presents the results in tabular or graphical form.
+This post-processing converts the raw position and velocity data produced by the model into parameters describing the seismic performance of the core, assesses these parameters against acceptable limits, and presents the results in tabular or graphical form.
 
 This paper describes a recent complete re-write of this post-processing toolset. It seeks to explore some of the software and architectural decisions made and examine the impact of these decisions on the engineering users.
 
 Background
 ----------
 
-The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The existing post-processing tool was based on Microsoft Excel, using VBA to decode the binary data and carry out the required calculations and Excel's graphing capabilities to plot the results. The original design of the VBA code was not particularly modular and its complexity had grown significantly as additional post-processing calculations were included and to accommodate developments in the models themselves. In short, there was significant "technical debt" [Cun92]_ in the code which made it difficult to determine whether new functionality would adversely impact the existing calculations.
+The LS-DYNA solver produces about 120GB of binary-format data for each simulation, split across multiple files. The existing post-processing tool was based on Microsoft Excel, using code written in Visual Basic for Applications (VBA) to decode the binary data and carry out the required calculations and Excel's graphing capabilities to plot the results. The original design of the VBA code was not particularly modular and its complexity had grown significantly as additional post-processing calculations were included and to accommodate developments in the models themselves. In short, there was significant "technical debt" [Cun92]_ in the code which made it difficult to determine whether new functionality would adversely impact the existing calculations.
 
 The start of a new analysis campaign forced a reappraisal of the existing approach as these issues meant there was low confidence that the new post-processing features required could be developed in the time or budget available. The following requirements were identified as strongly desirable in any new post-processing tool:
 
@@ -129,7 +129,7 @@ A key advantage of providing a custom plotting package is that best-practice can
 
 The plotter classes can also allow *alteration of presentation*, e.g. axis limits, while preventing *modification of data*. Alteration of presentation is provided for by instance methods or GUI controls defined by the plotter classes. Modification of data is prevented simply by the lack of any interface to do this once the relevant array has been passed to the plot instance. This immutability is not intended as a security feature but simplifies quality assurance by limiting where errors can be introduced when altering presentation.
 
-A further quality assurance feature is the capture of traceability data. When a new plot is generated, the ``BasePlot`` class traverses the stack frames using the ``inspect`` module to gather information about the paths and versions of calculation scripts and other Python modules used. This data is attached to the plots to assist in reproducing published plots or debugging issues. The use of introspection to capture this data means that this feature does not require any action by the script author.
+A further quality assurance feature is the capture of traceability data. When a new plot is generated, the ``BasePlot`` class traverses the stack frames using the standard library's ``inspect`` module to gather information about the paths and versions of calculation scripts and other Python modules used. This data is attached to the plots to assist in reproducing published plots or debugging issues. The use of introspection to capture this data means that this feature does not require any action by the script author.
 
 Interactive GUI
 ---------------
@@ -158,7 +158,7 @@ An alternative approach is used by ``afterplot`` which is simpler than the secon
 
 Store and Restore
 -----------------
-Functionality to save plots to disk as images is provided by ``matplotlib`` via ``Figure.savefig()`` which can generate a variety of formats. However once a ``matplotlib`` ``Figure`` object has been closed there there is no way to regenerate it for interactive use, except for re-running the script which created it. Despite the improved performance provided by ``aftershock`` this is clearly time-consuming when only minor presentation changes are required such as altering the limits on an axis. A means to enable an entire plotter instance , including its GUI, to be stored to disk and later restored to a new fully interactive GUI was therefore strongly desirable. While ``Figure`` objects were not pickleable at the time (this has been added in the latest version of ``matplotlib``), following the same approach that the ``pickle`` module uses internally to handle class instances enabled this to be achieved relatively simply.
+Functionality to save plots to disk as images is provided by ``matplotlib`` via ``Figure.savefig()`` which can generate a variety of formats. However once a ``matplotlib`` ``Figure`` object has been closed there there is no way to regenerate it for interactive use, except for re-running the script which created it. Despite the improved performance provided by ``aftershock`` this is clearly time-consuming when only minor presentation changes are required such as altering the limits on an axis. A means to enable an entire plotter instance, including its GUI, to be stored to disk and later restored to a new fully interactive GUI was therefore strongly desirable. While ``Figure`` objects were not pickleable at the time (this has been added in the latest version of ``matplotlib``), following the same approach that the ``pickle`` module uses internally to handle class instances enabled this to be achieved relatively simply.
 
 
 **Storing:**
@@ -197,7 +197,7 @@ Simplified restoring code, taking a path to a stored file and regenerating the p
         restored_plotter = t_plt(*args, **kwargs)
         restored_plotter.show()
 
-The benefits of this approach are that neither the storing nor restoring code needs to know anything about the actual plot class (except that it has a ``show()`` method), hence any plotter derived from ``BasePlot`` inherits this functionality. The only interface which storing and restoring needs to address is the plotter class parameter list. This is simple and quite robust to changes in the plotter class definition as code can always be added to handle any depreciated parameters, meaning that it should essentially always be possible to make stored plots forward-compatible with later versions of ``afterplot``. Additionally, if a plot is restored with a later version of ``afterplot`` any enhanced GUI functionality will automatically be available. For convenience a simple ``cmd`` script and short Python function also allow stored plots to be restored on user's local Windows PCs and the GUI displayed by simply double-clicking the file. Alternatively a simple script can be written to batch process presentational changes such as colour bars or line thicknesses for a series of plots. Such as script uses a provided ``restore()`` function to restore the desired plots without showing the GUI, then uses the methods the plotter classes provide to alter desired presentation aspects.
+The benefits of this approach are that neither the storing nor restoring code needs to know anything about the actual plot class (except that it has a ``show()`` method), hence any plotter derived from ``BasePlot`` inherits this functionality. The only interface which storing and restoring needs to address is the plotter class parameter list. This is simple and quite robust to changes in the plotter class definition as code can always be added to handle any depreciated parameters, meaning that it should essentially always be possible to make stored plots forward-compatible with later versions of ``afterplot``. Additionally, if a plot is restored with a later version of ``afterplot`` any enhanced GUI functionality will automatically be available. For convenience a simple ``cmd`` script and short Python function also allow stored plots to be restored on user's local Windows PCs and the GUI displayed by simply double-clicking the file. Alternatively a simple script can be written to batch process presentational changes such as colour bars or line thicknesses for a series of plots. Such a script uses a provided ``restore()`` function to restore the desired plots without showing the GUI, then uses the methods the plotter classes provide to alter desired presentation aspects.
 
 One complication omitted from the simplified code above is that ideally storing and restoring should be insensitive to whether parameters have been specified as positional or named arguments. Therefore the ``__new__()`` method of the ``BasePlot`` superclass uses ``inspect.getargspec()`` to convert all arguments to a dictionary of ``name:value``. Class instances are then actually stored/restored as if all parameters were provided as keyword arguments.
 
@@ -226,7 +226,7 @@ However there were a number of challenges, some of which were expected at the ou
 
 *Plotting functionality:* The success of the ``afterplot`` plotting module is less clear at present. It has provided the desired plotting flexibility, as demonstrated by the ``LayerPlot`` and ``WaterfallPlot`` plot types which could not be easily replicated using Excel's plotting facilities. The control of style it enforces also appears to be strongly desirable in terms of reducing the effort required to obtain publication-quality plots. However verification of the relatively complex GUI code has proved to be difficult. "Verification" in this sense does not refer to a formal proof of correctness, but to a level of independent checking consistent with that applied to the actual post-processing calculations. Part of the difficulty with this was due to the limited internal availability of developers familiar with the GUI toolset. Another aspect was the decision to provide a small number of relatively general-purpose plot classes. This made it necessary for the plot classes to accept data in different dimensions and with a variety of options, complicating the internal logic which often involves complex array striding and reshaping. It may have been simpler overall to provide a larger number of less flexible plotters with simpler interfaces and fewer internal code paths. Testing plotting code is not straightforward but ``matplotlib``'\s own test suite has provided some useful techniques to automatically check images produced by test cases against known-good results. 
 
-Overall, the decision to use the Python scientific software stack for this toolset has been strongly positive. It is anticipated that the planned successor to ``matplotlib``, ``blaze`` [Blaze]_, will provide sparse-array and other features which would permit the calculation scripts to be simpler and more efficient. Similarly, rationalisation of the ``matplotlib`` API is expected in future which simplify the creation of high-quality plots from Python.
+Overall, the decision to use the Python scientific software stack for this toolset has been strongly positive. It is anticipated that the planned successor to ``matplotlib``, ``blaze`` [Blaze]_, will provide sparse-array and other features which would permit the calculation scripts to be simpler and more efficient. Similarly, rationalisation of the ``matplotlib`` API is expected in future which will simplify the creation of high-quality plots from Python.
 
 References
 ----------
