@@ -133,7 +133,9 @@
                 {"name": "Stéfan van der Walt",
                  "org": "Stellenbosch University"},
                 {"name": "Daniel Wheeler",
-                 "org": "National Institute of Standards and Technology"}
+                 "org": "National Institute of Standards and Technology"},
+		{"name": "Tiziano Zito",
+		 "org": "Humboldt-Universität zu Berlin"}
 		]
 	}
 
