@@ -402,7 +402,7 @@ and Lobatto (hierarchical) basis can be used on quadrilaterals, see Figure
 :ref:`fe-bases`.
 
 .. figure:: fe-bases.png
-   :scale: 30%
+   :scale: 40%
    :figclass: w
 
    Bi-quadratic basis functions on the reference quadrilateral: left: Lagrange
@@ -465,7 +465,7 @@ uniquely determined by the knot vector for each axis, and cover the whole
 patch, see Figure :ref:`ig-base`.
 
 .. figure:: ig-base.png
-   :scale: 12%
+   :scale: 24%
    :figclass: w
 
    The degree 2 NURBS basis functions on the single patch
