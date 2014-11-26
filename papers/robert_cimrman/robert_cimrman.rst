@@ -405,7 +405,7 @@ and Lobatto (hierarchical) basis can be used on quadrilaterals, see Figure
    :scale: 30%
    :figclass: w
 
-   Bi-quadratic basis functions on the reference quadrilateral: left: Langrange
+   Bi-quadratic basis functions on the reference quadrilateral: left: Lagrange
    right: Lobatto. :label:`fe-bases`
 
 IGA
