@@ -115,7 +115,7 @@ Further plotting options are shown in Fig. :ref:`fig2plots` C and D.
    
    Typical workflow for data analysis using pyFRET. :label:`fig1workflow`
 
-.. figure:: 6bp_example.pdf
+.. figure:: 6bp_example_sml.pdf
     :align: center
 
     Figures made using pyFRET. A) A Proximity Ratio histogram. B) A scatter-plot of FRET efficiency and fluorophore stoichiometry from ALEX data. C) A heatmap of event frequencies.  D) A 3D plot of event frequencies. :label:`fig2plots`
