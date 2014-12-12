@@ -251,6 +251,13 @@ Figure :ref:`JitterCancellationIllustrated` illustrates jitter estimation and ca
 Spikes "peeling"
 ^^^^^^^^^^^^^^^^
 
+.. figure:: Fig7.png
+   :align: center
+   :scale: 25%
+   :figclass: w
+
+   Illustration the "peeling" procedure. Left: raw data (black) and first prediction (red); middle: previous raw data minus previous prediction (black) and new prediction (red); right: what's left (no more waveforms corresponding to the catalogue's content). The small spike left on the right (clearly visible in the middle on the four sites) does not belong to any neuron of the catalogue because the events used to built the latter where detected as local maxima (and we would need to detect local minima to catch events like the one we see here) :label:`PeelingIllustrated`.
+
 We have almost reached the end of our journey. The clustering step gave us a catalogue of waveforms: the cluster centre, its first and second derivative for each of the :math:`K` neurons / clusters on each site. We now go back to the raw data and for each detected event we do:
 
 1. Compute the squared Euclidean norm of event (over the 4 cuts corresponding to the 4 electrodes) to get :math:`R^2`.
@@ -265,13 +272,6 @@ We have almost reached the end of our journey. The clustering step gave us a cat
 Once every detected event has been examined, we are left with a "new" version of the raw data from which the aligned "best" centre waveforms have been subtracted (only when doing so was reducing the sum of squares of the amplitudes over the cuts). For the event illustrated in Fig. :ref:`JitterCancellationIllustrated` we go from the black trace on the left column to the red trace on the right column. It is clear that for this "peeling procedure" to work we have to cancel the jitter otherwise we would be going from the black trace on the left column to the red trace *on the same column* (where what remains as a peak amplitude similar to what we started with!). 
 
 We then iterate the procedure, taking the "new" raw data as if they were original data, detecting events as on the raw data, etc. We do that until we do not find anymore events for which the proposed subtraction is accepted; that is until we are only left with unclassified events. The first two iterations of this procedure are illustrated on figure :ref:`PeelingIllustrated`. See how the superposed event in the middle of the trace (left column) is nicely resolved into its two components. 
-
-.. figure:: Fig7.png
-   :align: center
-   :scale: 25%
-   :figclass: w
-
-   Illustration the "peeling" procedure. Left: raw data (black) and first prediction (red); middle: previous raw data minus previous prediction (black) and new prediction (red); right: what's left (no more waveforms corresponding to the catalogue's content). The small spike left on the right (clearly visible in the middle on the four sites) does not belong to any neuron of the catalogue because the events used to built the latter where detected as local maxima (and we would need to detect local minima to catch events like the one we see here) :label:`PeelingIllustrated`.
 
 Conclusions
 -----------
