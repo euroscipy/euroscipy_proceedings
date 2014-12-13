@@ -305,7 +305,7 @@ where :math:`E_{il}^{(0)}` comes from solving eq. (:ref:`reduced`) with
 where the proportionality factor will depended on the corresponding quantum
 numbers of the operators appearing in :math:`V^{(1/m)}` and :math:`V^{(1/m^2)}`.
 
-.. figure:: fig-1.png
+.. figure:: fig-1.pdf
    :align: center
    :figclass: htb
    
@@ -392,7 +392,7 @@ the string spectrum. It is noteworthy to mention that all the numerical
 calculations and plots of that paper were done with IPython using the SciPy
 library.
 
-.. figure:: fig-2.png
+.. figure:: fig-2.pdf
    :align: center
    :figclass: htb
 
@@ -463,7 +463,7 @@ where
 
     F_i(r)=\ln(a_i+b_ir).
 
-.. figure:: fig-3.png
+.. figure:: fig-3.pdf
    :align: center
    :figclass: htb
 
@@ -481,7 +481,7 @@ performance and visualization tools.
 Application in Control Engineering
 ==================================
 
-.. figure:: fig-4.png
+.. figure:: ctrl_sch.pdf
 
     General scheme of a control system.
 
@@ -576,7 +576,7 @@ position, for example.
 
 Fig. 5 presents a minimum time control strategy for this system.
 
-.. figure:: fig-5.png
+.. figure:: u.pdf
    :figclass: htb
 
    Time optimal control for the double integrator considering
@@ -588,7 +588,7 @@ The form of :math:`\pi(x)` for this case reveals its non-linear nature.
 Fig. 6 presents the trajectory developed by the state using this control
 strategy and random initial conditions.
 
-.. figure:: fig-6.png
+.. figure:: x.pdf
    :figclass: htb
 
    Time optimal trajectories for the double integrator, with random initial
