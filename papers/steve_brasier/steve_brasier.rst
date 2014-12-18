@@ -98,8 +98,8 @@ At present ``afterplot`` provides only four types of plotter, although these are
 #. ``WaterfallPlot`` (Figure :ref:`WfallPlot`): This provides an overview of the distribution of the plotted parameter at each time-step during a simulation.
 
 .. figure:: reld_Y_value_rr_1(2).png
-   :scale: 40%
-   :figclass: bht
+   :scale: 60%
+   :figclass: w
 
    Example LayerPlot output :label:`LayerPlot`
 
@@ -110,14 +110,14 @@ At present ``afterplot`` provides only four types of plotter, although these are
    Example ChannelPlot with GUI :label:`ChannelPlot`
 
 .. figure:: tplot-nogui-1.png
-   :scale: 30%
-   :figclass: bht
+   :scale: 50%
+   :figclass: w
 
    Example TimePlot output :label:`TimePlot`
 
 .. figure:: wfall-nogui-3.png
-   :scale: 40%
-   :figclass: bht
+   :scale: 60%
+   :figclass: w
 
    Example WaterfallPlot output :label:`WfallPlot`
 
