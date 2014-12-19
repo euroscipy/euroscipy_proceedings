@@ -97,7 +97,7 @@ At present ``afterplot`` provides only four types of plotter, although these are
 #. ``TimePlot`` (Figure :ref:`TimePlot`): This is a conventional X-Y plot, representing time-histories as individual series with time on the X-axis.
 #. ``WaterfallPlot`` (Figure :ref:`WfallPlot`): This provides an overview of the distribution of the plotted parameter at each time-step during a simulation.
 
-.. figure:: reld_Y_value_rr_1(2).png
+.. figure:: reld_Y_value_rr_1_2.png
    :scale: 60%
    :figclass: w
 
