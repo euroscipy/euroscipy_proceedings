@@ -218,7 +218,7 @@ functions was normalised to the 17.1nm response by dividing the value at each
 temperature by the corresponding value for 17.1nm. The response functions used
 in this method (before normalisation) are shown in Figure :ref:`response-plot`.
 
-.. figure:: responses.png
+.. figure:: responses.pdf
     :align: center
 
     Temperature response of each of the Fe channels on AIA. Here the empirical
@@ -436,7 +436,7 @@ dependence at all on the model peak temperature, and returns log(T)
 still quite low (:math:`<` 0.01) for all model DEMs despite the significant 
 failure of the method for these conditions.
 
-.. figure:: tempsolutions.png
+.. figure:: tempsolutions.pdf
     :align: center
     :figclass: w
     :scale: 35%
@@ -452,19 +452,19 @@ failure of the method for these conditions.
     :ref:`solution-slice`, :ref:`diff-slice` and :ref:`fit-slice`, respectively. 
     :label:`model-wid001`
 
-.. figure:: dataslice.png
+.. figure:: dataslice.pdf
     :align: center
 
     Plot of the solution temperature produced for a given input DEM peak 
     temperature and a DEM width of 0.1. :label:`solution-slice`
 
-.. figure:: diffslice.png
+.. figure:: diffslice.pdf
     :align: center
 
     Plot of the percentage difference between input and solution temperatures
     for a DEM width of 0.1. :label:`diff-slice`
 
-.. figure:: fitslice.png
+.. figure:: fitslice.pdf
     :align: center
 
     Plot of the goodness-of-fit values produced for a given input DEM peak 
@@ -490,7 +490,7 @@ proposed method. Also note that Figure :ref:`mytemps` was calculated using
 full-resolution AIA data, whereas Aschwanden's method rebins the original data
 into 4x4 macropixels (i.e. 1024x1024 images).
 
-.. figure:: fulldisk.png
+.. figure:: fulldisk.pdf
     :align: center
 
     Temperature map for the full-disk corona on 2011-02-15 00:00, calculated
@@ -541,19 +541,19 @@ are more strongly concentrated in one location. Temperatures of around log(T)
 which are more evenly distributed than the hotter regions. Temperatures below 
 this are more uniform and have no clearly visible structure.
 
-.. figure:: qs_2011-01-28T0000.png
+.. figure:: qs_2011-01-28T0000.pdf
     :align: center
 
     :label:`qs20110128`
     Temperature map for quiet sun region on 2011-01-28 00:00. 
 
-.. figure:: qs_2011-02-08T0000.png
+.. figure:: qs_2011-02-08T0000.pdf
     :align: center
 
     :label:`qs20110208`
     Temperature map for quiet sun region on 2011-02-08 00:00.
 
-.. figure:: qs_2011-02-21T0000.png
+.. figure:: qs_2011-02-21T0000.pdf
     :align: center
 
     :label:`qs20110221`
@@ -609,7 +609,7 @@ coronal hole 3 in Figure :ref:`limbtemps`. In both cases, the temperature is
 log(T) :math:`\approx` 6.0 at the limb and rises to log(T) :math:`\approx` 6.05
 at the edge of the mapped region.
 
-.. figure:: ch_2011-02-01T0000a_cropped.png
+.. figure:: ch_2011-02-01T0000a_cropped.pdf
     :align: center
 
     Temperature map of the northern coronal hole at 2011-02-01 00:00 (coronal 
@@ -619,7 +619,7 @@ at the edge of the mapped region.
     coronal hole, as well as a large quiet sun region and several smaller ones.
     :label:`ch20110201a`
 
-.. figure:: ch_2011-02-01T0000b_cropped.png
+.. figure:: ch_2011-02-01T0000b_cropped.pdf
     :align: center
 
     Temperature map of the southern coronal hole at 2011-02-01 00:00 (coronal 
@@ -629,14 +629,14 @@ at the edge of the mapped region.
     small quiet sun like regions similar to those seen in coronal hole 1.
     :label:`ch20110201b`
 
-.. figure:: ch_2011-02-14T0000_cropped.png
+.. figure:: ch_2011-02-14T0000_cropped.pdf
     :align: center
 
     Temperature map of a coronal hole at 2011-02-14 00:00 (coronal hole 3). 
     Again, this coronal hole contains significant speckling and several small 
     quiet sun like regions. :label:`ch20110214`
 
-.. figure:: limb_temps_20110214.png
+.. figure:: limb_temps_20110214.pdf
     :align: center
 
     Plot of temperatures along the vertical line show in Figure
@@ -684,7 +684,7 @@ surrounding the active regions (log(T) :math:`\approx` 6.1 - 6.2), and Figure
 :ref:`ar20110201` shows a filament found to have a fairly uniform temperature
 of log(T) :math:`\approx` 6.3.
 
-.. figure:: ar_2011-01-22T0000.png
+.. figure:: ar_2011-01-22T0000.pdf
     :align: center
 
     Temperature map of active region AR11147 and AR11149 at 2011-01-22 00:00. 
@@ -694,7 +694,7 @@ of log(T) :math:`\approx` 6.3.
     sun-like plasma is also visible around the active region in shades of light
     blue. :label:`ar20110122`
 
-.. figure:: ar_2011-02-01T0000.png
+.. figure:: ar_2011-02-01T0000.pdf
     :align: center
 
     Temperature map of active region AR11147 at 2011-02-01 00:00. The circle
@@ -703,7 +703,7 @@ of log(T) :math:`\approx` 6.3.
     cool quiet sun plasma surrounds the region. Also seen is a filament with a 
     roughly uniform temperature of log(T) ~6.3. :label:`ar20110201`
 
-.. figure:: ar_2011-02-19T0000.png
+.. figure:: ar_2011-02-19T0000.pdf
     :align: center
 
     Temperature map of active region AR11161 and AR 11162 at 2011-02-19 00:00. 
