@@ -22,12 +22,12 @@ introductory and an advanced track. The introductory track, presented by Mark
 Dickinson, David Cournapeau, Ralf Gommers and Phil Elson, gave a quick but
 thorough overview of the SciPy stack. In the mean time, experienced users
 discovered the new features of IPython 2.0 (by Cyrille Rossant) and
-scikit-image (by Stéfan van der Walt), learnt advanced profiling features
+scikit-image (by Stéfan van der Walt), learned advanced profiling features
 (Yury Zaystev), and deepened their knowledge of machine learning and
 performance computing, with a four hour tutorial on scikit-learn and pandas
-(Gael Varoquaux and Olivier Grisel), Luigi, a tool that enables spotify to
-process huge amounts of data, and a high performance computing tutorial (Ian
-Oswald).
+(Gael Varoquaux and Olivier Grisel), followed by a tutorial on Luigi, a tool
+that enables spotify to process huge amounts of data, and finally a high
+performance computing tutorial (Ian Oswald).
 
 The main track consisted of keynote talks, contributed talks, the very famous
 lightning talks, and last but not least the poster sessions. The first keynote
@@ -63,7 +63,8 @@ As EuroScipy grows bigger, the need for hard work and dedication from
 volunteers grows as well. This year, Enthought provided significant
 administrative, financial and organizational support to the conference.
 We thank our sponsors, Enthought, AHL, Python Academy, Github, Nag and our
-partners logilab, g-node, o'reilly, and python verband.
+partners logilab, g-node, o'reilly, and python verband, and most of all, the
+university of Cambridge, that welcomed us for this 7th edition.
 
 These proceedings are the result of many hours of work by
 authors and reviewers alike. We thank them for their significant
