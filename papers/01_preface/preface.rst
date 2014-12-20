@@ -29,13 +29,15 @@ performance computing, with a four hour tutorial on scikit-learn and pandas
 that enables spotify to process huge amounts of data, and finally a high
 performance computing tutorial (Ian Oswald).
 
-The main track consisted of keynote talks, contributed talks, the very famous
-lightning talks, and last but not least the poster sessions. The first keynote
-was given by Steven Johnson, on "Crossing barriers with Julia, Scipy and
-Ipython". The second keynote was delivered by Ben Nutall, on the use of Python
-in Science Education. Talks and posters presented new tools and research in
-various scientific fields (physics, bioinformatics, machine learning, applied
-mathematics. etc).
+After four long years as Program chair, Tiziano Zito stepped down this year
+and passed on the torch to Ralf Gommers to design and organized the main
+track. The main track consisted of keynote talks, contributed talks, the very
+famous lightning talks, and last but not least the poster sessions. The first
+keynote was given by Steven Johnson, on "Crossing barriers with Julia, Scipy
+and Ipython". The second keynote was delivered by Ben Nutall, on the use of
+Python in Science Education. Talks and posters presented new tools and
+research in various scientific fields (physics, bioinformatics, machine
+learning, applied mathematics. etc).
 
 The conference closed with code sprints around many scientific tools. It led
 to improvement in projects such as scipy, scikit-learn and scikit-image.
