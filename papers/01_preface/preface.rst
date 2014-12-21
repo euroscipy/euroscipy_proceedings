@@ -30,7 +30,7 @@ spotify to process huge amounts of data, and finally a high performance
 computing tutorial (Ian Ozsvald).
 
 After four long years as Program chair, Tiziano Zito stepped down this year
-and passed on the torch to Ralf Gommers to design and organized the main
+and passed on the torch to Ralf Gommers to design and organize the main
 track. The main track consisted of keynote talks, contributed talks, the very
 famous lightning talks, and last but not least the poster sessions. The first
 keynote was given by Steven G. Johnson, on *Crossing barriers with Julia, Scipy
