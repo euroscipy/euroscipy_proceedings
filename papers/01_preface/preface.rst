@@ -78,6 +78,8 @@ all the University of Cambridge that hosted this 7th edition.
 These proceedings are the result of many hours of work by
 authors and reviewers alike. We thank them for their significant
 investment in these manuscripts.
+Acknowledgments also go to [arXiv]_ for hosting the proceedings and for
+providing an open platform for scientific publishing.
 
 References
 ----------
