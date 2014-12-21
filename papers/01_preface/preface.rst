@@ -59,6 +59,11 @@ http://github.com/euroscipy/euroscipy_proceedings.git
 Similarly to the proceedings of EuroSciPy 2013 [EuroSciPy2013]_, this edition is
 published on the [arXiv]_ preprint server under the Creative Commons Attribution
 License [CCBY]_.
+This means that they are published without financial impact on the conference
+and in the open spirit that is encouraged within the Python community, as they
+will be available without restriction.
+Citation to any of the contributions, or to this table of content, should
+include the arXiv identifier [arXivID]_.
 
 Acknowledgments
 ---------------
@@ -80,3 +85,5 @@ References
 .. [EuroSciPy2013] http://arxiv.org/abs/1405.0166
 .. [arXiv] arXiv.org e-Print archive http://arxiv.org/
 .. [CCBY] http://creativecommons.org/licenses/by/3.0/ 
+.. [arXivID] Understanding the arXiv identifier
+             http://arxiv.org/help/arxiv_identifier
