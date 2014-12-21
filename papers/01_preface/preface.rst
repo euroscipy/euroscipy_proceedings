@@ -33,7 +33,7 @@ After four long years as Program chair, Tiziano Zito stepped down this year
 and passed on the torch to Ralf Gommers to design and organize the main
 track. The main track consisted of keynote talks, contributed talks, the very
 famous lightning talks, and last but not least the poster sessions. The first
-keynote was given by Steven G. Johnson, on *Crossing barriers with Julia, Scipy
+keynote was given by Steven G. Johnson, on *Crossing barriers with Julia, SciPy
 and Ipython*. The second keynote was delivered by Ben Nuttall, on the use of
 Python in Science Education. Talks and posters presented new tools and
 research in various scientific fields (physics, bioinformatics, machine
@@ -41,7 +41,7 @@ learning, applied mathematics, etc.).
 
 The conference closed with coding sprints where participants could contribute to
 scientific tools, including the general interest package SciPy but also
-specialized such as scikit-learn and scikit-image.
+specialized projects such as scikit-learn and scikit-image.
 
 The proceedings
 ----------------
@@ -51,7 +51,7 @@ year, we focused on improving the reviewing pipeline both in terms of
 efficiency and quality. A total of 12 papers were submitted, covering a large
 number of fields: Bioinformatics, Neuroscience, Geology, Astrophysics, etc.
 Each paper was reviewed by at least two members of the proceeding committee
-openly on Github. The committee consisted of members from several countries,
+openly on GitHub. The committee consisted of members from several countries,
 both from industry and academia. The reviews and papers, as well as the tool
 used to produce this document are publicly available on
 http://github.com/euroscipy/euroscipy_proceedings.git
