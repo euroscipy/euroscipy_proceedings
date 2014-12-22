@@ -34,8 +34,8 @@ and passed on the torch to Ralf Gommers to design and organize the main
 track. The main track consisted of keynote talks, contributed talks, the very
 famous lightning talks, and last but not least the poster sessions. The first
 keynote was given by Steven G. Johnson, on *Crossing barriers with Julia, SciPy
-and Ipython*. The second keynote was delivered by Ben Nuttall, on the use of
-Python in Science Education. Talks and posters presented new tools and
+and Ipython*. The second keynote was delivered by Ben Nuttall, on
+*Python Programming in Science Education*. Talks and posters presented new tools and
 research in various scientific fields (physics, bioinformatics, machine
 learning, applied mathematics, etc.).
 
