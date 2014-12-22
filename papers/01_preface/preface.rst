@@ -41,7 +41,7 @@ learning, applied mathematics, etc.).
 
 For the first time at EuroSciPy, the local team succeeded in capturing the
 conference in video and in making the result available. It is on YouTube at the
-URL <https://www.youtube.com/playlist?list=PLYx7XA2nY5GfavGAILg08spnrR7QWLimi>.
+URL https://www.youtube.com/playlist?list=PLYx7XA2nY5GfavGAILg08spnrR7QWLimi.
 This will allow anyone who could not attend to benefit from the tutorials and
 from the updates on scientific achievements with Python.
 
