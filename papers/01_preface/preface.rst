@@ -39,6 +39,12 @@ and Ipython*. The second keynote was delivered by Ben Nuttall, on
 research in various scientific fields (physics, bioinformatics, machine
 learning, applied mathematics, etc.).
 
+For the first time at EuroSciPy, the local team succeeded in capturing the
+conference in video and in making the result available. It is on YouTube at the
+URL <https://www.youtube.com/playlist?list=PLYx7XA2nY5GfavGAILg08spnrR7QWLimi>.
+This will allow anyone who could not attend to benefit from the tutorials and
+from the updates on scientific achievements with Python.
+
 The conference closed with coding sprints where participants could contribute to
 scientific tools, including the general interest package SciPy but also
 specialized projects such as scikit-learn and scikit-image.
