@@ -17,7 +17,7 @@ The 7th edition of the European Conference on Python in Science, EuroSciPy was
 held from the 27th to the 30th of August 2014 in Cambridge, UK. The conference
 was attended by more than 200 participants, both from academia and industry.
 
-The conference kicked off with two days of tutorials, divided into a
+The conference kicked off with two days of tutorials, divided into an
 introductory and an advanced track. The introductory track, presented by Mark
 Dickinson, David Cournapeau, Ralf Gommers and Phil Elson, gave a quick but
 thorough overview of the SciPy stack. In the mean time, experienced users
