@@ -1,0 +1,76 @@
+From: {{sender['name'] | html}}
+Subject: [{{conference}}] EuroScipy Proceedings
+To: {{email | html}}
+Cc: {{cced | html}}
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Dear {{name}},
+
+For the third time, the EuroSciPy conference will publish proceedings. In
+relation to your contribution "{{ title }}" we are glad to invite your
+contribution to the conference proceedings. The submission deadline is
+September, 20th.
+
+The proceeding papers have to be submitted to
+https://github.com/euroscipy/euroscipy_proceedings where you will find
+complete instructions. Git-aware contributors can follow the summary:
+
+• Fork https://github.com/euroscipy/euroscipy_proceedings
+• Clone the fork: git clone
+git@github.com:GITHUBLOGIN/euroscipy_proceedings
+• Write your paper in papers/lastname.rst
+• Commit and push it: git add papers/lastname.rst  ; git commit -m "My
+paper" ;
+git push origin master
+• Create the pull request on github and wait for feedback. Please name the
+pull request as follow: "Paper: The title of my paper (Name of first author)"
+
+Contributors unfamiliar with git are advised to follow the tutorial at
+http://git-lectures.github.io/
+
+Paper format
+------------
+
+Papers are formatted using reStructuredText and the compiled version should be
+no longer than 7 pages, including figures. We do not support papers written in
+latex or in word format. An example paper is provided in papers/00_vanderwalt.
+
+1. Fork the euroscipy_proceedings repository on GitHub.
+2. An example paper is provided in papers/00_vanderwalt. Create a new
+   directory papers/firstname_surname, copy the example paper into it, and
+   modify to your liking.
+3. Run ./make_paper.sh papers/firstname_surname to compile your paper to PDF
+   (requires LaTeX, docutils, Python--see below). The output appears in
+   output/firstname_surname/paper.pdf.
+4. Once you are ready to submit your paper, file a pull request on GitHub. The
+   pull request title must include the paper title and the name of the first
+   author as follows: "Paper: The title of my paper (Name of first author)"
+5. Pull requests are to be submitted by September 20th, but modifications are
+   allowed during the review period.
+
+
+Please do not modify any files outside of your paper directory.
+
+General guidelines
+------------------
+
+1. Papers must be clearly and concisely written in English and within the
+   recommended length. In the interests of speed, manuscripts are not
+   extensively copyedited and authors are requested to check their texts
+   carefully for grammar and spelling mistakes.
+2. All figures and tables should have captions.
+3. License conditions on images and figures must be respected (Creative
+   Commons, etc.).
+4. Code snippets should be formatted to fit inside a single column without
+   overflow.
+5. Avoid custom LaTeX markup where possible.
+
+The proceedings will be published on the arxiv.org platform as a conference
+collection, for which the editors will provide a table of content listing the
+contributions in the collection. The 2013 proceedings followed the same method
+and can be seen at http://arxiv.org/html/1405.0166v1
+
+With best regards,
+
+{{editors}}
