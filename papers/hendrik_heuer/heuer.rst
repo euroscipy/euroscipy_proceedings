@@ -8,7 +8,7 @@ Text comparison using word vector representations and dimensionality reduction
 
 .. class:: abstract
 
-   This paper describes a technique to compare large text sources using word vector representations (word2vec) and dimensionality reduction (t-SNE) and how it can be implemented using Python. The technique provides a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map. The technique uses the word2vec model from the gensim Python library and t-SNE from scikit-learn. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other.
+   This paper describes a technique to compare large text sources using word vector representations (word2vec) and dimensionality reduction (t-SNE) and how it can be implemented using Python. The technique provides a bird’s-eye view of different text sources, including text summaries and their source material and enables users to explore a text source like a geographical map. The technique uses the word2vec model from the gensim Python library and t-SNE from scikit-learn. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other.
 
 .. class:: keywords
 
@@ -19,9 +19,9 @@ Introduction
 
 When summarizing a large text, only a subset of the available topics and stories can be taken into account. The decision which topics to cover is largely editorial. This paper introduces a tool that assists this editorial process using word vector representations and dimensionality reduction. It enables a user to visually identify agreement and disagreement between two text sources. 
 
-There are a variety of different ways to approach the problem of visualizing the topics present in a text. The simplest approach is to look at unique words and their occurrences and visuale the words in a list. Topics could also be visualized using word clouds, where the font size of a word is determined by the frequency of the word. Word clouds have a variety of shortcomings: They can only visualize a small subsets, they focus on the most frequent words and they do not take synonyms and semantically similar words into account.
+There is a variety of different ways to approach the problem of visualizing the topics present in a text. The simplest approach is to look at unique words and their occurrences and visualize the words in a list. Topics could also be visualized using word clouds, where the font size of a word is determined by the frequency of the word. Word clouds have a variety of shortcomings: They can only visualize small subsets, they focus on the most frequent words and they do not take synonyms and semantically similar words into account.
 
-This paper describes a human-computer interaction-inspired approach of comparing two text sources. The approach yields a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map.
+This paper describes a human-computer interaction-inspired approach of comparing two text sources. The approach yields a bird’s-eye view of different text sources, including text summaries and their source material and enables users to explore a text source like a geographical map.
 As similar words are close to each other, the user can visually identify clusters of topics that are present in the text. Conceptually, it can be understood as a "Fourier transformation for text".
 
 This paper describes a tool, which can be used to visualize the topics in a single text source as well as to compare different text sources. To compare the topics in source A and source B, three different sets of words can be computed: a set of unique words in source A, a set of unique words in source B as well as the intersection set of words both in source A and B. These three sets are then plotted at the same time. For this, a colour is assigned to each set of words. This enables the user to visually compare the different text sources and enables them to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
@@ -33,9 +33,9 @@ The Github repository of the tool includes an online demo [Heu15]. The tool can 
 Background
 ----------
 
-The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of Distributional Semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modelling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
+The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of Distributional Semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
 
-The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. There are a variety of computational models that implement the Distributional Hypothesis, including word2vec [Mik13], GloVe [Pen14], Dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. Word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau2015, Kul2015]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available on Github in an implementation by Joseph Turian [Tur15].
+The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. There is a variety of computational models that implement the Distributional Hypothesis, including word2vec [Mik13], GloVe [Pen14], Dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. Word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau2015, Kul2015]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available on Github in an implementation by Joseph Turian [Tur15].
 
 word2vec
 ~~~~~~~~
@@ -44,41 +44,41 @@ word2vec word vectors can capture many linguistic properties such as gender, ten
 
 word2vec was developed by Mikolov, Sutskever, Chen, Corrado and Dean at Google. The two model architectures were made available as an open-source toolkit written in C [Mik13]. The open-source word2vec C tool released by Google and the Python bindings available in gensim were used [Řeh10] as this opened the possibility to use the freely available word vectors that were trained on a Google data set with 100 billion words.
 
-word2vec captures domain similarity, while other more dependency-based approaches capture functional similarity. Word vectors encode semantic meaning and capture many different degrees of similarity [Lev14]. In this vector space, linear algebra can be used to exploit the encoded dimensions of similarity. Using this, a computer system can complete tasks like the Scholastic Assessment Test (SAT) analogy quizzes, that measure relational similarity. 
+word2vec captures domain similarity while other more dependency-based approaches capture functional similarity. Word vectors encode semantic meaning and capture many different degrees of similarity [Lev14]. In this vector space, linear algebra can be used to exploit the encoded dimensions of similarity. Using this, a computer system can complete tasks like the Scholastic Assessment Test (SAT) analogy quizzes, that measure relational similarity. 
 
 .. math::
 
-   king - man + women = **queen**
+   king - man + women = queen
 
 It works for the superlative:
 
 .. math::
 
-   fastest - fast + slow = **slowest**
+   fastest - fast + slow = slowest
 
 As well as the past participle}:
 
 .. math::
 
-   woken - wake + be = **been**
+   woken - wake + be = been
 
 It can infer the Finnish national sport from the German national sport.
 
 .. math::
 
-   football - Germany + Finland = **hockey**
+   football - Germany + Finland = hockey
 
 Based on the last name of the current Prime Minister of the United Kingdom, it identifies the last name of the German Bundeskanzlerin:
 
 .. math::
 
-   Cameron - England + Germany = **Merkel**
+   Cameron - England + Germany = Merkel
 
 The analogies can also be applied to the national dish of a country:
 
 .. math::
 
-   haggis - Scotland + Germany = **Currywurst**
+   haggis - Scotland + Germany = Currywurst
 
 Fig. 1 shows the clusters of semantically similar words and how they for visual units, which can be easily interpreted by humans.
 
@@ -96,7 +96,7 @@ t-SNE achieves this by minimizing the Kullback-Leibler divergence between the jo
 Implementation
 --------------
 
-The tool implements a workflow that consists of a Python tool for the backend and a HTML and Javascript frontend. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript frontend. With the Javascript frontend, the user can explore the word map and zoom in and out to investiged both the local and the global structure of the text source. The Javascript frontend can be published online.
+The tool implements a workflow that consists of a Python tool for the backend and an HTML and Javascript frontend. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript frontend. With the Javascript frontend, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript frontend can be published online.
 
 The workflow of the tool includes the following four steps: 
 
@@ -129,7 +129,7 @@ Dimensionality Reduction
 
 The resulting 300--dimensional word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn [Ped11].
 
-In the dimensionality reduction step, the 300 dimensional word vectors are projected down to a two--dimensional space, so that they can be easily visualized in a 2D coordinate sytem (see Fig. 2).
+In the dimensionality reduction step, the 300--dimensional word vectors are projected down to a two--dimensional space so that they can be easily visualized in a 2D coordinate system (see Fig. 2).
 
 .. figure:: tsne_dimensionality_reduction.png
 
@@ -169,7 +169,7 @@ When applied to Game of Thrones, it is e.g. easy to visually compare characters 
 
 .. figure:: topic_comparison_usa.png
 
-   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. On the bottom left, only words present in the 2013 revision and in the bottom right, only words present in the 2015 revision are show. :label:`egfig`
+   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. On the bottom left, only words present in the 2013 revision and in the bottom right, only words present in the 2015 revision are shown. :label:`egfig`
 
 Conclusion
 ----------
@@ -178,7 +178,7 @@ Word2vec word vector representations and t-SNE dimensionality reduction can be u
 
 The paper gives an overview of an ongoing investigation of the usefulness of word vector representations and dimensionality reduction in the text and topic comparison context. The major flaw of this paper is that the introduced text visualization and text comparison approach are not validated empirically.
 
-As many researchers publish their source code under open source licenses and as the Python community embraces these publication, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. 
+As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. 
 
 Both the frontend and the backend of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the frontend code to explore the JSON file as a geographical map.
 
