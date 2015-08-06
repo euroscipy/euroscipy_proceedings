@@ -96,7 +96,7 @@ t-SNE achieves this by minimizing the Kullback-Leibler divergence between the jo
 Implementation
 --------------
 
-The tool implements a workflow that consists of a Python tool for the backend and an HTML and Javascript frontend. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript frontend. With the Javascript frontend, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript frontend can be published online.
+The tool implements a workflow that consists of a Python tool for the back end and an HTML and Javascript front end. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript front end. With the Javascript front end, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript front end can be published online.
 
 The workflow of the tool includes the following four steps: 
 
@@ -180,7 +180,7 @@ The paper gives an overview of an ongoing investigation of the usefulness of wor
 
 As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. 
 
-Both the frontend and the backend of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the frontend code to explore the JSON file as a geographical map.
+Both the front end and the back end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front end code to explore the JSON file as a geographical map.
 
 References
 ----------
