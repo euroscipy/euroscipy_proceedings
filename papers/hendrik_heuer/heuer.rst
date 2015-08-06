@@ -8,30 +8,27 @@ Text comparison using word vector representations and dimensionality reduction
 
 .. class:: abstract
 
-   This paper describes a novel tool to compare texts using word vector representations (word2vec) and dimensionality reduction (t-SNE). This yields a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map.
-
-   The tool uses word2vec word representations from the gensim Python library and t-SNE from scikit-learn to visualize and compare the topics in book summaries and their source material. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other.
+   This paper describes a technique to compare large text sources using word vector representations (word2vec) and dimensionality reduction (t-SNE) and how it can be implemented using Python. The technique provides a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map. The technique uses the word2vec model from the gensim Python library and t-SNE from scikit-learn. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other.
 
 .. class:: keywords
 
-   text comparison, topic comparison, word2vec, t-sne, gensim, scikit-learn
-
+   Text Comparison, Topic Comparison, word2vec, t-SNE,
 
 Introduction
 ------------
 
+When summarizing a large text, only a subset of the available stories and examples can be taken into account. The decision which topics to cover is largely editorial. The Topic Comparison module assists this editorial process. It enables a user to visually identify agreement and disagreement between two text sources. 
+
+
 The main contribution of this poster is a novel way of doing text comparison using word vector representations (word2vec) and dimensionality reduction (t-SNE). This yields a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map.
 As similar words are close to each other, the user can visually identify clusters of topics that are present in the text. Conceptually, it can be understood as a "Fourier transformation for text"
-The tool uses word2vec word representations from the gensim Python library and t-SNE from scikit-learn to visualize.
 
 There are a variety of different ways to approach the problem of visualizing the topics in a text. The simplest way would be looking at unique words and their occurrences and visualizing them in a list. The topics could also be visualized using word clouds, where the font size of a word is determined by the frequency of the word. Word clouds have a variety of shortcomings: They can only visualize a small subsets, the focus on the most common words is not helpful for the task at hand and they do not take synonyms and semantically similar words into account.
 
-Therefore, the bird's-eye view approach was developed and favoured. Section 3.7 details why the word2vec implementation CITATION mikolov_efficient_2013]CITATION  mikolov _ word2vec ????] was used instead of Random Indexing CITATION sahlgren_introduction_2005] or the dependency-based word embeddings from Levy and Goldberg CITATION levy_dependency-based_2014.
 
 Example Use Case
 ~~~~~~~~~~~~~~~~
 
-When summarizing a large text, only a subset of the available stories and examples can be taken into account. The decision which topics to cover is largely editorial. The Topic Comparison module assists this editorial process. It enables a user to visually identify agreement and disagreement between two text sources. 
 
 To compare the topics, three different sets of words are computed: a source text topic set, a summary topic set, as well as the intersection set of both topic sets (see Figure 8). These three sets are then visualized similarly to the Topic module. A colour is assigned to each set of words. This enables the user to visually compare the different text sources and to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
 
@@ -40,7 +37,15 @@ To compare the topics, three different sets of words are computed: a source text
 Background
 ----------
 
-Word vectors capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "is capital city of", which we exploit using a combination of dimensionality reduction and data visualization.
+The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts \cite{sahlgren_introduction_2005}. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of Distributional Semantics is to find a representation, e.g. a vector, that approximates the meaning of a word (see Figure 2) \cite{bruni_multimodal_2014}. The traditional approach to statistical modelling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations \cite{lecun_deep_2015}. The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity \cite{sahlgren_introduction_2005}.
+
+
+There are a variety of computational models that implement the Distributional Hypothesis, including word2vec \cite{mikolov_efficient_2013}, GloVe \cite{pennington_glove:_2014}, Dependency-based word embeddings \cite{levy_dependency-based_2014} and Random Indexing \cite{sahlgren_introduction_2005}. For all of the techniques, Python implementations exist. Word2vec is available in gensim. The dependency-based word embeddings by Levy and Goldberg (2014) are implemented in spaCy. Random Indexing is available 
+
+word2vec word vectors can capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "is capital city of", which we exploit using a combination of dimensionality reduction and data visualization.
+
+
+
 
 
 word2vec
@@ -86,6 +91,9 @@ The analogies can also be applied to the national dish of a country:
 
    haggis - Scotland + Germany = **Currywurst**
 
+.. figure:: word_clusters.png
+
+   Clusters of semantically similar words emerge when the word2vec vectors are projected down to 2D using t-SNE :label:`egfig`
 
 t-SNE
 ~~~~~
@@ -116,14 +124,40 @@ Word representations
 
 For all unique non-frequent words, the word representation vectors are collected from the word2vec model via the gensim Python library CITATION rehurek_lrec. Each word is represented by an N-dimensional vector (N=300). 
 
+The 
+
+.. code-block:: python
+
+   from gensim.models import Word2Vec
+
+   model = Word2Vec.load_word2vec_format( word_vectors_filename, binary=True )
+
+   for word in words:
+    if word in model:
+      print model[ word ]
+
+
 Dimensionality Reduction
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The results of the word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn (See Figure 7) CITATION pedregosa_scikit-learn:_2011.
 
-thesis-img/tsne_dimensionality_reduction.pdf
-
 In the dimensionality reduction step, the 300 dimensional word vectors are projected down to a two--dimensional space, so that they can be easily visualized in a 2D coordinate sytem.
+
+
+.. figure:: tsne_dimensionality_reduction.png
+
+   In the dimensionality reduction step, the word vectors are projected down to 2D :label:`egfig`
+
+For the implementation, the t-SNE implementation in scikit-learn is used:
+
+
+.. code-block:: python
+
+   from sklearn.manifold import TSNE
+
+   tsne = TSNE(n_components=2)
+   tsne.fit_transform( word_vectors )
 
 Visualization
 ~~~~~~~~~~~~~
@@ -138,14 +172,13 @@ This approach can be used to compare Wikipedia revisions.
 For this, a revsion of the Wikipedia article on Game of Thrones from 2013 and from 2015 was used and compared. Similar words are close to each other in the 2D projection.
 Using this, it is e.g. easy to visually compare characters names, i.e. first names, that were removed since 2013 and that were added in 2015. The tool gives an global overview and allows to compare the text sources in regards to the intersection set, i.e. words that are present in the 2013 and the 2015 revision, and each revision separately. In the proceedings, this technique is also applied to the Wikipedia articles on the United States and World War 2. The technique can also be applied to compare the Google searches of an individual.
 
-.. figure:: figure1.png
+.. figure:: topic_comparison_usa.png
 
-   This is the caption. :label:`egfig`
+   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in present in the 2013 (orange) and 2015 (red) revisions and the intersection set (white) of the Wikipedia article are plotted. :label:`egfig`
 
-    includegraphics[width=0.8\linewidth,trim=20mm 10mm 10mm 10mm, clip]facebook_hacking.png]
+.. figure:: global_clusters.png
 
-    includegraphics[width=0.4\linewidth,trim=20mm 10mm 10mm 10mm, clip]game_of_thrones_full_all_glow.png]
-    includegraphics[width=0.4\linewidth,trim=20mm 10mm 10mm 10mm, clip]game_of_thrones_full_white_glow.png]
+   Global clusters of the Wikipedia articles on the United States (left), Game of Thrones (middle), and World War 2 (right). :label:`egfig`
 
 Conclusion
 ----------
@@ -161,13 +194,26 @@ The open-source word2vec C tool released by Google and the Python bindings avail
 
 The major flaw of the thesis is that the introduced text visualization and text comparison approach is not validated empirically.
 
-bibliographystyle{plain]
-bibliography{Thesis.bib]
-
-
 References
 ----------
 .. [Atr03] P. Atreides. *How to catch a sandworm*,
            Transactions on Terraforming, 21(3):261-300, August 2003.
+
+
+.. [1] M. Sahlgren, “An introduction to random indexing,” in Methods and applications of semantic indexing workshop at the 7th international conference on terminology and knowledge engineering, TKE, 2005, vol. 5.
+.. [2] M. Bostock, D3.js - Data-Driven Documents. 2012.
+.. [3] Y. LeCun, Y. Bengio, and G. Hinton, “Deep learning,” Nature, vol. 521, no. 7553, pp. 436–444, May 2015.
+.. [4] O. Levy and Y. Goldberg, “Dependency-Based Word Embeddings,” in Proceedings of the 52nd Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), Baltimore, Maryland, 2014, pp. 302–308.
+.. [5] T. Mikolov, K. Chen, G. Corrado, and J. Dean, “Efficient Estimation of Word Representations in Vector Space,” CoRR, vol. abs/1301.3781, 2013.
+.. [6] J. Pennington, R. Socher, and C. D. Manning, “GloVe: Global Vectors for Word Representation,” in Proceedings of EMNLP, 2014.
+.. [7] E. Bruni, N. K. Tran, and M. Baroni, “Multimodal Distributional Semantics,” J. Artif. Int. Res., vol. 49, no. 1, pp. 1–47, Jan. 2014.
+.. [8] S. Bird, E. Klein, and E. Loper, Natural Language Processing with Python, 1st ed. O’Reilly Media, Inc., 2009.
+.. [9] F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel, M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Passos, D. Cournapeau, M. Brucher, and E. Duchesnay, “Scikit-learn: Machine Learning in Python,” Journal of Machine Learning Research, vol. 12, pp. 2825–2830, 2011.
+.. [10] Radim Řehůřek and P. Sojka, “Software Framework for Topic Modelling with Large Corpora,” in Proceedings of the LREC 2010 Workshop on New Challenges for NLP Frameworks, Valletta, Malta, 2010, pp. 45–50.
+.. [11] M. Honnibal, spaCy. 2015.
+.. [12] H. Heuer, Topic Comparison Tool. GitHub, 2015.
+.. [13] “turian/random-indexing-wordrepresentations,” GitHub. [Online]. Available: https://github.com/turian/random-indexing-wordrepresentations. [Accessed: 06-Aug-2015].
+.. [14] L. Van der Maaten and G. Hinton, “Visualizing data using t-SNE,” Journal of Machine Learning Research, vol. 9, no. 2579–2605, p. 85, 2008.
+.. [15] T. Mikolov, K. Chen, G. Corrado, and J. Dean, word2vec. Google, 2013.
 
 
