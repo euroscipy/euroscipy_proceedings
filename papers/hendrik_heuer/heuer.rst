@@ -204,7 +204,7 @@ References
 
 .. [Řeh10] Radim Řehůřek and P. Sojka, “Software Framework for Topic Modelling with Large Corpora,” in Proceedings of the LREC 2010 Workshop on New Challenges for NLP Frameworks, Valletta, Malta, 2010, pp. 45–50.
 
-.. [Hon15] M. Honnibal, spaCy. 2015.
+.. [Hon15] M. Honnibal, spaCy. 2015. Available: https://honnibal.github.io/spaCy/. [Accessed: 06-Aug-2015].
 
 .. [Heu15] H. Heuer, Topic Comparison Tool. GitHub, 2015. Available: https://github.com/h10r/topic_comparison_tool. [Accessed: 06-Aug-2015].
 
