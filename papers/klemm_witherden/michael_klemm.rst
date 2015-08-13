@@ -8,9 +8,9 @@
 
 
 
-------------------------------------------------
-A Numerical Perspective to Terraforming a Desert
-------------------------------------------------
+--------------------------------------
+Using the pyMIC Offload Module in PyFR
+--------------------------------------
 
 .. class:: abstract
 
@@ -34,6 +34,17 @@ Performance Results
 
 To be written...
 
+
+PyFR
+----
+
+To be written...
+
+
+The pyMIC Offload Module
+------------------------
+
+To be written
 
 
 Conclusion and Future Work
