@@ -47,7 +47,8 @@ To be written...
 The pyMIC Offload Module
 ------------------------
 
-To be written
+The Python Offload module for the Intel(R) Many Core Architecture, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+
 
 
 Conclusion and Future Work
@@ -59,6 +60,8 @@ To be written...
 
 Acknowledgments
 ---------------
+Peter Vincent and Freddie Witherden would like to thank the Engineering and Physical Sciences Research Council for their support via a Doctoral Training Grant and an Early Career Fellowship (EP/K027379/1).
+
 Intel, Xeon, and Xeon Phi are trademarks or registered trademarks of Intel Corporation or its subsidiaries in the United States and other countries.
 
 * Other names and brands are the property of their respective owners.
@@ -75,7 +78,6 @@ Intel does not guarantee the availability, functionality, or effectiveness of an
 Certain optimizations not specific to Intel microarchitecture are reserved for Intel microprocessors.
 Please refer to the applicable product User and Reference Guides for more information regarding the specific instruction sets covered by this notice.
 
-Peter Vincent and Freddie Witherden would like to thank the Engineering and Physical Sciences Research Council for their support via a Doctoral Training Grant and an Early Career Fellowship (EP/K027379/1).
 
 
 References
