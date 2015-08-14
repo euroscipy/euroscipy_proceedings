@@ -176,7 +176,7 @@ Software and workloads used in performance tests may have been optimized for per
 Performance tests, such as SYSmark and MobileMark, are measured using specific computer systems, components, software, operations and functions.
 Any change to any of those factors may cause the results to vary.
 You should consult other information and performance tests to assist you in fully evaluating your contemplated purchases, including the performance of that product when combined with other products.
-For more information go to \url{http://www.intel.com/performance}.
+For more information go to http://www.intel.com/performance.
 
 Intel's compilers may or may not optimize to the same degree for non-Intel microprocessors for optimizations that are not unique to Intel microprocessors.
 These optimizations include SSE2, SSE3, and SSSE3 instruction sets and other optimizations.
