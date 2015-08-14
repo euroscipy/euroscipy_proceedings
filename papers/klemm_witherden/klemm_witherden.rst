@@ -204,6 +204,8 @@ References
 
 .. [Huy07] HT Huynh. A flux reconstruction approach to high-order schemes including discontinuous Galerkin methods. AIAA paper, 4079:2007, 2007.
 
+.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
+
 .. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. PyCUDA and PyOpenCL: A scripting-based approach to GPU run-time code generation. Parallel Comput., 38(3):157–174, 2012.
 
 .. [Vin15]  PE Vincent, FD Witherden, AM Farrington, G Ntemos, BC Vermeire, JS Park, and AS Iyer. PyFR: Next-Generation High-Order Computational Fluid Dynamics on Many-Core Hardware. Paper AIAA-2015-3050, 22nd AIAA Computational Fluid Dynamics Conference, 22–26 June 2015, Dallas, Texas, USA.
@@ -212,4 +214,4 @@ References
 
 .. [Wit15] FD Witherden, BC Vermeire, and PE Vincent.  Heterogeneous computing on mixed unstructured grids with PyFR.  Accepted for publication in Computers & Fluids, 2015.
 
-.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
+
