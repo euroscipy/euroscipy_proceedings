@@ -142,7 +142,17 @@ Systems
 The pyMIC Module
 ----------------
 
-The Python Offload module for the Intel(R) Many Core Architecture, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+The Python Offload module for the Intel(R) Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+A programmer can start with a very simplistic, maybe non-optimal, offload solution and then refine it by adding more complexity to the program and exercising more fine-grained control over data transfers and kernel invocation.
+The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally increase complexity to improve the first offload solution.
+Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's `ndarray` class and its corresponding array operations.
+
+To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as Intel(R) Language Extensions for Offloading (LEO) and OpenMP 4.0 `target` constructs.
+Programmers can freely mix and match offloading on the Python level with offloading performed in extension modules.
+For instance, one could allocate and transfer an `ndarray` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
+
+Design
+``````
 
 
 Using pyMIC to Offload PyFR
@@ -201,3 +211,5 @@ References
 .. [Wit14] FD Witherden, AM Farrington, and PE Vincent. PyFR: An open source framework for solving advection–diffusion type problems on streaming architectures using the flux reconstruction approach. Computer Physics Communications, 185(11):3028–3040, 2014.
 
 .. [Wit15] FD Witherden, BC Vermeire, and PE Vincent.  Heterogeneous computing on mixed unstructured grids with PyFR.  Accepted for publication in Computers & Fluids, 2015.
+
+.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
