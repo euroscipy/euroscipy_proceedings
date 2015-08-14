@@ -30,6 +30,31 @@ Introduction
 
 To be written...
 
+Related Work
+------------
+
+
+Introduction to PyFR
+--------------------
+
+PyFR is an open-source Python framework for solving advection-diffusion problems of the form
+
+.. math::
+
+  \frac{\partial u}{\partial t} + \nabla \cdot \mathbf{f}(u, \nabla u) = S( \mathbf{x}, t),
+
+where :math:`u(\mathbf{x},t)` is a state vector representing the solution, :math:`\mathbf{f}` a flux function, and :math:`S` a source term.
+A prominent example of an advection-diffusion type problem are the compressible Navier-Stokes equations of fluid dynamics.
+The efficient solution of which, especially in their unsteady form, is of great interest to both industry and academic.
+
+The pyMIC Module
+----------------
+
+The Python Offload module for the Intel(R) Many Core Architecture, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+
+
+Using pyMIC to Offload PyFR
+---------------------------
 
 
 Performance Results
@@ -37,17 +62,6 @@ Performance Results
 
 To be written...
 
-
-PyFR
-----
-
-To be written...
-
-
-The pyMIC Offload Module
-------------------------
-
-The Python Offload module for the Intel(R) Many Core Architecture, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
 
 
 
