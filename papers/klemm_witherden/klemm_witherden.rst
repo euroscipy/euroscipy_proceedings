@@ -145,11 +145,11 @@ The pyMIC Module
 The Python Offload module for the Intel(R) Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
 A programmer can start with a very simplistic, maybe non-optimal, offload solution and then refine it by adding more complexity to the program and exercising more fine-grained control over data transfers and kernel invocation.
 The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally increase complexity to improve the first offload solution.
-Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's `ndarray` class and its corresponding array operations.
+Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's ``ndarray`` class and its corresponding array operations.
 
-To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as Intel(R) Language Extensions for Offloading (LEO) and OpenMP 4.0 `target` constructs.
+To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as Intel(R) Language Extensions for Offloading (LEO) and OpenMP 4.0 ``target`` constructs.
 Programmers can freely mix and match offloading on the Python level with offloading performed in extension modules.
-For instance, one could allocate and transfer an `ndarray` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
+For instance, one could allocate and transfer an ``ndarray`` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
 
 Design
 ``````
@@ -157,6 +157,34 @@ Design
 
 Using pyMIC to Offload PyFR
 ---------------------------
+
+Although PyFR can be run on the Intel Xeon Phi using the OpenCL backend this is configuration is not optimal.
+As was outlined in section 2 the performance of PyFR depends heavily on the presence of a highly tuned matrix multiplication library.
+For the Phi this is the Intel Math Kernel Library (MKL).
+However, as MKL does not provide an OpenCL interface it is necessary to implement these kernels using pure OpenCL code.
+This is known to be a challenging problem [McI14]_.
+Hence, in order to take full advantage of the capabilities of the Phi a native approach is required.
+
+One possible approach here is to move PyFR in its entirety onto the Phi itself and then run with the C/OpenMP backend.
+However, this requires that Python, along with dependencies such as NumPy, be cross-compiled for the Phi; a significant undertaking.
+Additionally, as ICC does not run natively on the Phi an additional set of scripts would also be required to ‘offload’ the compilation of runtime generated kernels onto the host.
+Moreover, with this approach the initial start up phase would also be run on the Phi itself.
+As the single threaded performance of the Phi is significantly less than that of a recent Xeon CPU this is likely to result in a substantial increase in the start up time of PyFR.
+It was therefore decided to add a native MIC backend into PyFR.
+
+On account of its need to target CUDA and OpenCL the PyFR backend interface is relatively low-level.
+At start up the solver code in PyFR allocates large blocks of memory which it then slices up into smaller pieces.
+A backend must therefore provide a means of both allocating memory and copying regions of this memory to/from the host.
+In contrast to this pyMIC is a relatively high-level library whose core tenant is an ``ndarray`` type.
+While writing the MIC backend for PyFR we therefore had to add a low level interface to pyMIC that enables raw memory to be allocated on the device and fine grained copying to/from this memory.
+
+The resulting backend consists of approximately 700 lines of pure Python code and 200 lines of Mako templates.
+As the native programming language for the Phi is OpenMP annotated C code the DSL translation engine for the MIC is almost identical to the one used in the existing C/OpenMP backend with the only changes being around how arguments are passed into kernels.
+These generated kernels are then compiled at runtime using ICC on the host to produce a shared library.
+This library is then given to pyMIC which takes care of migrating it onto the device.
+
+Matrix multiplications are handled by invoking a native kernel which itself calls out to the ``cblas_sgemm`` and ``cblas_dgemm`` routines from MKL.
+
 
 
 Performance Results
@@ -207,6 +235,8 @@ References
 .. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
 
 .. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. PyCUDA and PyOpenCL: A scripting-based approach to GPU run-time code generation. Parallel Comput., 38(3):157–174, 2012.
+
+.. [McI14] S McIntosh-Smith and T Mattson, High Performance Parallelism Pearls: Chapter 22, Morgan Kaufmann, 2014.
 
 .. [Vin15]  PE Vincent, FD Witherden, AM Farrington, G Ntemos, BC Vermeire, JS Park, and AS Iyer. PyFR: Next-Generation High-Order Computational Fluid Dynamics on Many-Core Hardware. Paper AIAA-2015-3050, 22nd AIAA Computational Fluid Dynamics Conference, 22–26 June 2015, Dallas, Texas, USA.
 
