@@ -102,6 +102,7 @@ Sustained performance in excess of 50% of peak FLOPs has been achieved on both I
 To scale out across multiple nodes PyFR has support for distributed memory parallelism using MPI.
 This is accomplished through the mpi4py wrappers [Dal15]_.
 Significant effort has gone into ensuring that communication is overlapped with computation with all MPI requests being both persistent and non-blocking.
+Before running PyFR across multiple nodes it is first necessary to decompose the domain using a graph partitioning library such as METIS [Kar98]_.
 On the Piz Daint supercomputer at CSCS PyFR has been found to exhibit near perfect weak scalability up to 2000 NVIDIA K20X GPUs [Vin15]_.
 The wire format used by PyFR for MPI buffers is independent of the backend being used.
 It is therfore possible for different MPI ranks to use different backends.
@@ -133,7 +134,7 @@ Communication
     MPI
 
 File format
-    Parallel HDF5
+    Parallel HDF5 using h5py [Col13]_
 
 Systems
     Euler, compressible Navier-Stokes
@@ -223,14 +224,17 @@ Certain optimizations not specific to Intel microarchitecture are reserved for I
 Please refer to the applicable product User and Reference Guides for more information regarding the specific instruction sets covered by this notice.
 
 
-
 References
 ----------
 .. [Bay15] M Bayer.  Mako: templates for Python. http://www.makotemplates.org
 
+.. [Col13] A Collette. Python and HDF5: Unlocking scientific data. O'Reilly Media, 2013.
+
 .. [Dal15] L Dalcin. mpi4py: MPI for python, http://mpi4py.scipy.org/
 
 .. [Huy07] HT Huynh. A flux reconstruction approach to high-order schemes including discontinuous Galerkin methods. AIAA paper, 4079:2007, 2007.
+
+.. [Kar98] G Karypis and V Kumar. A fast and high quality multilevel scheme for partitioning irregular graphs. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
 
 .. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
 
@@ -243,5 +247,3 @@ References
 .. [Wit14] FD Witherden, AM Farrington, and PE Vincent. PyFR: An open source framework for solving advection–diffusion type problems on streaming architectures using the flux reconstruction approach. Computer Physics Communications, 185(11):3028–3040, 2014.
 
 .. [Wit15] FD Witherden, BC Vermeire, and PE Vincent.  Heterogeneous computing on mixed unstructured grids with PyFR.  Accepted for publication in Computers & Fluids, 2015.
-
-
