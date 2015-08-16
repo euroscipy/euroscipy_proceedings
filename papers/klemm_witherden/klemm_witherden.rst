@@ -148,12 +148,104 @@ A programmer can start with a very simplistic, maybe non-optimal, offload soluti
 The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally increase complexity to improve the first offload solution.
 Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's ``ndarray`` class and its corresponding array operations.
 
+The current version of pyMIC restricts offloaded code to native code for the Intel Xeon Phi coprocessor written in C/C++ or Fortran.
+Since most Python codes employ native extension modules for increased execution speed, this blends well with the HPC codes we targeting.
+Native code can be compiled for the Intel coprocessor and invoked from the Python code through the pyMIC API.
+
 To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as Intel(R) Language Extensions for Offloading (LEO) and OpenMP 4.0 ``target`` constructs.
 Programmers can freely mix and match offloading on the Python level with offloading performed in extension modules.
 For instance, one could allocate and transfer an ``ndarray`` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
 
-Design
-``````
+Architecture
+````````````
+
+.. figure:: pyMIC_arch.png
+   :scale: 60 %
+
+   Architecture of the pyMIC offload module. :label:`pyMICarch`
+
+Figure :ref:`pyMICarch` shows the architecture of the pyMIC module.
+At the lowest level, the LIBXSTREAM library [Inte15]_ interacts with the coprocessor devices in the system.
+LIBXSTREAM provides a stream-oriented interface to enqueue invocations of user-defined functions, to allocate data, and to transfer data into an execution stream.
+All enqeued requests are executed asychronously, but LIBXSTREAM preserves the predecessor/successor relationship of requests within the same stream.
+The library is available as open-source software for Intel Architecture.
+
+At the next higher level sits the pyMIC offload engine that provides the internal interface for pyMIC's features and that abstracts from the underlying interface of the offload implementation.
+This design supports different offload implementations in future versions of pyMIC.
+For productivity and easier portability, this level of pyMIC has been implemented in Cython to bridge the gap between the Python level and the LIBXSTREAM library.
+
+The top-level API of pyMIC consists of several classes that provide the different levels of abstractions of offloading: ``OffloadDevice`` to interact with devices; ``OffloadStream`` to provide the stream functionality; ``OffloadArray`` to provide buffer and transfer management; and ``OffloadLibrary`` for kernel loading and unloading.
+
+Offloading Code
+```````````````
+
+The following Python code shows how to offload the computation of a ``dgemm`` operation to the coprocessor.
+
+.. code-block:: python
+   :linenos:
+
+   import pyMIC
+   import numpy
+
+   # size of the matrices
+   m, n, k = 4096, 4096, 4096
+
+   # create some input data
+   alpha = 1.0
+   beta = 0.0
+   a = numpy.random.random(m*k).reshape((m, k))
+   b = numpy.random.random(k*n).reshape((k, n))
+   c = numpy.zeros((m, n))
+
+   # load kernel library
+   device = pymic.devices[0]
+   stream = device.get_default_stream()
+   library = device.load_library("libdgemm.so")
+
+   # perform the offload and wait for completion
+   stream.invoke(library.mydgemm,
+                 a, b, c, m, n, k, alpha, beta)
+   stream.sync()
+
+Lines 4-12 initialize the matrix sizes to 4096x4096 each and then create two random matrices (``a``, ``b``) and an empty matrix (``c``).
+Line 15 gets a handle for the first coprocessor of the system and then initializes the default stream to this device (line 16).
+Line 17 finally loads a native library that contains the kernel that implements the offloaded version of the ``dgemm`` operation.
+
+Lines 202 and 204 enqueue a request to execute the kernel and to synchronize the host thread with the asychronous kernel invocation.
+While the ``invoke`` returns immediately after the request has been enqueued into the stream, the ``sync`` operation blocks until the kernel execution has finished on the target.
+
+The following code example shows the C code of the ``dgemm`` kernel:
+
+.. code-block:: c
+   :linenos:
+
+   #include <pymic_kernel.h>
+   #include <mkl.h>
+
+   PYMIC_KERNEL
+   void mydgemm(const double *A, const double *B,
+                double *C,
+                const int64_t *m, const int64_t *n,
+                const int64_t *k,
+                const double *alpha,
+                const double *beta) {
+        /* invoke dgemm of MKL's cblas wrapper */
+        cblas_dgemm(CblasRowMajor, CblasNoTrans,
+                    CblasNoTrans,
+                    *m, *n, *k, *alpha, A,
+                    *k, B, *n, *beta, C, *n);
+   }
+
+The pyMIC module automatically marshals and unmarshals data that is passed to the offloaded code.
+Kernel functions can receive any number of formal parameters, but their signature have to match the actual arguments of the ``invoke`` method in the host code.
+The types of the formal parameters are pointers to the C/C++ equivalent of a Python scalar type (on Linux*: ``int64_t``, ``double``, and ``double complex``).
+The pointers to the buffer area that is maintained by pyMIC to keep offloaded data on the coprocessor, so that a kernel can simply access the arguments without calling any additonal runtime functions or worrying about data transfers.
+However, it is the kernel code's responsibility to access the pointers appropriately and to avoid data corruption when accessing scalar or array data.
+
+In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` as ``double``.
+To keep the example simple, it then invokes the ``dgemm`` implementation of the Intel(R) Math Kernel Library.
+
+
 
 
 Using pyMIC to Offload PyFR
@@ -193,7 +285,19 @@ Performance Results
 
 To be written...
 
+Performance of pyMIC
+````````````````````
 
+.. figure:: pyMIC_perf_bandwidth.png
+   :scale: 60 %
+
+   Performance of the offloadded ``dgemm`` operation. :label:`pyMICPerfDgemm`
+
+
+.. figure:: pyMIC_perf_dgemm.png
+   :scale: 60 %
+
+   Performance of the offloadded ``dgemm`` operation. :label:`pyMICPerfDgemm`
 
 
 Conclusion and Future Work
@@ -233,6 +337,8 @@ References
 .. [Dal15] L Dalcin. mpi4py: MPI for python, http://mpi4py.scipy.org/
 
 .. [Huy07] HT Huynh. A flux reconstruction approach to high-order schemes including discontinuous Galerkin methods. AIAA paper, 4079:2007, 2007.
+
+.. [Inte15] Intel Corporation.  *LIBXSTREAM*. Download at http://github.com/hfp/libxstream.
 
 .. [Kar98] G Karypis and V Kumar. A fast and high quality multilevel scheme for partitioning irregular graphs. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
 
