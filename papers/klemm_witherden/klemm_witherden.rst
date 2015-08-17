@@ -211,8 +211,15 @@ Lines 4-12 initialize the matrix sizes to 4096x4096 each and then create two ran
 Line 15 gets a handle for the first coprocessor of the system and then initializes the default stream to this device (line 16).
 Line 17 finally loads a native library that contains the kernel that implements the offloaded version of the ``dgemm`` operation.
 
-Lines 202 and 204 enqueue a request to execute the kernel and to synchronize the host thread with the asychronous kernel invocation.
+Lines 19 and 22 enqueue a request to execute the kernel and to synchronize the host thread with the asychronous kernel invocation.
 While the ``invoke`` returns immediately after the request has been enqueued into the stream, the ``sync`` operation blocks until the kernel execution has finished on the target.
+
+By default, pyMIC uses copy-in/copy-out semantics for the data passed to a kernel.
+For Numpy's ``ndarray`` objects, the ``invoke`` method automatically enqueues allocation and transfer requests from the host to the coprocessor (`copy-in`).
+After the request for kernel invocation, corresponding transfers to move data back from the coprocessor are scheduled (`copyout`).
+For immutable scalar data, pyMIC only performs the copy-in operation.
+While this leads to a very quick first implementation, it also potentially causes unnecessary data transfers.
+In section 4.3, we will show to use pyMIC's interface to optimize data transfers.
 
 The following code example shows the C code of the ``dgemm`` kernel:
 
@@ -243,41 +250,45 @@ The pointers to the buffer area that is maintained by pyMIC to keep offloaded da
 However, it is the kernel code's responsibility to access the pointers appropriately and to avoid data corruption when accessing scalar or array data.
 
 In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` as ``double``.
-To keep the example simple, it then invokes the ``dgemm`` implementation of the Intel(R) Math Kernel Library.
+To keep the example simple, it then invokes the ``dgemm`` implementation of the Intel(R) Math Kernel Library (MKL).
 
+Optimizing OffloadStream
+````````````````````````
 
+TODO: Write this section.
 
 
 Using pyMIC to Offload PyFR
 ---------------------------
 
-Although PyFR can be run on the Intel Xeon Phi using the OpenCL backend this is configuration is not optimal.
+Although PyFR can be run on the Intel Xeon Phi coprocessor using the OpenCL backend this configuration is not optimal.
 As was outlined in section 2 the performance of PyFR depends heavily on the presence of a highly tuned matrix multiplication library.
-For the Phi this is the Intel Math Kernel Library (MKL).
+For the coprocessor this is the Intel Math Kernel Library.
 However, as MKL does not provide an OpenCL interface it is necessary to implement these kernels using pure OpenCL code.
 This is known to be a challenging problem [McI14]_.
-Hence, in order to take full advantage of the capabilities of the Phi a native approach is required.
+Hence, in order to take full advantage of the capabilities of the coprocessor a native approach is required.
 
 One possible approach here is to move PyFR in its entirety onto the Phi itself and then run with the C/OpenMP backend.
-However, this requires that Python, along with dependencies such as NumPy, be cross-compiled for the Phi; a significant undertaking.
-Additionally, as ICC does not run natively on the Phi an additional set of scripts would also be required to ‘offload’ the compilation of runtime generated kernels onto the host.
-Moreover, with this approach the initial start up phase would also be run on the Phi itself.
-As the single threaded performance of the Phi is significantly less than that of a recent Xeon CPU this is likely to result in a substantial increase in the start up time of PyFR.
+However, this requires that Python, along with dependencies such as NumPy, be cross-compiled for the Intel coprocessor; a significant undertaking.
+Additionally, as the Intel compiler does not run natively on the coprocessor an additional set of scripts would also be required to ‘offload’ the compilation of runtime-generated kernels onto the host.
+Moreover, with this approach the initial start up phase would also be run on the coprocessor.
+As the single-thread performance of the Intel Xeon Phi coprocessor is significantly less than that of a recent Xeon processor, this is likely to result in a substantial increase in the start-up time of PyFR.
+Trying to compensating for this additonal overheads might render the native solution ineffective.
 It was therefore decided to add a native MIC backend into PyFR.
 
-On account of its need to target CUDA and OpenCL the PyFR backend interface is relatively low-level.
-At start up the solver code in PyFR allocates large blocks of memory which it then slices up into smaller pieces.
+On account of its need to target CUDA* and OpenCL the PyFR backend interface is relatively low-level.
+At start up, the solver code in PyFR allocates large blocks of memory which it then slices up into smaller pieces.
 A backend must therefore provide a means of both allocating memory and copying regions of this memory to/from the host.
-In contrast to this pyMIC is a relatively high-level library whose core tenant is an ``ndarray`` type.
-While writing the MIC backend for PyFR we therefore had to add a low level interface to pyMIC that enables raw memory to be allocated on the device and fine grained copying to/from this memory.
+In contrast to this pyMIC is a relatively high-level library whose core tenant is comparable to a NumPy's ``ndarray`` type.
+While writing the MIC backend for PyFR we therefore had to add a low-level interface to pyMIC that enables raw memory to be allocated on the device and fine-grained copying to/from this memory.
 
 The resulting backend consists of approximately 700 lines of pure Python code and 200 lines of Mako templates.
-As the native programming language for the Phi is OpenMP annotated C code the DSL translation engine for the MIC is almost identical to the one used in the existing C/OpenMP backend with the only changes being around how arguments are passed into kernels.
-These generated kernels are then compiled at runtime using ICC on the host to produce a shared library.
-This library is then given to pyMIC which takes care of migrating it onto the device.
+As the native programming language for the Intel coprocessor is C code with OpenMP annotations the DSL translation engine for the Intel coprocessor is almost identical to the one used in the existing C/OpenMP backend with the only changes being around how arguments are passed into kernels.
+These generated kernels are then compiled at runtime by invoking the Intel compiler on the host to produce a shared library.
+The PyFR framework then loads the library on the target device by executing the ``load_library`` method of the device handle.
 
 Matrix multiplications are handled by invoking a native kernel which itself calls out to the ``cblas_sgemm`` and ``cblas_dgemm`` routines from MKL.
-
+This provides the optimal implementation to execute matrix multiplies on the coprocessor.
 
 
 Performance Results
