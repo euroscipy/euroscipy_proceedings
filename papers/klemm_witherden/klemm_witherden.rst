@@ -36,9 +36,19 @@ Using the pyMIC Offload Module in PyFR
 Introduction
 ------------
 
-To be written...
+It is a know fact that Python is a programming languages that has gained a lot of popularity throughout the computing industry [Tiob14]_.
+Python is an easy-to-use, elegant scripting language that not only allows for rapid prototyping of ideas, but also is used for the productive development of highly flexible software packages.
+Together with the NumPy [NumP15]_, SciPy [SciP15]_, and other packages, Python has been adopted as language for all sorts of computing problems of the high performance computing (HPC) community.
+With these add-on packages, Python can draw from a number of efficient algorithms that bring Python closer to the performance of languages such as C/C++ and Fortran that are compiled ahead of time.
 
-How to use trademarks: |Intel(R)| |Xeon Phi(tm)|.
+Heterogeneous architectures emerged as a consequence of the desire to compute at a faster pace to shorten time-to-solution or to tackle bigger problem sizes.
+Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| coprocessors [Inte14]_ are instances of hardware that aim to speed up the floating-point intensive parts of typical HPC applications.
+A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house decrete extension cards.
+One usage scenario is the so-called `offload model` where the host execution transfers data and control over to the coprocessing device to execute specialized kernels on it.
+
+In this paper, we present how pyMIC, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR.
+
+To be written...
 
 
 Related Work
@@ -392,7 +402,9 @@ References
 
 .. [Huy07] HT Huynh. A flux reconstruction approach to high-order schemes including discontinuous Galerkin methods. AIAA paper, 4079:2007, 2007.
 
-.. [Inte15] Intel Corporation.  *LIBXSTREAM*. Download at http://github.com/hfp/libxstream.
+.. [Inte14] Intel Corporation. *Intel Xeon Phi Coprocessor System Software Developers Guide*. 2014. Document number 328207-003EN.
+
+.. [Inte15] Intel Corporation. *LIBXSTREAM*. Download at http://github.com/hfp/libxstream.
 
 .. [Kar98] G Karypis and V Kumar. A fast and high quality multilevel scheme for partitioning irregular graphs. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
 
@@ -401,6 +413,12 @@ References
 .. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. PyCUDA and PyOpenCL: A scripting-based approach to GPU run-time code generation. Parallel Comput., 38(3):157–174, 2012.
 
 .. [McI14] S McIntosh-Smith and T Mattson, High Performance Parallelism Pearls: Chapter 22, Morgan Kaufmann, 2014.
+
+.. [NumP15] NumPy Developers. *NumPy*. 2015. http://www.numpy.org/.
+
+.. [SciP15] SciPy Developers. *SciPy*. 2015. http://www.scipy.org/.
+
+.. [Tiob14] TIOBE Software BV. *TIOBE Index for September 2014*. September 2014.  http://www.tiobe.com/.
 
 .. [Vin15]  PE Vincent, FD Witherden, AM Farrington, G Ntemos, BC Vermeire, JS Park, and AS Iyer. PyFR: Next-Generation High-Order Computational Fluid Dynamics on Many-Core Hardware. Paper AIAA-2015-3050, 22nd AIAA Computational Fluid Dynamics Conference, 22–26 June 2015, Dallas, Texas, USA.
 
