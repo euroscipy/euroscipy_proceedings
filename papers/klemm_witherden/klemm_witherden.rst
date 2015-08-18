@@ -48,7 +48,7 @@ One usage scenario is the so-called `offload model` where the host execution tra
 
 In this paper, we present how pyMIC, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR.
 
-To be written...
+**TODO:** To be written...
 
 
 Related Work
@@ -273,11 +273,10 @@ However, it is the kernel code's responsibility to access the pointers appropria
 In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` as ``double``.
 To keep the example simple, it then invokes the ``dgemm`` implementation of the |Intel(R)| Math Kernel Library (MKL).
 
-Optimizing OffloadStream
-````````````````````````
+Optimizing Data Transfers
+`````````````````````````
 
-TODO: Write this section.
-
+The following example code shows how to use pyMIC's ``OffloadArray`` class to optimize data transfers in the pyMIC programming model.
 
 .. code-block:: python
    :linenos:
@@ -311,6 +310,58 @@ TODO: Write this section.
    oc.update_host()
    stream.sync()
 
+After initializing the data of the matrix similar as before, the code now uses the ``bind`` operation (lines 20 through 22) of the pyMIC API.
+The ``bind`` operation binds a NumPy ``ndarray`` object to an offload buffer of class ``OffloadArray`` on the target coprocessor that is associated with a stream object.
+The offload buffer is a typed object and contains meta data that descibes the buffer and thus is comparable to a NumPy array.
+It also supports basic operations such as element-wise addition, multiplication, zeroing, and filling with values; these operations run as kernels on the coprocessor.
+The pyMIC runtime recognizes instances of ``OffloadArray`` as kernel arguments and disables automatic copy-in/copy-out transfers for them.
+
+By default the ``bind`` operation assumes that the offload buffer should be populated with data from the host array.
+To leave the buffer uninitialized and to avoid the data transfer, the ``update_device`` parameter can be set to ``False``.
+The ``OffloadArray`` instances offer the methods ``update_device()`` and ``update_host()`` enqueue requests for data transfers into the execution stream to the target.
+The above example uses this interface to avoid the initial transfer of the ``c`` matrix which will be overwritten regardless of its initial values.
+In line 27, the code issues an ``update_host()`` call to retrieve the results of the ``mydgemm`` kernel.
+
+Where the first example required six data transfers (three copy-in and three copy-out transfers) for ``a``, ``b``, and ``c``, the last example only performs the minimal number of transfers, that is, transfer ``a`` and ``b`` from the host to the device and transfer ``c``.
+
+
+The pyMIC Low-level Interface
+`````````````````````````````
+
+PyFR's offload model needs more fain-grained control over memory management and referencing data on the target device.
+While this enables the programmer to exercise control over all aspects of offloading, it also exposes details such as device pointers and memory offsets.
+The low-level data management interface (see Figure :ref:`pyMICarch`) that pyMIC uses internally is therefore intentionally exposed as part of the pyMIC API.
+
+This interface is based on ``memcpy``-like methods of a device stream.
+It supports allocation and deallocation of ``nbytes`` of device data with a given data aligment:
+
+.. code-block:: python
+
+   allocate_device_memory(self, nbytes, alignment=64)
+   deallocate_device_memory(self, device_ptr)
+
+It also offers primitive operations for different directions of data transfers:
+
+.. code-block:: python
+
+   transfer_host2device(self, host_ptr, device_ptr,
+                        nbytes,
+                        offset_host=0, offset_device=0)
+   transfer_device2host(self, device_ptr, host_ptr,
+                        nbytes,
+                        offset_device=0, offset_host=0)
+   transfer_device2device(self,
+                          device_ptr_src,
+                          device_ptr_dst,
+                          nbytes,
+                          offset_device_src=0,
+                          offset_device_dst=0)
+
+The host pointer passed as an argument is an actual pointer as returned by NumPy's ``nadrray.ctypes.data``.
+The device pointer is a fake pointer that was return by ``allocate_device_memory`` and that uniquely identifies the data allocation on the target device.
+
+
+
 Using pyMIC to Offload PyFR
 ---------------------------
 
@@ -333,7 +384,7 @@ On account of its need to target CUDA* and OpenCL the PyFR backend interface is 
 At start up, the solver code in PyFR allocates large blocks of memory which it then slices up into smaller pieces.
 A backend must therefore provide a means of both allocating memory and copying regions of this memory to/from the host.
 In contrast to this pyMIC is a relatively high-level library whose core tenant is comparable to a NumPy's ``ndarray`` type.
-While writing the MIC backend for PyFR we therefore had to add a low-level interface to pyMIC that enables raw memory to be allocated on the device and fine-grained copying to/from this memory.
+While writing the MIC backend for PyFR we therefore had to use the low-level interfaces to pyMIC that enables raw memory to be allocated on the device and fine-grained copying to/from this memory.
 
 The resulting backend consists of approximately 700 lines of pure Python code and 200 lines of Mako templates.
 As the native programming language for the Intel coprocessor is C code with OpenMP annotations the DSL translation engine for the Intel coprocessor is almost identical to the one used in the existing C/OpenMP backend with the only changes being around how arguments are passed into kernels.
@@ -367,7 +418,14 @@ Performance of pyMIC
 Conclusion and Future Work
 --------------------------
 
-To be written...
+**TODO:** To be written...
+
+Future Work pyMIC:
+
+- Support for events to performance cross-stream synchronization
+
+- Support for offloading full Python code
+
 
 
 
@@ -394,25 +452,25 @@ Please refer to the applicable product User and Reference Guides for more inform
 
 References
 ----------
-.. [Bay15] M Bayer.  Mako: templates for Python. http://www.makotemplates.org
+.. [Bay15] M Bayer.  *Mako: Templates for Python*. http://www.makotemplates.org
 
-.. [Col13] A Collette. Python and HDF5: Unlocking scientific data. O'Reilly Media, 2013.
+.. [Col13] A Collette. *Python and HDF5: Unlocking Scientific Data*. O'Reilly Media, 2013.
 
-.. [Dal15] L Dalcin. mpi4py: MPI for python, http://mpi4py.scipy.org/
+.. [Dal15] L Dalcin. *mpi4py: MPI for Python*, http://mpi4py.scipy.org/
 
-.. [Huy07] HT Huynh. A flux reconstruction approach to high-order schemes including discontinuous Galerkin methods. AIAA paper, 4079:2007, 2007.
+.. [Huy07] HT Huynh. *A Flux Reconstruction Approach to High-order Schemes including DGalerkin Methods*. AIAA paper, 4079:2007, 2007.
 
 .. [Inte14] Intel Corporation. *Intel Xeon Phi Coprocessor System Software Developers Guide*. 2014. Document number 328207-003EN.
 
 .. [Inte15] Intel Corporation. *LIBXSTREAM*. Download at http://github.com/hfp/libxstream.
 
-.. [Kar98] G Karypis and V Kumar. A fast and high quality multilevel scheme for partitioning irregular graphs. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
+.. [Kar98] G Karypis and V Kumar. *A Fast and High Quality Multilevel Scheme for Partitioning Irregular Graphs*. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
 
-.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel Xeon Phi Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
+.. [KlEn14] M Klemm and J Enkovaara. *pyMIC: A Python Offload Module for the Intel Xeon Phi Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
 
-.. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. PyCUDA and PyOpenCL: A scripting-based approach to GPU run-time code generation. Parallel Comput., 38(3):157–174, 2012.
+.. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. *PyCUDA and PyOpenCL: A Scripting-based Approach to GPU Run-time Code Generation*. Parallel Comput., 38(3):157–174, 2012.
 
-.. [McI14] S McIntosh-Smith and T Mattson, High Performance Parallelism Pearls: Chapter 22, Morgan Kaufmann, 2014.
+.. [McI14] S McIntosh-Smith and T Mattson, *High Performance Parallelism Pearls*: Chapter 22, Morgan Kaufmann, 2014.
 
 .. [NumP15] NumPy Developers. *NumPy*. 2015. http://www.numpy.org/.
 
@@ -420,8 +478,8 @@ References
 
 .. [Tiob14] TIOBE Software BV. *TIOBE Index for September 2014*. September 2014.  http://www.tiobe.com/.
 
-.. [Vin15]  PE Vincent, FD Witherden, AM Farrington, G Ntemos, BC Vermeire, JS Park, and AS Iyer. PyFR: Next-Generation High-Order Computational Fluid Dynamics on Many-Core Hardware. Paper AIAA-2015-3050, 22nd AIAA Computational Fluid Dynamics Conference, 22–26 June 2015, Dallas, Texas, USA.
+.. [Vin15]  PE Vincent, FD Witherden, AM Farrington, G Ntemos, BC Vermeire, JS Park, and AS Iyer. *PyFR: Next-Generation High-Order Computational Fluid Dynamics on Many-Core Hardware*. Paper AIAA-2015-3050, 22nd AIAA Computational Fluid Dynamics Conference, 22–26 June 2015, Dallas, Texas, USA.
 
-.. [Wit14] FD Witherden, AM Farrington, and PE Vincent. PyFR: An open source framework for solving advection–diffusion type problems on streaming architectures using the flux reconstruction approach. Computer Physics Communications, 185(11):3028–3040, 2014.
+.. [Wit14] FD Witherden, AM Farrington, and PE Vincent. *PyFR: An Open Source Framework for Solving Advection–diffusion Type Problems on Streaming Architectures using he Flux Reconstruction Approach*. Computer Physics Communications, 185(11):3028–3040, 2014.
 
-.. [Wit15] FD Witherden, BC Vermeire, and PE Vincent.  Heterogeneous computing on mixed unstructured grids with PyFR.  Accepted for publication in Computers & Fluids, 2015.
+.. [Wit15] FD Witherden, BC Vermeire, and PE Vincent.  *Heterogeneous Computing on Mixed Unstructured Grids with PyFR*.  Accepted for publication in Computers & Fluids, 2015.
