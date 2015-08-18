@@ -12,7 +12,7 @@ Text comparison using word vector representations and dimensionality reduction
 
 .. class:: keywords
 
-   Text Comparison, Topic Comparison, word2vec, t-SNE,
+   Text Comparison, Topic Comparison, word2vec, t-SNE
 
 Introduction
 ------------
@@ -21,10 +21,10 @@ When summarizing a large text, only a subset of the available topics and stories
 
 There is a variety of different ways to approach the problem of visualizing the topics present in a text. The simplest approach is to look at unique words and their occurrences and visualize the words in a list. Topics could also be visualized using word clouds, where the font size of a word is determined by the frequency of the word. Word clouds have a variety of shortcomings: They can only visualize small subsets, they focus on the most frequent words and they do not take synonyms and semantically similar words into account.
 
-This paper describes a human-computer interaction-inspired approach of comparing two text sources. The approach yields a bird’s-eye view of different text sources, including text summaries and their source material and enables users to explore a text source like a geographical map.
+This paper describes a human-computer interaction-inspired approach of comparing two text sources. The approach yields a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map.
 As similar words are close to each other, the user can visually identify clusters of topics that are present in the text. Conceptually, it can be understood as a "Fourier transformation for text".
 
-This paper describes a tool, which can be used to visualize the topics in a single text source as well as to compare different text sources. To compare the topics in source A and source B, three different sets of words can be computed: a set of unique words in source A, a set of unique words in source B as well as the intersection set of words both in source A and B. These three sets are then plotted at the same time. For this, a colour is assigned to each set of words. This enables the user to visually compare the different text sources and enables them to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
+This paper describes a tool, which can be used to visualize the topics in a single text source as well as to compare different text sources. To compare the topics in source A and source B, three different sets of words can be computed: a set of unique words in source A, a set of unique words in source B as well as the intersection set of words both in source A and B. These three sets are then plotted at the same time. For this, a colour is assigned to each set of words. This enables the user to visually compare the different text sources and makes it possible to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
 
 The comparison can be used to visualize the difference between a text summary and its source material. It can also help to compare Wikipedia revisions in regards to the topics they cover. Another possible application is the visualization of heterogeneous data sources like a list of search queries and keywords. 
 
@@ -33,11 +33,11 @@ The Github repository of the tool includes an online demo [Heu15]. The tool can 
 Distributional semantic models
 ------------------------------
 
-The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of Distributional Semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
+The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of distributional semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
 
 The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. The representations are called distributed representations because the features are not mutually exclusive and because their configurations correspond to the variations seen in the observed data [Cun15]. LeCun et al. provide the example of a news story. When the task is to predict the next word in a news story, the learned word vectors for Tuesday and Wednesday will be very similar as they can be easily replaced by each other when used in a sentence [Cun15].
 
-There is a variety of computational models that implement the Distributional Hypothesis, including word2vec [Che13], GloVe [Pen14], Dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. Word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau2015, Kul2015]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
+There is a variety of computational models that implement the distributional hypothesis, including word2vec [Che13], GloVe [Pen14], dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau15, Kul15]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
 
 For this paper, word2vec was selected because Mikolov et al. provide 1.4 million pre-trained entity vectors trained on 100 billion words from various news articles in the Google News dataset [Che13]. However, other models might perform equally well for the purpose of text comparison. Moreover, custom word vectors trained on a large domain-specific dataset, e.g. the Wikipedia encyclopedia for the Wikipedia revision comparison, could potentially yield even better results. 
 
@@ -60,7 +60,7 @@ It works for the superlative:
 
    fastest - fast + slow = slowest
 
-As well as the past participle}:
+As well as the past participle:
 
 .. math::
 
@@ -166,9 +166,9 @@ Fig. 3 shows how different the global cluster, i.e. the full group of words on t
 
    Global clusters of the Wikipedia articles on the United States (left), Game of Thrones (middle), and World War 2 (right). :label:`egfig`
 
-Fig. 4 shows four screenshots of the visualization of the Wikipedia articles on the United States, including everything enabled and detail views that only show the intersection set of words, words only present in the 2013 revision of the article and words only present in the 2015 revision of the article. 
+Fig. 4 shows four screenshots of the visualization of the Wikipedia articles on the United States including an overview and detail views that only show the intersection set of words, words only present in the 2013 revision of the article, and words only present in the 2015 revision of the article. 
 
-When applied to Game of Thrones, it is e.g. easy to visually compare characters names, i.e. first names, that were removed since 2013 and that were added in 2015. Using the online demo available [Heu15], this technique can be applied to the Wikipedia articles on the United States and World War 2. The technique can also be applied to compare the Google searches of an individual.
+When applied to Game of Thrones, it is e.g. easy to visually compare characters names, i.e. first names, that were removed since 2013 and that were added in 2015. Using the online demo available [Heu15], this technique can be applied to the Wikipedia articles on the United States and World War 2. The technique can also be applied to visualize the Google search history of an individual.
 
 .. figure:: topic_comparison_usa.png
 
@@ -198,13 +198,13 @@ References
 
 .. [Cun15] Y. LeCun, Y. Bengio, and G. Hinton, “Deep learning,” Nature, vol. 521, no. 7553, pp. 436–444, May 2015.
 
-.. [Gau2015] J. Gauthier, glove.py. GitHub, 2015. Available: https://github.com/hans/glove.py. [Accessed: 06-Aug-2015].
+.. [Gau15] J. Gauthier, glove.py. GitHub, 2015. Available: https://github.com/hans/glove.py. [Accessed: 06-Aug-2015].
 
 .. [Heu15] H. Heuer, Topic Comparison Tool. GitHub, 2015. Available: https://github.com/h10r/topic_comparison_tool. [Accessed: 06-Aug-2015].
 
 .. [Hon15] M. Honnibal, spaCy. 2015. Available: https://honnibal.github.io/spaCy/. [Accessed: 06-Aug-2015].
 
-.. [Kul2015] M. Kula, glove-python. GitHub, 2015. Available: https://github.com/maciejkula/glove-python. [Accessed: 06-Aug-2015].
+.. [Kul15] M. Kula, glove-python. GitHub, 2015. Available: https://github.com/maciejkula/glove-python. [Accessed: 06-Aug-2015].
 
 .. [Lev14] O. Levy and Y. Goldberg, “Dependency-Based Word Embeddings,” in Proceedings of the 52nd Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers), Baltimore, Maryland, 2014, pp. 302–308.
 
@@ -218,6 +218,6 @@ References
 
 .. [Sah05] M. Sahlgren, “An introduction to random indexing,” in Methods and applications of semantic indexing workshop at the 7th international conference on terminology and knowledge engineering, TKE, 2005, vol. 5.
 
-.. [Tur15] Joseph Turian, Random Indexing Word Representations. Github, 2015. [Online]. Available: https://github.com/turian/random-indexing-wordrepresentations. [Accessed: 06-Aug-2015].
+.. [Tur15] J. Turian, Random Indexing Word Representations. Github, 2015. [Online]. Available: https://github.com/turian/random-indexing-wordrepresentations. [Accessed: 06-Aug-2015].
 
-.. [Řeh10] Radim Řehůřek and P. Sojka, “Software Framework for Topic Modelling with Large Corpora,” in Proceedings of the LREC 2010 Workshop on New Challenges for NLP Frameworks, Valletta, Malta, 2010, pp. 45–50.
+.. [Řeh10] R. Řehůřek and P. Sojka, “Software Framework for Topic Modelling with Large Corpora,” in Proceedings of the LREC 2010 Workshop on New Challenges for NLP Frameworks, Valletta, Malta, 2010, pp. 45–50.
