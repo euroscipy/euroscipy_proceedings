@@ -11,6 +11,14 @@
 :institution: Imperial College London, UK
 
 
+.. |copy| unicode:: U+00A9
+.. |registered| unicode:: 0x00AE
+.. |trademark| unicode:: 0x2122
+
+.. |Intel(R)| unicode:: Intel U+00AE
+.. |Xeon(R)| unicode:: Xeon U+00AE
+.. |Xeon Phi(tm)| unicode:: Xeon U+0020 Phi U+2122
+
 --------------------------------------
 Using the pyMIC Offload Module in PyFR
 --------------------------------------
@@ -29,6 +37,9 @@ Introduction
 ------------
 
 To be written...
+
+How to use trademarks: |Intel(R)| |Xeon Phi(tm)|.
+
 
 Related Work
 ------------
@@ -143,7 +154,7 @@ Systems
 The pyMIC Module
 ----------------
 
-The Python Offload module for the Intel(R) Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+The Python Offload module for the |Intel(R)| Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
 A programmer can start with a very simplistic, maybe non-optimal, offload solution and then refine it by adding more complexity to the program and exercising more fine-grained control over data transfers and kernel invocation.
 The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally increase complexity to improve the first offload solution.
 Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's ``ndarray`` class and its corresponding array operations.
@@ -152,7 +163,7 @@ The current version of pyMIC restricts offloaded code to native code for the Int
 Since most Python codes employ native extension modules for increased execution speed, this blends well with the HPC codes we targeting.
 Native code can be compiled for the Intel coprocessor and invoked from the Python code through the pyMIC API.
 
-To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as Intel(R) Language Extensions for Offloading (LEO) and OpenMP 4.0 ``target`` constructs.
+To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as |Intel(R)| Language Extensions for Offloading (LEO) and OpenMP 4.0 ``target`` constructs.
 Programmers can freely mix and match offloading on the Python level with offloading performed in extension modules.
 For instance, one could allocate and transfer an ``ndarray`` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
 
@@ -250,13 +261,45 @@ The pointers to the buffer area that is maintained by pyMIC to keep offloaded da
 However, it is the kernel code's responsibility to access the pointers appropriately and to avoid data corruption when accessing scalar or array data.
 
 In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` as ``double``.
-To keep the example simple, it then invokes the ``dgemm`` implementation of the Intel(R) Math Kernel Library (MKL).
+To keep the example simple, it then invokes the ``dgemm`` implementation of the |Intel(R)| Math Kernel Library (MKL).
 
 Optimizing OffloadStream
 ````````````````````````
 
 TODO: Write this section.
 
+
+.. code-block:: python
+   :linenos:
+
+   import pyMIC
+   import numpy
+
+   # size of the matrices
+   m, n, k = 4096, 4096, 4096
+
+   # create some input data
+   alpha = 1.0
+   beta = 0.0
+   a = numpy.random.random(m*k).reshape((m, k))
+   b = numpy.random.random(k*n).reshape((k, n))
+   c = numpy.zeros((m, n))
+
+   # load kernel library
+   device = pymic.devices[0]
+   stream = device.get_default_stream()
+   library = device.load_library("libdgemm.so")
+
+   # create offloaded arrays
+   oa = stream.bind(a)
+   ob = stream.bind(b)
+   oc = stream.bind(c, update_device=False)
+
+   # perform the offload and wait for completion
+   stream.invoke(library.mydgemm,
+                 oa, ob, oc, m, n, k, alpha, beta)
+   oc.update_host()
+   stream.sync()
 
 Using pyMIC to Offload PyFR
 ---------------------------
@@ -353,7 +396,7 @@ References
 
 .. [Kar98] G Karypis and V Kumar. A fast and high quality multilevel scheme for partitioning irregular graphs. SIAM Journal on Scientific Computing, 20(1):359–392, 1998.
 
-.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel(R) Xeon Phi(tm) Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
+.. [KlEn14] M. Klemm and J. Enkovaara. *pyMIC: A Python Offload Module for the Intel Xeon Phi Coprocessor*, 4th Workshop on Python for High Performance and Scientific Computing, November 2014, New Orleans, LA, Online at http://www.dlr.de/sc/Portaldata/15/Resources/dokumente/pyhpc2014/submissions/pyhpc2014_submission_8.pdf.
 
 .. [Klö12] A Klöckner, N Pinto, Y Lee, B Catanzaro, P Ivanov, and A Fasih. PyCUDA and PyOpenCL: A scripting-based approach to GPU run-time code generation. Parallel Comput., 38(3):157–174, 2012.
 
