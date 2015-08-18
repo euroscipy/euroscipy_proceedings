@@ -30,8 +30,8 @@ The comparison can be used to visualize the difference between a text summary an
 
 The Github repository of the tool includes an online demo [Heu15]. The tool can be used to explore the precomputed topic sets of the Game of Thrones Wikipedia article revisions from 2013 and 2015. The repository also includes the precomputed topic sets for the Wikipedia article revisions for the articles on World War 2, Facebook, and the United States of America.
 
-Background
-----------
+Distributional semantic models
+------------------------------
 
 The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of Distributional Semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
 
@@ -86,17 +86,18 @@ Fig. 1 shows the clusters of semantically similar words and how they for visual 
 
    Clusters of semantically similar words emerge when the word2vec vectors are projected down to 2D using t-SNE :label:`egfig`
 
-t-SNE
-~~~~~
+Dimensionality reduction with t-SNE
+-----------------------------------
 
-t-distributed Stochastic Neighbour Embedding (t-SNE) is a dimensionality reduction technique that retains the local structure of data and that helps to visualize large real-world datasets with limited computational demands [Maa08]. Vectors that are similar in a high-dimensional vector space get represented by two-- or three--dimensional vectors that are close to each other in the two-- or three--dimensional vector space. Dissimilar high-dimensional vectors are distant in the two-- or three--dimensional vector space. Meanwhile, the global structure of the data is revealed.
+t-distributed Stochastic Neighbour Embedding (t-SNE) is a dimensionality reduction technique that retains the local structure of data and that helps to visualize large real-world datasets with limited computational demands [Maa08]. Vectors that are similar in a high-dimensional vector space get represented by two- or three-dimensional vectors that are close to each other in the two- or three-dimensional vector space. Dissimilar high-dimensional vectors are distant in the two- or three-dimensional vector space. Meanwhile, the global structure of the data and the presence of clusters at several scales is revealed. t-SNE is well-suited for high-dimensional data that lies on several different, but related, low-dimensional manifolds [Maa08].
 
-t-SNE achieves this by minimizing the Kullback-Leibler divergence between the joint probabilities of the high-dimensional data and the low-dimensional representation. The Kullback-Leibler divergence measures the dissimilarity ("distance") of two probability distributions by a discrete scalar and equals zero if they are the same [Maa08].
+t-SNE achieves this by minimizing the Kullback-Leibler divergence between the joint probabilities of the high-dimensional data and the low-dimensional representation. The Kullback-Leibler divergence measures the faithfulness with which a probability distribution q represents a probability distribution p by a discrete scalar and equals zero if the distributions are the same [Maa08]. The Kullback-Leibler divergence is minimized using the gradient descent method. In contrast to other Stochastic Neighbor Embedding methods that use Gaussian distributions, it uses a Student t-distribution.
+
 
 Implementation
 --------------
 
-The tool implements a workflow that consists of a Python tool for the back end and an HTML and Javascript front end. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript front end. With the Javascript front end, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript front end can be published online.
+The tool implements a workflow that consists of a Python tool for the back end and a Javascript tool for the front end. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript front end. With the Javascript front end, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript front end can be published online.
 
 The workflow of the tool includes the following four steps: 
 
@@ -127,9 +128,9 @@ For all unique non-frequent words, the word representation vectors are collected
 Dimensionality Reduction
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The resulting 300--dimensional word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn [Ped11].
+The resulting 300-dimensional word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn [Ped11].
 
-In the dimensionality reduction step, the 300--dimensional word vectors are projected down to a two--dimensional space so that they can be easily visualized in a 2D coordinate system (see Fig. 2).
+In the dimensionality reduction step, the 300-dimensional word vectors are projected down to a two-dimensional space so that they can be easily visualized in a 2D coordinate system (see Fig. 2).
 
 .. figure:: tsne_dimensionality_reduction.png
 
