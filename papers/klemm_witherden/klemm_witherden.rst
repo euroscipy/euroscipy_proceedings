@@ -398,7 +398,7 @@ This provides the optimal implementation to execute matrix multiplies on the cop
 Performance Results
 -------------------
 
-To be written...
+**TODO:** To be written...
 
 Performance of pyMIC
 ````````````````````
@@ -406,14 +406,33 @@ Performance of pyMIC
 .. figure:: pyMIC_perf_bandwidth.png
    :scale: 60 %
 
-   Performance of the offloadded ``dgemm`` operation. :label:`pyMICPerfDgemm`
+   Bandwidth of the data-transfer operations of pyMIC (see [KlEn14]_). :label:`pyMICPerfBandwidth`
 
 
 .. figure:: pyMIC_perf_dgemm.png
    :scale: 60 %
 
-   Performance of the offloadded ``dgemm`` operation. :label:`pyMICPerfDgemm`
+   Performance of the offloadded ``dgemm`` operation(see [KlEn14]_). :label:`pyMICPerfDgemm`
 
+Figures :ref:`pyMICPerfBandwidth` shows the performance results of micro-benchmarks that measure the achieved bandwidth as reported in [KlEn14]_.
+The achieved bandwidth depends on the size of the data transfer.
+For short data transfers, latency of enqueuing the request and setting up the data transfer in the offload runtime dominates, so that the achieved bandwidth is low.
+With increasing the size of the transfer, latency becomes less important and thus bandwidth goes up until it saturates at the PCIe gen2 limit.
+The effective bandwidth of the bind operation is lower, because it involves the overhead of allocation of the offload buffer, while pure transfers (`copyin` and `copyout`) move data into existing buffers.
+
+Figure :ref:`pyMICPerfDgemm` depicts the GFLOPS rate of offloading the ``dgemm`` operation (cf. [KlEn14]_).
+The chart compares the MKL native ``dgemm`` operation of micro-benchmark written in C (`MKL`) with the performance of NumPy setup to use MKL (`Numpy (MKL)`) and the ``mydgemm`` kernel (`pyMIC (kernel only)` and `pyMIC (incl. transfers)`) for various quadratic matrix sizes.
+As can be seen the GFLOP rate of MKL quickly saturates at small matrix sizes because of the effective threading implementation used.
+The comparatively low performance of NumPy is attributed to several temporary copies that NumPy has to maintain to implement a full ``dgemm`` operation.
+Offloading kernel for small matrix sizes is not expected to yield any performance gain due to the latency of transfering small matrices from the host to the coprocessor.
+For matrices larger than 2048x2048, the coprocessor is able to compensate latency and to yield better performance than the host system.
+Naturally, the effective GFLOP rate is slightly lower if data transfers are taken into consideration.
+
+
+Performance of PyFR
+```````````````````
+
+**TODO:** Write this section.
 
 Conclusion and Future Work
 --------------------------
@@ -435,7 +454,7 @@ Peter Vincent and Freddie Witherden would like to thank the Engineering and Phys
 
 Intel, Xeon, and Xeon Phi are trademarks or registered trademarks of Intel Corporation or its subsidiaries in the United States and other countries.
 
-* Other names and brands are the property of their respective owners.
+\* Other names and brands are the property of their respective owners.
 
 Software and workloads used in performance tests may have been optimized for performance only on Intel microprocessors.
 Performance tests, such as SYSmark and MobileMark, are measured using specific computer systems, components, software, operations and functions.
