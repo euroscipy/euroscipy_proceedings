@@ -8,7 +8,7 @@ Text comparison using word vector representations and dimensionality reduction
 
 .. class:: abstract
 
-   This paper describes a technique to compare large text sources using word vector representations (word2vec) and dimensionality reduction (t-SNE) and how it can be implemented using Python. The technique provides a bird’s-eye view of different text sources, including text summaries and their source material and enables users to explore a text source like a geographical map. The technique uses the word2vec model from the gensim Python library and t-SNE from scikit-learn. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other.
+   This paper describes a technique to compare large text sources using word vector representations (word2vec) and dimensionality reduction (t-SNE) and how it can be implemented using Python. The technique provides a bird’s-eye view of text sources, e.g. text summaries and their source material, and enables users to explore text sources like a geographical map. Word vector representations capture many linguistic properties such as gender, tense, plurality and even semantic concepts like "capital city of". Using dimensionality reduction, a 2D map can be computed where semantically similar words are close to each other. The technique uses the word2vec model from the gensim Python library and t-SNE from scikit-learn.
 
 .. class:: keywords
 
@@ -26,7 +26,7 @@ As similar words are close to each other, the user can visually identify cluster
 
 This paper describes a tool, which can be used to visualize the topics in a single text source as well as to compare different text sources. To compare the topics in source A and source B, three different sets of words can be computed: a set of unique words in source A, a set of unique words in source B as well as the intersection set of words both in source A and B. These three sets are then plotted at the same time. For this, a colour is assigned to each set of words. This enables the user to visually compare the different text sources and enables them to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
 
-The comparison can be used to visualize the difference between a text summary and its source material. It can also help to compare Wikipedia revisions in regards to the topics they cover. Another possible implementation is visualize heterogeneous like a list of search keywords. 
+The comparison can be used to visualize the difference between a text summary and its source material. It can also help to compare Wikipedia revisions in regards to the topics they cover. Another possible application is the visualization of heterogeneous data sources like a list of search queries and keywords. 
 
 The Github repository of the tool includes an online demo [Heu15]. The tool can be used to explore the precomputed topic sets of the Game of Thrones Wikipedia article revisions from 2013 and 2015. The repository also includes the precomputed topic sets for the Wikipedia article revisions for the articles on World War 2, Facebook, and the United States of America.
 
@@ -37,18 +37,18 @@ The distributional hypothesis by Harris states that words with similar meaning o
 
 The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. The representations are called distributed representations because the features are not mutually exclusive and because their configurations correspond to the variations seen in the observed data [Cun15]. LeCun et al. provide the example of a news story. When the task is to predict the next word in a news story, the learned word vectors for Tuesday and Wednesday will be very similar as they can be easily replaced by each other when used in a sentence [Cun15].
 
-There is a variety of computational models that implement the Distributional Hypothesis, including word2vec [Che13], GloVe [Pen14], Dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. Word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau2015, Kul2015]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available on Github in an implementation by Joseph Turian [Tur15].
+There is a variety of computational models that implement the Distributional Hypothesis, including word2vec [Che13], GloVe [Pen14], Dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. Word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau2015, Kul2015]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
 
-For this implementation, word2vec was selected because Mikolov et al. provide 1.4 million pre-trained entity vectors trained on 100 billion words from various news articles in the Google News dataset [Che13]. However, other models might do about as well for the purpose of text comparison. Moreover, custom word vectors trained on a large domain-specific dataset, e.g. the Wikipedia encyclopedia for the Wikipedia revision comparison, could potentially yield even better results. 
+For this paper, word2vec was selected because Mikolov et al. provide 1.4 million pre-trained entity vectors trained on 100 billion words from various news articles in the Google News dataset [Che13]. However, other models might perform equally well for the purpose of text comparison. Moreover, custom word vectors trained on a large domain-specific dataset, e.g. the Wikipedia encyclopedia for the Wikipedia revision comparison, could potentially yield even better results. 
 
 word2vec
 ~~~~~~~~
 
-word2vec word vectors can capture many linguistic properties such as gender, tense, plurality and even semantic concepts such as is capital city of.
+word2vec is a tool developed by Mikolov, Sutskever, Chen, Corrado and Dean at Google. The two model architectures in the C tool were made available under an open-source license [Mik13]. Gensim provides Python bindings for word2vec [Řeh10].
 
-word2vec was developed by Mikolov, Sutskever, Chen, Corrado and Dean at Google. The two model architectures were made available as an open-source toolkit written in C [Mik13]. The open-source word2vec C tool released by Google and the Python bindings available in gensim were used [Řeh10] as this opened the possibility to use the freely available word vectors that were trained on a Google data set with 100 billion words.
+Word vectors encode semantic meaning and capture many different degrees of similarity [Lev14]. word2vec word vectors can capture linguistic properties such as gender, tense, plurality, and even semantic concepts such as "is the capital city of". word2vec captures domain similarity while other more dependency-based approaches capture functional similarity. 
 
-word2vec captures domain similarity while other more dependency-based approaches capture functional similarity. Word vectors encode semantic meaning and capture many different degrees of similarity [Lev14]. In this vector space, linear algebra can be used to exploit the encoded dimensions of similarity. Using this, a computer system can complete tasks like the Scholastic Assessment Test (SAT) analogy quizzes, that measure relational similarity. 
+In the word2vec vector space, linear algebra can be used to exploit the encoded dimensions of similarity. Using this, a computer system can complete tasks like the Scholastic Assessment Test (SAT) analogy quizzes, that measure relational similarity. 
 
 .. math::
 
@@ -84,7 +84,7 @@ The analogies can also be applied to the national dish of a country:
 
    haggis - Scotland + Germany = Currywurst
 
-Fig. 1 shows the clusters of semantically similar words and how they for visual units, which can be easily interpreted by humans.
+Fig. 1 shows the clusters of semantically similar words and how they form semantic units, which can be easily interpreted by humans.
 
 .. figure:: word_clusters.png
 
@@ -97,11 +97,10 @@ t-distributed Stochastic Neighbour Embedding (t-SNE) is a dimensionality reducti
 
 t-SNE achieves this by minimizing the Kullback-Leibler divergence between the joint probabilities of the high-dimensional data and the low-dimensional representation. The Kullback-Leibler divergence measures the faithfulness with which a probability distribution q represents a probability distribution p by a discrete scalar and equals zero if the distributions are the same [Maa08]. The Kullback-Leibler divergence is minimized using the gradient descent method. In contrast to other Stochastic Neighbor Embedding methods that use Gaussian distributions, it uses a Student t-distribution.
 
-
 Implementation
 --------------
 
-The tool implements a workflow that consists of a Python tool for the back end and a Javascript tool for the front end. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript front end. With the Javascript front end, the user can explore the word map and zoom in and out to investigated both the local and the global structure of the text source. The Javascript front end can be published online.
+The text comparison tool implements a workflow that consists of a Python tool for the back-end and a Javascript tool for the front-end. With the Python tool, a text is converted into a collection of two-dimensional word vectors. These are visualized using the Javascript front-end. With the Javascript front-end, the user can explore the word map and zoom in and out to investigate both the local and the global structure of the text sources. The Javascript front-end can be published online.
 
 The workflow of the tool includes the following four steps: 
 
@@ -110,7 +109,7 @@ Pre-processing
 
 In the pre-processing step, all sentences are tokenized to extract single words. The tokenization is done using the Penn Treebank Tokenizer implemented in the Natural Language Processing Toolkit (NLTK) for Python [Bir09]. Alternatively, this could also be achieved with a regular expression.
 
-Using a hash map, all words are counted. Only unique words, i.e. the keys of the hash map, are taken into account for the dimensionality reduction. Not all unique words are taken into account. The 3000 most frequent English words according to a frequency list collected from Wikipedia are ignored to reduce the amount of data.
+Using a hash map, all words are counted. Only unique words, i.e. the keys of the hash map, are taken into account for the dimensionality reduction. The 3000 most frequent English words according to a frequency list collected from Wikipedia are ignored to reduce the amount of data.
 
 Word representations
 ~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +140,6 @@ In the dimensionality reduction step, the 300-dimensional word vectors are proje
    In the dimensionality reduction step, the word vectors are projected down to 2D :label:`egfig`
 
 For the implementation, the t-SNE implementation in scikit-learn is used:
-
 
 .. code-block:: python
 
@@ -174,18 +172,18 @@ When applied to Game of Thrones, it is e.g. easy to visually compare characters 
 
 .. figure:: topic_comparison_usa.png
 
-   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. On the bottom left, only words present in the 2013 revision and in the bottom right, only words present in the 2015 revision are shown. :label:`egfig`
+   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. In the bottom left, only the words present in the 2013 revision are displayed. In the bottom right, only the words present in the 2015 revision are shown. :label:`egfig`
 
 Conclusion
 ----------
 
 Word2vec word vector representations and t-SNE dimensionality reduction can be used to provide a bird’s-eye view of different text sources, including text summaries and their source material. This enables users to explore a text source like a geographical map. 
 
-The paper gives an overview of an ongoing investigation of the usefulness of word vector representations and dimensionality reduction in the text and topic comparison context. The major flaw of this paper is that the introduced text visualization and text comparison approach are not validated empirically.
+The paper gives an overview of an ongoing investigation of the usefulness of word vector representations and dimensionality reduction in the text and topic comparison context. The major flaw of this paper is that the introduced text visualization and text comparison approach is not validated empirically.
 
 As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. 
 
-Both the front end and the back end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front end code to explore the JSON file as a geographical map.
+Both the front-end and the back-end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front-end code to explore the JSON file as a geographical map.
 
 References
 ----------
