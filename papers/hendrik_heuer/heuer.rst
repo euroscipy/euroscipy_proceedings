@@ -33,7 +33,7 @@ The Github repository of the tool includes an online demo [Heu15]. The tool can 
 Distributional semantic models
 ------------------------------
 
-The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of words can be inferred from its distribution across contexts. The goal of distributional semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
+The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of a word can be inferred from its distribution across contexts. The goal of distributional semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short symbol sequences of length up to N and did not exploit distributed representations [Cun15]. 
 
 The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. The representations are called distributed representations because the features are not mutually exclusive and because their configurations correspond to the variations seen in the observed data [Cun15]. LeCun et al. provide the example of a news story. When the task is to predict the next word in a news story, the learned word vectors for Tuesday and Wednesday will be very similar as they can be easily replaced by each other when used in a sentence [Cun15].
 
@@ -44,7 +44,7 @@ For this paper, word2vec was selected because Mikolov et al. provide 1.4 million
 word2vec
 ~~~~~~~~
 
-word2vec is a tool developed by Mikolov, Sutskever, Chen, Corrado and Dean at Google. The two model architectures in the C tool were made available under an open-source license [Mik13]. Gensim provides Python bindings for word2vec [Řeh10].
+word2vec is a tool developed by Mikolov, Sutskever, Chen, Corrado, and Dean at Google. The two model architectures in the C tool were made available under an open-source license [Mik13]. Gensim provides Python bindings for word2vec [Řeh10].
 
 Word vectors encode semantic meaning and capture many different degrees of similarity [Lev14]. word2vec word vectors can capture linguistic properties such as gender, tense, plurality, and even semantic concepts such as "is the capital city of". word2vec captures domain similarity while other more dependency-based approaches capture functional similarity. 
 
