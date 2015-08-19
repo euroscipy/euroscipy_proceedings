@@ -25,7 +25,7 @@ Using the pyMIC Offload Module in PyFR
 
 .. class:: abstract
 
-    To be written...
+    **TODO:** To be written...
 
 .. class:: keywords
 
@@ -61,6 +61,9 @@ Section 6 concludes the paper.
 
 Related Work
 ------------
+
+**TODO:** Write this section.
+
 
 
 Introduction to PyFR
@@ -441,6 +444,8 @@ Performance of PyFR
 ```````````````````
 
 **TODO:** Write this section.
+
+
 
 Conclusion and Future Work
 --------------------------
