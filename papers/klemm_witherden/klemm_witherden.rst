@@ -36,18 +36,18 @@ Using the pyMIC Offload Module in PyFR
 Introduction
 ------------
 
-It is a know fact that Python is a programming languages that has gained a lot of popularity throughout the computing industry [Tiob14]_.
-Python is an easy-to-use, elegant scripting language that not only allows for rapid prototyping of ideas, but also is used for the productive development of highly flexible software packages.
+It is a known fact that Python is a programming language that has gained a lot of popularity throughout the computing industry [Tiob14]_.
+Python is an easy-to-use, elegant scripting language that not only allows for rapid prototyping of ideas, but that also is used for the productive development of highly flexible software packages.
 Together with the NumPy [NumP15]_, SciPy [SciP15]_, and other packages, Python has been adopted as language for all sorts of computing problems of the high performance computing (HPC) community.
-With these add-on packages, Python can draw from a number of efficient algorithms that bring Python closer to the performance of languages such as C/C++ and Fortran that are compiled ahead of time.
+With these add-on packages, Python can draw from a variety of efficient algorithms that bring Python closer to the performance of compiled languages such as C/C++ and Fortran.
 
 Heterogeneous architectures emerged as a consequence of the desire to compute at a faster pace to shorten time-to-solution or to tackle bigger problem sizes.
-Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| coprocessors [Inte14]_ are instances of hardware that aim to speed up the floating-point intensive parts of typical HPC applications.
+Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| coprocessor [Inte14]_ are instances of hardware that aim to speed up the floating-point intensive parts of HPC applications.
 A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house decrete extension cards.
-One usage scenario is the so-called `offload model` where the host execution transfers data and control over to the coprocessing device to execute specialized kernels on it.
+One usage scenario is the so-called `offload model`, in which the host execution transfers data and control over to the coprocessing device to execute specialized, highly parallel kernels on it. 
 
 In this paper, we present how pyMIC [KlEn14]_, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR [Wit14]_.
-PyFR is software package for solving advection-diffusion problems on streaming architectures.
+PyFR is a software package for solving advection-diffusion problems on streaming architectures.
 It is designed to solve a variety of governing systems on mixed structured grids consisting of different element types.
 Through its execution backends it supports a range of hardware platforms.
 A built-in, C-like domain-specific language is used to implement the solver core. 
@@ -55,9 +55,9 @@ Using the Mako templating engine, the domain-specific language is translated for
 
 The remainder of the paper is organized as follows.
 Section 2 summarizes related work.
-In Section 3, we introduce PyFR and explain some of its background.
+In Section 3, we introduce PyFR and explain its background.
 The pyMIC offload module is introduced in Section 4 and Section 5 shows how it has been applied to PyFR.
-Section 6 concludes the paper.
+Section 6 concludes the paper and envisions future work.
 
 Related Work
 ------------
@@ -79,7 +79,7 @@ where :math:`u(\mathbf{x},t)` is a state vector representing the solution, :math
 A prominent example of an advection-diffusion type problem are the compressible Navier-Stokes equations of fluid dynamics.
 The efficient solution of which, especially in their unsteady form, is of great interest to both industry and academia.
 PyFR is based around the flux reconstruction (FR) approach of Huynh [Huy07]_.
-FR is both high-order accurate in space and can operate unstructured grids.
+FR is both high-order accurate in space and can operate on unstructured grids.
 In FR the computational domain of interest is first discretized into an mesh of conforming elements.
 Inside of each element two sets of points are defined: one in the interior of the element, commonly termed the *solution points*, and another on the surface of the element, termed the *flux points*.
 
@@ -175,16 +175,16 @@ Systems
 The pyMIC Module
 ----------------
 
-The Python Offload module for the |Intel(R)| Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the coprocessor.
+The Python Offload module for the |Intel(R)| Many Core Architecture [KlEn14]_, follows Python's philosophy by providing an easy-to-use, but widely applicable interface to control offloading to the Intel Xeon Phi coprocessor.
 A programmer can start with a very simplistic, maybe non-optimal, offload solution and then refine it by adding more complexity to the program and exercising more fine-grained control over data transfers and kernel invocation.
-The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally increase complexity to improve the first offload solution.
-Because Numpy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with Numpy's ``ndarray`` class and its corresponding array operations.
+The guiding principle is to allow for a first, quickly working implementation in an application, and then offer the mechanisms to incrementally improve the first offload solution.
+Because NumPy is a well-known and widely used package for (multi-dimensional) array data in scientific Python codes, pyMIC is crafted to blend well with NumPy's ``ndarray`` class and its corresponding array operations.
 
 The current version of pyMIC restricts offloaded code to native code for the Intel Xeon Phi coprocessor written in C/C++ or Fortran.
-Since most Python codes employ native extension modules for increased execution speed, this blends well with the HPC codes we targeting.
-Native code can be compiled for the Intel coprocessor and invoked from the Python code through the pyMIC API.
+Since most Python codes employ native extension modules for increased execution speed, this blends well with the HPC codes we are targeting.
+Native code can be compiled for the Intel coprocessor and invoked from the Python code through the pyMIC interface.
 
-To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, succh as |Intel(R)| Language Extensions for Offloading (LEO) and OpenMP 4.0 ``target`` constructs.
+To foster cross-languge compatibility and to support Python extension modules written in C/C++ and Fortran, pyMIC integrates well with other offload programming models for the Intel coprocessor, such as the |Intel(R)| Language Extensions for Offloading (LEO) and the OpenMP 4.0 ``target`` constructs.
 Programmers can freely mix and match offloading on the Python level with offloading performed in extension modules.
 For instance, one could allocate and transfer an ``ndarray`` on the Python level through pyMIC's interfaces and then use the data from within an offloaded C/C++ region in an extension module.
 
@@ -198,7 +198,7 @@ Architecture
 
 Figure :ref:`pyMICarch` shows the architecture of the pyMIC module.
 At the lowest level, the LIBXSTREAM library [Inte15]_ interacts with the coprocessor devices in the system.
-LIBXSTREAM provides a stream-oriented interface to enqueue invocations of user-defined functions, to allocate data, and to transfer data into an execution stream.
+LIBXSTREAM provides a stream-oriented interface to enqueue into an execution stream the invocation of user-defined functions, data allocations, and data transfers.
 All enqeued requests are executed asychronously, but LIBXSTREAM preserves the predecessor/successor relationship of requests within the same stream.
 The library is available as open-source software for Intel Architecture.
 
@@ -206,7 +206,12 @@ At the next higher level sits the pyMIC offload engine that provides the interna
 This design supports different offload implementations in future versions of pyMIC.
 For productivity and easier portability, this level of pyMIC has been implemented in Cython to bridge the gap between the Python level and the LIBXSTREAM library.
 
-The top-level API of pyMIC consists of several classes that provide the different levels of abstractions of offloading: ``OffloadDevice`` to interact with devices; ``OffloadStream`` to provide the stream functionality; ``OffloadArray`` to provide buffer and transfer management; and ``OffloadLibrary`` for kernel loading and unloading.
+The top-level API of pyMIC consists of several classes that provide the different levels of abstractions the offload programming model: 
+
+* ``OffloadDevice`` to interact with devices; 
+* ``OffloadStream`` to provide the stream functionality; 
+* ``OffloadArray`` to provide buffer and transfer management; 
+* and ``OffloadLibrary`` for kernel loading and unloading.
 
 Offloading Code
 ```````````````
@@ -216,7 +221,7 @@ The following Python code shows how to offload the computation of a ``dgemm`` op
 .. code-block:: python
    :linenos:
 
-   import pyMIC
+   import pymic
    import numpy
 
    # size of the matrices
@@ -225,9 +230,9 @@ The following Python code shows how to offload the computation of a ``dgemm`` op
    # create some input data
    alpha = 1.0
    beta = 0.0
-   a = numpy.random.random(m*k).reshape((m, k))
-   b = numpy.random.random(k*n).reshape((k, n))
-   c = numpy.zeros((m, n))
+   a = NumPy.random.random(m*k).reshape((m, k))
+   b = NumPy.random.random(k*n).reshape((k, n))
+   c = NumPy.zeros((m, n))
 
    # load kernel library
    device = pymic.devices[0]
@@ -239,19 +244,20 @@ The following Python code shows how to offload the computation of a ``dgemm`` op
                  a, b, c, m, n, k, alpha, beta)
    stream.sync()
 
-Lines 4-12 initialize the matrix sizes to 4096x4096 each and then create two random matrices (``a``, ``b``) and an empty matrix (``c``).
+Lines 4-12 initialize the matrix sizes to 4096x4096 elements each and then create two random matrices (``a``, ``b``) and an empty matrix (``c``).
 Line 15 gets a handle for the first coprocessor of the system and then initializes the default stream to this device (line 16).
 Line 17 finally loads a native library that contains the kernel that implements the offloaded version of the ``dgemm`` operation.
 
 Lines 19 and 22 enqueue a request to execute the kernel and to synchronize the host thread with the asychronous kernel invocation.
 While the ``invoke`` returns immediately after the request has been enqueued into the stream, the ``sync`` operation blocks until the kernel execution has finished on the target.
 
-By default, pyMIC uses copy-in/copy-out semantics for the data passed to a kernel.
-For Numpy's ``ndarray`` objects, the ``invoke`` method automatically enqueues allocation and transfer requests from the host to the coprocessor (`copy-in`).
+By default, pyMIC provides copy-in/copy-out semantics for the data passed to a kernel.
+For NumPy's ``ndarray`` objects, the ``invoke`` method automatically enqueues allocation and transfer requests from the host to the coprocessor (`copy-in`).
 After the request for kernel invocation, corresponding transfers to move data back from the coprocessor are scheduled (`copyout`).
 For immutable scalar data, pyMIC only performs the copy-in operation.
 While this leads to a very quick first implementation, it also potentially causes unnecessary data transfers.
-In section 4.3, we will show to use pyMIC's interface to optimize data transfers.
+For instance, although the ``c`` matrix is meant to be overwritten on the target (``beta`` is zero), pyMIC would transfer the empty ``c`` matrix top the coprocessor and back.
+In Section 4.3, we will show to use pyMIC's interface to optimize data transfers.
 
 The following code example shows the C code of the ``dgemm`` kernel:
 
@@ -278,21 +284,22 @@ The following code example shows the C code of the ``dgemm`` kernel:
 The pyMIC module automatically marshals and unmarshals data that is passed to the offloaded code.
 Kernel functions can receive any number of formal parameters, but their signature have to match the actual arguments of the ``invoke`` method in the host code.
 The types of the formal parameters are pointers to the C/C++ equivalent of a Python scalar type (on Linux*: ``int64_t``, ``double``, and ``double complex``).
-The pointers to the buffer area that is maintained by pyMIC to keep offloaded data on the coprocessor, so that a kernel can simply access the arguments without calling any additonal runtime functions or worrying about data transfers.
+The pointers reference the buffer area that is maintained by pyMIC to keep offloaded data on the coprocessor, so that a kernel can simply access the arguments without calling any additonal runtime functions or worrying about data transfers.
 However, it is the kernel code's responsibility to access the pointers appropriately and to avoid data corruption when accessing scalar or array data.
 
-In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` as ``double``.
-To keep the example simple, it then invokes the ``dgemm`` implementation of the |Intel(R)| Math Kernel Library (MKL).
+In the above ``dgemm`` example, the kernel expects the matrices as pointers to data of type ``double``, the matrix sizes as scalar arguments of type ``int64_t``, and ``alpha`` and ``beta`` also as pointers to ``double``.
+To keep the example simple and to get optimal performance, the kernel then invokes the ``dgemm`` implementation of the |Intel(R)| Math Kernel Library (MKL).
 
 Optimizing Data Transfers
 `````````````````````````
 
-The following example code shows how to use pyMIC's ``OffloadArray`` class to optimize data transfers in the pyMIC programming model.
+The following example code shows how to use pyMIC's ``OffloadArray`` class to optimize data transfers in the pyMIC programming model.  
+This can be used to avoid the superfluous data transfers of the above ``dgemm`` example.
 
 .. code-block:: python
    :linenos:
 
-   import pyMIC
+   import pymic
    import numpy
 
    # size of the matrices
@@ -301,9 +308,9 @@ The following example code shows how to use pyMIC's ``OffloadArray`` class to op
    # create some input data
    alpha = 1.0
    beta = 0.0
-   a = numpy.random.random(m*k).reshape((m, k))
-   b = numpy.random.random(k*n).reshape((k, n))
-   c = numpy.zeros((m, n))
+   a = NumPy.random.random(m*k).reshape((m, k))
+   b = NumPy.random.random(k*n).reshape((k, n))
+   c = NumPy.zeros((m, n))
 
    # load kernel library
    device = pymic.devices[0]
@@ -333,14 +340,14 @@ The ``OffloadArray`` instances offer the methods ``update_device()`` and ``updat
 The above example uses this interface to avoid the initial transfer of the ``c`` matrix which will be overwritten regardless of its initial values.
 In line 27, the code issues an ``update_host()`` call to retrieve the results of the ``mydgemm`` kernel.
 
-Where the first example required six data transfers (three copy-in and three copy-out transfers) for ``a``, ``b``, and ``c``, the last example only performs the minimal number of transfers, that is, transfer ``a`` and ``b`` from the host to the device and transfer ``c``.
+Where the first example required six data transfers (one copy-in and one copy-out transfers respectively) for ``a``, ``b``, and ``c``, the last example only performs the minimal number of transfers, that is, it transfers ``a`` and ``b`` from the host to the device and only moves ``c`` back to the host process.
 
 
 The pyMIC Low-level Interface
 `````````````````````````````
 
 PyFR's offload model needs more fain-grained control over memory management and referencing data on the target device.
-While this enables the programmer to exercise control over all aspects of offloading, it also exposes details such as device pointers and memory offsets.
+While this low-level programming enables the programmer to exercise full control over all aspects of the offload workflow, it also exposes a lot of details such as device pointers and memory offsets.
 The low-level data management interface (see Figure :ref:`pyMICarch`) that pyMIC uses internally is therefore intentionally exposed as part of the pyMIC API.
 
 This interface is based on ``memcpy``-like methods of a device stream.
@@ -368,8 +375,12 @@ It also offers primitive operations for different directions of data transfers:
                           offset_device_src=0,
                           offset_device_dst=0)
 
-The host pointer passed as an argument is an actual pointer as returned by NumPy's ``nadrray.ctypes.data``.
-The device pointer is a fake pointer that was return by ``allocate_device_memory`` and that uniquely identifies the data allocation on the target device.
+Similar to the high-level interface of pyMIC, it's low-level interface operates in the stream-based model.
+All of the above methods may be executed asychronously and require to call the ``sync`` operation to wait for completion.
+                          
+The host pointer passed as an argument is an actual pointer as returned by NumPy's ``nadrray.ctypes.data`` or similar operations that expose a C-style pointer into the host memory associated with a Python object.
+The device pointer is a fake pointer that was returned by ``allocate_device_memory`` and that uniquely identifies the data allocation on the target device.
+Please note that these fake pointers are smart in the sense that once the Python garbage collector reclaims a smart pointer, the ``__del__`` method automatically releases the device memory associated with the fake pointer.
 
 
 
@@ -377,9 +388,9 @@ Using pyMIC to Offload PyFR
 ---------------------------
 
 Although PyFR can be run on the Intel Xeon Phi coprocessor using the OpenCL backend this configuration is not optimal.
-As was outlined in section 2 the performance of PyFR depends heavily on the presence of a highly tuned matrix multiplication library.
-For the coprocessor this is the Intel Math Kernel Library.
-However, as MKL does not provide an OpenCL interface it is necessary to implement these kernels using pure OpenCL code.
+As was outlined in Section 2 the performance of PyFR depends heavily on the presence of a highly tuned matrix multiplication library.
+For the coprocessor this is the Intel MKL.
+However, as the MKL does not provide an OpenCL interface it is necessary to implement these kernels using pure OpenCL code.
 This is known to be a challenging problem [McI14]_.
 Hence, in order to take full advantage of the capabilities of the coprocessor a native approach is required.
 
@@ -432,11 +443,14 @@ With increasing the size of the transfer, latency becomes less important and thu
 The effective bandwidth of the bind operation is lower, because it involves the overhead of allocation of the offload buffer, while pure transfers (`copyin` and `copyout`) move data into existing buffers.
 
 Figure :ref:`pyMICPerfDgemm` depicts the GFLOPS rate of offloading the ``dgemm`` operation (cf. [KlEn14]_).
-The chart compares the MKL native ``dgemm`` operation of micro-benchmark written in C (`MKL`) with the performance of NumPy setup to use MKL (`Numpy (MKL)`) and the ``mydgemm`` kernel (`pyMIC (kernel only)` and `pyMIC (incl. transfers)`) for various quadratic matrix sizes.
-As can be seen the GFLOP rate of MKL quickly saturates at small matrix sizes because of the effective threading implementation used.
+The chart compares the MKL native ``dgemm`` operation of a micro-benchmark written in C (`MKL`) with the performance of NumPy that was setup to use MKL (`NumPy (MKL)`).
+Both are executing on the host for various quadratic matrix sizes as our baseline.
+The chart also shows the ``mydgemm`` kernel (`pyMIC (kernel only)` and `pyMIC (incl. transfers)`).
+As can be seen the GFLOPS rate of MKL quickly saturates at small matrix sizes because of the effective threading implementation used.
+Due to the cache-blocking in MKL, it provides a stable level of performance across all matrix sizes once it has saturated.
 The comparatively low performance of NumPy is attributed to several temporary copies that NumPy has to maintain to implement a full ``dgemm`` operation.
-Offloading kernel for small matrix sizes is not expected to yield any performance gain due to the latency of transfering small matrices from the host to the coprocessor.
-For matrices larger than 2048x2048, the coprocessor is able to compensate latency and to yield better performance than the host system.
+Offloading the kernel for small matrix sizes is not expected to yield any performance gain due to the latency of transferring the small matrices from the host to the coprocessor.
+For matrices larger than 2048x2048 elements, the coprocessor is able to compensate the transfer latency and to yield better performance than the host system.
 Naturally, the effective GFLOP rate is slightly lower if data transfers are taken into consideration.
 
 
@@ -506,7 +520,7 @@ References
 
 .. [McI14] S McIntosh-Smith and T Mattson, *High Performance Parallelism Pearls*: Chapter 22, Morgan Kaufmann, 2014.
 
-.. [NumP15] NumPy Developers. *NumPy*. 2015. http://www.numpy.org/.
+.. [NumP15] NumPy Developers. *NumPy*. 2015. http://www.NumPy.org/.
 
 .. [SciP15] SciPy Developers. *SciPy*. 2015. http://www.scipy.org/.
 
