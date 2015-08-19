@@ -46,10 +46,18 @@ Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| c
 A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house decrete extension cards.
 One usage scenario is the so-called `offload model` where the host execution transfers data and control over to the coprocessing device to execute specialized kernels on it.
 
-In this paper, we present how pyMIC, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR.
+In this paper, we present how pyMIC [KlEn14]_, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR [Wit14]_.
+PyFR is software package for solving advection-diffusion problems on streaming architectures.
+It is designed to solve a variety of governing systems on mixed structured grids consisting of different element types.
+Through its execution backends it supports a range of hardware platforms.
+A built-in, C-like domain-specific language is used to implement the solver core. 
+Using the Mako templating engine, the domain-specific language is translated for the backend and execution on the compute system.
 
-**TODO:** To be written...
-
+The remainder of the paper is organized as follows.
+Section 2 summarizes related work.
+In Section 3, we introduce PyFR and explain some of its background.
+The pyMIC offload module is introduced in Section 4 and Section 5 shows how it has been applied to PyFR.
+Section 6 concludes the paper.
 
 Related Work
 ------------
