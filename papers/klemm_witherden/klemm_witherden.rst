@@ -458,6 +458,8 @@ Future Work pyMIC:
 
 - Support for offloading full Python code
 
+- Support Python 3
+
 
 
 
