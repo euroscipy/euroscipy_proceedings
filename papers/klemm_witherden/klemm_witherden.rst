@@ -421,8 +421,6 @@ This provides the optimal implementation to execute matrix multiplies on the cop
 Performance Results
 -------------------
 
-**TODO:** To be written...
-
 Performance of pyMIC
 ````````````````````
 
@@ -484,7 +482,13 @@ Further, 11 of the CPU cores are freed up in the process to run either alternati
 Conclusion and Future Work
 --------------------------
 
-**TODO:** To be written...
+In this paper we have introduced the pyMIC offlad module for executing kernels on the Intel Xeon Phi coprocessor.
+The architecture of pyMIC has been outlined and several examples have been presented.
+It is shown how by utilising pyMIC in combination with MKL how it is possible to obtain a substantial speedup for ``dgemm``.
+We have also described PyFR, an open source framework for solving the compressible Navier-Stokes equations on modern hardware platforms.
+The operating model of PyFR, including the techniques used that allow it to run performantly across a variety of hardware platforms, have been presented.
+We have shown how using pyMIC it is possible add a backend into PyFR that allows it to target the Intel Xeon Phi.
+Implementation details have been discussed and benchmarks presented that show a speedup compared with a conventional CPU for a benchmark flow problem.
 
 Future Work pyMIC:
 
@@ -493,7 +497,6 @@ Future Work pyMIC:
 - Support for offloading full Python code
 
 - Support Python 3
-
 
 
 
