@@ -301,7 +301,7 @@ This can be used to avoid the superfluous data transfers of the above ``dgemm`` 
    :linenos:
 
    import pymic
-   import numpy
+   import numpy as np
 
    # size of the matrices
    m, n, k = 4096, 4096, 4096
@@ -309,9 +309,9 @@ This can be used to avoid the superfluous data transfers of the above ``dgemm`` 
    # create some input data
    alpha = 1.0
    beta = 0.0
-   a = NumPy.random.random(m*k).reshape((m, k))
-   b = NumPy.random.random(k*n).reshape((k, n))
-   c = NumPy.zeros((m, n))
+   a = np.random.random(m, k)
+   b = np.random.random(k, n)
+   c = np.zeros(m, n)
 
    # load kernel library
    device = pymic.devices[0]
@@ -381,7 +381,7 @@ All of the above methods may be executed asychronously and require to call the `
                           
 The host pointer passed as an argument is an actual pointer as returned by NumPy's ``nadrray.ctypes.data`` or similar operations that expose a C-style pointer into the host memory associated with a Python object.
 The device pointer is a fake pointer that was returned by ``allocate_device_memory`` and that uniquely identifies the data allocation on the target device.
-Please note that these fake pointers are smart in the sense that once the Python garbage collector reclaims a smart pointer, the ``__del__`` method automatically releases the device memory associated with the fake pointer.
+Please note that these allocations are smart in the sense that once the Python garbage collector reclaims a smart pointer, the ``__del__`` method automatically releases the device memory associated with the allocation.
 
 
 
