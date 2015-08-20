@@ -417,6 +417,10 @@ This provides the optimal implementation to execute matrix multiplies on the cop
 Performance Results
 -------------------
 
+To evaluate th performance of PyFR with pyMIC as an execution backend, we use a Intel Xeon E5-2697v2 host system with an Intel Xeon Phi 3120A coprocessor attached.
+Before diving into the performance evaluation of PyFR, we will shortly revist earlier performance results for pyMIC.
+
+
 Performance of pyMIC
 ````````````````````
 
