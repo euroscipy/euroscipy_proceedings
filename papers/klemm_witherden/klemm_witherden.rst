@@ -25,7 +25,13 @@ Using the pyMIC Offload Module in PyFR
 
 .. class:: abstract
 
-    **TODO:** To be written...
+    PyFR is an open-source high-order accuate computational fluid dynamics solver for unstructured grids.
+    It is designed to efficiently solve the compressible Navier-Stokes equations on a range of hardware platforms, including GPUs and CPUs.
+    In this paper we will describe how the pyMIC module was used to enable PyFR to run with near native performance on the Intel Xeon Phi coprocessor.
+    We will introduce the architecture of both pyMIC and PyFR and present a variety of examples showcasing the capabilities of pyMIC.
+    Further, we will also compare the contrast pyMIC to other approaches including native execution and OpenCL.
+    The process of adding support for pyMIC into PyFR will be described in detail.
+    Benchmark results show that for a standard cylinder flow probablem that PyFR with pyMIC is able achieve 240 GFLOP/s of sustained floating point performance; for a 1.85 times improvement over PyFR with C/OpenMP on a 12 core Intel Xeon E5-2697 v2 CPU.
 
 .. class:: keywords
 
@@ -54,15 +60,10 @@ A built-in, C-like domain-specific language is used to implement the solver core
 Using the Mako templating engine, the domain-specific language is translated for the backend and execution on the compute system.
 
 The remainder of the paper is organized as follows.
-Section 2 summarizes related work.
-In Section 3, we introduce PyFR and explain its background.
-The pyMIC offload module is introduced in Section 4 and Section 5 shows how it has been applied to PyFR.
-Section 6 concludes the paper and envisions future work.
+In Section 2, we introduce PyFR and explain its background.
+The pyMIC offload module is introduced in Section 3 and Section 4 shows how it has been applied to PyFR.
+Section 5 concludes the paper and envisions future work.
 
-Related Work
-------------
-
-**TODO:** Write this section.
 
 
 
@@ -425,13 +426,13 @@ Performance Results
 Performance of pyMIC
 ````````````````````
 
-.. figure:: pyMIC_perf_bandwidth.png
+.. figure:: pymic_perf_bandwidth.png
    :scale: 60 %
 
    Bandwidth of the data-transfer operations of pyMIC (see [KlEn14]_). :label:`pyMICPerfBandwidth`
 
 
-.. figure:: pyMIC_perf_dgemm.png
+.. figure:: pymic_perf_dgemm.png
    :scale: 60 %
 
    Performance of the offloadded ``dgemm`` operation(see [KlEn14]_). :label:`pyMICPerfDgemm`
@@ -457,7 +458,26 @@ Naturally, the effective GFLOP rate is slightly lower if data transfers are take
 Performance of PyFR
 ```````````````````
 
-**TODO:** Write this section.
+As a benchmark problem we consider the case of flow over a circular cylinder at Mach 0.2 and Reynolds number 3900.
+Following [Wit14]_ the domain was meshed with 46610 hexahedra and run with fourth order solution polynomials.
+A visual depiction of the simulation can be seen in Figure :ref:`pyfrcyl`.
+When running at double precision this gives a working set of 3.1 GiB.
+One complete time step using a fourth order Runge-Kutta scheme requires on the order of :math:`{\sim}4.6 \times 10^{11}` floating point operations with large simulations requiring on the order of half of million steps.
+The performance of PyFR in sustained GFLOPS for this problem on an Intel Xeon Phi 3120A coprocessor (57 cores at 1.1 GHz) can be seen in Figure :ref:`pyfrperf`.
+Results for a twelve core Intel Xeon E5-2697 v2 CPU using the OpenMP backend are also included.
+Using \pymic a speedup of approximately 1.85 times can be observed.
+Further, 11 of the CPU cores are freed up in the process to run either alternative workloads or a heterogenous PyFR simulation using two MPI ranks to exploit both the CPU cores and the coprocessor.
+
+.. figure:: pyfr_cylinder.jpg
+   :scale: 12%
+
+   Isosurfaces of density colored by velocity magnitude for the cylinder benchmark problem. :label:`pyfrcyl`
+
+
+.. figure:: pyfr_perf.pdf
+   :scale: 60 %
+
+   Sustained performance of PyFR for the cylinder flow problem using the C/OpenMP backend on a 12 core Xeon E5-2697 CPU and the \pymic backend on an actively cooled Xeon Phi. :label:`pyfrperf`
 
 
 
