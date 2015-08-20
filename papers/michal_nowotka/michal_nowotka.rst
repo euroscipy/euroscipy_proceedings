@@ -340,15 +340,10 @@ Acknowledgments
 We acknowledge the following people, projects and communities, without whom
 described projects would not have been possible:
 
-1. George Papadatos
-2. George Papadatos
-3. George Papadatos
-4. A very very big gap...
-5. Greg Landrum and the RDKit community (http://www.rdkit.org/)
-6. Francis Atkinson, Nathan Dedman, Gerard van Westen and ChEMBL group.
-7. All ChEMBL users, in particular those who have contacted chembl-help and
+1. Greg Landrum and the RDKit community (http://www.rdkit.org/)
+2. Francis Atkinson, Nathan Dedman, Gerard van Westen and ChEMBL group.
+3. All ChEMBL users, in particular those who have contacted chembl-help and
    suggested enhancements to the existing services
-8. Chembl-help for being such a fantastic email address.
 
 References
 ----------
