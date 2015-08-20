@@ -50,13 +50,13 @@ With these add-on packages, Python can draw from a variety of efficient algorith
 Heterogeneous architectures emerged as a consequence of the desire to compute at a faster pace to shorten time-to-solution or to tackle bigger problem sizes.
 Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| coprocessor [Inte14]_ are instances of hardware that aim to speed up the floating-point intensive parts of HPC applications.
 A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house decrete extension cards.
-One usage scenario is the so-called `offload model`, in which the host execution transfers data and control over to the coprocessing device to execute specialized, highly parallel kernels on it. 
+One usage scenario is the so-called `offload model`, in which the host execution transfers data and control over to the coprocessing device to execute specialized, highly parallel kernels on it.
 
 In this paper, we present how pyMIC [KlEn14]_, a Python module geared to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR [Wit14]_.
 PyFR is a software package for solving advection-diffusion problems on streaming architectures.
 It is designed to solve a variety of governing systems on mixed structured grids consisting of different element types.
 Through its execution backends it supports a range of hardware platforms.
-A built-in, C-like domain-specific language is used to implement the solver core. 
+A built-in, C-like domain-specific language is used to implement the solver core.
 Using the Mako templating engine, the domain-specific language is translated for the backend and execution on the compute system.
 
 The remainder of the paper is organized as follows.
@@ -143,34 +143,27 @@ This enables simulations to be run on heterogeneous clusters containing a mix of
 However, as discussed in [Wit15]_, this capability comes at the cost of a more complicated domain decomposition process.
 
 PyFR v1.0.0 is released under a three-clause new style BSD license and is available from http://pyfr.org.
-Key functionality summarised below.
+The following list summarizes the key functionality of PyFR:
 
-Dimensions
-    2D, 3D
+* Dimensions: 2D, 3D
 
-Elements
-    Triangles, quadrilaterals, hexahedra, tetrahedra, prisms, pyramids
+* Elements: triangles, quadrilaterals, hexahedra, tetrahedra, prisms, pyramids
 
-Spatial orders
-    Arbitary
+* Spatial orders: arbitary
 
-Time steppers
-    RK4, RK45[2R+], TVDRK3
+* Time steppers: RK4, RK45[2R+], TVDRK3
 
-Precisions
-    Single, Double
+* Precisions: single, double
 
-Backends
-    C/OpenMP, CUDA, OpenCL
+* Backends: C/OpenMP, CUDA, OpenCL
 
-Communication
-    MPI
+* Communication: MPI
 
-File format
-    Parallel HDF5 using h5py [Col13]_
+* File format: parallel HDF5 using h5py [Col13]_
 
-Systems
-    Euler, compressible Navier-Stokes
+* Systems: Euler, compressible Navier-Stokes
+
+
 
 
 The pyMIC Module
@@ -207,11 +200,11 @@ At the next higher level sits the pyMIC offload engine that provides the interna
 This design supports different offload implementations in future versions of pyMIC.
 For productivity and easier portability, this level of pyMIC has been implemented in Cython to bridge the gap between the Python level and the LIBXSTREAM library.
 
-The top-level API of pyMIC consists of several classes that provide the different levels of abstractions the offload programming model: 
+The top-level API of pyMIC consists of several classes that provide the different levels of abstractions the offload programming model:
 
-* ``OffloadDevice`` to interact with devices; 
-* ``OffloadStream`` to provide the stream functionality; 
-* ``OffloadArray`` to provide buffer and transfer management; 
+* ``OffloadDevice`` to interact with devices;
+* ``OffloadStream`` to provide the stream functionality;
+* ``OffloadArray`` to provide buffer and transfer management;
 * and ``OffloadLibrary`` for kernel loading and unloading.
 
 Offloading Code
@@ -294,7 +287,7 @@ To keep the example simple and to get optimal performance, the kernel then invok
 Optimizing Data Transfers
 `````````````````````````
 
-The following example code shows how to use pyMIC's ``OffloadArray`` class to optimize data transfers in the pyMIC programming model.  
+The following example code shows how to use pyMIC's ``OffloadArray`` class to optimize data transfers in the pyMIC programming model.
 This can be used to avoid the superfluous data transfers of the above ``dgemm`` example.
 
 .. code-block:: python
@@ -378,10 +371,11 @@ It also offers primitive operations for different directions of data transfers:
 
 Similar to the high-level interface of pyMIC, it's low-level interface operates in the stream-based model.
 All of the above methods may be executed asychronously and require to call the ``sync`` operation to wait for completion.
-                          
+
 The host pointer passed as an argument is an actual pointer as returned by NumPy's ``nadrray.ctypes.data`` or similar operations that expose a C-style pointer into the host memory associated with a Python object.
 The device pointer is a fake pointer that was returned by ``allocate_device_memory`` and that uniquely identifies the data allocation on the target device.
 Please note that these allocations are smart in the sense that once the Python garbage collector reclaims a smart pointer, the ``__del__`` method automatically releases the device memory associated with the allocation.
+
 
 
 
@@ -416,6 +410,8 @@ The PyFR framework then loads the library on the target device by executing the 
 
 Matrix multiplications are handled by invoking a native kernel which itself calls out to the ``cblas_sgemm`` and ``cblas_dgemm`` routines from MKL.
 This provides the optimal implementation to execute matrix multiplies on the coprocessor.
+
+
 
 
 Performance Results
@@ -463,7 +459,7 @@ When running at double precision this gives a working set of 3.1 GiB.
 One complete time step using a fourth order Runge-Kutta scheme requires on the order of :math:`{\sim}4.6 \times 10^{11}` floating point operations with large simulations requiring on the order of half of million steps.
 The performance of PyFR in sustained GFLOPS for this problem on an Intel Xeon Phi 3120A coprocessor (57 cores at 1.1 GHz) can be seen in Figure :ref:`pyfrperf`.
 Results for a twelve core Intel Xeon E5-2697 v2 CPU using the OpenMP backend are also included.
-Using \pymic a speedup of approximately 1.85 times can be observed.
+Using pyMIC a speedup of approximately 1.85 times can be observed.
 Further, 11 of the CPU cores are freed up in the process to run either alternative workloads or a heterogenous PyFR simulation using two MPI ranks to exploit both the CPU cores and the coprocessor.
 
 .. figure:: pyfr_cylinder.jpg
@@ -475,7 +471,8 @@ Further, 11 of the CPU cores are freed up in the process to run either alternati
 .. figure:: pyfr_perf.pdf
    :scale: 60 %
 
-   Sustained performance of PyFR for the cylinder flow problem using the C/OpenMP backend on a 12 core Xeon E5-2697 CPU and the \pymic backend on an actively cooled Xeon Phi. :label:`pyfrperf`
+   Sustained performance of PyFR for the cylinder flow problem using the C/OpenMP backend on a 12 core Xeon E5-2697 CPU and the pyMIC backend on an actively cooled Xeon Phi. :label:`pyfrperf`
+
 
 
 
@@ -495,6 +492,7 @@ The next release of pyMIC will support Python 3.
 We are also working on extending the synchronization capabilities of pyMIC to not only allow for synchronization between a host thread and single streams through the ``sync()`` method.
 A future version of pyMIC will add events that will allow for synchronizing host threads with streams objects and to also synchronize multiple streams.
 Finally, we are looking into extending pyMIC to go beyond native kernels on the target devices, but also provide offload capabilities for generic Python code.
+
 
 
 
