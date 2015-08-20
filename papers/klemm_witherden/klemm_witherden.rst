@@ -490,13 +490,11 @@ The operating model of PyFR, including the techniques used that allow it to run 
 We have shown how using pyMIC it is possible add a backend into PyFR that allows it to target the Intel Xeon Phi.
 Implementation details have been discussed and benchmarks presented that show a speedup compared with a conventional CPU for a benchmark flow problem.
 
-Future Work pyMIC:
-
-- Support for events to performance cross-stream synchronization
-
-- Support for offloading full Python code
-
-- Support Python 3
+The roadmap for the pyMIC module contains several extensions that we are planning to make over the course of the upcoming releases.
+The next release of pyMIC will support Python 3.
+We are also working on extending the synchronization capabilities of pyMIC to not only allow for synchronization between a host thread and single streams through the ``sync()`` method.
+A future version of pyMIC will add events that will allow for synchronizing host threads with streams objects and to also synchronize multiple streams.
+Finally, we are looking into extending pyMIC to go beyond native kernels on the target devices, but also provide offload capabilities for generic Python code.
 
 
 
