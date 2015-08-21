@@ -249,11 +249,7 @@ The following Python code shows how to offload the computation of a ``dgemm`` op
    :linenos:
 
    import pymic
-<<<<<<< HEAD
-   import numpy
-=======
    import numpy as np
->>>>>>> work
 
    # size of the matrices
    m, n, k = 4096, 4096, 4096
@@ -261,15 +257,9 @@ The following Python code shows how to offload the computation of a ``dgemm`` op
    # create some input data
    alpha = 1.0
    beta = 0.0
-<<<<<<< HEAD
-   a = NumPy.random.random(m*k).reshape((m, k))
-   b = NumPy.random.random(k*n).reshape((k, n))
-   c = NumPy.zeros((m, n))
-=======
    a = np.random.random(m, k)
    b = np.random.random(k, n)
    c = np.zeros(m, n)
->>>>>>> work
 
    # load kernel library
    device = pymic.devices[0]
