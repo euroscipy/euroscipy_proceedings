@@ -33,12 +33,12 @@ Introduction
 ChEMBL [ChEMBL14]_ is the largest open access database resource in the fields of
 computational drug discovery, chemoinformatics and chemical biology.
 Developed by the `Chemogenomics team`_ at the `European Bioinformatics
-Institute`_, ChEMBL database stores curated two-dimensional chemical structures
-and abstracted quantitative bioactivity data alongside calculated molecular
-properties. The majority of the ChEMBL data is derived by manual abstraction
+Institute`_, the ChEMBL database stores curated two-dimensional chemical
+structures and standardised quantitative bioactivity data alongside calculated
+molecular properties.
+The majority of the ChEMBL data is derived by manual extraction
 and curation from the primary scientific literature, and therefore cover a
-significant fraction of the structure–activity relationship (SAR) data for the
-discovery of modern drugs.
+significant fraction of the publicly available chemogenomics space.
 
 In this paper, we describe how Python is used as the cornerstone and
 foundation inside the ChEMBL group, in order to support and streamline many
@@ -62,18 +62,18 @@ database, with an ability to modify data and without any limitations of how
 frequently data can be retrieved.
 This method requires downloading a large SQL dump file and a private
 machine (physical or virtual), which will host database server.
-Because this method requires some non-trvial hardware infrastructure, it can be
+Because this method requires some non-trivial hardware infrastructure, it can be
 expensive.
 On the other hand, web services provide ChEMBL data over HTTP(S), using well
 defined and documented RESTful protocol.
 This method should be used by developers, who wish to create simple web
-sites, RIAs or mobile applications, requiring chemical data.
+sites, RIAs or mobile applications, consuming chemical and biological data.
 
-ChEMBL team uses Python to streamline delivering data using both methods.
+The ChEMBL team uses Python to streamline delivering data using both methods.
 In case of SQL dumps, `Django ORM`_ is employed to export data from `Oracle`_
-database, that is used by ChEMBL in production, into two other popular formats:
+database, used by ChEMBL in production, into two other popular formats:
 `MySQL`_ and `PostgreSQL`_.
-`Django data model`_, which describes ChEMBL database schema is
+The `Django data model`_, which describes the ChEMBL database schema, is
 responsible for translating incompatible data types, indicating possible
 problems with data during `migration process`_, which is fully automated.
 After data is populated to separate Oracle, MySQL and PostgreSQL instances,
@@ -96,8 +96,8 @@ apply advanced filtering and ordering of data in JSON, JSONP, XML and YAML
 formats.
 For convenient use in web pages using AJAX technique, CORS mechanism is
 implemented.
-There is also an `online documentation`_, that allows to perform web services
-call from a web browser.
+There is also an `online documentation`_, that allows users to perform web
+services calls from a web browser.
 
 .. figure:: figure2.jpg
    :align: center
@@ -279,8 +279,8 @@ There are two variants - one based on `Ubuntu 14.04 LTS`_ and the second
 one based on `CentOS 7`_.
 Virtual Machine disk images are available in vmdk, qcow2 and img formats.
 `Docker`_ containers are available as well.
-Scripts used to build and configure machines are available on GitHub so it is
-possible to run them on physical machines instead of VMs.
+The scripts used to build and configure machines are available on GitHub so it
+is possible to run them on physical machines instead of VMs.
 
 Again, Python plays important role in configuring myChEMBL.
 Since Docker is designed to run one process per container and ignores
@@ -292,10 +292,10 @@ single point of entry.
 Curation of data
 ----------------
 
-Supporting the process of extracting data from scientific papers and curating
-it is another area, where Python plays important role.
-The ChEMBL team is currently working on web application, that can help ChEMBL
-curators in this tedious process.
+Supporting the process of extracting and curation data from scientific papers
+is another area where Python plays an important role.
+The ChEMBL team is currently working on a web application, that can aid in-house
+expert curators with this rather tedious and time-consuming process.
 The application can open a scientific publication in PDF format or a scanned
 image and extract compounds presented as images or identifiers.
 Extracted compounds are presented to the user in order to correct possible
@@ -308,25 +308,25 @@ appropriate action.
    :scale: 30%
    :figclass: w
 
-   Extracting data from scientific paper. :label:`egfig`
+   Extracting data from a scientific publication. :label:`egfig`
 
 Apart from the scientific papers and images, curation interface can handle
 most popular chemical formats, such as SDF files, MDL molfiles, SMILES and
-INCHIs.
-It uses `Celery`_ as synchronous task queue for performing necessary
-chemistry calculations when new compound is inserted or updated.
-With this system a chemical curator no longer has to deal with raw SQL
-statements, that can be hard to learn or debug but can focus on domain specific
-tasks.
+InChIs.
+It uses `Celery`_ as synchronous task queue for performing the necessary
+chemistry calculations when new a compound is inserted or updated.
+With this system, a chemical curator no longer has to deal with raw SQL
+statements, that can be hard to learn or debug, instead they can focus on domain
+specific tasks.
 
 Discussion
 ----------
 
-Python is an essential technology in most critical aspects of ChEMBL team
+Python is an essential technology in most critical aspects of the ChEMBL team
 activities.
 It streamlines data distribution, curation and analysis.
 The tools build using Python language are robust, flexible and web friendly,
-which makes them perfect for collaborating in scientific environment.
+which makes them ideal for collaborating in a scientific environment.
 As an interpreted, dynamically typed scripting language, Python is perfect for
 prototyping different computing solutions and applications.
 Many powerful general purpose libraries, that Python has at its
@@ -341,7 +341,8 @@ We acknowledge the following people, projects and communities, without whom
 described projects would not have been possible:
 
 1. Greg Landrum and the RDKit community (http://www.rdkit.org/)
-2. Francis Atkinson, Nathan Dedman, Gerard van Westen and ChEMBL group.
+2. Francis Atkinson, Nathan Dedman, Gerard van Westen and all former and current
+   members of the ChEMBL group.
 3. All ChEMBL users, in particular those who have contacted chembl-help and
    suggested enhancements to the existing services
 
