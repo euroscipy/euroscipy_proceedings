@@ -13,16 +13,12 @@ PyCells for an Open Semiconductor Industory
 
 .. class:: abstract
 
-   A short version of the long version that is way too long to be written as a
-   short version anyway.  Still, when considering the facts from first
-   principles, we find that the outcomes of this introspective approach is
-   compatible with the guidelines previously established.
-
-   In such an experiment it is then clear that the potential for further
-   development not only depends on previous relationships found but also on
-   connections made during exploitation of this novel new experimental
-   protocol.
-
+   In modern semiconductor industory, automatic generation of parameterized and recurring layout structures plays an important role, and should be present as a feature in Electronic Desin Automation (EDA)-tools.  
+   Currently these layout generators are developed with a proprietary programming language SKILL, and can be used with a specific EDA-tool, Cadence.
+   Therefore the development of the layout generators that can be used in all kinds of EDA-tools which suuport openaccess database is in a high demand. 
+   In this project we have developed these layout generators, PyCells, with Python using Python API library for all transistors, resistors, and capacitors of ams technologies, and have not only preserved all the features of a copmprehensive layout generator, but also enhanced the compuational performance.      
+   The resulting PyCells are verified thoroughly with respect to accuracy and computation time with different EDA-tools, and have extra interactive features such as auto-abutment and stretching.
+   
 .. class:: keywords
 
    PyCells, Semiconductor, Open-Access
