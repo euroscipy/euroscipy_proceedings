@@ -13,11 +13,10 @@ PyCells for an Open Semiconductor Industory
 
 .. class:: abstract
 
-   In modern semiconductor industory, automatic generation of parameterized and recurring layout structures plays an important role, and should be present as a feature in Electronic Desin Automation (EDA)-tools.  
-   Currently these layout generators are developed with a proprietary programming language SKILL, and can be used with a specific EDA-tool, Cadence.
-   Therefore the development of the layout generators that can be used in all kinds of EDA-tools which suuport openaccess database is in a high demand. 
-   In this project we have developed these layout generators, PyCells, with Python using Python API library for all transistors, resistors, and capacitors of ams technologies, and have not only preserved all the features of a copmprehensive layout generator, but also enhanced the compuational performance.      
-   The resulting PyCells are verified thoroughly with respect to accuracy and computation time with different EDA-tools, and have extra interactive features such as auto-abutment and stretching.
+In modern semiconductor industory, automatic generation of parameterized and recurring layout structures plays an important role, and should be present as a feature in Electronic Desin Automation (EDA)-tools.
+Currently these layout generators are developed with a proprietary programming language SKILL, and can be used with a specific EDA-tool, Cadence. Therefore the development of the layout generators that can be used in all kinds of EDA-tools which suuport openaccess database is in a high demand. 
+In this project we have developed these layout generators, PyCells, with Python using Python API library for all transistors, resistors, and capacitors of ams technologies, and have not only preserved all the features of a copmprehensive layout generator, but also enhanced the compuational performance.
+The resulting PyCells are verified thoroughly with respect to accuracy and computation time with different EDA-tools, and have extra interactive features such as auto-abutment and stretching.
    
 .. class:: keywords
 
@@ -41,167 +40,100 @@ nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
 Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
 justo vitae odio tincidunt tempus at vitae tortor.
 
-Of course, no paper would be complete without some source code.  Without
-highlighting, it would look like this::
+Development
+------------
 
-   def sum(a, b):
-       """Sum two numbers."""
+Twelve hundred years ago  |---| in a galaxy just across the hill...
 
-       return a + b
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sapien
+tortor, bibendum et pretium molestie, dapibus ac ante. Nam odio orci, interdum
+sit amet placerat non, molestie sed dui. Pellentesque eu quam ac mauris
+tristique sodales. Fusce sodales laoreet nulla, id pellentesque risus convallis
+eget. Nam id ante gravida justo eleifend semper vel ut nisi. Phasellus
+adipiscing risus quis dui facilisis fermentum. Duis quis sodales neque. Aliquam
+ut tellus dolor. Etiam ac elit nec risus lobortis tempus id nec erat. Morbi eu
+purus enim. Integer et velit vitae arcu interdum aliquet at eget purus. Integer
+quis nisi neque. Morbi ac odio et leo dignissim sodales. Pellentesque nec nibh
+nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
+Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
+justo vitae odio tincidunt tempus at vitae tortor.
 
-With code-highlighting:
+ 
+Stretching
+----------
+
+Besides the basic feature of specifying parameters, the Python API offers also more enhanced interactions with the EDA-tool. One of these is stretching. Stretching allows to change parameters interactively. PCells are made stretchable by pre-defined properties stored in the OpenAccess database. When designing a PCell in Python, the stretch handles are defined within the source code. The stretch handles have to be associated to a layout shape and parameter. Stretching can be limited in horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown:
+
+.. code-block:: python
+   
+   stretchHandle( 
+       name = 'width_handle_left',
+       shape = poly1GateShape,
+	   parameter = 'wtot',
+	   location = CENTER_LEFT,
+	   direction = EAST_WEST,
+	   stretchType = 'relative',
+	   minVal = 0.4,
+	   maxVal = 10000.0
+   )
+
+In figure 4.3, the steps for stretching a device is illustrated. The layout tool displays stretch handles as small diamonds, which can be dragged by the engineer graphically to change the parameter value using the mouse. When releasing the stretch handle, the PCell code is automatically invoked and the layout is adapted according to the new value.
+
+
+Abutment
+--------
+
+Another advanced feature is auto-abutment. Abutment is used to make the layout more area efficient. When placing two instances next to each other, the layout can be adapted in a way, that common structures are shared between the instances. This minimizes the layout area and the two instances appear to be merged. Such as stretching, auto-abutment is defined by additional information associated with shapes in the OpenAccess database. In Python abutment can be defined for a shape by using the autoAbutment() function. This function provides a variety of parameters. The parameter abutClass assigns a group of components, which are compatible for abutment. Only components with the same abutClass can be abutted. Furthermore, there are seven function parameters to specify different types of abutment, which differ in the pin shapes. One pin shape can be larger than the other one and two or three pin shapes can be connected to the same net. These different abutment conditions are listed in table 4.1. Additionally there is one parameter (noAbut) that specifies the spacing between two instances where no abutment should happen. The other six abutment condition parameters define the spacing and the PyCell parameter with its value for the two instances when they are abutted. An example of a auto-abutment definition is shown:
 
 .. code-block:: python
 
-   def sum(a, b):
-       """Sum two numbers."""
+    autoAbutment(
+        shape = drain,
+        pinSize = self.w,
+        directions = [WEST],
+        abutClass = 'mos_drain',
+        abut2PinEqual = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffHalf'},
+            {'diffLeftStyle': 'DiffHalf'}],
+        abut2PinBigger = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        abut3PinBigger = [{'spacing': 0.0},
+            {'diffLeftStyle': 'ContactEdgeAbut2'},
+            {'diffLeftStyle': 'ContactEdgeAbut2'}],
+        abut3PinEqual = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffAbut'},
+            {'diffLeftStyle': 'ContactEdgeAbut2'}],
+        abut2PinSmaller = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        abut3PinSmaller = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        noAbut = [{'spacing': 0.4 }]
+    )
 
-       return a + b
-
-Maybe also in another language, and with line numbers:
-
-.. code-block:: c
-   :linenos:
-
-   int main() {
-       for (int i = 0; i < 10; i++) {
-           /* do something */
-       }
-       return 0;
-   }
-
-Or a snippet from the above code, starting at the correct line number:
-
-.. code-block:: c
-   :linenos:
-   :linenostart: 2
-
-   for (int i = 0; i < 10; i++) {
-       /* do something */
-   }
- 
-Important Part
---------------
-
-It is well known [Atr03]_ that Spice grows on the planet Dune.  Test
-some maths, for example :math:`e^{\pi i} + 3 \delta`.  Or maybe an
-equation on a separate line:
-
-.. math::
-
-   g(x) = \int_0^\infty f(x) dx
-
-or on multiple, aligned lines:
-
-.. math::
-   :type: eqnarray
-
-   g(x) &=& \int_0^\infty f(x) dx \\
-        &=& \ldots
+Figure 4.4 shows how the auto-abutment feature works within the EDA-tool. For example, two transistor instances can be abutted to share a common drain. To do this, the layout engineer drags one instance and places it in a way, that the drain contacts overlap. Then the abutment feature of the PCell is triggered and the two instances are merged.
 
 
-The area of a circle and volume of a sphere are given as
+Conclusion
+------------
 
-.. math::
-   :label: circarea
+Twelve hundred years ago  |---| in a galaxy just across the hill...
 
-   A(r) = \pi r^2.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sapien
+tortor, bibendum et pretium molestie, dapibus ac ante. Nam odio orci, interdum
+sit amet placerat non, molestie sed dui. Pellentesque eu quam ac mauris
+tristique sodales. Fusce sodales laoreet nulla, id pellentesque risus convallis
+eget. Nam id ante gravida justo eleifend semper vel ut nisi. Phasellus
+adipiscing risus quis dui facilisis fermentum. Duis quis sodales neque. Aliquam
+ut tellus dolor. Etiam ac elit nec risus lobortis tempus id nec erat. Morbi eu
+purus enim. Integer et velit vitae arcu interdum aliquet at eget purus. Integer
+quis nisi neque. Morbi ac odio et leo dignissim sodales. Pellentesque nec nibh
+nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
+Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
+justo vitae odio tincidunt tempus at vitae tortor.
 
-.. math::
-   :label: spherevol
-
-   V(r) = \frac{4}{3} \pi r^3
-
-We can then refer back to Equation (:ref:`circarea`) or
-(:ref:`spherevol`) later.
-
-Mauris purus enim, volutpat non dapibus et, gravida sit amet sapien. In at
-consectetur lacus. Praesent orci nulla, blandit eu egestas nec, facilisis vel
-lacus. Fusce non ante vitae justo faucibus facilisis. Nam venenatis lacinia
-turpis. Donec eu ultrices mauris. Ut pulvinar viverra rhoncus. Vivamus
-adipiscing faucibus ligula, in porta orci vehicula in. Suspendisse quis augue
-arcu, sit amet accumsan diam. Vestibulum lacinia luctus dui. Aliquam odio arcu,
-faucibus non laoreet ac, condimentum eu quam. Quisque et nunc non diam
-consequat iaculis ut quis leo. Integer suscipit accumsan ligula. Sed nec eros a
-orci aliquam dictum sed ac felis. Suspendisse sit amet dui ut ligula iaculis
-sollicitudin vel id velit. Pellentesque hendrerit sapien ac ante facilisis
-lacinia. Nunc sit amet sem sem. In tellus metus, elementum vitae tincidunt ac,
-volutpat sit amet mauris. Maecenas diam turpis, placerat at adipiscing ac,
-pulvinar id metus.
-
-.. figure:: figure1.png
-
-   This is the caption. :label:`egfig`
-
-.. figure:: figure1.png
-   :align: center
-   :figclass: w
-
-   This is a wide figure, specified by adding "w" to the figclass.  It is also
-   center aligned, by setting the align keyword (can be left, right or center).
-
-.. figure:: figure1.png
-   :scale: 20%
-   :figclass: bht
-
-   This is the caption on a smaller figure that will be placed by default at the
-   bottom of the page, and failing that it will be placed inline or at the top.
-   Note that for now, scale is relative to a completely arbitrary original
-   reference size which might be the original size of your image - you probably
-   have to play with it. :label:`egfig2`
-
-As you can see in Figures :ref:`egfig` and :ref:`egfig2`, this is how you reference auto-numbered
-figures.
-
-.. table:: This is the caption for the materials table. :label:`mtable`
-
-   +------------+----------------+
-   | Material   | Units          |
-   +------------+----------------+
-   | Stone      | 3              |
-   +------------+----------------+
-   | Water      | 12             |
-   +------------+----------------+
-   | Cement     | :math:`\alpha` |
-   +------------+----------------+
-
-
-We show the different quantities of materials required in Table
-:ref:`mtable`.
-
-
-.. The statement below shows how to adjust the width of a table.
-
-.. raw:: latex
-
-   \setlength{\tablewidth}{0.8\linewidth}
-
-
-.. table:: This is the caption for the wide table.
-   :class: w
-
-   +--------+----+------+------+------+------+--------+
-   | This   | is |  a   | very | very | wide | table  |
-   +--------+----+------+------+------+------+--------+
-
-
-Perhaps we want to end off with a quote by Lao Tse:
-
-  *Muddy water, let stand, becomes clear.*
-
-
-.. Customised LaTeX packages
-.. -------------------------
-
-.. Please avoid using this feature, unless agreed upon with the
-.. proceedings editors.
-
-.. ::
-
-..   .. latex::
-..      :usepackage: somepackage
-
-..      Some custom LaTeX source here.
 
 References
 ----------
