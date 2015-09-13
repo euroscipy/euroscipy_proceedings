@@ -46,17 +46,17 @@ justo vitae odio tincidunt tempus at vitae tortor.
 Development
 ------------
 
-OpenAceess has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is file based database and manage the logical design data (schematics) as well as the artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is writen in C++. The company Ciranoca (now acquired by Synopsys) developed a Python wrapper for the OpenAccess C++ class library with the goal to access and modify design data within Python. Additionally they provide an integrated development enviroment, which enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separeted window.
+OpenAceess has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is file based database and manage the logical design data (schematics) as well as the artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys) developed a Python wrapper for the OpenAccess C++ class library with the goal to access and modify design data within Python. Additionally they provide an integrated development environment, which enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
 
-In our development we made use of this Python API for OpenAceess to write Python scripts, which generate recuring layout structures based on a given set of parameters. Usally these recuring structures are primitiv devices used in integrated ciruit design, like resistors, capacitors and transitors. The electrical properties of these devices (resistance, capacitance and e.g. transistor transconductance) are brought down to geometric dimensions (e.g width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
+In our development we made use of this Python API for OpenAceess to write Python scripts, which generate recurring layout structures based on a given set of parameters. Usually these recurring structures are primitive devices used in integrated circuit design, like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
-A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (eg. 5V, 20V, 50V 120V), which will then results in different layout structures. Gernal speaking each transistor has a similar gate, source and drain structure but different doping concentrations for the implant regions of the semiconductor and different protectional structures. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This aproach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the correcponding device is touched.
+A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which will then results in different layout structures. General speaking each transistor has a similar gate, source and drain structure but different doping concentrations for the implant regions of the semiconductor and different protection structures. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched.
 
  
 Stretching
 ----------
 
-Besides the basic feature, of specifying parameters for recuring structures, the Python API offers also more enhanced interactions with the EDA-tool. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog designs into the avaliable space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
+Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactions with the EDA-tool. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
 
 .. math::
    :label: capequ
@@ -70,7 +70,7 @@ Besides the basic feature, of specifying parameters for recuring structures, the
    Stretching of a capacitor by changing L and W ratio, but keeping its area constant. :label:`capfig`
 
 
-The electrical properties of restistors and transistors are proportional to the ratio of length and width:
+The electrical properties of resistors and transistors are proportional to the ratio of length and width:
 
 .. math::
    :label: resequ
@@ -82,13 +82,13 @@ The electrical properties of restistors and transistors are proportional to the 
 
    g_m \propto \frac{W}{L}
    
-Therefore one can not simply fit them into a given shape, without affacting the behaviour of the design. One option is to allow the resistors to have bends (shown in figure :ref:`resfig`) or change the number of fingers for transistors (see figure :ref:`transfig`).
+Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (shown in figure :ref:`resfig`) or change the number of fingers for transistors (see figure :ref:`transfig`).
       
 .. figure:: stretch_res.pdf
    :scale: 80%
    :align: center
    
-   Stretching of a resistor by bending the the device in a snake structure, but keeping length and width constant. :label:`resfig`
+   Stretching of a resistor by bending the device in a snake structure, but keeping length and width constant. :label:`resfig`
    
    
 .. figure:: stretch_mos.pdf
@@ -149,7 +149,7 @@ Another advanced feature is auto-abutment. Abutment is used to make the layout m
         noAbut = [{'spacing': 0.4 }]
     )
 	
-This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what will happend if instances have common structures but are in different size. It is also important to take  logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. have the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
+This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what will happen if instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. having the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
 
 .. figure:: abut_mos.pdf
 	   :scale: 80%
@@ -181,5 +181,7 @@ justo vitae odio tincidunt tempus at vitae tortor.
 
 References
 ----------
-.. [Atr03] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
+.. [OpenAccess] What is OpenAccess?
+        https://www.si2.org/?page=69
+.. [PyCell] Synopsys PyCell Studio
+		https://www.synopsys.com/
