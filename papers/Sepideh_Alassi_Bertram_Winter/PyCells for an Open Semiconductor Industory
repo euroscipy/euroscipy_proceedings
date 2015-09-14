@@ -31,19 +31,19 @@ The number of companies active in modern semiconductor business is increasing ev
 
 
 Development
-------------
+-----------
 
-OpenAceess has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is file based database and manage the logical design data (schematics) as well as the artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys) developed a Python wrapper for the OpenAccess C++ class library with the goal to access and modify design data within Python. Additionally they provide an integrated development environment, which enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
+OpenAceess [OpenAccess]_ has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is a file based database and manages logical design data (schematics) as well as artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys ) developed a Python wrapper [PyCellAPI]_ for the OpenAccess C++ class library with the goal to access and modify design data through Python. Additionally they provide an integrated development environment [PyCellStudio]_ that enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
 
-In our development, we made use of this Python API for OpenAceess to write Python scripts, which generate recurring layout structures based on a given set of parameters. Usually these recurring structures are primitive devices used in integrated circuit design, like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
+In our development, we used this Python API for OpenAceess to write Python scripts, which generate recurring layout structures based on a given set of parameters. Typical recurring structures are primitive devices that are used in integrated circuit design like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
-A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which will then results in different layout structures. General speaking each transistor has a similar gate, source and drain structure but different doping concentrations for the implant regions of the semiconductor and different protection structures. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched.
+A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which then again result in different layout structures. General speaking each transistor has similar gate, source and drain structures, but has eventually different doping concentrations for the implant regions of the semiconductor material and different protection structures, which need to be reflected in the layout. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched.
 
  
 Stretching
 ----------
 
-Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactions with the EDA-tool. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
+Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactions with the EDA-tool [PyCellAPI]_. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
 
 .. math::
    :label: capequ
@@ -85,7 +85,7 @@ Therefore one can not simply fit them into a given shape, without affecting the 
    Stretching of a transistor by increasing the number of fingers, but keeping the gate to source/drain edge constant. :label:`transfig`
    
    
-All these features can be realized by making the PyCells stretchable. PyCells are made stretchable by pre-defined properties stored in the OpenAccess database. The stretch handles are defined within the Python source code. The stretch handles have to be associated to a layout shape and parameter. Stretching can be limited in horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown:
+All these features can be realized by making the PyCells stretchable. The stretch handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to a layout shape and parameter. Stretching can be limited in horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown:
 
 .. code-block:: python
    
@@ -136,7 +136,7 @@ Another advanced feature is auto-abutment. Abutment is used to make the layout m
         noAbut = [{'spacing': 0.4 }]
     )
 	
-This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what will happen if instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. having the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
+This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what happens when instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. having the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
 
 .. figure:: abut_mos.pdf
 	   :scale: 80%
@@ -146,28 +146,27 @@ This function provides a variety of parameters to define which instances are com
 
 When a layout engineer wants to abut two transistors, he drags one instance and places it in a way, that the drain contacts overlap. Then the abutment feature of the PyCell is triggered and the two instances are merged. If one instances is moved away again, each instance get its initial structure.
 
-Verification:
---------------
+Verification
+------------
 
 The last but the most important part of the project is verifying the PyCells. We have considered four processes in order to verify the accuracy of PyCells: Design Rule Check (DRC), Layout Versus Schematic (LVS), Schematic Driven Layout (SDL), and database Comparison (DBCOMP).
 
-	Design Rule Check (DRC):
-	--------------------------
-	The semiconductor manfacturers define a set of design rules for every technology that the layout of every design must comply with. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violances in order to ensure the accuracy of them. A DRC verification software checks these layouts and highlights the violations. 
+Design Rule Check (DRC)
++++++++++++++++++++++++
+The semiconductor manfacturers define a set of design rules for every technology that the layout of every design must comply with. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violances in order to ensure the accuracy of them. A DRC verification software checks these layouts and highlights the violations. 
 	
-	Layout versus Schematic (LVS):
-	------------------------------
-	The layout of a design should match the schematic of it with respect to type and number of devices, connections, as well as the topogical parameters. In this verification process, we ensure that the layout of a sample design which is generated by PyCells matches perfectly with the schematic of the design. The LVS tool compares the layout and schematic of a design by extracting the netlists, according to design rules defined by semiconductor manfacturer, of layout and schematic in which the devices in design and their connections as well as topological parameters such as area, perimeter, etc are listed. 
-	
-	Schematic Driven Layout (SDL) :
-	--------------------------------
-	PyCell codes must include the definition of pins regarding type of connections, weak connection (by polysilicon) or strong connection (by metal), and definition of shapes that require exteranl connections. Having types of connections implemented in PyCells, the SDL Navigator tool can get the schematic of a sample design and generate the layout of it by calling PyCells with respective parameters. After generation of the layout, SDL Navigator checks the connectivity features.
-	
-	Database Compararison (DBCOMP):
-	----------------------------
-	The last verification step is to substantiate the aim of project, generating layouts with Python (PyCells) exactly the same as the ones generated with SKILL (PCells). This verification process is in GDSII level and is done with help of a regression test, in which in a layout the PCells and PyCells of identical devices are instanced with a set of parameters, and the layouts are compared to be congruent.
-	
-	
+Layout versus Schematic (LVS)
++++++++++++++++++++++++++++++
+The layout of a design should match the schematic of it with respect to type and number of devices, connections, as well as the topogical parameters. In this verification process, we ensure that the layout of a sample design which is generated by PyCells matches perfectly with the schematic of the design. The LVS tool compares the layout and schematic of a design by extracting the netlists, according to design rules defined by semiconductor manfacturer, of layout and schematic in which the devices in design and their connections as well as topological parameters such as area, perimeter, etc are listed. 
+
+Schematic Driven Layout (SDL)
++++++++++++++++++++++++++++++
+PyCell codes must include the definition of pins regarding type of connections, weak connection (by polysilicon) or strong connection (by metal), and definition of shapes that require exteranl connections. Having types of connections implemented in PyCells, the SDL Navigator tool can get the schematic of a sample design and generate the layout of it by calling PyCells with respective parameters. After generation of the layout, SDL Navigator checks the connectivity features.
+
+Database Compararison (DBCOMP)
+++++++++++++++++++++++++++++++
+The last verification step is to substantiate the aim of project, generating layouts with Python (PyCells) exactly the same as the ones generated with SKILL (PCells). This verification process is in GDSII level and is done with help of a regression test, in which in a layout the PCells and PyCells of identical devices are instanced with a set of parameters, and the layouts are compared to be congruent.
+
 
 Conclusion
 ------------
@@ -179,5 +178,6 @@ References
 ----------
 .. [OpenAccess] What is OpenAccess?
         https://www.si2.org/?page=69
-.. [PyCell] Synopsys PyCell Studio
+.. [PyCellAPI] J. Ivie. Ciranova Python API Reference Manual. Ciranova, Inc., 2009
+.. [PyCellStudio] Synopsys PyCell Studio
 		https://www.synopsys.com/
