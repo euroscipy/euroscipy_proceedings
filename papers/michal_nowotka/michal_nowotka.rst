@@ -10,6 +10,10 @@
 :email: mdavies@ebi.ac.uk
 :institution: European Bioinformatics Institute
 
+:author: Nathan Dedman
+:email: ndedman@ebi.ac.uk
+:institution: European Bioinformatics Institute
+
 
 ------------------------------------------------
 Want Drugs? Use Python.
@@ -139,7 +143,7 @@ There are many software libraries, written in different languages, that
 implement some operations described above (or all of them).
 From the libraries, that are available with open source license, two are very
 robust and comprehensive.
-`RDKit`_ (developed and maintained by Greg Ladrum) and `Indigo`_ (created by GGA
+`RDKit`_ (developed and maintained by Greg Landrum) and `Indigo`_ (created by GGA
 software, now `Epam`_) toolkits both offer all described functionality, provide
 Python bindings and database cartridges (extentions), that allow performing
 substructure and similarity searches on compounds stored in RDBMS.
@@ -289,6 +293,20 @@ with `supervisor`_, which is responsible for managing and monitoring all core
 MyChEMBL services (such as Postgres, Apache, IPython server) and providing a
 single point of entry.
 
+With the wealth of activity data that is present in the ChEMBL database, we can
+also leverage this using Python (more specifically, Scikit-learn) to allow us to
+build predictive models.
+One such application of this currently available publicly, is `ADME SARfari`_,
+which allows cross-species prediction and comparison of ADME related targets for
+a particular compound or sequence.
+This was created with a view to more efficient use of animal models and a
+decrease in late stage attrition during the drug development process.
+This is achieved by training a naive Bayesian classifier (scikit-learn), with
+data extracted from the ChEMBL schema with `SQLAlchemy`_ (Object Relational
+Mapping) contained within a web framework (`Pyramid`_ & `Cornice`_) to provide an API
+and HTML5 interactive user interface.
+
+
 Curation of data
 ----------------
 
@@ -401,3 +419,7 @@ References
 .. _Docker: https://www.docker.com/
 .. _supervisor: http://supervisord.org/
 .. _Celery: http://www.celeryproject.org/
+.. _ADME SARfari: https://www.ebi.ac.uk/chembl/admesarfari
+.. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _Pyramid: http://www.pylonsproject.org/
+.. _Cornice: https://cornice.readthedocs.org/en/latest/
