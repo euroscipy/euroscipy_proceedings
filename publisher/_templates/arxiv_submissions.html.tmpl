@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>{{proceedings['title']['full']}}</title>
+</head>
+<body>
+<h1>{{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}})</h1>
+
+<p>Editors: {{', '.join(proceedings['editor'])}}<br />
+{{proceedings['location']}}, {{proceedings['dates']}}
+</p>
+
+<h2>Articles</h2>
+
+{{for line in toc}}
+<ul>
+<li>{{html_quote(line['authors']) | html}}</li>
+<li>{{html_quote(line['title']) | html}}</li>
+<li>
+{{for abstract_item in line['abstract']}}
+{{html_quote(abstract_item) | html}}
+{{endfor}}
+</li>
+<li>Part of the {{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}),
+{{if len(proceedings['editor'])>1}}
+{{', '.join(proceedings['editor'][:-1])}} and {{proceedings['editor'][-1]}} editors,
+{{else}}
+proceedings['editor'] editor,
+{{endif}}
+({{proceedings['copyright_year']}}). arXiv:{{proceedings['arxiv_identifier']}}</li>
+<li>{{proceedings['title']['full']}} ({{proceedings['title']['acronym']}} {{proceedings['year']}}),
+{{if len(proceedings['editor'])>1}}
+{{', '.join(proceedings['editor'][:-1])}} and {{proceedings['editor'][-1]}} editors,
+{{else}}
+proceedings['editor'] editor,
+{{endif}}
+p.{{html_quote(line['page']['start']) | html}} ({{proceedings['copyright_year']}}). arXiv:{{line['arxiv_identifier']}}</li>
+</ul>
+{{endfor}}
+
+</body>
+</html>

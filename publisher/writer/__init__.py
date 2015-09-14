@@ -45,6 +45,8 @@ class Translator(LaTeXTranslator):
         self.figure_alignment = 'left'
         self.table_type = 'table'
 
+        self.d_class.sections.insert(0, 'title')
+
     def visit_docinfo(self, node):
         pass
 
@@ -151,7 +153,7 @@ class Translator(LaTeXTranslator):
           Copyright\,\copyright\,%(year)s %(copyright_holder)s %(copyright)s%%
         ''' % \
         {'email': self.author_emails[0],
-         'year': options['proceedings']['year'],
+         'year': options['proceedings']['copyright_year'],
          'copyright_holder': copyright_holder,
          'copyright': options['proceedings']['copyright']['article']}
 
@@ -309,7 +311,7 @@ class Translator(LaTeXTranslator):
         self.active_table.caption = []
 
         opening = self.active_table.get_opening()
-        opening = opening.replace('linewidth', 'tablewidth')
+        opening = opening.replace(r'{\linewidth}', r'{0.8\linewidth}')
         self.active_table.get_opening = lambda: opening
 
         LaTeXTranslator.visit_thead(self, node)

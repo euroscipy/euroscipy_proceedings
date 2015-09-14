@@ -5,10 +5,11 @@
        "acronym": "EuroSciPy",
        "conference": "European Conference on Python in Science",
        "ordinal": "6th",
-       "short": "PROC. OF THE 6th EUR. CONF ON PYTHON IN SCIENCE. (EUROSCIPY 2013)",
+       "short": "PROC. OF THE 6th EUR. CONF. ON PYTHON IN SCIENCE (EUROSCIPY 2013)",
        "full": "Proceedings of the 6th European Conference on Python in Science"
      },
      "year": "2013",
+     "copyright_year": "2014",
      "editor": [
         "Pierre de Buyl",
         "Nelle Varoquaux"
@@ -16,14 +17,15 @@
      "volume": 6,
      "number": 1,
      "isbn": "value",
+     "arxiv_identifier": "YYYY.NNNN",
      "location": "Brussels, Belgium",
-     "dates": "21 August - 25 August",
+     "dates": "21-25 August 2013",
      "copyright": {
-       "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
-       "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors",
+       "article": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited. http://creativecommons.org/licenses/by/3.0/",
+       "proceedings": ["The articles in the Proceedings of the Python in Science Conference are copyrighted and owned by their original authors.",
                        "This is an open-access publication and is distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.",
-                       "For more information, please see:  http://creativecommons.org/licenses/by/3.0/"],
-       "license": "Creative Commons Attribution License (CCAL)"}
+                       "For more information, please see: http://creativecommons.org/licenses/by/3.0/"],
+       "license": "Creative Commons Attribution License (CC BY)"}
   },
   "organization": [
 
@@ -32,8 +34,8 @@
             "members": [
                 {"name": "Pierre de Buyl",
                  "org": "Université libre de Bruxelles"},
-                {"name": "Jonathan Rocher",
-                 "org": "Université libre de Bruxelles"}
+                {"name": "Nicolas Pettiaux",
+                 "org": "Haute École de Bruxelles - École supérieure d'informatique"}
                 ]
         },
  
@@ -99,11 +101,47 @@
 		{"name": "Mike Müller",
 		 "org": "Python Academy"},
 		{"name": "Didrik Pinte",
-		 "org": "Enthought Europe"},
+		 "org": "Enthought"},
 		{"name": "Gaël Varoquaux",
 		 "org": "INRIA Parietal"},
 		{"name": "Nelle Varoquaux",
 		 "org": "Mines ParisTech"}
+		]
+	},
+
+      {
+            "name": "Proceedings reviewers",
+            "members": [
+		{"name": "Francesc Alted",
+		 "org": "Continuum Analytics Inc."},
+		{"name": "Daniel J. Bates",
+		 "org": "Colorado State University"},
+		{"name": "Ondřej Čertík",
+		 "org": "Los Alamos National Laboratory"},
+		{"name": "David Cournapeau",
+		 "org": "Enthought"},
+		{"name": "Alexandre Gramfort",
+		 "org": "Telecom ParisTech, CNRS LTCI"},
+		{"name": "Valentin Haenel",
+		 "org": "Independent"},
+		{"name": "Konrad Hinsen",
+		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
+		{"name": "Robert Kern",
+		 "org": "Enthought"},
+		{"name": "Mike Müller",
+		 "org": "Python Academy"},
+		{"name": "Andy R. Terrel",
+		 "org": "Continuum Analytics Inc."},
+		{"name": "C. Titus Brown",
+		 "org":  "Michigan State University"},
+		{"name": "Jake Vanderplas",
+		 "org": "University of Washington"},
+		{"name": "Gaël Varoquaux",
+		 "org": "INRIA Parietal"},
+		{"name": "Paul Zimmermann",
+		 "org": "INRIA"},
+                {"name": "Tiziano Zito",
+                 "org": "Humboldt-Universität zu Berlin"}
 		]
 	}
 

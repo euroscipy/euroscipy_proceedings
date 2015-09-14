@@ -1,7 +1,6 @@
 EuroSciPy Proceedings
 =====================
 
-This repository is a fork from scipy/scipy_proceedings.
 
 Paper Format
 ------------
@@ -9,7 +8,7 @@ Papers are formatted using reStructuredText and the compiled version should be
 no longer than 7 pages, including figures.  Here are the steps to produce a
 paper:
 
-- Fork the [scipy_proceedings](https://github.com/euroscipy/scipy_proceedings)
+- Fork the [euroscipy_proceedings](https://github.com/euroscipy/euroscipy_proceedings)
   repository on GitHub.
 
 - An example paper is provided in ``papers/00_vanderwalt``.  Create a new
@@ -21,10 +20,12 @@ paper:
   ``output/firstname_surname/paper.pdf``.
 
 - Once you are ready to submit your paper, file a pull request on GitHub.
+  The pull request title must include the paper title and the name of the
+  first author.
 
 - Please do not modify any files outside of your paper directory.
 
-Pull requests are to be submitted by **September 30th**, but modifications are
+Pull requests are to be submitted by **2015, September 15th**, but modifications are
 allowed during the review period.
 
 The articles in the Proceedings remain copyrighted and owned by their original
@@ -61,3 +62,9 @@ Requirements
  - AMSmath LaTeX classes (included in most LaTeX distributions)
  - `docutils` 0.8 or later (``easy_install docutils``)
  - `pygments` for code highlighting (``easy_install pygments``)
+
+Acknowledgments
+---------------
+
+This repository is a fork from scipy/scipy_proceedings, the proceedings
+repository of the US SciPy conference.
