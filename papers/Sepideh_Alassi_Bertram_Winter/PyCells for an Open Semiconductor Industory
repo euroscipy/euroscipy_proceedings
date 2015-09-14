@@ -171,20 +171,7 @@ The last verification step is to substantiate the aim of project, generating lay
 Conclusion
 ------------
 
-Twelve hundred years ago  |---| in a galaxy just across the hill...
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sapien
-tortor, bibendum et pretium molestie, dapibus ac ante. Nam odio orci, interdum
-sit amet placerat non, molestie sed dui. Pellentesque eu quam ac mauris
-tristique sodales. Fusce sodales laoreet nulla, id pellentesque risus convallis
-eget. Nam id ante gravida justo eleifend semper vel ut nisi. Phasellus
-adipiscing risus quis dui facilisis fermentum. Duis quis sodales neque. Aliquam
-ut tellus dolor. Etiam ac elit nec risus lobortis tempus id nec erat. Morbi eu
-purus enim. Integer et velit vitae arcu interdum aliquet at eget purus. Integer
-quis nisi neque. Morbi ac odio et leo dignissim sodales. Pellentesque nec nibh
-nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
-Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
-justo vitae odio tincidunt tempus at vitae tortor.
+Believing in what Richard Stallman has said "Proprietary software is an injustice", we have successfully developed the layout generators for an open semiconductor industory, giving the designers who use ams technologies opportunity to work with any desired EDA-tools, to share their designs easily with others, and to receive the support they deserve. These PyCells are developed for all high and low voltage devices which enable the IC-designers to have advanced designs, and furthermore PyCells are efficient considering the compuattion time which is extremly important in semiconductor industory. These PyCells have passed all the verification tests and are practically in use by customers.     
 
 
 References
