@@ -13,15 +13,17 @@ PyCells for an Open Semiconductor Industory
 
 .. class:: abstract
 
-   In modern semiconductor industory, automatic generation of parameterized and recurring layout structures plays an important role, and should be present as a feature in Electronic Desin Automation (EDA)-tools.  
-   Currently these layout generators are developed with a proprietary programming language SKILL, and can be used with a specific EDA-tool, Cadence.
-   Therefore the development of the layout generators that can be used in all kinds of EDA-tools which suuport openaccess database is in a high demand. 
-   In this project we have developed these layout generators, PyCells, with Python using Python API library for all transistors, resistors, and capacitors of ams technologies, and have not only preserved all the features of a copmprehensive layout generator, but also enhanced the compuational performance.      
-   The resulting PyCells are verified thoroughly with respect to accuracy and computation time with different EDA-tools, and have extra interactive features such as auto-abutment and stretching.
+	In modern semiconductor industory, automatic generation of parameterized and recurring layout structures plays an important role, and should be present as a feature in Electronic Desin Automation (EDA)-tools.
+	
+	Currently these layout generators are developed with a proprietary programming language SKILL, and can be used with a specific EDA-tool, Cadence. Therefore the development of the layout generators that can be used in all kinds of EDA-tools which suuport openaccess database is in a high demand.
+	
+	In this project we have developed these layout generators, PyCells, with Python using Python API library for all transistors, resistors, and capacitors of ams technologies, and have not only preserved all the features of a copmprehensive layout generator, but also enhanced the compuational performance.
+	
+	The resulting PyCells are verified thoroughly with respect to accuracy and computation time with different EDA-tools, and have extra interactive features such as auto-abutment and stretching.
    
 .. class:: keywords
 
-   PyCells, Semiconductor, Open-Access
+   PyCells, Semiconductor, OpenAccess
 
 Introduction
 ------------
@@ -41,169 +43,145 @@ nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
 Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
 justo vitae odio tincidunt tempus at vitae tortor.
 
-Of course, no paper would be complete without some source code.  Without
-highlighting, it would look like this::
+Development
+------------
 
-   def sum(a, b):
-       """Sum two numbers."""
+OpenAceess has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is file based database and manage the logical design data (schematics) as well as the artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys) developed a Python wrapper for the OpenAccess C++ class library with the goal to access and modify design data within Python. Additionally they provide an integrated development environment, which enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
 
-       return a + b
+In our development we made use of this Python API for OpenAceess to write Python scripts, which generate recurring layout structures based on a given set of parameters. Usually these recurring structures are primitive devices used in integrated circuit design, like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
-With code-highlighting:
+A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which will then results in different layout structures. General speaking each transistor has a similar gate, source and drain structure but different doping concentrations for the implant regions of the semiconductor and different protection structures. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched.
+
+ 
+Stretching
+----------
+
+Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactions with the EDA-tool. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
+
+.. math::
+   :label: capequ
+
+   C \propto W \cdot L
+   
+.. figure:: stretch_cap.pdf
+   :scale: 80%
+   :align: center
+   
+   Stretching of a capacitor by changing L and W ratio, but keeping its area constant. :label:`capfig`
+
+
+The electrical properties of resistors and transistors are proportional to the ratio of length and width:
+
+.. math::
+   :label: resequ
+
+   R \propto \frac{L}{W}
+   
+.. math::
+   :label: tranequ
+
+   g_m \propto \frac{W}{L}
+   
+Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (shown in figure :ref:`resfig`) or change the number of fingers for transistors (see figure :ref:`transfig`).
+      
+.. figure:: stretch_res.pdf
+   :scale: 80%
+   :align: center
+   
+   Stretching of a resistor by bending the device in a snake structure, but keeping length and width constant. :label:`resfig`
+   
+   
+.. figure:: stretch_mos.pdf
+   :scale: 80%
+   :align: center
+   
+   Stretching of a transistor by increasing the number of fingers, but keeping the gate to source/drain edge constant. :label:`transfig`
+   
+   
+All these features can be realized by making the PyCells stretchable. PyCells are made stretchable by pre-defined properties stored in the OpenAccess database. The stretch handles are defined within the Python source code. The stretch handles have to be associated to a layout shape and parameter. Stretching can be limited in horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown:
 
 .. code-block:: python
+   
+   stretchHandle( 
+       name = 'width_handle_left',
+       shape = poly1GateShape,
+	   parameter = 'wtot',
+	   location = CENTER_LEFT,
+	   direction = EAST_WEST,
+	   stretchType = 'relative',
+	   minVal = 0.4,
+	   maxVal = 10000.0
+   )
 
-   def sum(a, b):
-       """Sum two numbers."""
-
-       return a + b
-
-Maybe also in another language, and with line numbers:
-
-.. code-block:: c
-   :linenos:
-
-   int main() {
-       for (int i = 0; i < 10; i++) {
-           /* do something */
-       }
-       return 0;
-   }
-
-Or a snippet from the above code, starting at the correct line number:
-
-.. code-block:: c
-   :linenos:
-   :linenostart: 2
-
-   for (int i = 0; i < 10; i++) {
-       /* do something */
-   }
- 
-Important Part
---------------
-
-It is well known [Atr03]_ that Spice grows on the planet Dune.  Test
-some maths, for example :math:`e^{\pi i} + 3 \delta`.  Or maybe an
-equation on a separate line:
-
-.. math::
-
-   g(x) = \int_0^\infty f(x) dx
-
-or on multiple, aligned lines:
-
-.. math::
-   :type: eqnarray
-
-   g(x) &=& \int_0^\infty f(x) dx \\
-        &=& \ldots
+The layout tool displays then the stretch handles as small diamonds, which can be dragged by the engineer graphically to change the parameter value using the mouse. When releasing the stretch handle, the Python code is automatically invoked and the layout structure is adapted according to the new value of the parameter.
 
 
-The area of a circle and volume of a sphere are given as
+Abutment
+--------
 
-.. math::
-   :label: circarea
+Another advanced feature is auto-abutment. Abutment is used to make the layout more area efficient. When placing two instances next to each other, the layout can be adapted in a way, that common structures are shared between the instances. This minimizes the layout area and two instances appear to be merged. Such as stretching, auto-abutment is defined by additional properties associated with shapes in the OpenAccess database. In Python abutment can be defined for a shape by using the autoAbutment() function: 
+	
+.. code-block:: python
 
-   A(r) = \pi r^2.
+    autoAbutment(
+        shape = drain,
+        pinSize = self.w,
+        directions = [WEST],
+        abutClass = 'mos_drain',
+        abut2PinEqual = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffHalf'},
+            {'diffLeftStyle': 'DiffHalf'}],
+        abut2PinBigger = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        abut3PinBigger = [{'spacing': 0.0},
+            {'diffLeftStyle': 'ContactEdgeAbut2'},
+            {'diffLeftStyle': 'ContactEdgeAbut2'}],
+        abut3PinEqual = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffAbut'},
+            {'diffLeftStyle': 'ContactEdgeAbut2'}],
+        abut2PinSmaller = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        abut3PinSmaller = [{'spacing': 0.0},
+            {'diffLeftStyle': 'DiffEdgeAbut'},
+            {'diffLeftStyle': 'DiffEdgeAbut'}],
+        noAbut = [{'spacing': 0.4 }]
+    )
+	
+This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what will happen if instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. having the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
 
-.. math::
-   :label: spherevol
+.. figure:: abut_mos.pdf
+	   :scale: 80%
+	   :align: center
+   
+	   Abutment of two transistors: a) no abutment, as spacing between transistors is too large b) transistors abutted, but leave source/drain pin to connect to another instance c) transistors abutted, no connection to source/drain needed :label:`abutfig` 
 
-   V(r) = \frac{4}{3} \pi r^3
-
-We can then refer back to Equation (:ref:`circarea`) or
-(:ref:`spherevol`) later.
-
-Mauris purus enim, volutpat non dapibus et, gravida sit amet sapien. In at
-consectetur lacus. Praesent orci nulla, blandit eu egestas nec, facilisis vel
-lacus. Fusce non ante vitae justo faucibus facilisis. Nam venenatis lacinia
-turpis. Donec eu ultrices mauris. Ut pulvinar viverra rhoncus. Vivamus
-adipiscing faucibus ligula, in porta orci vehicula in. Suspendisse quis augue
-arcu, sit amet accumsan diam. Vestibulum lacinia luctus dui. Aliquam odio arcu,
-faucibus non laoreet ac, condimentum eu quam. Quisque et nunc non diam
-consequat iaculis ut quis leo. Integer suscipit accumsan ligula. Sed nec eros a
-orci aliquam dictum sed ac felis. Suspendisse sit amet dui ut ligula iaculis
-sollicitudin vel id velit. Pellentesque hendrerit sapien ac ante facilisis
-lacinia. Nunc sit amet sem sem. In tellus metus, elementum vitae tincidunt ac,
-volutpat sit amet mauris. Maecenas diam turpis, placerat at adipiscing ac,
-pulvinar id metus.
-
-.. figure:: figure1.png
-
-   This is the caption. :label:`egfig`
-
-.. figure:: figure1.png
-   :align: center
-   :figclass: w
-
-   This is a wide figure, specified by adding "w" to the figclass.  It is also
-   center aligned, by setting the align keyword (can be left, right or center).
-
-.. figure:: figure1.png
-   :scale: 20%
-   :figclass: bht
-
-   This is the caption on a smaller figure that will be placed by default at the
-   bottom of the page, and failing that it will be placed inline or at the top.
-   Note that for now, scale is relative to a completely arbitrary original
-   reference size which might be the original size of your image - you probably
-   have to play with it. :label:`egfig2`
-
-As you can see in Figures :ref:`egfig` and :ref:`egfig2`, this is how you reference auto-numbered
-figures.
-
-.. table:: This is the caption for the materials table. :label:`mtable`
-
-   +------------+----------------+
-   | Material   | Units          |
-   +------------+----------------+
-   | Stone      | 3              |
-   +------------+----------------+
-   | Water      | 12             |
-   +------------+----------------+
-   | Cement     | :math:`\alpha` |
-   +------------+----------------+
+When a layout engineer wants to abut two transistors, he drags one instance and places it in a way, that the drain contacts overlap. Then the abutment feature of the PyCell is triggered and the two instances are merged. If one instances is moved away again, each instance get its initial structure.
 
 
-We show the different quantities of materials required in Table
-:ref:`mtable`.
+Conclusion
+------------
 
+Twelve hundred years ago  |---| in a galaxy just across the hill...
 
-.. The statement below shows how to adjust the width of a table.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sapien
+tortor, bibendum et pretium molestie, dapibus ac ante. Nam odio orci, interdum
+sit amet placerat non, molestie sed dui. Pellentesque eu quam ac mauris
+tristique sodales. Fusce sodales laoreet nulla, id pellentesque risus convallis
+eget. Nam id ante gravida justo eleifend semper vel ut nisi. Phasellus
+adipiscing risus quis dui facilisis fermentum. Duis quis sodales neque. Aliquam
+ut tellus dolor. Etiam ac elit nec risus lobortis tempus id nec erat. Morbi eu
+purus enim. Integer et velit vitae arcu interdum aliquet at eget purus. Integer
+quis nisi neque. Morbi ac odio et leo dignissim sodales. Pellentesque nec nibh
+nulla. Donec faucibus purus leo. Nullam vel lorem eget enim blandit ultrices.
+Ut urna lacus, scelerisque nec pellentesque quis, laoreet eu magna. Quisque ac
+justo vitae odio tincidunt tempus at vitae tortor.
 
-.. raw:: latex
-
-   \setlength{\tablewidth}{0.8\linewidth}
-
-
-.. table:: This is the caption for the wide table.
-   :class: w
-
-   +--------+----+------+------+------+------+--------+
-   | This   | is |  a   | very | very | wide | table  |
-   +--------+----+------+------+------+------+--------+
-
-
-Perhaps we want to end off with a quote by Lao Tse:
-
-  *Muddy water, let stand, becomes clear.*
-
-
-.. Customised LaTeX packages
-.. -------------------------
-
-.. Please avoid using this feature, unless agreed upon with the
-.. proceedings editors.
-
-.. ::
-
-..   .. latex::
-..      :usepackage: somepackage
-
-..      Some custom LaTeX source here.
 
 References
 ----------
-.. [Atr03] P. Atreides. *How to catch a sandworm*,
-           Transactions on Terraforming, 21(3):261-300, August 2003.
+.. [OpenAccess] What is OpenAccess?
+        https://www.si2.org/?page=69
+.. [PyCell] Synopsys PyCell Studio
+		https://www.synopsys.com/
