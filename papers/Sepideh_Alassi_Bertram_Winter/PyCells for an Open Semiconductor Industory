@@ -38,7 +38,10 @@ OpenAceess [OpenAccess]_ has been established as standard for storing design dat
 
 In our development, we have used Python API library to write Python codes, which generate recurring layout structures based on a given set of parameters. Typical recurring structures are primitive devices that are used in integrated circuit design like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
-A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which then again result in different layout structures. Generally speaking each transistor has similar gate, source and drain structures, but has eventually different doping concentrations for the implant regions of the semiconductor material and different protection structures, which need to be reflected in the layout. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched. 
+A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which then again result in different layout structures. Generally speaking each transistor has similar gate, source and drain structures, but has eventually different doping concentrations for the implant regions of the semiconductor material and different protection structures, which need to be reflected in the layout. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched. In the next section, the development of PyCells is explained using a sample high voltage transistor. 
+
+Sample PyCell Development
++++++++++++++++++++++++++
 
 
  
@@ -185,6 +188,10 @@ Database Compararison (DBCOMP)
 ++++++++++++++++++++++++++++++
 The last verification step is to substantiate the main aim of this project, generating layouts with Python (PyCells) exactly the same as the ones generated with SKILL (PCells). This verification process is in GDSII level and is done with help of a regression test, in which in a layout the PCells and PyCells of identical devices are instanced with a set of parameters, and the layouts are compared to be congruent.
 
+Optimization
+------------
+
+The computation time plays a crucial role in designing integrated circuits because of the complexity of the designs and the amount of operations necessary to generate layouts of high voltage devices or the large devices. Therefore throughout this project the PyCells are developed to be in the most optimized shape possible without losing the clarity of the structure of the codes. For optimizing the codes, data aggregation and optimal use of local variables as well as iterations are taken into account. This has resulted in faster execution of PyCells codes for generating large and complex devices in comparison with PCells for identical device.
 
 Conclusion
 ------------
