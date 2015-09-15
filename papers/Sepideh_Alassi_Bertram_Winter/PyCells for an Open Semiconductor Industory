@@ -32,17 +32,18 @@ The number of companies active in modern semiconductor business is increasing ev
 Development
 -----------
 
-OpenAceess [OpenAccess]_ has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is a file based database and manages logical design data (schematics) as well as artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys ) developed a Python wrapper [PyCellAPI]_ for the OpenAccess C++ class library with the goal to access and modify design data through Python. Additionally they provide an integrated development environment [PyCellStudio]_ that enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
+OpenAceess [OpenAccess]_ has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is a file based database and manages logical design data (schematics) as well as artwork data for manufacturing (layout). The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys ) developed a Python wrapper [PythonAPI]_ for the OpenAccess C++ class library with the goal to access and modify design data through Python. Additionally they provide an integrated development environment [PyCellStudio]_ that enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window.
 
-In our development, we used this Python API for OpenAceess to write Python scripts, which generate recurring layout structures based on a given set of parameters. Typical recurring structures are primitive devices that are used in integrated circuit design like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
+In our development, we have used Python API library to write Python codes, which generate recurring layout structures based on a given set of parameters. Typical recurring structures are primitive devices that are used in integrated circuit design like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
-A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which then again result in different layout structures. General speaking each transistor has similar gate, source and drain structures, but has eventually different doping concentrations for the implant regions of the semiconductor material and different protection structures, which need to be reflected in the layout. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched.
+A typical CMOS semiconductor process offers n-channel and p-channel transistors. Each of these transistor types can have multiple voltage ratings (e. g. 5V, 20V, 50V 120V), which then again result in different layout structures. Generally speaking each transistor has similar gate, source and drain structures, but has eventually different doping concentrations for the implant regions of the semiconductor material and different protection structures, which need to be reflected in the layout. Therefore we created a set of base classes in Python from which the more specialized transistors inherit common structures, while adding only structures dedicated to this type of transistor. This approach reduces duplicate code and makes maintaining the scripts more intuitive when the number of devices gets large. Finally the Python scripts are compiled to byte-code and stored inside the OpenAccess library. A plugin of the OpenAccess database takes care to load the correct script when a parameter of the corresponding device is touched. 
+
 
  
 Stretching
 ----------
 
-Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactions with the EDA-tool [PyCellAPI]_. One of these is stretching. Stretching allows to change parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. For simplicity the relationship is illustrated for a rectangular capacitor in figure :ref:`capfig`:
+Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactive features with the EDA-tool [PythonAPI]_. Stretching which is one of these features allows changing parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. The stretching is shown for a rectangular capacitor in figure :ref:`capfig`:
 
 .. math::
    :label: capequ
@@ -68,7 +69,7 @@ The electrical properties of resistors and transistors are proportional to the r
 
    g_m \propto \frac{W}{L}
    
-Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (shown in figure :ref:`resfig`) or change the number of fingers for transistors (see figure :ref:`transfig`).
+Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (as shown in figure :ref:`resfig`) or to change the number of fingers of transistors (see figure :ref:`transfig`), or two stretch the gate of transistor (see figure :ref:`stretchgate`).
       
 .. figure:: stretch_res.pdf
    :scale: 80%
@@ -84,7 +85,7 @@ Therefore one can not simply fit them into a given shape, without affecting the 
    Stretching of a transistor by increasing the number of fingers, but keeping the gate to source/drain edge constant. :label:`transfig`
    
    
-All these features can be realized by making the PyCells stretchable. The stretch handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to a layout shape and parameter. Stretching can be limited in horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown:
+All these features can be recognized by making the PyCells stretchable. The stretch handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to the shape and parameters of the layout. Stretching can be limited to horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown below:
 
 .. code-block:: python
    
@@ -99,13 +100,13 @@ All these features can be realized by making the PyCells stretchable. The stretc
 	   maxVal = 10000.0
    )
 
-The layout tool displays then the stretch handles as small diamonds, which can be dragged by the engineer graphically to change the parameter value using the mouse. When releasing the stretch handle, the Python code is automatically invoked and the layout structure is adapted according to the new value of the parameter.
+The layout tool displays then the stretch handles as small diamonds, which can be dragged by the engineer graphically to change the parameter value using the mouse. When releasing the stretch handle, the Python code is automatically invoked and the layout structure is adapted according to the new values of parameters.
 
 
 Abutment
 --------
 
-Another advanced feature is auto-abutment. Abutment is used to make the layout more area efficient. When placing two instances next to each other, the layout can be adapted in a way, that common structures are shared between the instances. This minimizes the layout area and two instances appear to be merged. Such as stretching, auto-abutment is defined by additional properties associated with shapes in the OpenAccess database. In Python abutment can be defined for a shape by using the autoAbutment() function: 
+Another advanced feature is auto-abutment. Abutment is used to make the layout more compact. When placing two instances next to each other, the layout can be adapted in a way that common structures are shared between the instances. This minimizes the layout area and two instances appear to be merged. Similar to stretching, auto-abutment is defined by additional properties associated with shapes in the OpenAccess database. In Python, abutment can be defined for a shape by using the autoAbutment() function: 
 	
 .. code-block:: python
 
@@ -135,7 +136,7 @@ Another advanced feature is auto-abutment. Abutment is used to make the layout m
         noAbut = [{'spacing': 0.4 }]
     )
 	
-This function provides a variety of parameters to define which instances are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example what happens when instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logical connected (i. e. having the same net). The resulting layout can be further reduced, when the two instances are the only ones connected to the net. In this case structures between the two instance that would allow to connect to the net can be omitted (see figure :ref:`abutfig` for reference). 
+This function provides variety of parameters to define which attributes are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example in cases where the instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logically connected (i. e. having the same net). The resulting layout can be further diminished, when the two instances are the only ones connected to the net. In this case the structures between the two instance, that would allow to connect to the net, can be omitted (see figure :ref:`abutfig` for reference). 
 
 .. figure:: abut_mos.pdf
 	   :scale: 80%
@@ -143,7 +144,7 @@ This function provides a variety of parameters to define which instances are com
    
 	   Abutment of two transistors: a) no abutment, as spacing between transistors is too large b) transistors abutted, but leave source/drain pin to connect to another instance c) transistors abutted, no connection to source/drain needed :label:`abutfig` 
 
-When a layout engineer wants to abut two transistors, he drags one instance and places it in a way, that the drain contacts overlap. Then the abutment feature of the PyCell is triggered and the two instances are merged. If one instances is moved away again, each instance get its initial structure.
+In order to abut two transistors, the layout designer should drag one instance and place it in a way that the drain contacts overlap. Consequently the abutment feature of the PyCell is triggered and two instances will be merged. If one instance is relocated, each of the other instances gets its initial structure.
 
 Verification
 ------------
