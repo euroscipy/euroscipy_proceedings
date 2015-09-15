@@ -42,13 +42,94 @@ A typical CMOS semiconductor process offers n-channel and p-channel transistors.
 
 Sample PyCell Development
 +++++++++++++++++++++++++
-
-
+The process of developing a PyCells is described in this section step by step using the sample 20V MOS transistor, pmos20. In order to simplify the development of new layout generators, the architecture shown in Figure :ref:`architecture` has been established. 
+.. figure:: 20V_mos.PNG
+   :scale: 80%
+   :align: center
+   
+  Class diagram for PyCells of 20V MOS transistors . :label:`architecture`
  
+For developing the Pycells, first step is seting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :label:`param`  
+
+.. figure:: parameters.pdf
+   :scale: 80%
+   :align: center
+   
+   Evaluation flow of the parameters . :label:`param` 
+   
+ The technology data (td) provided by foundary is read to have access to the layers and values to initialize some of the variables such as gate Oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundary, the dimensions of layers as well as spaces between them are calculated. 
+ .. code-block:: python
+   
+ 	# basic setup
+	if self.type == ’pmos20h’:
+		polyLengthNotGate = td[’e_p1_sdf’] + td[’o_pp_sdf’] + td[’o_pp_p1’]
+		diffLengthNotGate = td[’o_pp_sdf’] + td[’o_pp_p1’]
+		if self.wideMetSpacSB:
+			td[’s_source_bulk’] = (td[’s_m1wide’] + 2 * (td[’e_m1_ct’] -
+			    td[’e_df_ct_gb’]))
+	else:
+		polyLengthNotGate = td[’e_df_nt’] + td[’e_p1_sdf’]
+		diffLengthNotGate = td[’e_df_nt’]
+ 
+The first structure to be generated is the polysilicon gate which has an octagonal shape drawn with a polysilicon layer (poly1) with a gap inside for drain contact (see Figure :label:`gate`) and finally it is appended to the list of shapes which are connected to the gate pin. 
+
+ .. figure:: gate.pdf
+   :scale: 80%
+   :align: center
+   
+   Polysilicon gate structure of pmos20V :label:`gate`
+
+ .. code-block:: python
+   
+ 	p1Gate = OctagonWithHole(layers.poly1, gateOuterBox,
+		gateInnerBox, td[’p1_corn’], 0)
+	self.pins[’G’].append(p1Gate)
+	
+Other structures of the transistor are drawn one by one in correct order, such as adding diffusion layer and setting drain and source gates and the contacts of them as shown in Figure :label:`pin`.
+
+.. figure:: pin.pdf
+   :scale: 80%
+   :align: center
+   
+   Creation of the source and drain contacts. :label:`pin`
+ 
+In order to increase the breakdown voltage of the device, a slightly p-doped region at the drain has to be created. This region consists of a deep and a shallow well, which define the drift region of the device. The deep and shallow wells are generated (see Figure :label:`well`)
+
+.. figure:: well.pdf
+   :scale: 80%
+   :align: center
+   
+   Deep and shallow p-well under the drain. :label:`well`
+
+Similarly a shallow n-well should be added on source region to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20 device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :label:`bulk` )    
+
+.. figure:: bulk.pdf
+   :scale: 80%
+   :align: center
+   
+   Bulk contact as a ring with an n-implant and an n-well. :label:`bulk`
+
+Lastly the overall device structures such as definition layer for the tickness of the gate oxide should be added to PyCell. The resulting layout for pmos20t is shown in Figure :label:`pmos20`. 
+
+.. figure:: pmos20.pdf
+   :scale: 80%
+   :align: center
+   
+   Final layout of a pmos20t transistor. :label:`pmos20`
+   
+Figure :label:`pmos50` shows the layout generated for 50V transistor with guard ring and multiplication factor of 2
+
+.. figure:: pmos50.pdf
+   :scale: 80%
+   :align: center
+   
+   Layout with a 50V guard ring and a device multiplier of 2. :label:`pmos50`
+
+   
 Stretching
 ----------
 
-Besides the basic feature, of specifying parameters for recurring structures, the Python API offers also more enhanced interactive features with the EDA-tool [PythonAPI]_. Stretching which is one of these features allows changing parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. The stretching is shown for a rectangular capacitor in figure :ref:`capfig`:
+Besides the basic features, such as specifying parameters for recurring structures, the Python API offers also more enhanced interactive features with the EDA-tool [PythonAPI]_. Stretching which is one of these features allows changing parameters of an instance interactively. This helps the engineer to fit instances of an analog design into the available space, without affecting the electrical properties of the instance. For example the capacitance value of a capacitor depends to a large extend on its area. Therefore the shape can be varied while maintaining a constant area. The stretching is shown for a rectangular capacitor in Figure :ref:`capfig`:
 
 .. math::
    :label: capequ
@@ -74,7 +155,7 @@ The electrical properties of resistors and transistors are proportional to the r
 
    g_m \propto \frac{W}{L}
    
-Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (as shown in figure :ref:`resfig`) or to change the number of fingers of transistors (see figure :ref:`transfig`), or to stretch the gate of a transistor (see figure :ref:`stretchgate`).
+Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (as shown in Figure :ref:`resfig`) or to change the number of fingers of transistors (see Figure :ref:`transfig`), or to stretch the gate of a transistor (see Figure :ref:`stretchgate`).
       
 .. figure:: res_stretch.PNG
    :scale: 80%
@@ -146,7 +227,7 @@ Another advanced feature is auto-abutment. Abutment is used to make the layout m
         noAbut = [{'spacing': 0.4 }]
     )
 	
-This function provides variety of parameters to define which attributes are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example in cases where the instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logically connected (i. e. having the same net). The resulting layout can be further diminished, when the two instances are the only ones connected to the net. In this case the structures between the two instance, that would allow to connect to the net, can be omitted. The abutment process is shown in figure :ref:`abutment` and figure :ref:`abutfig` depicts different case of abutment.
+This function provides variety of parameters to define which attributes are compatible for abutment. Only instances that have common layout structures can be merged. Furthermore, there are several function parameters to specify different types of abutment, for example in cases where the instances have common structures but are in different size. It is also important to take logical information of the design into account, as it is only allowed to merge structures which are logically connected (i. e. having the same net). The resulting layout can be further diminished, when the two instances are the only ones connected to the net. In this case the structures between the two instance, that would allow to connect to the net, can be omitted. The abutment process is shown in Figure :ref:`abutment` and Figure :ref:`abutfig` depicts different case of abutment.
 
 .. figure:: abutment.pdf
 	   :scale: 80%
