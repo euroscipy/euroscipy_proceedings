@@ -52,7 +52,7 @@ Besides the basic feature, of specifying parameters for recurring structures, th
 
    C \propto W \cdot L
    
-.. figure:: stretch_cap.pdf
+.. figure:: cap_stretch.PNG
    :scale: 80%
    :align: center
    
@@ -73,14 +73,14 @@ The electrical properties of resistors and transistors are proportional to the r
    
 Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (as shown in figure :ref:`resfig`) or to change the number of fingers of transistors (see figure :ref:`transfig`), or to stretch the gate of a transistor (see figure :ref:`stretchgate`).
       
-.. figure:: stretch_res.pdf
+.. figure:: res_stretch.PNG
    :scale: 80%
    :align: center
    
    Stretching of a resistor by bending the device in a snake structure, but keeping length and width constant. :label:`resfig`
    
    
-.. figure:: stretch_mos.pdf
+.. figure:: mos_stretch.PNG
    :scale: 80%
    :align: center
    
