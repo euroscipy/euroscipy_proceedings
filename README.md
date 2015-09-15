@@ -25,7 +25,7 @@ paper:
 
 - Please do not modify any files outside of your paper directory.
 
-Pull requests are to be submitted by **2015, September 15th**, but modifications are
+Pull requests are to be submitted by **2015, September 20th**, but modifications are
 allowed during the review period.
 
 The articles in the Proceedings remain copyrighted and owned by their original
