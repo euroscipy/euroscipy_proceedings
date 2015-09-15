@@ -103,17 +103,17 @@ AJAX calls from web pages.
 There is also an `online documentation`_, that allows users to perform web
 services calls from a web browser.
 
-.. figure:: figure2.jpg
+.. figure:: figure2.png
    :align: center
-   :scale: 60%
+   :scale: 40%
    :figclass: w
 
-   ChEMBL web service schema diagram.
-   The oval shapes represent ChEMBL web service resources and the line between
-   two resources indicates that they share a common attribute.
-   The arrow direction shows where the primary information about a resource
+   Diagram depicting relations between resources.
+   Ellipses represent ChEMBL web service endpoints and the line between two 
+   resources indicates that they share a common attribute.
+   The arrow direction shows where the primary information about a resource 
    type can be found.
-   A dashed line indicates the relationship between two resources behaves
+   A dashed line indicates the relationship between two resources behaves 
    differently. :label:`egfig`
 
 The ChEMBL `web services codebase`_ is Apache 2.0 licensed and available from
