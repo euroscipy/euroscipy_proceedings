@@ -21,9 +21,9 @@ Want Drugs? Use Python.
 
 .. class:: abstract
 
-   We describe how Python is leveraged to streamline the modelling of drug
+   We describe how Python can be leveraged to streamline the modelling of drug
    discovery data and the development of tools for the scientific community.
-   We look at various examples, e.g. chemistry toolkits, machine-learning
+   We look at various examples, such as chemistry toolkits, machine-learning
    applications and web frameworks and show how Python can glue it all together
    to create efficient data science pipelines.
 
@@ -44,9 +44,8 @@ The majority of the ChEMBL data is derived by manual extraction
 and curation from the primary scientific literature, and therefore cover a
 significant fraction of the publicly available chemogenomics space.
 
-In this paper, we describe how Python is used as the cornerstone and
-foundation inside the ChEMBL group, in order to support and streamline many
-facets of the group's work, tools and resources.
+In this paper, we describe how Python is used by the ChEMBL group, in order to 
+process data and deliver high quality tools and services.
 In particular, we cover the following topics:
 
 1. Distributing data
@@ -62,44 +61,45 @@ As with most other scientific databases, ChEMBL offers two essential
 channels to share its data: `SQL dump downloads`_ *via* FTP and `web services`_.
 Both channels have different characteristics - FTP should be used by
 organizations, that would like to have their own private instance of ChEMBL
-database, with an ability to modify data and without any limitations of how
-frequently data can be retrieved.
-This method requires downloading a large SQL dump file and a private
-machine (physical or virtual), which will host database server.
-Because this method requires some non-trivial hardware infrastructure, it can be
-expensive.
-On the other hand, web services provide ChEMBL data over HTTP(S), using well
-defined and documented RESTful protocol.
-This method should be used by developers, who wish to create simple web
+database.
+This method requires downloading a SQL dump file and hosting on a
+machine (physical or virtual).
+This approach can be expensive, both in terms of time and hardware 
+infrastructure costs.
+An alternative approach to accessing the ChEMBL data, is to use the ChEMBL web 
+services.
+This method, which is supported with detailed online documentation and 
+examples, should be used by developers, who wish to create simple web
 sites, RIAs or mobile applications, consuming chemical and biological data.
 
-The ChEMBL team uses Python to streamline delivering data using both methods.
-In case of SQL dumps, `Django ORM`_ is employed to export data from `Oracle`_
-database, used by ChEMBL in production, into two other popular formats:
-`MySQL`_ and `PostgreSQL`_.
+The ChEMBL team uses Python to deliver the SQL dumps and web services to end 
+users.
+In the case of the SQL dumps, `Django ORM`_ is employed to export data from 
+a production `Oracle`_ database into two other popular formats: `MySQL`_ and 
+`PostgreSQL`_.
 The `Django data model`_, which describes the ChEMBL database schema, is
 responsible for translating incompatible data types, indicating possible
-problems with data during `migration process`_, which is fully automated.
+problems with data during the fully automated `migration process`_.
 After data is populated to separate Oracle, MySQL and PostgreSQL instances,
 it is carefully verified and SQL dumps are produced.
 
-Django ORM is used by web services [WS15]_ as well.
+The Django ORM is also used by web services [WS15]_.
 This technique simplifies implementing data filtering, ordering and pagination
 without having to embed raw SQL statements inside the code.
 The whole ChEMBL web services code base is written in Python using `Django
-framework`_, `Tastypie`_ for exposing REST resources and `Gunicorn`_ as an
-application server.
+framework`_, `Tastypie`_ (used to expose RESTful resources) and 
+`Gunicorn`_ (used as an application server).
 In production, Oracle is used as a database engine and `MongoDB`_ for caching
 results.
-Thanks to ORM, the same codebase can be used with open source database engines
-as well, which is used in a project called MyChEMBL, described below.
+The ORM allows for the same codebase to be used with open source database 
+engines.
 
 Currently ChEMBL web services provide 18 distinct resource endpoints, each of
 which allows to retrieve single resource by ID, multiple resources in bulk and
 apply advanced filtering and ordering of data in JSON, JSONP, XML and YAML
 formats.
-For convenient use in web pages using AJAX technique, CORS mechanism is
-implemented.
+The web services also support CORS, which allows them to be accessed *via* 
+AJAX calls from web pages.
 There is also an `online documentation`_, that allows users to perform web
 services calls from a web browser.
 
@@ -116,10 +116,11 @@ services calls from a web browser.
    A dashed line indicates the relationship between two resources behaves
    differently. :label:`egfig`
 
-Whole `web services codebase`_ is Apache 2.0 licensed and available from
+The ChEMBL `web services codebase`_ is Apache 2.0 licensed and available from
 `GitHub`_.
 The code is also registered in the Python Package Index (`PyPI`_) so that every
-organization having their own ChEMBL server can immediately expose web services.
+organization having their own ChEMBL database instance can immediately expose 
+web services.
 
 Performing core cheminformatics operations
 ------------------------------------------
@@ -128,7 +129,7 @@ There are some common computations and techniques, that are essential in the
 field of cheminformatics.
 Since chemical compounds are usually represented as graph structures these are
 similar to the operations, that can be performed on graphs.
-The most essential of them are:
+The most important operations are:
 
 1. 2D/3D compound depiction.
 2. Finding compounds similar to the given query compound with some similarity
@@ -140,35 +141,31 @@ The most essential of them are:
    INCHI, MDL molfile.
 
 There are many software libraries, written in different languages, that
-implement some operations described above (or all of them).
+implement some or all of the operations described above.
 From the libraries, that are available with open source license, two are very
 robust and comprehensive.
 `RDKit`_ (developed and maintained by Greg Landrum) and `Indigo`_ (created by GGA
 software, now `Epam`_) toolkits both offer all described functionality, provide
-Python bindings and database cartridges (extentions), that allow performing
+Python bindings and database cartridges, that allow performing
 substructure and similarity searches on compounds stored in RDBMS.
-Their quality made them very popular in cheminformatics community and ChEMBL
-group in particular.
 
-Both aforementioned toolkits are used for rendering compound images available
-*via* ChEMBL web services.
-RDKit is used even more extensively.
-ChEMBL web services, as described so far, can be seen as a *data-focused*,
+Both of the aforementioned toolkits are used for rendering compound images available
+*via* the ChEMBL web services.
+The ChEMBL web services described so far can be seen as a *data-focused*,
 as they are responsible for retrieving data stored in the ChEMBL database.
 To assist with data processing, loading and curating, a requirement to build
 additional *cheminformatics-focused* services was identified.
-As a result, `Beaker`_ project was created.
-Beaker [Beaker14]_ exposes most functionality offered by RDKit *via* RESTful web
-services.
-This means that this functionality can be now accessed *via* HTTP, using any
-programming language, without having to install RDKit locally.
+To address this need the `Beaker`_ project was setup.
+Beaker [Beaker14]_ exposes most functionality offered by RDKit using REST.
+This means that the functionality RDKit provides, can now be accessed *via* HTTP, 
+using any programming language, without requiring a local RDKit installation.
 
 
-Just like the *data* part of ChEMBL web services, the *utils* part (Beaker) is
-written in pure Python (this time using `Bottle framework`_), Apache 2.0
-licensed, available on GitHub, registered to PyPI and having its own `live
-online documentation`_.
-This means, that it is possible to quickly set up a local instance of beaker
+Following a similar setup to the *data* part of ChEMBL web services, the *utils* 
+part (Beaker) is written in pure Python (using `Bottle framework`_), 
+Apache 2.0 licensed, available on GitHub, registered to PyPI and has its 
+own `live online documentation`_.
+This means, that it is possible to quickly set up a local instance of the Beaker
 server.
 
 .. figure:: figure1.png
@@ -181,15 +178,15 @@ In order to facilitate writing Python software, that uses ChEMBL web services,
 This small Python package wraps around `Requests library`_, providing more
 convenient API, similar to `Django QuerySet`_, offering lazy evaluation of
 results, chaining filters and caching results locally.
-This effectively reduces requests to remote server to the minimum, which speeds
+This effectively reduces the number of requests to the remote server, which speeds 
 up data retrieval process.
 The package covers full ChEMBL web services functionality so allows to retrieve
 data as well as perform chemical computations without installing chemistry
 toolkits.
 
 
-As an example the following code will retrieve all approved drugs for a given
-target:
+The following code example demonstrates how to retrieve all approved drugs for 
+a given target:
 
 .. code-block:: python
 
@@ -223,11 +220,11 @@ example to SDF file and compute maximum common substructure:
 Rapid data analysis and prototyping
 -----------------------------------
 
-Having a very comprehensive cheminformtics toolbox, consisting of chemical
+Access to a very comprehensive cheminformtics toolbox, consisting of chemical
 database, efficient data access methods (ORM, web services, client library) and
 specialized chemical frameworks and many other popular general purpose
-libraries, implementing core data mining and machine learning algorithms, it is
-now easier to perform sophisticated data analysis or quickly prototype advanced
+libraries, implementing core data mining and machine learning algorithms, makes 
+it easier to perform sophisticated data analysis or quickly prototype advanced
 cheminformatics applications.
 
 The possibility to create such a toolbox, made Python language so appealing.
@@ -313,7 +310,7 @@ Curation of data
 Supporting the process of extracting and curation data from scientific papers
 is another area where Python plays an important role.
 The ChEMBL team is currently working on a web application, that can aid in-house
-expert curators with this rather tedious and time-consuming process.
+expert curators with this challenging and time-consuming process.
 The application can open a scientific publication in PDF format or a scanned
 image and extract compounds presented as images or identifiers.
 Extracted compounds are presented to the user in order to correct possible
@@ -328,22 +325,22 @@ appropriate action.
 
    Extracting data from a scientific publication. :label:`egfig`
 
-Apart from the scientific papers and images, curation interface can handle
-most popular chemical formats, such as SDF files, MDL molfiles, SMILES and
-InChIs.
-It uses `Celery`_ as synchronous task queue for performing the necessary
-chemistry calculations when new a compound is inserted or updated.
-With this system, a chemical curator no longer has to deal with raw SQL
-statements, that can be hard to learn or debug, instead they can focus on domain
-specific tasks.
+In addition to processing scientific papers and images, curation interface can 
+handle the most popular chemical formats, such as SDF files, MDL molfiles, 
+SMILES and InChIs.
+`Celery`_ is used as a synchronous task queue for performing the necessary
+chemistry calculations when a new compound is inserted or updated.
+This system allows a chemical curator to focus on domain specific tasks and no 
+longer interact directly with the database, using raw SQL statements, which can 
+be hard to learn and difficult to debug.
 
 Discussion
 ----------
 
-Python is an essential technology in most critical aspects of the ChEMBL team
-activities.
-It streamlines data distribution, curation and analysis.
-The tools build using Python language are robust, flexible and web friendly,
+Python has become an essential technology requirement of the core activities 
+undertaken by ChEMBL group, as it has been demonstrated to streamline data 
+distribution, curation and analysis.
+The tools built using Python are robust, flexible and web friendly,
 which makes them ideal for collaborating in a scientific environment.
 As an interpreted, dynamically typed scripting language, Python is perfect for
 prototyping different computing solutions and applications.
