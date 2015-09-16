@@ -43,60 +43,50 @@ A typical CMOS semiconductor process offers n-channel and p-channel transistors.
 Sample PyCell Development
 +++++++++++++++++++++++++
 The process of developing a PyCells is described in this section step by step using the sample 20V MOS transistor, pmos20. In order to simplify the development of new layout generators, the architecture shown in Figure :ref:`architecture` has been established. 
-.. figure:: 20V_mos.PNG
-   :scale: 80%
+
+.. figure:: 20V_mos.pdf
+   :scale: 30%
    :align: center
    
-  Class diagram for PyCells of 20V MOS transistors . :label:`architecture`
+   Class diagram for PyCells of 20V MOS transistors . :label:`architecture`
  
 For developing the Pycells, first step is seting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :label:`param`  
 
 .. figure:: parameters.pdf
-   :scale: 80%
+   :scale: 50%
    :align: center
    
    Evaluation flow of the parameters . :label:`param` 
    
- The technology data (td) provided by foundary is read to have access to the layers and values to initialize some of the variables such as gate Oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundary, the dimensions of layers as well as spaces between them are calculated. 
- .. code-block:: python
-   
- 	# basic setup
-	if self.type == ’pmos20h’:
-		polyLengthNotGate = td[’e_p1_sdf’] + td[’o_pp_sdf’] + td[’o_pp_p1’]
-		diffLengthNotGate = td[’o_pp_sdf’] + td[’o_pp_p1’]
-		if self.wideMetSpacSB:
-			td[’s_source_bulk’] = (td[’s_m1wide’] + 2 * (td[’e_m1_ct’] -
-			    td[’e_df_ct_gb’]))
-	else:
-		polyLengthNotGate = td[’e_df_nt’] + td[’e_p1_sdf’]
-		diffLengthNotGate = td[’e_df_nt’]
- 
+The technology data (td) provided by foundary is read to have access to the layers and values to initialize some of the variables such as gate Oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundary, the dimensions of layers as well as spaces between them are calculated. 
+
 The first structure to be generated is the polysilicon gate which has an octagonal shape drawn with a polysilicon layer (poly1) with a gap inside for drain contact (see Figure :label:`gate`) and finally it is appended to the list of shapes which are connected to the gate pin. 
 
  .. figure:: gate.pdf
-   :scale: 80%
+   :scale: 50%
    :align: center
    
    Polysilicon gate structure of pmos20V :label:`gate`
 
  .. code-block:: python
    
- 	p1Gate = OctagonWithHole(layers.poly1, gateOuterBox,
-		gateInnerBox, td[’p1_corn’], 0)
-	self.pins[’G’].append(p1Gate)
+  p1Gate = OctagonWithHole(layers.poly1, 
+		gateOuterBox, gateInnerBox,
+                td['p1_corn'], 0)
+  self.pins['G'].append(p1Gate)
 	
 Other structures of the transistor are drawn one by one in correct order, such as adding diffusion layer and setting drain and source gates and the contacts of them as shown in Figure :label:`pin`.
 
-.. figure:: pin.pdf
-   :scale: 80%
+.. figure:: pins.pdf
+   :scale: 50%
    :align: center
    
    Creation of the source and drain contacts. :label:`pin`
- 
+  
 In order to increase the breakdown voltage of the device, a slightly p-doped region at the drain has to be created. This region consists of a deep and a shallow well, which define the drift region of the device. The deep and shallow wells are generated (see Figure :label:`well`)
 
-.. figure:: well.pdf
-   :scale: 80%
+.. figure:: wells.pdf
+   :scale: 50%
    :align: center
    
    Deep and shallow p-well under the drain. :label:`well`
@@ -104,15 +94,15 @@ In order to increase the breakdown voltage of the device, a slightly p-doped reg
 Similarly a shallow n-well should be added on source region to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20 device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :label:`bulk` )    
 
 .. figure:: bulk.pdf
-   :scale: 80%
+   :scale: 50%
    :align: center
    
    Bulk contact as a ring with an n-implant and an n-well. :label:`bulk`
 
 Lastly the overall device structures such as definition layer for the tickness of the gate oxide should be added to PyCell. The resulting layout for pmos20t is shown in Figure :label:`pmos20`. 
 
-.. figure:: pmos20.pdf
-   :scale: 80%
+.. figure:: pmos20t.pdf
+   :scale: 40%
    :align: center
    
    Final layout of a pmos20t transistor. :label:`pmos20`
@@ -120,11 +110,15 @@ Lastly the overall device structures such as definition layer for the tickness o
 Figure :label:`pmos50` shows the layout generated for 50V transistor with guard ring and multiplication factor of 2
 
 .. figure:: pmos50.pdf
-   :scale: 80%
+   :scale: 35%
    :align: center
    
    Layout with a 50V guard ring and a device multiplier of 2. :label:`pmos50`
 
+Optimization
+++++++++++++
+
+The computation time plays a crucial role in designing integrated circuits because of the complexity of the designs and the amount of operations necessary to generate layouts of high voltage devices or the large devices. Therefore throughout this project the PyCells are developed to be in the most optimized shape possible without losing the clarity of the structure of the codes. For optimizing the codes, data aggregation and optimal use of local variables as well as iterations are taken into account. This has resulted in faster execution of PyCells codes for generating large and complex devices in comparison with PCells for identical device.
    
 Stretching
 ----------
@@ -137,7 +131,7 @@ Besides the basic features, such as specifying parameters for recurring structur
    C \propto W \cdot L
    
 .. figure:: cap_stretch.PNG
-   :scale: 80%
+   :scale: 20%
    :align: center
    
    Stretching of a capacitor by changing L and W ratio, but keeping its area constant. :label:`capfig`
@@ -158,14 +152,14 @@ The electrical properties of resistors and transistors are proportional to the r
 Therefore one can not simply fit them into a given shape, without affecting the behaviour of the design. One option is to allow the resistors to have bends (as shown in Figure :ref:`resfig`) or to change the number of fingers of transistors (see Figure :ref:`transfig`), or to stretch the gate of a transistor (see Figure :ref:`stretchgate`).
       
 .. figure:: res_stretch.PNG
-   :scale: 80%
+   :scale: 20%
    :align: center
    
    Stretching of a resistor by bending the device in a snake structure, but keeping length and width constant. :label:`resfig`
    
    
 .. figure:: mos_stretch.PNG
-   :scale: 80%
+   :scale: 40%
    :align: center
    
    Stretching of a transistor by increasing the number of fingers, but keeping the gate to source/drain edge constant. :label:`transfig`
@@ -251,11 +245,12 @@ The last but the most important part of the project is verifying the PyCells. We
 Design Rule Check (DRC)
 +++++++++++++++++++++++
 The semiconductor manfacturers define a set of design rules for every technology with which the layout of every design must comply. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violances in order to ensure the accuracy of them. A DRC verification software checks the layouts and highlights the violations of design rules, such as space between layers, overlapping of layers, the cases of missing layers, etc (see Figure :label:`DRC` ).
+
 .. figure:: designrules.pdf
-	   :scale: 80%
+	   :scale: 50%
 	   :align: center
    
-	   Design Rule Check :label:`DRC` 
+	   Design rules check :label:`DRC` 
 	
 Layout versus Schematic (LVS)
 +++++++++++++++++++++++++++++
@@ -269,10 +264,6 @@ Database Compararison (DBCOMP)
 ++++++++++++++++++++++++++++++
 The last verification step is to substantiate the main aim of this project, generating layouts with Python (PyCells) exactly the same as the ones generated with SKILL (PCells). This verification process is in GDSII level and is done with help of a regression test, in which in a layout the PCells and PyCells of identical devices are instanced with a set of parameters, and the layouts are compared to be congruent.
 
-Optimization
-------------
-
-The computation time plays a crucial role in designing integrated circuits because of the complexity of the designs and the amount of operations necessary to generate layouts of high voltage devices or the large devices. Therefore throughout this project the PyCells are developed to be in the most optimized shape possible without losing the clarity of the structure of the codes. For optimizing the codes, data aggregation and optimal use of local variables as well as iterations are taken into account. This has resulted in faster execution of PyCells codes for generating large and complex devices in comparison with PCells for identical device.
 
 Conclusion
 ------------
@@ -284,6 +275,6 @@ References
 ----------
 .. [OpenAccess] What is OpenAccess?
         https://www.si2.org/?page=69
-.. [PyCellAPI] J. Ivie. Ciranova Python API Reference Manual. Ciranova, Inc., 2009
+.. [PythonAPI] J. Ivie. Ciranova Python API Reference Manual. Ciranova, Inc., 2009
 .. [PyCellStudio] Synopsys PyCell Studio
 		https://www.synopsys.com/
