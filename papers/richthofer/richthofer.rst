@@ -44,9 +44,9 @@ Introduction
 As virtual-machine-languages, Python and Java both depend on native language bindings/extensions in many scenarios. Especially scientific code mostly relies on NumPy or native interfaces to some computation- or control-framework that connects Python to problem-specific hardware or libraries.
 Developing and maintaining such bindings is usually a difficult and error-prone task. One major goal of the JyNI-project is to let Python and Java – with the help of [JYTHON]_ – share their pools of language-bindings, vastly enriching both ecosystems.
 
-While Jython already enables Python-code to access Java-frameworks and also native JNI Java/C-extensions, it currently locks out all CPython-specific extensions. Remember that this does not only affect the actual C-extensions, but also all Python-frameworks that have a – maybe single, subtle – dependency on such an extension. Such dependencies can include:
+While Jython already enables Python-code to access Java-frameworks and also native JNI Java/C-extensions, it currently locks out all CPython-specific extensions. Remember that this does not only affect the actual C-extensions, but also all Python-frameworks that have a – maybe single, subtle – dependency on such an extension. Dependencies can include:
 
-* Libraries like NumPy are written directly in terms of the C-API. These libraries, which in turn link native libraries like BLAS, are widely used in the Python ecosystem, especially in scientific code.
+* Libraries like NumPy that are written directly in terms of the C-API. These libraries, which in turn link native libraries like BLAS, are widely used in the Python ecosystem, especially in scientific code.
 
 * Cython is a popular tool to build optimized C-code from Python source that has been annotated with types and other declaration, using the C-API to link.
 
@@ -113,7 +113,7 @@ different techniques, depending of the PyObject's implementation details.
    :scale: 26%
    :figclass: h
 
-   Approaches to bridge PyObjects :label:`modi`
+   Approaches to bridge PyObjects. *Left*: Native PyObject wraps Java. *Center*: Java-PyObject wraps native one. *Right*: Objects are mirrored. :label:`modi`
 
 The basic approach is to back the C-API of PyObject by a Java-PyObject via JNI.
 This would avoid data-sync issues, but is only feasible if there are matching counterparts of the PyObject type in Jython and CPython (:ref:`modi`, left).
@@ -212,11 +212,10 @@ reference graph, it mirrors it on Java-side using some minimalistic head-objects
 (``JyNIGCHead`` s); see figure :ref:`rnrg`. Note that with this design, also Java-object,
 especialy Jython-PyObjects can participate in the reference graph keep parts of it alive.
 
-.. figure:: JyNIGCBasic_0108.eps
-   :scale: 42%
-   :figclass: H
-
-   reflected native reference graph :label:`rnrg`
+.. latex::
+   \begin{figure}[H]\noindent\makebox[\columnwidth][c]{\includegraphics[scale=0.42]{JyNIGCBasic_0108.eps}}
+   \caption{reflected native reference graph \DUrole{label}{rnrg}}
+   \end{figure}
 
 If a part of the (native) reference-graph becomes unreachable (figure :ref:`cuo`), this is
 reflected (asynchronously) on Java-side. At its next run, the Java-GC will collect this
