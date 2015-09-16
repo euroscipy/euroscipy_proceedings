@@ -41,6 +41,10 @@ Garbage Collection in JyNI – How to bridge Mark/Sweep and Reference Counting G
 Introduction
 ------------
 
+.. figure:: JyNILogo2.png
+   :figclass: h
+   :scale: 25%
+
 As virtual-machine-languages, Python and Java both depend on native language bindings/extensions in many scenarios. Especially scientific code mostly relies on NumPy or native interfaces to some computation- or control-framework that connects Python to problem-specific hardware or libraries.
 Developing and maintaining such bindings is usually a difficult and error-prone task. One major goal of the JyNI-project is to let Python and Java – with the help of [JYTHON]_ – share their pools of language-bindings, vastly enriching both ecosystems.
 
@@ -93,7 +97,7 @@ There have been similar efforts in other contexts.
 
 None of the named approaches reached a sufficient level of functionality/compatibility, at least not for current language versions (some of them used to work to some extend, but became unmaintained). In the Python ecosystem the C-extension API has been an ongoing issue since its beginning. PyPy famously has been encouraging developers to favor CFFI above C-extension API, as it is the only existing approach that has been designed to be well portable to other Python implementations. However even if this effort would work out, there would be so many legacy extensions around that a serious move to CFFI won't be done in foreseeable future.
 
-For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PLS15]_). Backgroung here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Reference-counters are not atomic and atomic reference-counters yield insufficient performance.
+For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PLS15]_). Backgroung here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Current reference-counters are not atomic and switching to atomic reference-counters yields insufficient performance.
 In context of a mark-and-sweep-based garbage collection in a future CPython the JyNI GC-approach could be potentially adopted to support legacy extensions and provide a smooth migration path.
 
 .. - follow-up paper of [JyNI_ESCP13]_
