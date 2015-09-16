@@ -50,7 +50,7 @@ The process of developing a PyCells is described in this section step by step us
    
    Class diagram for PyCells of 20V MOS transistors . :label:`architecture`
  
-For developing the Pycells, first step is seting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :label:`param`  
+For developing the Pycells, first step is seting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :ref:`param`  
 
 .. figure:: parameters.pdf
    :scale: 50%
@@ -60,7 +60,7 @@ For developing the Pycells, first step is seting the parameters of the transisto
    
 The technology data (td) provided by foundary is read to have access to the layers and values to initialize some of the variables such as gate Oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundary, the dimensions of layers as well as spaces between them are calculated. 
 
-The first structure to be generated is the polysilicon gate which has an octagonal shape drawn with a polysilicon layer (poly1) with a gap inside for drain contact (see Figure :label:`gate`) and finally it is appended to the list of shapes which are connected to the gate pin. 
+The first structure to be generated is the polysilicon gate which has an octagonal shape drawn with a polysilicon layer (poly1) with a gap inside for drain contact (see Figure :ref:`gate`) and finally it is appended to the list of shapes which are connected to the gate pin. 
 
  .. figure:: gate.pdf
    :scale: 50%
@@ -75,7 +75,7 @@ The first structure to be generated is the polysilicon gate which has an octagon
                 td['p1_corn'], 0)
   self.pins['G'].append(p1Gate)
 	
-Other structures of the transistor are drawn one by one in correct order, such as adding diffusion layer and setting drain and source gates and the contacts of them as shown in Figure :label:`pin`.
+Other structures of the transistor are drawn one by one in correct order, such as adding diffusion layer and setting drain and source gates and the contacts of them as shown in Figure :ref:`pin`.
 
 .. figure:: pins.pdf
    :scale: 50%
@@ -83,7 +83,7 @@ Other structures of the transistor are drawn one by one in correct order, such a
    
    Creation of the source and drain contacts. :label:`pin`
   
-In order to increase the breakdown voltage of the device, a slightly p-doped region at the drain has to be created. This region consists of a deep and a shallow well, which define the drift region of the device. The deep and shallow wells are generated (see Figure :label:`well`)
+In order to increase the breakdown voltage of the device, a slightly p-doped region at the drain has to be created. This region consists of a deep and a shallow well, which define the drift region of the device. The deep and shallow wells are generated (see Figure :ref:`well`)
 
 .. figure:: wells.pdf
    :scale: 50%
@@ -91,7 +91,7 @@ In order to increase the breakdown voltage of the device, a slightly p-doped reg
    
    Deep and shallow p-well under the drain. :label:`well`
 
-Similarly a shallow n-well should be added on source region to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20 device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :label:`bulk` )    
+Similarly a shallow n-well should be added on source region to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20 device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :ref:`bulk` )    
 
 .. figure:: bulk.pdf
    :scale: 50%
@@ -99,7 +99,7 @@ Similarly a shallow n-well should be added on source region to define the device
    
    Bulk contact as a ring with an n-implant and an n-well. :label:`bulk`
 
-Lastly the overall device structures such as definition layer for the tickness of the gate oxide should be added to PyCell. The resulting layout for pmos20t is shown in Figure :label:`pmos20`. 
+Lastly the overall device structures such as definition layer for the tickness of the gate oxide should be added to PyCell. The resulting layout for pmos20t is shown in Figure :ref:`pmos20`. 
 
 .. figure:: pmos20t.pdf
    :scale: 40%
@@ -107,7 +107,7 @@ Lastly the overall device structures such as definition layer for the tickness o
    
    Final layout of a pmos20t transistor. :label:`pmos20`
    
-Figure :label:`pmos50` shows the layout generated for 50V transistor with guard ring and multiplication factor of 2
+Figure :ref:`pmos50` shows the layout generated for 50V transistor with guard ring and multiplication factor of 2
 
 .. figure:: pmos50.pdf
    :scale: 35%
@@ -168,7 +168,7 @@ Therefore one can not simply fit them into a given shape, without affecting the 
    :scale: 80%
    :align: center
    
-   Stretching the gate of a transistor :ref:`stretchgate`
+   Stretching the gate of a transistor :label:`stretchgate`
    
 All these features can be recognized by making the PyCells stretchable. The stretch handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to the shape and parameters of the layout. Stretching can be limited to horizontal or vertical direction. Also minimal and maximal limits, as well as a snap resolution can be specified. An example of a stretch handle definition is shown below:
 
@@ -244,7 +244,7 @@ The last but the most important part of the project is verifying the PyCells. We
 
 Design Rule Check (DRC)
 +++++++++++++++++++++++
-The semiconductor manfacturers define a set of design rules for every technology with which the layout of every design must comply. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violances in order to ensure the accuracy of them. A DRC verification software checks the layouts and highlights the violations of design rules, such as space between layers, overlapping of layers, the cases of missing layers, etc (see Figure :label:`DRC` ).
+The semiconductor manfacturers define a set of design rules for every technology with which the layout of every design must comply. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violances in order to ensure the accuracy of them. A DRC verification software checks the layouts and highlights the violations of design rules, such as space between layers, overlapping of layers, the cases of missing layers, etc (see Figure :ref:`DRC` ).
 
 .. figure:: designrules.pdf
 	   :scale: 50%
