@@ -101,7 +101,7 @@ Lastly the overall device structures such as definition layer for the thickness 
    
    Final layout of a pmos20t transistor. :label:`pmos20`
    
-Figure :ref:`pmos50` shows the layout generated for a transistor with 50V guard ring and multiplication factor of 2
+Figure :ref:`pmos50` shows the layout generated for a transistor with 50V guard ring and multiplication factor of 2.
 
 .. figure:: pmos50.pdf
    :scale: 35%
