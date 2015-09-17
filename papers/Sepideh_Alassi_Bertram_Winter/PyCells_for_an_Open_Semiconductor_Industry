@@ -34,7 +34,7 @@ The aim of this project is developing interoperable layout generators with Pytho
 Development
 -----------
 
-OpenAceess [OpenAccess]_ has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is a file based database and manages logical design data (schematics) as well as artwork data (layout) for manufacturing. The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys ) developed a Python wrapper [PythonAPI]_ for the OpenAccess C++ class library with the goal to access and modify design data through Python. Additionally they provide an integrated development environment [SynopsysPyCellStudio]_ that enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window of the GUI.
+OpenAceess [OpenAccess]_ has been established as standard for storing design data in the semiconductor industry and builds the foundation for interoperability of EDA-tools. OpenAccess is a file based database and manages logical design data (schematics) as well as artwork data (layout) for manufacturing. The reference implementation for accessing design data within the database is written in C++. The company Ciranova (now acquired by Synopsys) developed a Python wrapper [PythonAPI]_ for the OpenAccess C++ class library with the goal to access and modify design data through Python. Additionally they provide an integrated development environment [SynopsysPyCellStudio]_ that enables interactive development and debugging of Python code, while the effects on the design data are shown directly in a separated window of the GUI.
 
 In our development, we have used Python API library to write Python codes, which generate recurring layout structures based on a given set of parameters. Typical recurring structures are primitive devices that are used in integrated circuit design like resistors, capacitors and transistors. The electrical properties of these devices (resistance, capacitance and e. g. transistor transconductance) are brought down to geometric dimensions (e. g. width and length) which serve as parameters for the Python scripts. The object oriented nature of Python fits very well for this task as shown in the following example:
 
@@ -50,7 +50,7 @@ The process of developing a PyCells is described in this section step by step us
    
    Class diagram for PyCells of 20V MOS transistors . :label:`architecture`
  
-For developing the Pycells, first step is setting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :ref:`param`  
+For developing the PyCells, first step is setting the parameters of the transistor, such as length, width, number of fingers, type of guardring, etc as shown in Figure :ref:`param`  
 
 .. figure:: parameters.pdf
    :scale: 50%
@@ -58,7 +58,7 @@ For developing the Pycells, first step is setting the parameters of the transist
    
    Evaluation flow of the parameters . :label:`param` 
    
-The technology data (td) provided by foundry is read to have access to the layers and values to initialize some of the variables such as gate Oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundry, the dimensions of layers as well as spaces between them are calculated. 
+The technology data (td) provided by foundry is read to have access to the layers and values to initialize some of the variables such as gate oxide thickness, etc. After the parameters are set and evaluated with respect to the acceptable thresholds defined by the foundry, the dimensions of layers as well as spaces between them are calculated. 
 
 Then the first structure to be generated is the polysilicon gate which has an octagonal shape drawn with a polysilicon layer (poly1) with a gap inside for drain contact and finally it is appended to the list of shapes which are connected to the gate pin. 
 
@@ -77,7 +77,7 @@ Other structures of the transistor are drawn one by one in correct order, such a
    
    Creation of the source and drain contacts. :label:`pin`
   
-In order to increase the breakdown voltage of the device, a slightly p-doped region at the drain has to be created. This region consists of a deep and a shallow well, which define the drift region of the device. (see Figure :ref:`well`)
+In order to increase the breakdown voltage of the device, regions with different doping concentrations have to be created at the drain terminal of the transistor. (see Figure :ref:`well`)
 
 .. figure:: wells.pdf
    :scale: 50%
@@ -85,7 +85,7 @@ In order to increase the breakdown voltage of the device, a slightly p-doped reg
    
    Deep and shallow p-well under the drain. :label:`well`
 
-Similarly a shallow n-well should be added on source region to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20t device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :ref:`bulk` )    
+Similarly a n-well should be added to define the device body, followed by a p-implant layer on source and drain. Furthermore, the bulk connection of the pmos20t device is accomplished by a contact ring around the device which has to make the connection to the n-type isolation well, for which n-type implant and a shallow n-well are required. (see Figure :ref:`bulk`)    
 
 .. figure:: bulk.pdf
    :scale: 50%
@@ -101,7 +101,7 @@ Lastly the overall device structures such as definition layer for the thickness 
    
    Final layout of a pmos20t transistor. :label:`pmos20`
    
-Figure :ref:`pmos50` shows the layout generated for 50V transistor with guard ring and multiplication factor of 2
+Figure :ref:`pmos50` shows the layout generated for a transistor with 50V guard ring and multiplication factor of 2.
 
 .. figure:: pmos50.pdf
    :scale: 35%
@@ -238,7 +238,7 @@ The last but the most important part of the project is verifying the PyCells. We
 
 Design Rule Check (DRC)
 +++++++++++++++++++++++
-The semiconductor manufacturers define a set of design rules for every technology with which the layout of every design must comply. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violations in order to ensure the accuracy of them. A DRC verification software checks the layouts and highlights the violations of design rules, such as insufficient space between layers, overlapping layers, incorrect dimension of layers, etc (see Figure :ref:`DRC` ).
+The semiconductor manufacturers define a set of design rules for every technology with which the layout of every design must comply. Therefore all the layouts with various parameters which are generated by PyCells are checked for design rule violations in order to ensure the accuracy of them. A DRC verification software checks the layouts and highlights the violations of design rules, such as insufficient space between layers, overlapping layers, incorrect dimension of layers, etc (see Figure :ref:`DRC`).
 
 .. figure:: designrules.pdf
 	   :scale: 50%
@@ -262,7 +262,7 @@ The last verification step is to substantiate the main aim of this project, gene
 Conclusion
 ------------
 
-Believing in what Richard Stallman has said "Proprietary software is an injustice", we have successfully developed the layout generators for an open semiconductor industry, giving the designers who use ams technologies opportunity to work with any desired EDA-tools, to share their designs easily with others, and to receive the support they deserve. These PyCells are developed for all high and low voltage devices of technologies in order to enable the IC-designers to have advanced designs without feeling constraints because of missing parametrized layouts. Furthermore, by using these PyCells we have managed to reduce the computation time which is extremely important in semiconductor industry. The PyCells developed for ams AG technologies, have passed all the verification tests and are practically in use by customers.     
+Believing in what Richard Stallman has said "Proprietary software is an injustice", we have successfully developed the layout generators for an open semiconductor industry, giving the designers who use ams AG technologies opportunity to work with any desired EDA-tools, to share their designs easily with others, and to receive the support they deserve. These PyCells are developed for all high and low voltage devices of technologies in order to enable the IC-designers to have advanced designs without feeling constraints because of missing parametrized layouts. Furthermore, by using these PyCells we have managed to reduce the computation time which is extremely important in semiconductor industry. The PyCells developed for ams AG technologies, have passed all the verification tests and are practically in use by customers.     
 
 
 References
