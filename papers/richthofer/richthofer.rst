@@ -45,7 +45,7 @@ Introduction
    :figclass: h
    :scale: 25%
 
-As virtual-machine-languages, Python and Java both depend on native language bindings/extensions in many scenarios. Especially scientific code mostly relies on NumPy or native interfaces to some computation- or control-framework that connects Python to problem-specific hardware or libraries.
+As interpreter-based languages, Python and Java both depend on native language bindings/extensions in many scenarios. Especially scientific code mostly relies on NumPy or native interfaces to some computation- or control-framework that connects Python to problem-specific hardware or libraries – a fact that usually ties this kind of code to CPython.
 Developing and maintaining such bindings is usually a difficult and error-prone task. One major goal of the JyNI-project is to let Python and Java – with the help of [JYTHON]_ – share their pools of language-bindings, vastly enriching both ecosystems.
 
 While Jython already enables Python-code to access Java-frameworks and also native JNI Java/C-extensions, it currently locks out all CPython-specific extensions. Remember that this does not only affect the actual C-extensions, but also all Python-frameworks that have a – maybe single, subtle – dependency on such an extension. Dependencies can include:
@@ -54,7 +54,7 @@ While Jython already enables Python-code to access Java-frameworks and also nati
 
 * Cython is a popular tool to build optimized C-code from Python source that has been annotated with types and other declaration, using the C-API to link.
 
-* The ctypes and CFFI modules, comparable to JNA and JFFI in the Java-world respectively, are other popular means of providing support for C bindings, also all written to use the C-API.
+* The ctypes and CFFI modules, comparable to JNR, JNA and JFFI in the Java-world respectively, are other popular means of providing support for C bindings, also all written to use the C-API.
 
 * SWIG, Pyrex (from which Cython was derived) and Boost.Python are further tools that create extensions using the C-API.
 
@@ -296,7 +296,7 @@ implement finalizers – we use finalizers only where really needed.
 
 .. Weak References
 
-Todo: Explain weak references here
+   Todo: Explain weak references here
 
 
 Roadmap
