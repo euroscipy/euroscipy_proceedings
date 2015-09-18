@@ -285,6 +285,11 @@ Next the weak scaling of the solver is tested by running the case for increasing
 
 Strong scaling is tested for a computational box of size :math:`512^3`, for a various number of processors larger than 64. For *slab* decomposition the maximum number of CPUs is now 512, whereas for *pencil* :math:`512^2` CPUs can be used. The top panel of Figure :ref:`strong` shows the performance of the pure Python solvers. Evidently, the performance is degrading when the number of mesh nodes per CPU becomes lower and the number of processors increases. The main reason for this poor performance can be found in the implementation of the 3D FFT, where there is a for-loop over the number of processors. When this for-loop (as well as a few other routines) is moved to cython, we observe very good strong scaling, even better than the C++ implementation that is using MPI directly from within FFTW.
 
+Conclusions
+-----------
+
+It is possible to write a very good solver for direct numerical simulations of turbulent flows directly in Python, with nothing more than standard modules like numpy, scipy and mpi4py. It is also possible to get a fully competitive solver, that runs with the speed of C on thousands of processors with billions of unknowns, but then it is necessary to move a few computationally heavy routines from numpy's ufuncs to Cython or numba.
+
 
 Acknowledgements
 ----------------
