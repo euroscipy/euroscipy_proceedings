@@ -73,40 +73,11 @@ Moving to Python could therefore lower the barrier of entry significantly.
 
 It is also beneficial that the scientific Python ecosystem is open-source compared to the MATLAB environment and commercial Fortran compilers which require expensive licenses.
 
-Thus we decided to design and implement a proof-of-concept astrodynamics library in Python.
- 
-Requirements for the Plyades Library
-------------------------------------
-
-Based on the previous discussion we derive the following requirements for the Plyades library.
-Within these the keywords *shall*, *should*, and *may* are to be interpreted as specified in ISO 29148 [ISO11]_.
-
-The library shall be written in pure Python
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Although Python would also be suited to serve as glue code or as a wrapper for legacy Fortran codes we decided to keep the implementation in pure Python and thus reduce its complexity.
-
-Low-level functionality should be based on pure functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To aid future parallelization efforts and keep the code simple low-level functions should be free of side effects.
-
-The user interface shall be based on an object-oriented domain model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    *The determined Real Programmer can write FORTRAN programs in any language.* - Ed Post
-
-
-
-Common calculations and visualizations should be available as niladic or monadic instance methods
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-blob
-
 Design of the Plyades Object Model
 ----------------------------------
 
-blob
+The general design of the Plyades library is based on the notion 
+
 
 The Body Class
 ~~~~~~~~~~~~~~
@@ -307,11 +278,11 @@ References
 
 .. [ASP13] The Astropy Collaboration. *Astropy: A community Python package for astronomy*, Astronomy & Astrophysics, 558(2013):A33.
 
-.. [ISO11] ISO. Systems and software engineering — Life cycle processes — Requirements engineering. Norm ISO/IEC/IEEE 29148:2011. International Organization for Standardization, 2011.
-
 .. [IFC15] Intel Corporation. *Intel® Fortran Compiler - Support for Fortran language standards*, https://software.intel.com/en-us/articles/intel-fortran-compiler-support-for-fortran-language-standards, last visited: September 19, 2015.
 
 .. [PGH11] Fernando Perez, Brian Granger, John D. Hunter. *Python: An Ecosystem For Scientific Computing*, Computing in Science & Engineering 13.2(2011):13-21.
 
 .. [PGu14] Philip Guo. *Python is Now the Most Popular Introductory Teaching Language at Top U.S. Universities*, ACM Communications, July 7, 2014.
 .. , `<http://cacm.acm.org/blogs/blog-cacm/176450-python-is-now-the-most-popular-introductory-teaching- language-at-top-us-universities/fulltext>`_, last visited: September 18, 2015.
+
+.. [ErE04] Eric Evans. Domain-driven design: tackling complexity in the heart of software. Addison-Wesley Professional, 2004.
