@@ -66,12 +66,14 @@ This assessment also holds true for astrodynamics work as most of the required l
 * Planetary ephemerides (``jplephem``)
 
 Another advantage is Python's friendliness to beginners.
-In the US Python was the most popular language for teaching introductory computer science (CS) courses at top-ranked CS-departments in 2014 [PGu14]_.
+In the United States Python was the most popular language for teaching introductory computer science (CS) courses at top-ranked CS-departments in 2014 [PGu14]_.
 Astrodynamicists are rarely computer scientist but mostly aerospace engineers, physicists and mathematicians.
 Most graduates of these disciplines have only little programming experience.
 Moving to Python could therefore lower the barrier of entry significantly.
 
 It is also beneficial that the scientific Python ecosystem is open-source compared to the MATLAB environment and commercial Fortran compilers which require expensive licenses.
+
+Thus we decided to design and implement a proof-of-concept astrodynamics library in Python.
  
 Requirements for the Plyades Library
 ------------------------------------
@@ -79,28 +81,25 @@ Requirements for the Plyades Library
 Based on the previous discussion we derive the following requirements for the Plyades library.
 Within these the keywords *shall*, *should*, and *may* are to be interpreted as specified in ISO 29148 [ISO11]_.
 
-The library should be written in pure Python
+The library shall be written in pure Python
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-blob
+Although Python would also be suited to serve as glue code or as a wrapper for legacy Fortran codes we decided to keep the implementation in pure Python and thus reduce its complexity.
 
-Cython shall be the only extension language
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Low-level functionality should be based on pure functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-blob
+To aid future parallelization efforts and keep the code simple low-level functions should be free of side effects.
 
-All low-level functionality shall be based on pure functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The user interface shall be based on an object-oriented domain model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-blob
+    *The determined Real Programmer can write FORTRAN programs in any language.* - Ed Post
 
-The library shall be able to use SPICE kernels to compute ephemerides of celestial bodies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-blob
 
-Each object shall provide commonly used visualizations as instance methods
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Common calculations and visualizations should be available as niladic or monadic instance methods
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 blob
 
@@ -121,7 +120,10 @@ These include
 * the equatorial radius :math:`r_e`
 * the polar radius :math:`r_p`
 * the :math:`J_2` coefficient of the bodies gravity potential
-* and the identification code used within the JPL ephemrides.
+* and the identification code used within the JPL ephemerides.
+
+The Propagator Class
+~~~~~~~~~~~~~~~~~~~~
 
 The State Class
 ~~~~~~~~~~~~~~~
@@ -137,7 +139,7 @@ Exemplary Usage
 In this example we use the Plyades library to conduct an analysis of the orbit of the International Space Station (ISS) [#]_.
 We obtain the inital state data on August 28, 2015, 12:00h from NASA realtime trajectory data [NAS15]_ and  use it to instantiate a Plyades ``State`` object as shown below.
 
-.. [#] A Jupyter Notebook with with this analysis can be obtained from `Github <https://github.com/helgee/euroscipy-2015>`_.
+.. [#] A Jupyter Notebook with this analysis can be obtained from `Github <https://github.com/helgee/euroscipy-2015>`_.
 
 .. code-block:: python
 
@@ -160,6 +162,17 @@ We obtain the inital state data on August 28, 2015, 12:00h from NASA realtime tr
 The position (``iss_r``) and velocity (``iss_v``) vectors use the functionality units from the Astropy package [ASP13]_ while the timestamp (``iss_t``) is an Astropy ``Time`` object.
 The constant ``EARTH`` from the ``plyades.bodies`` module is a ``Body`` object and provides Earth's planetary constants.
 
+The resulting ``State`` object contains all data necessary to describe the current orbit of the spacecraft.
+Calculations of orbital characteristics are therefore implemented with the ``@property`` decorator, like shown below, and are instantly available.
+
+.. code-block:: python
+
+    @property
+    def elements(self):
+        return kepler.elements(self.body.mu, self.r, self.v)
+    
+We compute the following orbital elements for the orbit of the ISS:
+
 * Semi-major axis: :math:`a=6777.773` km
 * Eccentricity: :math:`e=0.00109`
 * Inclination: :math:`i=51.724` deg
@@ -167,27 +180,65 @@ The constant ``EARTH`` from the ``plyades.bodies`` module is a ``Body`` object a
 * Argument of periapsis: :math:`\omega=101.293` deg
 * True anomaly: :math:`\nu=48.984` deg
 
+Based on the orbital elements derived quantities like the orbital period can be determined.
+
+In the idealized two-body problem which assumes a uniform gravity potential the only orbital element that changes over time is the true anomaly.
+It is the angle that defines the position of the spacecraft on the orbital ellipse.
+By solving Kepler's equation we can determine the true anomaly for every point in time and derive new Cartesian state vectors [DAV13]_.
+
 .. code-block:: python
 
     kepler_orbit = iss.kepler_orbit()
     kepler_orbit.plot3d()
 
+We now call the ``kepler_orbit`` instance method to solve Kepler's equation at regular intervals until one revolution is completed.
+The trajectory that comprises of the resulting state vectors is stored in the returned ``Orbit`` object.
+By calling ``plot3d`` we receive a three-dimensional visualization of the full orbital ellipse as shown in figure :ref:`3d`.
+
 .. figure:: 3d_orbit.png
 
     A three-dimensional visualization of the orbit based on Matplotlib. :label:`3d`
 
+We can achieve an equal result, apart from numerical errors, by numerically integrating Newton's equation:
+
+.. math::
+    :label: newton 
+
+    \vec{\ddot{r}} = -\mu \frac{\vec{r}}{|\vec{r}|^3}
+
+Plyades uses the DOP853 integrator from the ``scipy.integrate`` suite which is an 8th-order Runge-Kutta integrator with Dormand-Prince coefficients.
+By default the propagator uses adaptive step-size control and a simple force model that only considers the uniform gravity potential (see equation :ref:`newton`).
+
 .. code-block:: python
 
     newton_orbit = iss.propagate(
-        iss.period*1.3,
+        iss.period*0.8,
         max_step=500,
-        interpolate=200
+        interpolate=100
     )
     newton_orbit.plot_plane(plane='XZ', show_steps=True)
+
+In this example we propagate for 0.8 revolutions and constrain the step size to 500 seconds to improve accuracy.
+We also interpolate additional state vectors between the integrator steps for visualization purposes.
 
 .. figure:: numerical_orbit.png
 
     Visualization of a numerically propagated orbit with intermediate solver steps (+, blue), start point (+, red), and end point (x, red). :label:`numerical`
+
+The trajectory plot in figure :ref:`numerical` also includes markers for the intermediate integrator steps.
+
+Since the shape of the Earth is rather an irregular ellisoid than a sphere Earth's gravity potential is also not uniform.
+We can model the oblateness of the Earth by including the second dynamic form factor :math:`J_2` in the equations of motion as shown in equation :ref:`j2`.
+
+.. math::
+    :label: j2
+
+        \vec{\ddot{r}} = -\mu \frac{\vec{r}}{|\vec{r}|^3} - \frac{3}{2} \frac{\mu J_2 R_e^2}{|\vec{r}|^5} \begin{bmatrix} x \left(1 - 5\frac{z^2}{|\vec{r}|^2}\right) \\ y \left(1 - 5\frac{z^2}{|\vec{r}|^2}\right) \\ z \left(3 - 5\frac{z^2}{|\vec{r}|^2}\right) \end{bmatrix}
+
+When introducing this perturbation we should expect that the properties of the orbit will change over time.
+We will now analyze these effects further.
+
+Plyades allows the substitution of force equations with a convenient decorator-based syntax that is illustrated in the next code listing.
 
 .. code-block:: python
 
@@ -208,7 +259,7 @@ The constant ``EARTH`` from the ``plyades.bodies`` module is a ``Body`` object a
 
     Visualization of the perturbed orbit. :label:`perturbed`
 
-The perturbation of the orbit is clearly visible within the visualization in figure :ref:`perturbed`.
+After propagating over 50 revolutions the perturbation of the orbit is clearly visible within the visualization in figure :ref:`perturbed`.
 A secular (non-periodical) precession of the orbital plane is visible.
 Thus a change in the longitude of the ascending node should be present.
 
@@ -256,9 +307,9 @@ References
 
 .. [ASP13] The Astropy Collaboration. *Astropy: A community Python package for astronomy*, Astronomy & Astrophysics, 558(2013):A33.
 
-.. [ISO11] TODO
+.. [ISO11] ISO. Systems and software engineering — Life cycle processes — Requirements engineering. Norm ISO/IEC/IEEE 29148:2011. International Organization for Standardization, 2011.
 
-.. [IFC15] TODO
+.. [IFC15] Intel Corporation. *Intel® Fortran Compiler - Support for Fortran language standards*, https://software.intel.com/en-us/articles/intel-fortran-compiler-support-for-fortran-language-standards, last visited: September 19, 2015.
 
 .. [PGH11] Fernando Perez, Brian Granger, John D. Hunter. *Python: An Ecosystem For Scientific Computing*, Computing in Science & Engineering 13.2(2011):13-21.
 
