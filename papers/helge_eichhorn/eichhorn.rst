@@ -12,11 +12,10 @@ Plyades: A Python Library for Space Mission Design
 
 .. class:: abstract
 
-    TODO
     Designing a space mission is a computation-heavy task.
     Software tools that conduct the necessary numerical simulations and optimizations are therefore indispensable.
-    Since the beginning of computational astrodynamics the language of choice has been Fortran and more recently MATLAB.
-    This talk explores how Python's unique strengths and its ecosystem make it a viable alternative for future missions.
+    The usability of existing software, written in Fortran and MATLAB, suffers because of high complexity, low levels of abstraction and out-dated programming practices.
+    We propose Python as a viable alternative for astrodynamics tools and demonstrate the proof-of-concept library Plyades which combines powerful features with Pythonic ease of use.
 
 .. class:: keywords
 
@@ -34,7 +33,7 @@ At the European Space Operations Center (ESOC) of the European Space Agency (ESA
 While this legacy code mostly fulfills the performance requirements [#]_ usability and programmer productivity suffer.
 One reason for this is that Fortran is a compiled language which hinders exploratory analyses and rapid prototyping.
 The low level of abstraction supported by Fortran77 and programming conventions, like 6-character variable name limits and fixed-form source code, that are in conflict with today's best practices are a more serious problem, though.
-The more recent Fortran standards remedy a lot of these shortcomings, e.g free-form source in Fortran90 or object-oriented programming features in Fortran2003, but also introduce new complexity, e.g. requiring sophisticated build systems for dependency resolution.
+The more recent Fortran standards remedy a lot of these shortcomings, e.g. free-form source in Fortran90 or object-oriented programming features in Fortran2003, but also introduce new complexity, e.g. requiring sophisticated build systems for dependency resolution.
 Compiler vendors have also been very slow to implement new standards.
 For example this year the Intel Fortran compiler achieved full support of the Fortran2003 standard, which was released in 2005 [IFC15]_.
 
@@ -76,8 +75,12 @@ It is also beneficial that the scientific Python ecosystem is open-source compar
 Design of the Plyades Object Model
 ----------------------------------
 
-The general design of the Plyades library is based on the notion 
+The general idea behind the design of the Plyades library is the introduction of proper abstraction.
+We developed a domain model based on the following entities which are part of every analysis in mission design:
 
+* orbits (or trajectories),
+* spacecraft state vectors,
+* and celestial bodies.
 
 The Body Class
 ~~~~~~~~~~~~~~
@@ -85,24 +88,44 @@ The Body Class
 The Body class is a simple helper class that holds physical constants and other properties of celestial bodies such as planets and moon.
 These include
 
-* the name of the body
-* the gravitational parameter :math:`\mu`
-* the mean radius :math:`r_m`
-* the equatorial radius :math:`r_e`
-* the polar radius :math:`r_p`
-* the :math:`J_2` coefficient of the bodies gravity potential
-* and the identification code used within the JPL ephemerides.
+* the name of the body,
+* the gravitational parameter :math:`\mu`,
+* the mean radius :math:`r_m`,
+* the equatorial radius :math:`r_e`,
+* the polar radius :math:`r_p`,
+* the :math:`J_2` coefficient of the bodies gravity potential.
 
-The Propagator Class
-~~~~~~~~~~~~~~~~~~~~
+.. * and the identification code used within the JPL ephemerides.
 
 The State Class
 ~~~~~~~~~~~~~~~
 
+To define the state of a spacecraft in space-time we need the following information
+
+* the position vector (:math:`\vec{r} \in \mathbf{r^3}`),
+* the velocity vector (:math:`\vec{v} \in \mathbf{r^3}`),
+* the corresponding epoch,
+* the reference frame in which the vectors are defined,
+* the central body which also defines the origin of the coordinate system,
+* and additional spacecraft status parameters such as mass.
+
+While the information could certainly be stored in a single Numpy-array an object-oriented programming (OOP) approach offers advantages.
+Since all necessary data can be encapsulated in the object most orbital characteristics can be calculated by calling niladic or monadic instance methods.
+Keeping the number of parameters within the application programming interface (API) very small, as recommended by Robert C. Martin [RCM08]_, improves usability, e.g. the user is not required to know the calling sequence.
+OOP also offers the opportunity to integrate the ``State`` class with the Python object model and the Jupyter notebook to provide rich human-friendly representations.
+
+State vectors also provide methods for backwards and forwards propagation.
+Through propagation trajectories are generated, which are instances of the ``Orbit`` class.
+
 The Orbit Class
 ~~~~~~~~~~~~~~~
 
-The Orbit class is a simple helper class
+In contrast to the ``State`` class which represents a single state in space-time the ``Orbit`` class spans a time interval and contains several spacecraft states.
+It provides all necessary tools to analyze the evolution of the trajectory over time including
+
+* quick visualizations in three-dimensional space and two-dimensional projections,
+* evolution of orbital characteristics,
+* and determination of intermediate state vectors.
 
 Exemplary Usage
 ---------------
@@ -251,38 +274,45 @@ Future Development
 ------------------
 
 As of this writing Plyades has been superseded by the Python Astrodynamics project [PyA15]_.
-The project aims to merge the three MIT-licensed, Python-based astrodynamics libraries Plyades, Poliastro [JCR15]_ and Orbital [FML15]_ and provide a comprehensive Python-based astrodynamics toolkit.
+The project aims to merge the three MIT-licensed, Python-based astrodynamics libraries Plyades, Poliastro [JCR15]_ and Orbital [FML15]_ and provide a comprehensive Python-based astrodynamics toolkit for productive use.
 
 Conclusion
 ----------
 
+In this paper we have discussed the current tools and programming environments for space mission design.
+These suffer from high complexity, low levels of abstraction, low flexibility, and out-dated programming practices.
+We have then shown why the maturity and breadth of the scientific Python ecosystem as well as the usability of the Python programming language make Python a viable alternative for next generation astrodynamics tools.
+With the design and implementation of the proof-of-concept library Plyades we demonstrated that it is possible to create powerful yet simple to use astrodynamics tools in pure Python by using scientific Python libraries and following modern best practices.
+The Plyades work has lead to the foundation of the Python Astrodynamics project, an inter-european collaboration, whose goal is the development of a production-grade Python-based astrodynamics library.
+
+
 References
 ----------
 
-.. [Ore15] CS Systèmes d'Information. *Orekit: An accurate and efficient core layer for space flight dynamics applications*,
-           http://www.orekit.org, last visited: September 17, 2015.
-
-.. [RCM08] Robert C. Martin. *Clean Code: A Handbook of Agile Software Craftsmanship*, Prentice Hall, 2008.
+.. [ASP13] The Astropy Collaboration. *Astropy: A community Python package for astronomy*, Astronomy & Astrophysics, 558(2013):A33.
 
 .. [DAV13] David A. Vallado, Wayne D. McClain. *Fundamentals of Astrodynamics and Applications*, 4th Edition, Microcosm Press, 2013.
 
+.. [FML15] Frazer McLean. *Orbital*, https://github.com/RazerM/orbital, last visited: September 17, 2015.
+
 .. [HEi15] Helge Eichhorn. *Plyades: A Python astrodynamics library*, http://github.com/helgee/plyades, last visited: September 17, 2015.
 
-.. [PyA15] Juan Luis Cano Rodriguez, Helge Eichhorn, Frazer McLean. *Python Astrodynamics*, http://www.python-astrodynamics.org, last visited: September 17, 2015.
+.. [IFC15] Intel Corporation. *Intel® Fortran Compiler - Support for Fortran language standards*, https://software.intel.com/en-us/articles/intel-fortran-compiler-support-for-fortran-language-standards, last visited: September 19, 2015.
 
 .. [JCR15] Juan Luis Cano Rodríguez, Jorge Cañardo Alastuey. *Poliastro: Astrodynamics in Python*, Zenodo, 2015. `doi:10.5281/zenodo.17462 <http://dx.doi.org/10.5281/zenodo.17462>`_.
 
-.. [FML15] Frazer McLean. *Orbital*, https://github.com/RazerM/orbital, last visited: September 17, 2015.
-
 .. [NAS15] National Aeronautics and Space Association. *ISS Trajectory Data*, http://spaceflight.nasa.gov/realdata/sightings/SSapplications/Post/JavaSSOP/orbit/ISS/SVPOST.html, last visited: August 28, 2015.
 
-.. [ASP13] The Astropy Collaboration. *Astropy: A community Python package for astronomy*, Astronomy & Astrophysics, 558(2013):A33.
-
-.. [IFC15] Intel Corporation. *Intel® Fortran Compiler - Support for Fortran language standards*, https://software.intel.com/en-us/articles/intel-fortran-compiler-support-for-fortran-language-standards, last visited: September 19, 2015.
+.. [Ore15] CS Systèmes d'Information. *Orekit: An accurate and efficient core layer for space flight dynamics applications*, http://www.orekit.org, last visited: September 17, 2015.
 
 .. [PGH11] Fernando Perez, Brian Granger, John D. Hunter. *Python: An Ecosystem For Scientific Computing*, Computing in Science & Engineering 13.2(2011):13-21.
 
 .. [PGu14] Philip Guo. *Python is Now the Most Popular Introductory Teaching Language at Top U.S. Universities*, ACM Communications, July 7, 2014.
+
+.. [PyA15] Juan Luis Cano Rodriguez, Helge Eichhorn, Frazer McLean. *Python Astrodynamics*, http://www.python-astrodynamics.org, last visited: September 17, 2015.
+
+.. [RCM08] Robert C. Martin. *Clean Code: A Handbook of Agile Software Craftsmanship*, Prentice Hall, 2008.
+
 .. , `<http://cacm.acm.org/blogs/blog-cacm/176450-python-is-now-the-most-popular-introductory-teaching- language-at-top-us-universities/fulltext>`_, last visited: September 18, 2015.
 
-.. [ErE04] Eric Evans. Domain-driven design: tackling complexity in the heart of software. Addison-Wesley Professional, 2004.
+.. ErE04] Eric Evans. Domain-driven design: tackling complexity in the heart of software. Addison-Wesley Professional, 2004.
