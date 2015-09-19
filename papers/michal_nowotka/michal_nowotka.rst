@@ -1,19 +1,22 @@
 :author: Michał Nowotka
 :email: mnowotka@ebi.ac.uk
-:institution: European Bioinformatics Institute
+:institution: European Molecular Biology Laboratory, European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
 
 :author: George Papadatos
 :email: georgep@ebi.ac.uk
-:institution: European Bioinformatics Institute
+:institution: European Molecular Biology Laboratory, European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
 
 :author: Mark Davies
 :email: mdavies@ebi.ac.uk
-:institution: European Bioinformatics Institute
+:institution: European Molecular Biology Laboratory, European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
 
 :author: Nathan Dedman
 :email: ndedman@ebi.ac.uk
-:institution: European Bioinformatics Institute
+:institution: European Molecular Biology Laboratory, European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
 
+:author: Anne Hersey
+:email: ahersey@ebi.ac.uk
+:institution: European Molecular Biology Laboratory, European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
 
 ------------------------------------------------
 Want Drugs? Use Python.
@@ -76,9 +79,9 @@ sites, RIAs or mobile applications, that consume chemical and biological data.
 
 The ChEMBL team uses Python to deliver the SQL dumps and web services to end 
 users.
-In the case of the SQL dumps, the `Django ORM`_ is employed to export data from 
-a production `Oracle`_ database into two other popular formats: `MySQL`_ and 
-`PostgreSQL`_.
+In the case of the SQL dumps, the `Django ORM`_ (Object Relational Mapping) is 
+employed to export data from  a production `Oracle`_ database into two other 
+popular formats: `MySQL`_ and `PostgreSQL`_.
 The `Django data model`_, which describes the ChEMBL database schema, is
 responsible for translating incompatible data types, indicating possible
 problems with data during the fully automated `migration process`_.
@@ -208,8 +211,8 @@ example to SDF file and compute maximum common substructure:
 
    from chembl_webresource_client.utils import utils
 
-   smiles = [drug['molecule_structures']['canonical_smiles']
-             for drug in approved_drugs]
+   smiles = [drug['molecule_structures']\
+       ['canonical_smiles'] for drug in approved_drugs]
    mols = [utils.smiles2ctab(smile) for smile in smiles]
    sdf = ''.join(mols)
    result = utils.mcs(sdf)
@@ -238,7 +241,7 @@ They contain examples at different difficulty levels, covering following topics:
 3. Detailed RDKit tutorial.
 4. Machine learning - classification and regression using `scikit-learn`_.
 5. Building predictive models - ligand-based target prediction tutorial using
-   RDKit, scikit-learn and `Pandas`_.
+   RDKit, scikit-learn and `pandas`_.
 6. Data mining - MDS tutorial, mining patent data provided by the `SureChEMBL`_
    project.
 7. NoSQL approaches - data mining using `Neo4j`_, fast similarity search
@@ -247,9 +250,9 @@ They contain examples at different difficulty levels, covering following topics:
 Since many notebooks require quite complex dependencies (RDKit, numpy, scipy,
 lxml etc.) in order to execute them, preparing the right environment may pose
 a challenge to non-technical users.
-This is the reason why ChEMBL team has created a project called *MyChEMBL*
-[MyChEMBL14].
-`MyChEMBL`_ encapsulates environment consisting of the ChEMBL database running
+This is the reason why ChEMBL team has created a project called *myChEMBL*
+[myChEMBL14]_.
+`myChEMBL`_ encapsulates environment consisting of the ChEMBL database running
 on PostgreSQL engine with RDKit chemistry cartridge, web services, IPython
 Notebook server hosting collection of notebooks described above,
 RDKit and Indigo toolkits, data-oriented Python libraries, simple web interface
@@ -261,9 +264,9 @@ more.
    :scale: 30%
    :figclass: w
 
-   MyChEMBL launchpad :label:`egfig`
+   myChEMBL launchpad :label:`egfig`
 
-MyChEMBL comes preconfigured and can be used immediately.
+myChEMBL comes preconfigured and can be used immediately.
 The project is distributed as a Virtual Machine, that can be `downloaded`_ *via*
 FTP or obtained using `Vagrant`_ by executing the following commands::
 
@@ -281,9 +284,9 @@ is possible to run them on physical machines instead of VMs.
 
 Again, Python plays important role in configuring myChEMBL.
 Since Docker is designed to run one process per container and ignores
-OS-specific initialization daemons such as upstart, systemd etc. MyChEMBL ships
+OS-specific initialization daemons such as upstart, systemd etc. myChEMBL ships
 with `supervisor`_, which is responsible for managing and monitoring all core
-MyChEMBL services (such as Postgres, Apache, IPython server) and providing a
+myChEMBL services (such as Postgres, Apache, IPython server) and providing a
 single point of entry.
 
 
@@ -295,13 +298,14 @@ available in the ChEMBL database has enabled large scale data mining and
 predictive modelling analyses [Ligands12]_ [Targets13]_. 
 Such analyses typically involve the generation of classification models trained 
 on the structural features of compounds with known activity. 
-Given a new compound, the model then predicts  that predicts likely biological 
-targets, based on the enrichment of structural features against known targets in 
-the training set. 
-We implemented our own classification model using 
-i) a carefully selected subset of ChEMBL as a training set stored as a pandas dataframe, 
-ii) structural features computed by RDKit, 
-iii) the naive Bayesian classification method implemented in scikit-learn. 
+Given a new compound, the model predicts likely biological targets, based 
+on the enrichment of structural features against known targets in the training set. 
+We implemented our own classification model using:
+
+1. a carefully selected subset of ChEMBL as a training set stored as a pandas dataframe, 
+2. structural features computed by RDKit, 
+3. the naive Bayesian classification method implemented in scikit-learn.
+
 As a result, ChEMBL provides both predictions of likely targets for known drug 
 compounds available online 
 (e.g. in https://www.ebi.ac.uk/chembl/compound/inspect/CHEMBL502), along with the 
@@ -312,8 +316,9 @@ getting predictions for arbitrary input structures.
 
 Furthermore, similar models have been used in a publicly available web application 
 called `ADME SARfari`_ [Sarfari]_.
-This resource allows cross-species target prediction and comparison of ADME related 
-targets for a particular compound or protein sequence.
+This resource allows cross-species target prediction and comparison of ADME 
+(Absorption, Distribution, Metabolism, and Excretion) related targets for a particular 
+compound or protein sequence.
 The application uses `SQLAlchemy`_ as an ORM, contained within a web framework 
 (`Pyramid`_ & `Cornice`_) to provide an API and HTML5 interactive user interface.
 
@@ -371,7 +376,7 @@ We acknowledge the following people, projects and communities, without whom
 the projects described above would not have been possible:
 
 1. Greg Landrum and the RDKit community (http://www.rdkit.org/)
-2. Francis Atkinson, Nathan Dedman, Gerard van Westen and all former and current
+2. Francis Atkinson, Gerard van Westen and all former and current
    members of the ChEMBL group.
 3. All ChEMBL users, in particular those who have contacted chembl-help and
    suggested enhancements to the existing services
@@ -388,7 +393,7 @@ References
            Nucl. Acids Res., April 2015.
 .. [Beaker14] M. Nowotka. *ChEMBL Beaker: A Lightweight Web Framework Providing Robust and Extensible Cheminformatics Services*,
            Challenges, 5(2):444-449, November 2014.
-.. [MyChEMBL14] M. Davies. *MyChEMBL: A Virtual Platform for Distributing Cheminformatics Tools and Open Data*,
+.. [myChEMBL14] M. Davies. *myChEMBL: A Virtual Platform for Distributing Cheminformatics Tools and Open Data*,
            Challenges, 5(2):334-337, November 2014.
 .. [Ligands12] J. Besnard. *Automated design of ligands to polypharmacological profiles*,
            Nature, 492(7428):215–220, December 2012.
@@ -430,10 +435,10 @@ References
 .. _matplotlib: http://matplotlib.org/
 .. _D3.js: http://d3js.org/
 .. _scikit-learn: http://scikit-learn.org/stable/
-.. _Pandas: http://pandas.pydata.org/
+.. _pandas: http://pandas.pydata.org/
 .. _SureChEMBL: https://www.surechembl.org/search/
 .. _Neo4j: http://neo4j.com/
-.. _MyChEMBL: https://github.com/chembl/mychembl/
+.. _myChEMBL: https://github.com/chembl/mychembl/
 .. _downloaded: ftp://ftp.ebi.ac.uk/pub/databases/chembl/VM/myChEMBL/releases/myChEMBL-20_0/
 .. _Vagrant: https://www.vagrantup.com/
 .. _Ubuntu 14.04 LTS: http://releases.ubuntu.com/14.04/
