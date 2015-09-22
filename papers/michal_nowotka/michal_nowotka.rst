@@ -39,8 +39,8 @@ Want Drugs? Use Python.
 Introduction
 ------------
 
-ChEMBL [ChEMBL12]_ [ChEMBL14]_ is the largest open access database resource in 
-the fields of computational drug discovery, chemoinformatics, medicinal 
+ChEMBL [ChEMBL12]_ [ChEMBL14]_ is a large open access database resource in 
+the field of computational drug discovery, chemoinformatics, medicinal 
 chemistry [MedChem]_ and chemical biology.
 Developed by the `Chemogenomics team`_ at the `European Bioinformatics
 Institute`_, the ChEMBL database stores curated two-dimensional chemical
@@ -74,7 +74,7 @@ infrastructure costs.
 An alternative approach to accessing the ChEMBL data, is to use the dedicated 
 web services.
 This method, supported with detailed online documentation and 
-examples, should be used by developers, who wish to create simple widgets, web
+examples, can be used by developers, who wish to create simple widgets, web
 sites, RIAs or mobile applications, that consume chemical and biological data.
 
 The ChEMBL team uses Python to deliver the SQL dumps and web services to end 
@@ -136,8 +136,8 @@ These include:
 1. 2D/3D compound depiction.
 2. Finding compounds similar to the given query compound with some similarity
    threshold.
-3. Finding all compounds, that have given query compound as substructure.
-4. Computing some useful descriptors, such as molecular weight,
+3. Finding all compounds, that have the given query compound as substructure.
+4. Computing useful descriptors, such as molecular weight,
    polar surface area, number of rotatable bonds etc.
 5. Converting between popular chemical formats/identifiers such as SMILES,
    InChI, MDL molfile.
@@ -151,7 +151,7 @@ They both provide Python bindings and database cartridges, that, among other
 things, allow performing substructure and similarity searches on compounds 
 stored in RDBMS.
 
-The ChEMBL web services described so far can be seen as a *data-focused*,
+The ChEMBL web services described so far can be seen as *data-focused*,
 as they are responsible for retrieving data stored in the ChEMBL database.
 To assist with data processing, loading and curating, a requirement to build
 additional *cheminformatics-focused* services was identified.
@@ -180,9 +180,9 @@ convenient API, similar to `Django QuerySet`_, offering lazy evaluation of
 results, chaining filters and caching results locally.
 This effectively reduces the number of requests to the remote server, which speeds 
 up data retrieval process.
-The package covers full ChEMBL web services functionality so allows to retrieve
-data as well as perform chemical computations without installing chemistry
-toolkits.
+The package covers full ChEMBL web services functionality so allows users
+to retrieve data as well as perform chemical computations without installing 
+chemistry toolkits.
 
 
 The following code example demonstrates how to retrieve all approved drugs for 
@@ -227,9 +227,9 @@ many other popular general purpose, scientific and data science libraries,
 facilitates sophisticated data analysis and rapid prototyping of 
 advanced cheminformatics applications.
 
-This is complemented by an `IPython notebook`_ server, which allows to 
-execute Python code along with rich interactive plots and markdown 
-formatting and rapidly share results with other scientists.
+This is complemented by an `IPython notebook`_ server, which executes a 
+Python code along with rich interactive plots and markdown 
+formatting and rapid sharing of results with other scientists.
 
 In order to demonstrate capabilities of the software environment used inside
 ChEMBL a `collection of IPython notebooks`_ has been prepared.
@@ -250,9 +250,9 @@ They contain examples at different difficulty levels, covering following topics:
 Since many notebooks require quite complex dependencies (RDKit, numpy, scipy,
 lxml etc.) in order to execute them, preparing the right environment may pose
 a challenge to non-technical users.
-This is the reason why ChEMBL team has created a project called *myChEMBL*
+This is the reason that the ChEMBL team has created a project called *myChEMBL*
 [myChEMBL14]_.
-`myChEMBL`_ encapsulates environment consisting of the ChEMBL database running
+`myChEMBL`_ encapsulates an environment consisting of the ChEMBL database running
 on PostgreSQL engine with RDKit chemistry cartridge, web services, IPython
 Notebook server hosting collection of notebooks described above,
 RDKit and Indigo toolkits, data-oriented Python libraries, simple web interface
@@ -293,7 +293,7 @@ single point of entry.
 Target prediction
 -----------------
 
-The unprecedented wealth and diversity of structure-activity data freely 
+The wealth and diversity of structure-activity data freely 
 available in the ChEMBL database has enabled large scale data mining and 
 predictive modelling analyses [Ligands12]_ [Targets13]_. 
 Such analyses typically involve the generation of classification models trained 
@@ -306,7 +306,7 @@ We implemented our own classification model using:
 2. structural features computed by RDKit, 
 3. the naive Bayesian classification method implemented in scikit-learn.
 
-As a result, ChEMBL provides both predictions of likely targets for known drug 
+As a result, ChEMBL provides predictions of likely targets for known drug 
 compounds available online 
 (e.g. in https://www.ebi.ac.uk/chembl/compound/inspect/CHEMBL502), along with the 
 models themselves available to download 
@@ -383,23 +383,23 @@ the projects described above would not have been possible:
 
 References
 ----------
-.. [ChEMBL12] A. Gaulton. *ChEMBL: a large-scale bioactivity database for drug discovery*,
+.. [ChEMBL12] A. Gaulton, L.J. Bellis, A.P. Bento et al. *ChEMBL: a large-scale bioactivity database for drug discovery*,
            Nucl. Acids Res., 40(database issue):D1100–D1107, January 2012.
-.. [ChEMBL14] A.P. Bento. *The ChEMBL bioactivity database: an update*,
+.. [ChEMBL14] A.P. Bento, A. Gaulton, A. Hersey et al. *The ChEMBL bioactivity database: an update*,
            Nucl. Acids Res., 42(D1):D1083-D1090, January 2014.
-.. [MedChem] G. Papadatos. *The ChEMBL database: a taster for medicinal chemists*,
+.. [MedChem] G. Papadatos, J.P. Overington. *The ChEMBL database: a taster for medicinal chemists*,
            Future Med Chem., 6(4):361-364, March 2014.         
-.. [WS15] M. Davies. *ChEMBL web services: streamlining access to drug discovery data and utilities*,
+.. [WS15] M. Davies, M. Nowotka, G. Papadatos et al. *ChEMBL web services: streamlining access to drug discovery data and utilities*,
            Nucl. Acids Res., April 2015.
-.. [Beaker14] M. Nowotka. *ChEMBL Beaker: A Lightweight Web Framework Providing Robust and Extensible Cheminformatics Services*,
+.. [Beaker14] M. Nowotka, M. Davies, G. Papadatos et al. *ChEMBL Beaker: A Lightweight Web Framework Providing Robust and Extensible Cheminformatics Services*,
            Challenges, 5(2):444-449, November 2014.
-.. [myChEMBL14] M. Davies. *myChEMBL: A Virtual Platform for Distributing Cheminformatics Tools and Open Data*,
+.. [myChEMBL14] M. Davies, M. Nowotka, G. Papadatos et al. *myChEMBL: A Virtual Platform for Distributing Cheminformatics Tools and Open Data*,
            Challenges, 5(2):334-337, November 2014.
-.. [Ligands12] J. Besnard. *Automated design of ligands to polypharmacological profiles*,
+.. [Ligands12] J. Besnard, G.F. Ruda, V.Setola et al. *Automated design of ligands to polypharmacological profiles*,
            Nature, 492(7428):215–220, December 2012.
-.. [Targets13] F. Martínez-Jiménez. *Target Prediction for an Open Access Set of Compounds Active against Mycobacterium tuberculosis*,
+.. [Targets13] F. Martínez-Jiménez, G. Papadatos, L. Yang et al. *Target Prediction for an Open Access Set of Compounds Active against Mycobacterium tuberculosis*,
            PLoS Comput Biol, 9(10): e1003253, October 2013.
-.. [Sarfari] M. Davies. *ADME SARfari: comparative genomics of drug metabolizing systems*,
+.. [Sarfari] M. Davies, N. Dedman, A. Hersey et al. *ADME SARfari: comparative genomics of drug metabolizing systems*,
            Bioinformatics, 31(10):1695-7, May 2015.    
 
 
