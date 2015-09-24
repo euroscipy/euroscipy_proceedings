@@ -97,7 +97,7 @@ There have been similar efforts in other contexts.
 
 None of the named approaches reached a sufficient level of functionality/compatibility, at least not for current language versions (some of them used to work to some extend, but became unmaintained). In the Python ecosystem the C-extension API has been an ongoing issue since its beginning. PyPy famously has been encouraging developers to favor CFFI above C-extension API, as it is the only existing approach that has been designed to be well portable to other Python implementations. However even if this effort would work out, there would be so many legacy extensions around that a serious move to CFFI won't be done in foreseeable future.
 
-For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PLS15]_). Backgroung here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Current reference-counters are not atomic and switching to atomic reference-counters yields insufficient performance.
+For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PLS15]_). Background here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Current reference-counters are not atomic and switching to atomic reference-counters yields insufficient performance.
 In context of a mark-and-sweep-based garbage collection in a future CPython the JyNI GC-approach could be potentially adopted to support legacy extensions and provide a smooth migration path.
 
 .. - follow-up paper of [JyNI_ESCP13]_
@@ -271,8 +271,8 @@ PyObjects and update the mirrored graph on Java-side.
 
 While we can easily recreate the GC-heads, there might be PyObjects that
 were weakly reachable from native side and were sweeped by Java-GC. In order
-to restore such objects, me must perform a resurrection
-(c.f. figure :label:`resurrected`).
+to restore such objects, we must perform a resurrection
+(c.f. figure :ref:`resurrected`).
 
 .. figure:: JyNIGCHard_0090.eps
    :scale: 42%
@@ -294,9 +294,129 @@ implement finalizers – we use finalizers only where really needed.
 .. Fixing finalizers and weak references
 
 
-.. Weak References
+Weak References
+---------------
 
-   Todo: Explain weak references here
+Supporting the ``PyWeakRef``-builtin type in JyNI is not as complicated as
+garbage collection, but still a notably involved task. This is mainly due
+to consistency-requirements that are not trivial to fulfill.
+
+- If a Jython weakref-object is handed to native side, this shall be converted
+  to a CPython weakref-object and vice versa.
+- If native code evaluates a native weakref, it shall return the exactly same
+  referent-PyObject that would have been created if the Java-pendant (if one exists)
+  was evaluated and the result was handed to native side. And vice versa.
+- If a Jython weak reference is cleared, its native pendant shall be cleared either.
+  Still, none of them shall be cleared as long as its referent is still alive.
+- This implies that even if a Jython referent-PyObject was deleted (can happen in mirror-mode)
+  Jython weakref-objects stay alive as long as the native pendant of the referent is alive.
+  If evaluated, such a Jython weakref-object retrieves the Jython referent by converting
+  the native referent.
+- An obvious requirement is that this shall of course work without keeping the referents
+  alive or creating some kind of memory leak. JyNI's delicate garbage-collection mechanism
+  must be considered to filfill the named requirements in this context.
+
+.. - Native and Java-side weakref-objects shall not be cleared significantly at different
+   times (e.g. in different GC-cycles). I.e. it shall not happen that a native weakref
+   is already cleared, while its Jython-pendant is still valid (or the other way round).
+   This is required to ensure a consistent clear-status between Jython-side and native
+   weakref-objects.
+
+In the following, we explain JyNI's solution to this issue. We start by explaining the
+weakref-concepts of Jython and CPython, completing this section by describing how JyNI
+combines them to a consistent solution.
+Note that CPython's weakref-module actually introduces three builtin types:
+
+- ``_PyWeakref_RefType`` (“weakref”)
+- ``_PyWeakref_ProxyType`` (“weakproxy”)
+- | ``_PyWeakref_CallableProxyType``
+  | (“weakcallableproxy”)
+
+
+Weak References in Jython
+.........................
+
+In Jython the package ``org.python.modules._weakref`` contains the classes that implement
+weak reference support.
+
+- ``ReferenceType`` implements the “weakref”-builtin
+- ``ProxyType`` implements the “weakproxy”-builtin
+- ``CallableProxyType`` implements the “weakcallableproxy”-builtin
+
+All of them extend ``AbstractReference``, which in turn extends
+``PyObject``.
+
+.. figure:: JythonWeakRef.eps
+   :scale: 55%
+   :figclass: H
+
+   Jython's concept for weak references :label:`jythonwr`
+
+As figure :ref:`jythonwr` illustrates, Jython creates only one Java-style weak reference
+per referent. This is created in form of a ``GlobalRef``-object, which extends
+``java.lang.ref.WeakReference``. It stores all Jython weak references pointing to it
+in a static, weak-referencing map. This is needed to process potential callbacks when the
+reference is cleared. Once created, a ``GlobalRef`` is tied to its referent, kept alive
+by it and is reused throughout the referent's life-time. Finally,
+``AbstractReference``-subclasses refer to the ``GlobalRef`` corresponding to their actual
+referent.
+
+
+Weak References in CPython
+..........................
+
+In CPython, each weakref-type simply contains a reference to its referent without increasing
+reference count.
+
+.. figure:: CPythonWeakRef.eps
+   :scale: 55%
+   :figclass: H
+
+   CPython's concept for weak references :label:`cpythonwr`
+
+Figure :ref:`cpythonwr` shows that – like in Jython – referents have a reference to
+weak references pointing to them; in this case references are connected in a
+double-linked list, allowing to iterate them for callback-processing.
+
+
+Weak References in JyNI
+.......................
+
+JyNI's weak reference support is grounded on CPython's approach on native side and
+Jython's approach on Java-side. However, the actual effort is to bridge these approaches
+in a consistent way.
+
+.. figure:: JyNIWeakRef.eps
+   :scale: 42%
+   :figclass: H
+
+   JyNI's concept for weak references :label:`jyniwr`
+
+To fulfill the requirement for consistent clear-status, we drive a “Java-referent dies
+first”-politic. Instead of an ordinary ``GlobalRef``, JyNI uses a subclass called
+``NativeGlobalRef``. This subclass holds a reference-increment for the native counterpart
+of its referent. This ensures that the native referent cannot die as long as Jython-side
+weak references exist (see figure :ref:`jyniwr`). Otherwise, native weak references could
+be cleared earlier than their Jython-pendants. Note that the native ref-increment held by
+``NativeGlobalRef`` cannot create a reference-cycle, because it is not reflected by a
+``JyNIGCHead`` as seen in figure :ref:`rnrg`. Also, the consistency-check shown in figure
+:ref:`constcy` takes this ref-increment into account, i.e. tracks ref-increments coming from
+``NativeGlobalRef`` s separately.
+
+.. figure:: JyNIWeakRef-NoJavaReferent.eps
+   :scale: 42%
+   :figclass: H
+
+   JyNI weak reference after Java-referent was collected :label:`jyniwrnj`
+
+If the Jython-side referent and its native pendant are handled in mirror-mode, it can happen
+that the Java-referent is garbage-collected while the native one persists. As soon as the
+Jython-side referent is collected, its ``NativeGlobalRef`` releases the native
+reference-increment (see figure :ref:`jyniwrnj`). Still, it will not be cleared and process
+callbacks, before also the native referent dies. Until then, ``NativeGlobalRef`` continues
+to be valid – it implements its ``get``-method such that if the Jython-side referent is not
+available, it is recreated from the native referent. As long as such a retrieved referent is
+alive on Java-side, the situation in figure :ref:`jyniwr` is restored.
 
 
 Roadmap
