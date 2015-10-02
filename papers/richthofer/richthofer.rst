@@ -419,6 +419,169 @@ available, it is recreated from the native referent. As long as such a retrieved
 alive on Java-side, the situation in figure :ref:`jyniwr` is restored.
 
 
+Example: Using Tkinter from Java
+-------------------------------------------
+
+In [JyNI_ESCP13]_ we demonstrated a minimalistic Tkinter example-program that used the original
+Tkinter binary bundeled with CPython. Here we demonstrate how the same functionality can be
+achieved from Java-code. This confirms the usability of Python-libraries from Java via Jython
+and JyNI. While the main magic happens in Jython, it is not completely self-evident that this
+is also possible through JyNI and required some internal improvements to work. Remember the
+Tkinter-program from [JyNI_ESCP13]_:
+
+.. code-block:: python
+
+    import sys
+    #Include native Tkinter:
+    sys.path.append('/usr/lib/python2.7/lib-dynload')
+    sys.path.append('/usr/lib/python2.7/lib-tk')
+
+    from Tkinter import *
+
+    root = Tk()
+    txt = StringVar()
+    txt.set("Hello World!")
+
+    def print_text():
+        print txt.get()
+
+    def print_time_stamp():
+        from java.lang import System
+        print "System.currentTimeMillis: "
+            +str(System.currentTimeMillis())
+
+    Label(root,
+         text="Welcome to JyNI Tkinter-Demo!").pack()
+    Entry(root, textvariable=txt).pack()
+    Button(root, text="print text",
+            command=print_text).pack()
+    Button(root, text="print timestamp",
+            command=print_time_stamp).pack()
+    Button(root, text="Quit",
+            command=root.destroy).pack()
+
+    root.mainloop()
+
+.. figure:: TkinterDemoJava.png
+   :scale: 36%
+
+   Tkinter demonstration by Java-code. Note that the class ``JyNI.TestTk`` is executed
+   rather than ``org.python.util.jython``. :label:`tkDemo`
+
+To translate the program to Java, we must provide type-information via some interfaces (after importing som Jython-classes):
+
+.. code-block:: java
+
+    import org.python.core.PyObject;
+    import org.python.core.PyModule;
+    import org.python.core.PySystemState;
+    import org.python.core.Py;
+    import org.python.core.imp;
+
+    public static interface Tk {
+        public void mainloop();
+        public void destroy();
+    }
+
+    public static interface StringVar {
+        public String get();
+        public void set(String text);
+    }
+
+    public static interface Label {
+        public void pack();
+    }
+
+    public static interface Button {
+        public void pack();
+    }
+
+    public static interface Entry {
+        public void pack();
+    }
+
+We define the methods backing the button-actions as static methods with a special Python-compliant signature:
+
+.. code-block:: java
+
+
+    static Tk root;
+    static StringVar txt;
+
+    public static void printText(PyObject[] args,
+            String[] kws) {
+        System.out.println(txt.get());
+    }
+
+    public static void printTimeStamp(PyObject[] args,
+            String[] kws) {
+        System.out.println("System.currentTimeMillis: "
+                + System.currentTimeMillis());
+    }
+
+    public static void destroyRoot(PyObject[] args,
+            String[] kws) {
+        root.destroy();
+    }
+
+On top of this a rather Java-like main-method can be implemented. Note that constructing objects is still somewhat unhandy, as keywords must be declared in a string-array and explicitly passed to Jython. Calling methods on objects then works like ordinary Java-code and is even type-safe based on the declared interfaces.
+
+
+.. code-block:: java
+
+    public static void main(String[] args) {
+        PySystemState pystate = Py.getSystemState();
+        pystate.path.add(
+                "/usr/lib/python2.7/lib-dynload");
+        pystate.path.add("/usr/lib/python2.7/lib-tk");
+        PyModule tkModule = (PyModule)
+                imp.importName("Tkinter", true);
+
+        root = Py.newJavaObject(tkModule, Tk.class);
+
+        txt = Py.newJavaObject(tkModule,
+                StringVar.class);
+        txt.set("Hello World!");
+
+        String[] keyWords0 = {"text"};
+        Label lab = Py.newJavaObject(tkModule,
+                Label.class, keyWords0, root,
+                "Welcome to JyNI Tkinter-Demo!");
+        lab.pack();
+
+        String[] keyWords1 = {"textvariable"};
+        Entry entry = Py.newJavaObject(tkModule,
+                Entry.class, keyWords1, root, txt);
+        entry.pack();
+
+        String[] keyWords2 = {"text", "command"};
+        Button buttonPrint = Py.newJavaObject(
+                tkModule, Button.class, keyWords2,
+                root, "print text",
+                Py.newJavaFunc(TestTk.class,
+                        "printText"));
+        buttonPrint.pack();
+
+        Button buttonTimestamp = Py.newJavaObject(
+                tkModule, Button.class, keyWords2,
+                root, "print timestamp",
+                Py.newJavaFunc(TestTk.class,
+                        "printTimeStamp"));
+        buttonTimestamp.pack();
+        
+        Button buttonQuit = Py.newJavaObject(
+                tkModule, Button.class, keyWords2,
+                root, "Quit",
+                Py.newJavaFunc(TestTk.class,
+                        "destroyRoot"));
+        buttonQuit.pack();
+
+        root.mainloop();
+    }
+
+The code in this form is runnable by Jython 2.7.1 with JyNI 2.7-alpha.3 or newer.
+
+
 Roadmap
 -------
 
