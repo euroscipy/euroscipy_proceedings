@@ -39,11 +39,11 @@ For example this year the Intel Fortran compiler achieved full support of the Fo
 
 .. [#] Many routines were not written with thread-safety and re-entrancy in mind and can therefore not be used in parallel codes.
 
-Due to these reasons Fortran-based tools and libraries have been generally supplanted with programming environments with better usability such as MATLAB.
+Due to these reasons Fortran-based tools and libraries have been generally used together with programming environments with better usability such as MATLAB.
 A common approach for developing mission design software at ESOC is prototyping and implementing downstream processes such as visualization in MATLAB and then later porting performance-intensive parts or the whole system to Fortran77.
 The results are added complexity through the use of the MEX-interface for integrating Fortran and MATLAB, duplicated effort for porting, and still a low-level of abstraction because the system design is constrained by Fortran's limitations.
 
-Because of the aforementioned problems some organizations explore possibilities to replace Fortran for future developments.
+Because of the aforementioned problems some organizations explore possibilities to replace Fortran for future development.
 The French space agency CNES (Centre Nationale D'Études Spatiale) for instance uses the Java-based Orekit library [Ore15]_ for its flight dynamics systems.
 
 In this paper we show why Python and the scientific Python ecosystem are a viable choice for the next generation of space mission design software and present the Plyades library.
@@ -85,7 +85,7 @@ We developed a domain model based on the following entities which are part of ev
 The Body Class
 ~~~~~~~~~~~~~~
 
-The Body class is a simple helper class that holds physical constants and other properties of celestial bodies such as planets and moon.
+The Body class is a simple helper class that holds physical constants and other properties of celestial bodies such as planets and moons.
 These include
 
 * the name of the body,
@@ -104,14 +104,14 @@ To define the state of a spacecraft in space-time we need the following informat
 
 * the position vector (:math:`\vec{r} \in \mathbf{r^3}`),
 * the velocity vector (:math:`\vec{v} \in \mathbf{r^3}`),
-* the corresponding epoch,
+* the corresponding moment in time, the so-called epoch,
 * the reference frame in which the vectors are defined,
 * the central body which also defines the origin of the coordinate system,
 * and additional spacecraft status parameters such as mass.
 
 While the information could certainly be stored in a single Numpy-array an object-oriented programming (OOP) approach offers advantages.
 Since all necessary data can be encapsulated in the object most orbital characteristics can be calculated by calling niladic or monadic instance methods.
-Keeping the number of parameters within the application programming interface (API) very small, as recommended by Robert C. Martin [RCM08]_, improves usability, e.g. the user is not required to know the calling sequence.
+Keeping the number of parameters within the application programming interface (API) very small, as recommended by Robert C. Martin [RCM08]_, improves usability, e.g. the user is not required to know the order of the function parameters.
 OOP also offers the opportunity to integrate the ``State`` class with the Python object model and the Jupyter notebook to provide rich human-friendly representations.
 
 State vectors also provide methods for backwards and forwards propagation.
@@ -133,7 +133,7 @@ Exemplary Usage
 In this example we use the Plyades library to conduct an analysis of the orbit of the International Space Station (ISS) [#]_.
 We obtain the inital state data on August 28, 2015, 12:00h from NASA realtime trajectory data [NAS15]_ and  use it to instantiate a Plyades ``State`` object as shown below.
 
-.. [#] A Jupyter Notebook with this analysis can be obtained from `Github <https://github.com/helgee/euroscipy-2015>`_.
+.. [#] A Jupyter notebook with this analysis can be obtained from `Github <https://github.com/helgee/euroscipy-2015>`_.
 
 .. code-block:: python
 
@@ -153,7 +153,7 @@ We obtain the inital state data on August 28, 2015, 12:00h from NASA realtime tr
 
     iss = plyades.State(iss_r, iss_v, iss_t, frame, body)
 
-The position (``iss_r``) and velocity (``iss_v``) vectors use the functionality units from the Astropy package [ASP13]_ while the timestamp (``iss_t``) is an Astropy ``Time`` object.
+The position (``iss_r``) and velocity (``iss_v``) vectors use the units functionality from the Astropy package [ASP13]_ while the timestamp (``iss_t``) is an Astropy ``Time`` object.
 The constant ``EARTH`` from the ``plyades.bodies`` module is a ``Body`` object and provides Earth's planetary constants.
 
 The resulting ``State`` object contains all data necessary to describe the current orbit of the spacecraft.
@@ -193,7 +193,7 @@ By calling ``plot3d`` we receive a three-dimensional visualization of the full o
 
     A three-dimensional visualization of the orbit based on Matplotlib. :label:`3d`
 
-We can achieve an equal result, apart from numerical errors, by numerically integrating Newton's equation:
+We can achieve a similar result, apart from numerical errors, by numerically integrating Newton's equation:
 
 .. math::
     :label: newton 
