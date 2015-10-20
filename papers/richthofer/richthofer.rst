@@ -133,8 +133,8 @@ A native extension can explicitly release the GIL by inserting the ``Py_BEGIN_AL
 
 Jython on the other hand has no GIL and is fully multithreaded based on Java's threading architecture. This does not mean multithreading would be trivial – one still has to care for concurrency issues and thread synchronization, but the whole machinary Java came up with for this topic is available to deal with it.
 
-Now from JyNI's perspective this is a difficult situation. On the one hand we want to avoid regressions on Jython-side, especially regarding a killer-feature like GIL-freeness. On the other hand, native C-extensions might rely on CPython's GIL.
-So as a compromise JyNI provides a GIL for native side that is acquired by any thread that enters native code. On returning to Java-code, i.e. finnishing the native method call, the JyNI-GIL is released. Note that re-entering Java-side by doing a Java call from a native method would *not* release the GIL. In case it is desired to release the GIL for such a re-entering of Java-side or in some other situation, JyNI also supports the ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` macros from CPython. This architecture implies that multiple threads can exist on Java-side, while only one thread can exist on native side at the same time (unless allow-threads macros are used). When combining multithreaded Jython-code with JyNI it is the developer's responsibility to avoid issues that might arise from this design.
+From JyNI's perspective this is a difficult situation. On the one hand we want to avoid regressions on Jython-side, especially regarding a killer-feature like GIL-freeness. On the other hand, native C-extensions might rely on CPython's GIL.
+So as a compromise JyNI provides a GIL for native side that is acquired by any thread that enters native code. On returning to Java-code, i.e. finnishing the native method call, the JyNI-GIL is released. Note that re-entering Java-side by doing a Java call from a native method would *not* release the GIL. In case it is desired to release the GIL for such a re-entering of Java-side or in some other situation, JyNI also supports the ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` macros from CPython. This architecture implies that multiple threads can exist on Java-side, while only one thread can exist on native side at the same time (unless allow-threads macros are used). When combining multithreaded Jython code with JyNI it is the developer's responsibility to avoid issues that might arise from this design.
 
 
 Garbage Collection
@@ -294,8 +294,91 @@ modification, it is sufficient to let only gc-heads attached to these objects
 implement finalizers – we use finalizers only where really needed.
 
 
-.. Fixing finalizers and weak references
+Testing native garbage collection
+.................................
 
+Since the proposed garbage collection algorithm is rather involved, it is
+crucial to have a good way to test it. To achieve this we developed a
+monitoring concept that is capable to track native allocations, finalizations,
+re- and deallocations. The class ``JyNI.JyReferenceMonitor`` can – if native
+monitoring is enabled – list at any time all natively allocated objects,
+their reference counts, timestamps for allocation, finalization, re-
+and deallocations and the corresponding code positions (file and line-number)
+that performed the memory operations. Unless explicitly cleared, it can also
+provide history of these actions. The method ``listLeaks()`` lists all currently
+allocated native objects (actually these are not necessarily leaks, if the method
+is not called at the end of a program or test). While ``listLeaks()`` is useful for
+debugging, ``getCurrentNativeLeaks()`` provides a list that is ideal for unit
+testing. E.g. one can assert that no objects are leaked:
+
+.. code-block:: python
+
+  from JyNI import JyReferenceMonitor as monitor
+  #...
+  self.assertEqual(
+      len(monitor.getCurrentNativeLeaks()), 0)
+
+The native counterpart of ``JyNI.JyReferenceMonitor`` is ``JyRefMonitor.c``.
+Its header defines the ``JyNIDebug``-macro family, wich we insert into C-code
+wherever memory operations occur (mainly in ``obmalloc.c`` and various inlined
+allocations in ``stringobject.c``, ``intobject.c`` etc.).
+
+Consider the following demonstration code:
+
+.. code-block:: python
+
+    import time
+    from java.lang import System
+    from JyNI import JyReferenceMonitor as monitor
+    import DemoExtension
+    JyNI.JyRefMonitor_setMemDebugFlags(1)
+    lst = ([0, "test"],)
+    l[0][0] = lst
+    DemoExtension.argCountToString(lst)
+    del lst
+    print "Leaks before GC:"
+    monitor.listLeaks()
+    System.gc()
+    time.sleep(2)
+    print "Leaks after GC:"
+    monitor.listLeaks()
+
+It creates a reference cycle, passes it to a native function and deletes it
+afterwards. By passing it to native code, a native counterpart of ``lst`` was
+created, which cannot be cleared without some garbage collection (also in
+CPython it would need the reference cycle searching garbage collector).
+We list the leaks before calling Java's GC and after running it.
+The output is as follows::
+
+  Leaks before GC:
+  Current native leaks:
+  140640457447208_GC (list) #2:
+      "[([...],), 'test']"_j *38
+  140640457457768_GC (tuple) #1:
+      "(([([...],), 'test'],),)"_j *38
+  140640457461832 (str) #2: "test"_j *38
+  140640457457856_GC (tuple) #3:
+      "([([...],), 'test'],)"_j *38
+  Leaks after GC:
+  no leaks recorded
+
+We can see that it lists some leaks before running Java's GC. Each line
+consists of the native memory position, the type (in round braces), the
+current native reference count indicated by ``#``, a string representation
+and the creation time indicated by ``*`` in milliseconds after initialization
+of the ``JyReferenceMonitor`` class. The postfix ``_GC`` means that the object
+is subject to garbage collection, i.e. it can hold references to other objects
+and thus participate in cycles. Objects without ``_GC`` will be directly freed
+when the reference counter drops to zero. The postfix ``_j`` of the string
+representation means that Jython generated the string rather than native code.
+We close this section by discussing the observed reference counts:
+
+* The list-object has one reference increment from its ``JyGCHead`` and the other
+  from the tuple at the bottom of the output.
+* The first-listed tuple is the argument-tuple and only referenced by its ``JyGCHead``.
+* The string is referenced by its ``JyGCHead`` and the list.
+* The tuple at the bottom is referenced by its ``JyGCHead``, by the list and by
+  the argument-tuple.
 
 Weak References
 ---------------
