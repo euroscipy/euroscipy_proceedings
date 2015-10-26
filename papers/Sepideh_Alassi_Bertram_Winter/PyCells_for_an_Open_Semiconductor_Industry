@@ -258,7 +258,7 @@ The last verification step is to substantiate the main aim of this project, gene
 Conclusion
 ------------
 
-Believing in what Richard Stallman has said "Proprietary software is an injustice", we have successfully developed the layout generators for an open semiconductor industry, giving the designers who use ams AG technologies, opportunity to work with any desired EDA-tools, to share their designs easily with others, and to receive the support they deserve. These PyCells are developed for all high and low voltage devices of ams AG technologies in order to enable the IC-designers to have advanced designs without having constraints because of missing parametrized layouts. Furthermore, by using these PyCells we have managed to reduce the computation time which is extremely important in semiconductor industry. The developed PyCells have passed all the verification tests and in practical use by customers.     
+Believing in what Richard Stallman has said "Proprietary software is an injustice", we have successfully developed the layout generators for an open semiconductor industry, giving the designers who use ams AG technologies, opportunity to work with any desired EDA-tools, to share their designs easily with others, and to receive the support they deserve. These PyCells are developed for all high and low voltage devices of ams AG technologies in order to enable the IC-designers to have advanced designs without having constraints because of missing parametrized layouts. Furthermore, by using these PyCells we have managed to reduce the computation time which is extremely important in semiconductor industry. The developed PyCells have passed all the verification tests and in practical use by customers. The PyCells are available free of charge to all Europractice [Europractice]_ members, currently more than 500 universities and more than 100 research institutes worldwide active in IC design are members of Europractice, and have free access to the technologies of ams AG including the PyCells. 
 
 
 References
@@ -267,4 +267,6 @@ References
         https://www.si2.org/?page=69
 .. [PythonAPI] J. Ivie. Ciranova Python API Reference Manual. Ciranova, Inc., 2009
 .. [SynopsysPyCellStudio] Synopsys PyCell Studio
-		https://www.synopsys.com/
+	https://www.synopsys.com/
+.. [Europractice] Europractice Services
+	http://www.europractice-ic.com/
