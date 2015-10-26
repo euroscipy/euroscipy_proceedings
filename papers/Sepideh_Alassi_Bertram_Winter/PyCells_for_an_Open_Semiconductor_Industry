@@ -248,7 +248,7 @@ The layout of a design should match with its schematic with respect to type, num
 
 Schematic Driven Layout (SDL)
 +++++++++++++++++++++++++++++
-PyCell codes must include the definition of pins regarding type of connections, weak connection (by polysilicon) or strong connection (by metal), and also the definition of shapes requiring external connections. Having types of connections implemented in PyCells, the SDL Navigator tool can attain the schematic of a sample design and generate the layout of it by calling PyCells with respective parameters. After generation of the layout, SDL Navigator checks the connectivity features using flylines.
+PyCell codes must include the definition of pins regarding type of connections, weak connection (by polysilicon) or strong connection (by metal), and also the definition of shapes requiring external connections. Having types of connections implemented in PyCells, the SDL Navigator tool can attain the schematic of a sample design and generate the layout of it by calling PyCells with respective parameters. After generation of the layout, SDL Navigator checks the connectivity features using flylines (the wire-like shapes which appear on layout and show the connections between the ports).
 
 Database Comparison (DBCOMP)
 ++++++++++++++++++++++++++++++
