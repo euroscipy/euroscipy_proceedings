@@ -38,7 +38,7 @@ A typical CMOS semiconductor process offers n-channel and p-channel transistors.
 
 Sample PyCell Development
 +++++++++++++++++++++++++
-The process of developing a PyCells is described in this section step by step using the sample 20V MOS transistor, pmos20t. In order to simplify the development of new layout generators, the architecture shown in Figure :ref:`architecture` has been established. 
+The process of developing a PyCell is described in this section step by step using the sample 20V MOS transistor, pmos20t. In order to simplify the development of new layout generators, the architecture shown in Figure :ref:`architecture` has been established. 
 
 .. figure:: 20V_mos.pdf
    :scale: 30%
@@ -108,7 +108,7 @@ Figure :ref:`pmos50` shows the layout generated for a transistor with 50V guard 
 Optimization
 ++++++++++++
 
-The computation time plays a crucial role in designing integrated circuits. The complexity of the designs and the amount of operations necessary to generate layouts of high voltage devices or the large devices increase the computation time significantly. For this reason, throughout this project the PyCells are developed to be in the most optimized shape possible without losing the clarity of the structure of the codes. For optimizing the codes, data aggregation and optimal use of local variables as well as iterations are taken into account. This has resulted in faster execution of PyCell codes for generating large and complex devices in comparison with execution time of PCells for identical devices.
+The computation time plays a crucial role in designing integrated circuits. The complexity of the designs and the amount of operations necessary to generate layouts of high voltage devices or the large devices increase the computation time significantly. For this reason, throughout this project the PyCells are developed to be in the most optimized shape possible without losing the clarity of the structure of the codes. For optimizing the codes, data aggregation and optimal use of local variables as well as iterations are taken into account. This has resulted in faster execution of the PyCell codes for generating large and complex devices in comparison with execution time of PCells for identical devices.
    
 Stretching
 ----------
@@ -160,7 +160,7 @@ Therefore, one cannot simply fit them into a given shape without affecting the b
    
    Stretching the gate of a transistor :label:`stretchgate`
    
-The stretch handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to the shape and parameters of the layout. Stretching can be limited to minimum and maximum boundaries on both horizontal and vertical directions. Snap resolution can be also be specified in definition of stretch handles, an example of which is shown below:
+The stretch handles appear as diamond shaped elements on the GUI, indicating the place where the user can click and drag the object in order to change its dimensions. These handles are stored as properties in the OpenAccess database and are defined within the Python source code. The stretch handles have to be associated to the shape and parameters of the layout. Stretching can be limited to minimum and maximum boundaries on both horizontal and vertical directions. Snap resolution can be also be specified in definition of stretch handles, an example of which is shown below:
 
 .. code-block:: python
    
