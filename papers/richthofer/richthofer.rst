@@ -15,7 +15,7 @@ Garbage Collection in JyNI – How to bridge Mark/Sweep and Reference Counting G
    Java classes. It enables Python-code to leverage Java's
    multithreading-features and utilizes Java's built-in garbage collection.
    However, it currently does not support CPython's C-API and thus does not
-   support native extensions like NumPy and Scipy. Since most scientific code
+   support native extensions like NumPy and SciPy. Since most scientific code
    depends on such extensions, it is usually not runnable with Jython.
 
    For various reasons, implementing CPython's C-API is not an easy task.
@@ -120,8 +120,8 @@ different techniques, depending on the PyObject's implementation details.
    Approaches to bridge PyObjects. *Left*: Native PyObject wraps Java. *Center*: Java-PyObject wraps native one. *Right*: Objects are mirrored. :label:`modi`
 
 The basic approach is to back the C-API of PyObject by a Java-PyObject via JNI.
-This would avoid data-synchronization issues, but is only feasible if there are matching counterparts of the PyObject type in Jython and CPython (:ref:`modi`, left).
-For CPython-specific types we can do it the other way round  (:ref:`modi`, center). Another problem is that CPython API defines macros in pulic headers that access PyObjects' internal data. To deal with these, we sometimes have to mirror the object (:ref:`modi`, right).
+This would avoid data-synchronization issues, but is only feasible if there are matching counterparts of the PyObject type in Jython and CPython (fig. :ref:`modi`, left).
+For CPython-specific types we can do it the other way round  (fig. :ref:`modi`, center). Another problem is that CPython API defines macros in pulic headers that access PyObjects' internal data. To deal with these, we sometimes have to mirror the object (fig. :ref:`modi`, right).
 This might involve data-synchronization issues, but luckily macors mostly exist for immutable types, so initial synchronization is sufficient. [JyNI_ESCP13]_ describes this in more detail.
 
 
@@ -628,41 +628,36 @@ On top of this a rather Java-like main-method can be implemented. Note that cons
         PyModule tkModule = (PyModule)
                 imp.importName("Tkinter", true);
 
-        root = Py.newJavaObject(tkModule, Tk.class);
+        root = tkModule.newJ(Tk.class);
 
-        txt = Py.newJavaObject(tkModule,
-                StringVar.class);
+        txt = tkModule.newJ(StringVar.class);
         txt.set("Hello World!");
 
-        String[] keyWords0 = {"text"};
-        Label lab = Py.newJavaObject(tkModule,
-                Label.class, keyWords0, root,
+        Label lab = tkModule.newJ(Label.class,
+                new String[]{"text"}, root,
                 "Welcome to JyNI Tkinter-Demo!");
         lab.pack();
 
-        String[] keyWords1 = {"textvariable"};
-        Entry entry = Py.newJavaObject(tkModule,
-                Entry.class, keyWords1, root, txt);
+        Entry entry = tkModule.newJ(Entry.class,
+                new String[]{"textvariable"}, root, txt);
         entry.pack();
 
-        String[] keyWords2 = {"text", "command"};
-        Button buttonPrint = Py.newJavaObject(
-                tkModule, Button.class, keyWords2,
-                root, "print text",
+        String[] kw_txt_cmd = {"text", "command"};
+        Button buttonPrint = tkModule.newJ(Button.class,
+                kw_txt_cmd, root, "print text",
                 Py.newJavaFunc(TestTk.class,
                         "printText"));
         buttonPrint.pack();
 
-        Button buttonTimestamp = Py.newJavaObject(
-                tkModule, Button.class, keyWords2,
+        Button buttonTimestamp = tkModule.newJ(
+                Button.class, kw_txt_cmd,
                 root, "print timestamp",
                 Py.newJavaFunc(TestTk.class,
                         "printTimeStamp"));
         buttonTimestamp.pack();
         
-        Button buttonQuit = Py.newJavaObject(
-                tkModule, Button.class, keyWords2,
-                root, "Quit",
+        Button buttonQuit = tkModule.newJ(Button.class,
+                kw_txt_cmd, root, "Quit",
                 Py.newJavaFunc(TestTk.class,
                         "destroyRoot"));
         buttonQuit.pack();
