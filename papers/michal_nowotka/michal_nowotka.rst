@@ -151,11 +151,12 @@ They both provide Python bindings and database cartridges, that, among other
 things, allow performing substructure and similarity searches on compounds 
 stored in RDBMS.
 
-The ChEMBL web services described so far can be seen as *data-focused*,
-as they are responsible for retrieving data stored in the ChEMBL database.
-To assist with data processing, loading and curating, a requirement to build
-additional *cheminformatics-focused* services was identified.
-To address this need the `Beaker`_ project was setup.
+The ChEMBL web services that we've described so far are focused on the retrieval 
+of structured data stored in databases. 
+Talking with colleagues, we've identified a gap in efficient pipelines, that allow 
+researchers to handle data process and curating chemical datasets, and we thus 
+focused on building additional *cheminformatics-focused* services.
+To fix this gap, the `Beaker`_ project was setup.
 Beaker [Beaker14]_ exposes most functionality offered by RDKit using REST.
 This means that the functionality RDKit provides, can now be accessed *via* HTTP, 
 using any programming language, without requiring a local RDKit installation.
@@ -180,7 +181,7 @@ convenient API, similar to `Django QuerySet`_, offering lazy evaluation of
 results, chaining filters and caching results locally.
 This effectively reduces the number of requests to the remote server, which speeds 
 up data retrieval process.
-The package covers full ChEMBL web services functionality so allows users
+The package covers full ChEMBL web services functionality, allowing users
 to retrieve data as well as perform chemical computations without installing 
 chemistry toolkits.
 
@@ -229,7 +230,7 @@ advanced cheminformatics applications.
 
 This is complemented by an `IPython notebook`_ server, which executes a 
 Python code along with rich interactive plots and markdown 
-formatting and rapid sharing of results with other scientists.
+formatting to improve sharing results with other scientists.
 
 In order to demonstrate capabilities of the software environment used inside
 ChEMBL a `collection of IPython notebooks`_ has been prepared.
