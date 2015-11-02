@@ -24,12 +24,11 @@ Introduction
 
 Probabilistic Programming or Bayesian Statistics [DoingBayes]_ is what some call a new paradigm. 
 The aim of this paper is to introduce a Hierarchical model for Rugby Prediction, and also provide an 
-introduction to PyMC3. Readers who are unfamiliar with Hierarchical models are advised to either read a more thorough exposition online or turn to the excellent textbook on multilevel modelling [Multilevel]_.
+introduction to PyMC3. Readers who are unfamiliar with Hierarchical models are advised to either read a more thorough exposition online or turn to the excellent textbook on 
+multilevel modelling [Multilevel]_.
 
 
-Since I am a rugby fan I decide to apply the results of the paper Bayesian Football to the Six Nations.
-
-Rugby union is a contact sport that consists of two teams of fifteen players. The objective is to obtain more points than the opposition 
+Since I am a rugby fan I decide to apply the results of the paper Bayesian Football to the Six Nations. Rugby union is a contact sport that consists of two teams of fifteen players. The objective is to obtain more points than the opposition 
 through scoring tries or kicking goals over eighty minutes of playing time. Play is started with one team drop kicking the ball from the halfway line towards the opposition. 
 The rugby ball can be moved up the field by either carrying it or kicking it. However, when passing the ball it can only be thrown laterally or backward. The opposition can 
 stop players moving up the field by tackling them. Only players carrying the ball can be tackled and once a tackle is completed the opposition can compete for the ball. Play 
@@ -37,8 +36,8 @@ continues until a try is scored, the ball crosses the side line or dead-ball lin
 game at the halfway with a drop kick towards the opposition. The team with the most points at the end wins the game.
 
 
-Within the Bayesian framework, which 
-naturally accommodates hierarchical models [DoingBayes]_,  we use here the result proved in [Biao]_that assuming two conditionally independent Poisson variables for the number of goals scored, correlation is taken into account, since the observable variables are mixed at an upper level. 
+Within the Bayesian framework, which naturally accommodates hierarchical models [DoingBayes]_,  we use here the result proved in [Biao]_that assuming two conditionally 
+independent Poisson variables for the number of points scored, correlation is taken into account, since the observable variables are mixed at an upper level. 
 Moreover, since we are employing a Bayesian framework, the prediction of the outcome of a new game under the model is provided by the posterior predictive distribution
 This predictive distribution is approximated by a Monte Carlo method.
  
