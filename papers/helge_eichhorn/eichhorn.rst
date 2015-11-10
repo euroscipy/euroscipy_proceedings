@@ -93,7 +93,7 @@ These include
 * the mean radius :math:`r_m`,
 * the equatorial radius :math:`r_e`,
 * the polar radius :math:`r_p`,
-* the :math:`J_2` coefficient of the bodies gravity potential.
+* the :math:`J_2` coefficient of the body's gravity potential.
 
 .. * and the identification code used within the JPL ephemerides.
 
