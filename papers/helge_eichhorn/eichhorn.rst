@@ -223,7 +223,7 @@ We also interpolate additional state vectors between the integrator steps for vi
 
 The trajectory plot in figure :ref:`numerical` also includes markers for the intermediate integrator steps.
 
-Since the shape of the Earth is rather an irregular ellisoid than a sphere Earth's gravity potential is also not uniform.
+Since the shape of the Earth is rather an irregular ellipsoid than a sphere Earth's gravity potential is also not uniform.
 We can model the oblateness of the Earth by including the second dynamic form factor :math:`J_2` in the equations of motion as shown in equation :ref:`j2`.
 
 .. math::
