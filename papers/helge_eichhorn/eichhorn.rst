@@ -26,13 +26,14 @@ Introduction
 
 Designing a space mission trajectory is a computation-heavy task.
 Software tools that conduct the necessary numerical simulations and optimizations are therefore indispensable and high numerical performance is required.
-Since no mission or spacecraft is alike the ever-changing requirements and constraints also demand high development speed and programmer productivity.
+No science mission or spacecraft are exactly the same and during the early mission design phases the technical capabilities and constraints change frequently.
+Therefore high development speed and programmer productivity are required as well.
 Due to its supreme numerical performance Fortran has been the top programming language in many organizations within the astrodynamics community.
 
 At the European Space Operations Center (ESOC) of the European Space Agency (ESA) a large body of sometimes decades old Fortran77 code remains in use for mission analysis tasks.
 While this legacy code mostly fulfills the performance requirements [#]_ usability and programmer productivity suffer.
 One reason for this is that Fortran is a compiled language which hinders exploratory analyses and rapid prototyping.
-The low level of abstraction supported by Fortran77 and programming conventions, like 6-character variable name limits and fixed-form source code, that are in conflict with today's best practices are a more serious problem, though.
+The low level of abstraction supported by Fortran77 and programming conventions, like the 6-character variable name limit and fixed-form source code, that are in conflict with today's best practices are a more serious problem, though.
 The more recent Fortran standards remedy a lot of these shortcomings, e.g. free-form source in Fortran90 or object-oriented programming features in Fortran2003, but also introduce new complexity, e.g. requiring sophisticated build systems for dependency resolution.
 Compiler vendors have also been very slow to implement new standards.
 For example this year the Intel Fortran compiler achieved full support of the Fortran2003 standard, which was released in 2005 [IFC15]_.
@@ -44,7 +45,7 @@ A common approach for developing mission design software at ESOC is prototyping 
 The results are added complexity through the use of the MEX-interface for integrating Fortran and MATLAB, duplicated effort for porting, and still a low-level of abstraction because the system design is constrained by Fortran's limitations.
 
 Because of the aforementioned problems some organizations explore possibilities to replace Fortran for future development.
-The French space agency CNES (Centre Nationale D'Études Spatiale) for instance uses the Java-based Orekit library [Ore15]_ for its flight dynamics systems.
+The French space agency CNES (Centre National D'Études Spatiale) for instance uses the Java-based Orekit library [Ore15]_ for its flight dynamics systems.
 
 In this paper we show why Python and the scientific Python ecosystem are a viable choice for the next generation of space mission design software and present the Plyades library.
 Plyades is a proof-of-concept implementation of an object-oriented astrodynamics library in pure Python.
@@ -57,16 +58,15 @@ Why Python?
 Perez, Granger, and Hunter [PGH11]_ show that the scientific Python ecosystem has reached a high level of maturity and conclude that "Python has now entered a phase where it's clearly a valid choice for high-level scientific code development, and its use is rapidly growing".
 This assessment also holds true for astrodynamics work as most of the required low-level mathematical and infrastructural building blocks are already available, as shown below:
 
-* Vector algebra (``numpy``)
-* Visualization (``matplotlib``, ``bokeh``)
-* Numerical integration (``scipy.integrate``)
-* Numerical optimization (``scipy.optimize``)
-* High performance numerics (``cython``, ``numba``)
-* Planetary ephemerides (``jplephem``)
+* Vector algebra: NumPy [WCV11]_
+* Visualization: Matplotlib [JDH07]_, Bokeh [BDT15]_
+* Numerical integration and optimization: SciPy [JOP01]_
+* High performance numerics: Cython [BBC11]_, Numba [NDT15]_
+* Planetary ephemerides: jplephem [BRh15]_
 
 Another advantage is Python's friendliness to beginners.
 In the United States Python was the most popular language for teaching introductory computer science (CS) courses at top-ranked CS-departments in 2014 [PGu14]_.
-Astrodynamicists are rarely computer scientist but mostly aerospace engineers, physicists and mathematicians.
+Astrodynamicists are rarely computer scientists but mostly aerospace engineers, physicists and mathematicians.
 Most graduates of these disciplines have only little programming experience.
 Moving to Python could therefore lower the barrier of entry significantly.
 
@@ -137,16 +137,16 @@ We obtain the inital state data on August 28, 2015, 12:00h from NASA realtime tr
 
 .. code-block:: python
 
-    iss_r = np.array([
+    iss_r = numpy.array([
         -2775.03475,
         4524.24941,
         4207.43331,
         ]) * astropy.units.km
-    iss_v = np.array([
+    iss_v = numpy.array([
         -3.641793088,
         -5.665088604,
         3.679500667,
-        ]) * astropy.units.km/units.s
+        ]) * astropy.units.km/astropy.units.s
     iss_t = astropy.time.Time('2015-08-28T12:00:00.000')
     frame = 'ECI'
     body = plyades.bodies.EARTH
@@ -187,7 +187,9 @@ By solving Kepler's equation we can determine the true anomaly for every point i
 
 We now call the ``kepler_orbit`` instance method to solve Kepler's equation at regular intervals until one revolution is completed.
 The trajectory that comprises of the resulting state vectors is stored in the returned ``Orbit`` object.
-By calling ``plot3d`` we receive a three-dimensional visualization of the full orbital ellipse as shown in figure :ref:`3d`.
+By calling ``plot3d`` we receive a three-dimensional visualization [#]_ of the full orbital ellipse as shown in figure :ref:`3d`.
+
+.. [#] The visualization suffers from the fact that Matplotlib's mplot3d toolkit does not support proper depth buffering. Thus Matplotlib renders the complete orbit in front of the Earth and the parts of the orbit behind the planet are not obscured.
 
 .. figure:: 3d_orbit.png
 
@@ -291,6 +293,12 @@ References
 
 .. [ASP13] The Astropy Collaboration. *Astropy: A community Python package for astronomy*, Astronomy & Astrophysics, 558(2013):A33.
 
+.. [BBC11] Stefan Behnel, Robert Bradshaw, Craig Citro, Lisandro Dalcin, Dag Sverre Seljebotn and Kurt Smith. *Cython: The Best of Both Worlds*, Computing in Science and Engineering, 13, 31-39(2011).
+
+.. [BDT15] Bokeh Development Team. *Bokeh: Python library for interactive visualization*, http://www.bokeh.pydata.org, last visited: November 10, 2015.
+
+.. [BRh15] Brandon Rhodes. *jplephem 2.5*, https://pypi.python.org/pypi/jplephem, last visited: November 10, 2015.
+
 .. [DAV13] David A. Vallado, Wayne D. McClain. *Fundamentals of Astrodynamics and Applications*, 4th Edition, Microcosm Press, 2013.
 
 .. [FML15] Frazer McLean. *Orbital*, https://github.com/RazerM/orbital, last visited: September 17, 2015.
@@ -301,7 +309,13 @@ References
 
 .. [JCR15] Juan Luis Cano Rodríguez, Jorge Cañardo Alastuey. *Poliastro: Astrodynamics in Python*, Zenodo, 2015. `doi:10.5281/zenodo.17462 <http://dx.doi.org/10.5281/zenodo.17462>`_.
 
+.. [JDH07] John D. Hunter. *Matplotlib: A 2D Graphics Environment*, Computing in Science & Engineering, 9, 90-95(2007).
+
+.. [JOP01] Eric Jones, Travis Oliphant, Pearu Peterson, et al. *SciPy: Open source scientific tools for Python*, http://www.scipy.org/, last visited: November 10, 2015.
+
 .. [NAS15] National Aeronautics and Space Association. *ISS Trajectory Data*, http://spaceflight.nasa.gov/realdata/sightings/SSapplications/Post/JavaSSOP/orbit/ISS/SVPOST.html, last visited: August 28, 2015.
+
+.. [NDT15] Numba Development Team. *Numba*, http://numba.pydata.org, last visited: November 10, 2015.
 
 .. [Ore15] CS Systèmes d'Information. *Orekit: An accurate and efficient core layer for space flight dynamics applications*, http://www.orekit.org, last visited: September 17, 2015.
 
@@ -312,6 +326,8 @@ References
 .. [PyA15] Juan Luis Cano Rodriguez, Helge Eichhorn, Frazer McLean. *Python Astrodynamics*, http://www.python-astrodynamics.org, last visited: September 17, 2015.
 
 .. [RCM08] Robert C. Martin. *Clean Code: A Handbook of Agile Software Craftsmanship*, Prentice Hall, 2008.
+
+.. [WCV11] Stéfan van der Walt, S. Chris Colbert and Gaël Varoquaux. *The NumPy Array: A Structure for Efficient Numerical Computation*, Computing in Science & Engineering, 13, 22-30(2011).
 
 .. , `<http://cacm.acm.org/blogs/blog-cacm/176450-python-is-now-the-most-popular-introductory-teaching- language-at-top-us-universities/fulltext>`_, last visited: September 18, 2015.
 
