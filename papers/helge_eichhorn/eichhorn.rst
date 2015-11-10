@@ -45,7 +45,7 @@ A common approach for developing mission design software at ESOC is prototyping 
 The results are added complexity through the use of the MEX-interface for integrating Fortran and MATLAB, duplicated effort for porting, and still a low-level of abstraction because the system design is constrained by Fortran's limitations.
 
 Because of the aforementioned problems some organizations explore possibilities to replace Fortran for future development.
-The French space agency CNES (Centre National D'Études Spatiale) for instance uses the Java-based Orekit library [Ore15]_ for its flight dynamics systems.
+The French space agency CNES (Centre National D'Études Spatiales) for instance uses the Java-based Orekit library [Ore15]_ for its flight dynamics systems.
 
 In this paper we show why Python and the scientific Python ecosystem are a viable choice for the next generation of space mission design software and present the Plyades library.
 Plyades is a proof-of-concept implementation of an object-oriented astrodynamics library in pure Python.
