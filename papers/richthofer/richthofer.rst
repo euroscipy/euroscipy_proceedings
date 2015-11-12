@@ -33,7 +33,7 @@ Garbage Collection in JyNI – How to bridge Mark/Sweep and Reference Counting G
    garbage collection on top of Java's mark-and-sweep-based approach (taking
    care of adjacent concepts like finalizers and weak references and their
    interference with Jython). (Note that there are vague considerations around
-   to switch to mark-and-sweep-based gc in a future CPython too. So this
+   to switch to mark-and-sweep-based GC in a future CPython too; cf. [PY3_PL15]_. So this
    algorithm might one day be even relevant to CPython in terms of running
    legacy modules.)
 
@@ -229,8 +229,7 @@ The kind of object that needed a JNI-``GlobalRef`` in figure :ref:`aprc`, can no
 
 If a part of the (native) reference-graph becomes unreachable (figure :ref:`cuo`), this is
 reflected (asynchronously) on Java-side. On its next run, Java-GC will collect this
-subgraph and weak references registered to a reference queue can detect deleted objects and
-then release native references.
+subgraph, causing weak references to detect deleted objects and then release native references.
 
 .. figure:: JyNIGCBasic_0130.eps
    :scale: 42%
@@ -731,17 +730,37 @@ Currently JyNI does not allow to hand instances of new-style classes to native c
 References
 ----------
 
-.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2015-10-30
-
-.. [PMB_PL15] Romain Guillebert, PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2015-10-30
-
-.. [PY3_PL15] Larry Hastings, Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2015-10-30
+.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2015-10-30
 
 .. [JyNI_EP13] Stefan Richthofer, JyNI - Using native CPython-Extensions in Jython, Proceedings of the 6th European Conference on Python in Science (EuroSciPy 2013), http://arxiv.org/abs/1404.6390, 2014-05-01, Web. 2015-10-30
 
-.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2015-10-30
-
 .. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, 2015-09-11, Web. 2015-10-30
+
+.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 2015-10-30
+
+.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing, et al., Cython, http://cython.org, 2015-10-10, Web. 2015-11-12
+
+.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2015-11-12
+
+.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2015-11-12
+
+.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, 2015; https://github.com/jnr, Web. 2015-11-12
+
+.. [JNA] Todd Fast, Timothy Wall, Liang Chen, et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2015-11-12
+
+.. [SWIG] Dave Beazley, William Fulton, et al., SWIG, http://www.swig.org, Web. 2015-11-12
+
+.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2015-11-12
+
+.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2015-11-12
+
+.. [SIP] Phil Thompson, Reverbank Computing, SIP, 2015; https://riverbankcomputing.com/software/sip/intro, Web. 2015-11-12
+
+.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2015-10-30
+
+.. [PMB_PL15] Romain Guillebert (write-up by Jake Edge), PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2015-10-30
+
+.. [PY3_PL15] Larry Hastings (write-up by Jake Edge), Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2015-10-30
 
 .. [ICLD] IronPython team, Ironclad, https://github.com/IronLanguages/ironclad, 2015-01-02, Web. 2015-10-30
 
@@ -751,25 +770,5 @@ References
 
 .. [JPY] Brockmann Consult GmbH, jpy, https://github.com/bcdev/jpy, 2015-10-30, Web. 2015-09-16
 
-.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, 2015-10-30
-
 .. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 1 Oct. 2002, Web. 2015-10-30
-
-.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2015-11-12
-
-.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2015-11-12
-
-.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing, et al., Cython, http://cython.org, 2015-10-10, Web. 2015-11-12
-
-.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2015-11-12
-
-.. [SWIG] Dave Beazley, William Fulton, et al., SWIG, http://www.swig.org, Web. 2015-11-12
-
-.. [JNA] Todd Fast, Timothy Wall, Liang Chen, et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2015-11-12
-
-.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, 2015; https://github.com/jnr, Web. 2015-11-12
-
-.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2015-11-12
-
-.. [SIP] Phil Thompson, Reverbank Computing, SIP, 2015; https://riverbankcomputing.com/software/sip/intro, Web. 2015-11-12
 
