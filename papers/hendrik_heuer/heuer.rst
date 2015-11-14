@@ -52,37 +52,37 @@ In the word2vec vector space, linear algebra can be used to exploit the encoded 
 
 .. math::
 
-   king - man + woman = queen
+   king - man + woman \approx queen
 
 It works for the superlative:
 
 .. math::
 
-   fastest - fast + slow = slowest
+   fastest - fast + slow \approx slowest
 
 As well as the past participle:
 
 .. math::
 
-   woken - wake + be = been
+   woken - wake + be \approx been
 
 It can infer the Finnish national sport from the German national sport.
 
 .. math::
 
-   football - Germany + Finland = hockey
+   football - Germany + Finland \approx hockey
 
 Based on the last name of the current Prime Minister of the United Kingdom, it identifies the last name of the German Bundeskanzlerin:
 
 .. math::
 
-   Cameron - England + Germany = Merkel
+   Cameron - England + Germany \approx Merkel
 
 The analogies can also be applied to the national dish of a country:
 
 .. math::
 
-   haggis - Scotland + Germany = Currywurst
+   haggis - Scotland + Germany \approx Currywurst
 
 Fig. 1 shows the clusters of semantically similar words and how they form semantic units, which can be easily interpreted by humans.
 
@@ -152,7 +152,7 @@ For the implementation, the t-SNE implementation in scikit-learn is used:
 Visualization
 ~~~~~~~~~~~~~
 
-After the dimensionality reduction, the vectors are exported to a JSON file. The vectors are visualized using the D3.js JavaScript data visualization library [Bos12]. Using D3.js, an interactive map was developed. With this map, the user can move around and zoom in and out.
+After the dimensionality reduction, the vectors are exported to a JSON file. The vectors are visualized using the D3.js JavaScript data visualization library [Bos12]. Using D3.js, an interactive map was developed. With this map, the user can move around and zoom in and out. The colour coding helps to judge the ratio of dissimilar and similar words. At the global scale, the map can be used to assess how similar two text sources are to each other. At the local scale, clusters of similar words can be explored.
 
 Results
 --------------
@@ -185,6 +185,8 @@ The paper gives an overview of an ongoing investigation of the usefulness of wor
 As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. Distributed representations are an active field of research. New findings on word, sentence or paragraph vectors can be easily integrated into the workflow of the tool.
 
 Both the front-end and the back-end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front-end code to explore the JSON file as a geographical map.
+
+The tool can be used in addition to topic modeling techniques like LDA. It enables the comparison of large text sources at a glance and is aimed at similar text sources with sublte differences.
 
 References
 ----------
