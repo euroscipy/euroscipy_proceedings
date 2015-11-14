@@ -52,7 +52,7 @@ In the word2vec vector space, linear algebra can be used to exploit the encoded 
 
 .. math::
 
-   king - man + women = queen
+   king - man + woman = queen
 
 It works for the superlative:
 
@@ -88,7 +88,7 @@ Fig. 1 shows the clusters of semantically similar words and how they form semant
 
 .. figure:: word_clusters.png
 
-   Clusters of semantically similar words emerge when the word2vec vectors are projected down to 2D using t-SNE :label:`egfig`
+   Clusters of semantically similar words emerge when the word2vec vectors are projected down to 2D using t-SNE. :label:`egfig`
 
 Dimensionality reduction with t-SNE
 -----------------------------------
@@ -120,12 +120,13 @@ For all unique non-frequent words, the word representation vectors are collected
 
    from gensim.models import Word2Vec
 
-   model = Word2Vec.load_word2vec_format( \
-    word_vectors_filename, binary=True )
+   model = Word2Vec.load_word2vec_format(
+    word_vectors_filename, binary=True 
+   )
 
    for word in words:
      if word in model:
-       print model[ word ]
+       print model[word]
 
 
 Dimensionality Reduction
@@ -137,7 +138,7 @@ In the dimensionality reduction step, the N-dimensional word vectors are project
 
 .. figure:: tsne_dimensionality_reduction.png
 
-   In the dimensionality reduction step, the word vectors are projected down to 2D :label:`egfig`
+   In the dimensionality reduction step, the word vectors are projected down to 2D. :label:`egfig`
 
 For the implementation, the t-SNE implementation in scikit-learn is used:
 
@@ -146,7 +147,7 @@ For the implementation, the t-SNE implementation in scikit-learn is used:
    from sklearn.manifold import TSNE
 
    tsne = TSNE(n_components=2)
-   tsne.fit_transform( word_vectors )
+   tsne.fit_transform(word_vectors)
 
 Visualization
 ~~~~~~~~~~~~~
@@ -160,7 +161,7 @@ The flow described in the previous section is applied to different revisions of 
 
 The article on Game of Thrones was deemed especially illustrative for the task of comparing the topics in a text, as the storyline of the TV show developed between the two different snapshot dates as new characters were introduced. Other characters became less relevant and were removed from the article. The article on World War 2 was especially interesting as one of the motivations for the topic tool is to find subtle changes in data.
 
-Fig. 3 shows how different the global cluster, i.e. the full group of words on the maximum zoom setting, of the Wikipedia articles on the United States, Game of Thrones and World War 2 are.
+Fig. 3 shows how different the global cluster, i.e. the full group of words on the minimum zoom setting, of the Wikipedia articles on the United States, Game of Thrones and World War 2 are.
 
 .. figure:: global_clusters.png
 
@@ -172,7 +173,7 @@ When applied to Game of Thrones, it is e.g. easy to visually compare characters 
 
 .. figure:: topic_comparison_usa.png
 
-   Topic Comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. In the bottom left, only the words present in the 2013 revision are displayed. In the bottom right, only the words present in the 2015 revision are shown. :label:`egfig`
+   Topic comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. In the bottom left, only the words present in the 2013 revision are displayed. In the bottom right, only the words present in the 2015 revision are shown. :label:`egfig`
 
 Conclusion
 ----------
