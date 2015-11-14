@@ -37,7 +37,7 @@ The distributional hypothesis by Harris states that words with similar meaning o
 
 The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. The representations are called distributed representations because the features are not mutually exclusive and because their configurations correspond to the variations seen in the observed data [Cun15]. LeCun et al. provide the example of a news story. When the task is to predict the next word in a news story, the learned word vectors for Tuesday and Wednesday will be very similar as they can be easily replaced by each other when used in a sentence [Cun15].
 
-There are a variety of computational models that implement the distributional hypothesis, including word2vec [Che13], GloVe [Pen14], dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. There are a variety of Python implementations of these techniques. word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau15, Kul15]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
+There are a variety of computational models that implement the distributional hypothesis, including word2vec [Che13], GloVe [Pen14], dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. There are a variety of Python implementations of these techniques. word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau15, Kul15]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur10].
 
 For this paper, word2vec was selected because Mikolov et al. provide 1.4 million pre-trained entity vectors trained on 100 billion words from various news articles in the Google News dataset [Che13]. However, other models might perform equally well for the purpose of text comparison. Moreover, custom word vectors trained on a large domain-specific dataset, e.g. the Wikipedia encyclopedia for the Wikipedia revision comparison, could potentially yield even better results. 
 
@@ -218,6 +218,6 @@ References
 
 .. [Sah05] M. Sahlgren, “An introduction to random indexing,” in Methods and applications of semantic indexing workshop at the 7th international conference on terminology and knowledge engineering, TKE, 2005, vol. 5.
 
-.. [Tur15] J. Turian, Random Indexing Word Representations. Github, 2015. [Online]. Available: https://github.com/turian/random-indexing-wordrepresentations. [Accessed: 06-Aug-2015].
+.. [Tur10] J. Turian, Random Indexing Word Representations. Github, 2010. [Online]. Available: https://github.com/turian/random-indexing-wordrepresentations. [Accessed: 06-Aug-2015].
 
 .. [Řeh10] R. Řehůřek and P. Sojka, “Software Framework for Topic Modelling with Large Corpora,” in Proceedings of the LREC 2010 Workshop on New Challenges for NLP Frameworks, Valletta, Malta, 2010, pp. 45–50.
