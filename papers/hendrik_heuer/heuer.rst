@@ -22,7 +22,7 @@ When summarizing a large text, only a subset of the available topics and stories
 There are a variety of different ways to approach the problem of visualizing the topics present in a text. The simplest approach is to look at unique words and their occurrences and visualize the words in a list. Topics could also be visualized using word clouds, where the font size of a word is determined by the frequency of the word. Word clouds have a variety of shortcomings: they can only visualize small subsets, they focus on the most frequent words and they do not take synonyms and semantically similar words into account.
 
 This paper describes a human-computer interaction-inspired approach of comparing two text sources. The approach yields a bird’s-eye view of different text sources, including text summaries and their source material, and enables users to explore a text source like a geographical map.
-As similar words are close to each other, the user can visually identify clusters of topics that are present in the text. Conceptually, it can be understood as a "Fourier transformation for text".
+As similar words are close to each other, the user can visually identify clusters of topics that are present in the text.
 
 This paper describes a tool, which can be used to visualize the topics in a single text source as well as to compare different text sources. To compare the topics in source A and source B, three different sets of words can be computed: a set of unique words in source A, a set of unique words in source B as well as the intersection set of words both in source A and B. These three sets are then plotted at the same time. For this, a colour is assigned to each set of words. This enables the user to visually compare the different text sources and makes it possible to see which topics are covered where. The user can explore the word map and zoom in and out. He or she can also toggle the visibility, i.e. show and hide, certain word sets.
 
@@ -33,11 +33,11 @@ The Github repository of the tool includes an online demo [Heu15]. The tool can 
 Distributional semantic models
 ------------------------------
 
-The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of a word can be inferred from its distribution across contexts. The goal of distributional semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short word sequences of length up to N and did not exploit distributed representations [Cun15].  Distributional semantics relies on word co-occurrence in context windows.
+The distributional hypothesis by Harris states that words with similar meaning occur in similar contexts [Sah05]. This implies that the meaning of a word can be inferred from its distribution across contexts. The goal of distributional semantics is to find a representation, e.g. a vector, that approximates the meaning of a word [Bru14]. The traditional approach to statistical modeling of language is based on counting frequencies of occurrences of short word sequences of length up to N and did not exploit distributed representations [Cun15].  Distributional semantics takes word co-occurrence in context windows into account.
 
 The general idea behind word space models is to use distributional statistics to generate high-dimensional vector spaces, where a word is represented by a context vector that encodes semantic similarity [Sah05]. The representations are called distributed representations because the features are not mutually exclusive and because their configurations correspond to the variations seen in the observed data [Cun15]. LeCun et al. provide the example of a news story. When the task is to predict the next word in a news story, the learned word vectors for Tuesday and Wednesday will be very similar as they can be easily replaced by each other when used in a sentence [Cun15].
 
-There is a variety of computational models that implement the distributional hypothesis, including word2vec [Che13], GloVe [Pen14], dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. For all of the techniques, Python implementations exist. word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau15, Kul15]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
+There are a variety of computational models that implement the distributional hypothesis, including word2vec [Che13], GloVe [Pen14], dependency-based word embeddings [Lev14] and Random Indexing [Sah05]. There are a variety of Python implementations of these techniques. word2vec is available in gensim [Řeh10]. For GloVe, the C source code was ported to Python [Gau15, Kul15]. The dependency-based word embeddings by Levy and Goldberg are implemented in spaCy [Hon15]. Random Indexing is available in an implementation by Joseph Turian [Tur15].
 
 For this paper, word2vec was selected because Mikolov et al. provide 1.4 million pre-trained entity vectors trained on 100 billion words from various news articles in the Google News dataset [Che13]. However, other models might perform equally well for the purpose of text comparison. Moreover, custom word vectors trained on a large domain-specific dataset, e.g. the Wikipedia encyclopedia for the Wikipedia revision comparison, could potentially yield even better results. 
 
@@ -114,7 +114,7 @@ Using a hash map, all words are counted. Only unique words, i.e. the keys of the
 Word representations
 ~~~~~~~~~~~~~~~~~~~~
 
-For all unique non-frequent words, the word representation vectors are collected from the word2vec model from the gensim Python library [Řeh10]. Each word is represented by an N-dimensional vector (N=300). 
+For all unique non-frequent words, the word representation vectors are collected from the word2vec model from the gensim Python library [Řeh10]. Each word is represented by an N-dimensional vector (N=300, informed by the best accuracy in [Mik13] and following the default in [Che13]). 
 
 .. code-block:: python
 
@@ -131,9 +131,9 @@ For all unique non-frequent words, the word representation vectors are collected
 Dimensionality Reduction
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The resulting 300-dimensional word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn [Ped11].
+The resulting N-dimensional word2vec vectors are projected down to 2D using the t-SNE Python implementation in scikit-learn [Ped11].
 
-In the dimensionality reduction step, the 300-dimensional word vectors are projected down to a two-dimensional space so that they can be easily visualized in a 2D coordinate system (see Fig. 2).
+In the dimensionality reduction step, the N-dimensional word vectors are projected down to a two-dimensional space so that they can be easily visualized in a 2D coordinate system (see Fig. 2).
 
 .. figure:: tsne_dimensionality_reduction.png
 
@@ -181,7 +181,7 @@ Word2vec word vector representations and t-SNE dimensionality reduction can be u
 
 The paper gives an overview of an ongoing investigation of the usefulness of word vector representations and dimensionality reduction in the text and topic comparison context. The major flaw of this paper is that the introduced text visualization and text comparison approach is not validated empirically.
 
-As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. 
+As many researchers publish their source code under open source licenses and as the Python community embraces and supports these publications, it was possible to integrate the findings from the literature review of my Master's thesis into a useable tool. Distributed representations are an active field of research. New findings on word, sentence or paragraph vectors can be easily integrated into the workflow of the tool.
 
 Both the front-end and the back-end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front-end code to explore the JSON file as a geographical map.
 
