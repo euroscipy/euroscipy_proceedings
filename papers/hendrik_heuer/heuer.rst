@@ -157,7 +157,7 @@ After the dimensionality reduction, the vectors are exported to a JSON file. The
 Results
 --------------
 
-As with many unsupervised methods, the evaluation can be difficult and the quality of the visualizations is hard to quantify. The goal of this section is, therefore, to introduce relevant use cases and illustrate how the technique can be applied. 
+As with many unsupervised methods, the evaluation can be difficult and the quality of the visualization is hard to quantify. The goal of this section is, therefore, to introduce relevant use cases and illustrate how the technique can be applied. 
 
 The flow described in the previous section can be applied to different revisions of Wikipedia articles. For this, a convenience sample of the most popular articles in 2013 from the English Wikipedia was used.  For each article, the last revision from the 31st of December 2013 and the most recent revision on the 26th of May 2015 were collected. The assumption was that popular articles will attract sufficient changes to be interesting to compare. The list of the most popular Wikipedia articles includes Facebook, Game of Thrones, the United States, and World War 2.
 
