@@ -157,7 +157,9 @@ After the dimensionality reduction, the vectors are exported to a JSON file. The
 Results
 --------------
 
-The flow described in the previous section is applied to different revisions of Wikipedia articles. For this, a convenience sample of the most popular articles in 2013 from the English Wikipedia was used.  For each article, the last revision from the 31st of December 2013 and the most recent revision on the 26th of May 2015 were collected. The assumption was that popular articles will attract sufficient changes to be interesting to compare. The list of the most popular Wikipedia articles includes Facebook, Game of Thrones, the United States, and World War 2.
+As with many unsupervised methods, the evaluation can be difficult and the quality of the visualizations is hard to quantify. The goal of this section is, therefore, to introduce relevant use cases and illustrate how the technique can be applied. 
+
+The flow described in the previous section can be applied to different revisions of Wikipedia articles. For this, a convenience sample of the most popular articles in 2013 from the English Wikipedia was used.  For each article, the last revision from the 31st of December 2013 and the most recent revision on the 26th of May 2015 were collected. The assumption was that popular articles will attract sufficient changes to be interesting to compare. The list of the most popular Wikipedia articles includes Facebook, Game of Thrones, the United States, and World War 2.
 
 The article on Game of Thrones was deemed especially illustrative for the task of comparing the topics in a text, as the storyline of the TV show developed between the two different snapshot dates as new characters were introduced. Other characters became less relevant and were removed from the article. The article on World War 2 was especially interesting as one of the motivations for the topic tool is to find subtle changes in data.
 
@@ -169,11 +171,17 @@ Fig. 3 shows how different the global cluster, i.e. the full group of words on t
 
 Fig. 4 shows four screenshots of the visualization of the Wikipedia articles on the United States including an overview and detail views that only show the intersection set of words, words only present in the 2013 revision of the article, and words only present in the 2015 revision of the article. 
 
-When applied to Game of Thrones, it is e.g. easy to visually compare characters names, i.e. first names, that were removed since 2013 and that were added in 2015. Using the online demo available [Heu15], this technique can be applied to the Wikipedia articles on the United States and World War 2. The technique can also be applied to visualize the Google search history of an individual.
-
 .. figure:: topic_comparison_usa.png
 
    Topic comparison of the Wikipedia article on the United States. In the top left, all words in both texts are plotted. On the top right, only the intersection set of words is shown. In the bottom left, only the words present in the 2013 revision are displayed. In the bottom right, only the words present in the 2015 revision are shown. :label:`egfig`
+
+When applied to Game of Thrones, it is e.g. easy to visually compare names that were removed since 2013 and that were added in 2015 (Fig. 5). Using the online demo available [Heu15], this technique can be applied to the Wikipedia articles on the United States and World War 2. 
+
+The technique can also be applied to visualize the Google search history of an individual. Similar words are represented by similar vectors. Thus, terms related to different topics, e.g. technology, philosophy or music, will end up in separate clusters.
+
+.. figure:: game_of_thrones.png
+
+   Names present in the Wikipedia article on Game of Thrones. Red names were added to the 2015 revision, orange names removed. White names are present in both revisions.
 
 Conclusion
 ----------
@@ -186,7 +194,7 @@ As many researchers publish their source code under open source licenses and as 
 
 Both the front-end and the back-end of the implementation were made available on GitHub under GNU General Public License 3 [Heu15]. The repository includes the necessary Python code to collect the word2vec representations using Gensim, to project them down to 2D using t-SNE and to output them as JSON. The repository also includes the front-end code to explore the JSON file as a geographical map.
 
-The tool can be used in addition to topic modeling techniques like LDA. It enables the comparison of large text sources at a glance and is aimed at similar text sources with sublte differences.
+The tool can be used in addition to topic modeling techniques like LDA. It enables the comparison of large text sources at a glance and is aimed at similar text sources with subtle differences.
 
 References
 ----------
