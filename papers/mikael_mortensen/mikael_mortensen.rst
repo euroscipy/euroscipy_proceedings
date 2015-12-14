@@ -19,7 +19,7 @@ Massively parallel implementation in Python of a pseudo-spectral DNS code for tu
 
    Keys to the efficiency of the solver are the mesh decomposition and three 
    dimensional FFT routines, implemented directly in Python using MPI, wrapped 
-   through mpi4py, and a serial FFT module (both *numpy.fft* or *pyFFTW* may be used). 
+   through MPI for Python, and a serial FFT module (both *numpy.fft* or *pyFFTW* may be used). 
    Two popular decomposition strategies, *slab* and *pencil*, have been 
    implemented and tested.  
    
@@ -34,7 +34,7 @@ Direct Numerical Simulations (DNS) of Navier Stokes equations have been used for
  
 All known DNS codes (at least to the  knowledge of the author) running on supercomputers are implemented in low-level languages like Fortran or C/C++. These  languages are known for excellent performance in heavy duty number crunching algorithms, which goes a long way to explain the popularity. Python, on the other hand, is a scripting language known for being very convenient to work with, but as a research tool more aimed at post-processing, visualization or fast prototyping than high performance computing. However, a lesser known fact is that Python is very convenient to program also with MPI, and that as long as number crunching is performed using vectorized expressions, a code may run on thousands of processors at speeds closing in on the optimal low-level codes.  
 
-The purpose of this work is to describe a ~100 line pseudo-spectral DNS solver developed from scratch in Python, using nothing more than numpy and mpi4py, possibly optimized with pyfftw and Cython. It is important to stress that the entire solver is written in Python, this in not simply a wrapper of a low-level number cruncher. The mesh is created and decomposed in Python and MPI communications are implemented using mpi4py. Two popular strategies, *slab* and *pencil*, for MPI communications of the three-dimensional Fast Fourier Transform (FFT), required by the pseudo-spectral method, will be described. 
+The purpose of this work is to describe a ~100 line pseudo-spectral DNS solver developed from scratch in Python, using nothing more than NumPy and MPI for Python (mpi4py), possibly optimized with pyFFTW and Cython. It is important to stress that the entire solver is written in Python, this in not simply a wrapper of a low-level number cruncher. The mesh is created and decomposed in Python and MPI communications are implemented using mpi4py. Two popular strategies, *slab* and *pencil*, for MPI communications of the three-dimensional Fast Fourier Transform (FFT), required by the pseudo-spectral method, will be described. 
 
 In this short paper we will first describe the Fourier transformed Navier Stokes equations that are solved for a triply periodic domain. We will then give a brief description of the implementation and show the results of performance tests conducted on a BlueGene/P supercomputer at the KAUST supercomputing laboratory. The performance of the pure Python solver, as well as a version optimized with Cython, is compared to a pure C++ implementation. 
 
@@ -60,7 +60,7 @@ where :math:`\bm{u}(\bm{x}, t)` is the velocity vector, :math:`\bm{\omega}=\nabl
    \bm{x} =(x_i, y_j, z_k) = \left\{\left( \frac{2\pi i}{N}, \frac{2\pi j}{N}, \frac{2\pi k}{N} \right): i,j,k \in 0,\ldots, N-1\right\} .
 
 
-In transforming the equations from real space to Fourier space we will be needing the corresponding wavenumber mesh
+To transform the equations from real space to Fourier space we need the corresponding wavenumber mesh
 
 .. math::
    :label: eq:wavemesh 
@@ -102,27 +102,27 @@ and this is used to eliminate the pressure from the momentum equation. We finall
 
    \frac{d\hat{\bm{u}}_{\bm{k}}}{d t}  = \widehat{( \bm{u} \times \bm{\omega})}_{\bm{k}} - \nu |\bm{k}|^2  \hat{\bm{u}}_{\bm{k}} - \bm{k} \frac{\bm{k} \cdot \widehat{( \bm{u} \times \bm{\omega})}_{\bm{k}} }{|\bm{k}|^2}.
 
-An explicit solver will integrate Eq. :ref:`eq:NSfinal` from given initial conditions. Any integrator may be used, here we have settled for a fourth order Runge Kutta method.
+An explicit solver will integrate Eq. :ref:`eq:NSfinal` from given initial conditions. Any integrator may be used, here we have settled for a fourth order [Runge-Kutta]_ method.
 
-Detail of implementation
-------------------------
-The major challenges one has to deal with when implementing a high performance solver for Eq. (:ref:`eq:NSfinal`) in Python is the following
+Details of implementation
+-------------------------
+The major challenges one has to deal with when implementing a high performance solver for Eq. (:ref:`eq:NSfinal`) in Python are the following
 
 * MPI
 * Mesh decomposition
 * Three dimensional Fourier transforms with MPI
-* Vectorization (numpy ufuncs)
+* Vectorization (NumPy ufuncs)
 * Dynamic loading of Python on a supercomputer
 
-MPI/mpi4py
-==========
+MPI/MPI for Python (mpi4py)
+===========================
 
-The [mpi4py]_ Python package contains wrappers for almost the entire MPI and it has been shown to be able to distribute numpy arrays at the speed of regular C arrays. The mpi4py module allows us to write Python code with MPI just like regular low-level languages, but with a much simpler and user-friendly syntax. Since coding is performed like in C, Python implementation may, as such, be used as an easy to follow, working prototype for a complete low-level implementation in Fortran, C or C++.
+The [mpi4py]_ Python package contains wrappers for almost the entire MPI and it has been shown to be able to distribute NumPy arrays at the speed of regular C arrays. The MPI for Python module allows us to write Python code with MPI just like regular low-level languages, but with a much simpler and user-friendly syntax. Since coding is performed like in C, Python implementation may, as such, be used as an easy to follow, working prototype for a complete low-level implementation in Fortran, C or C++.
 
 Mesh decomposition
 ==================
 
-The computational mesh is structured and the most common approaches to mesh decomposition are the *slab* and the *pencil* methods. The *slab* decomposition distributes the mesh along one single index, whereas the *pencil* distributes two of the three indices. The advantage of the *slab* decomposition is that it is generally faster than *pencil*, but it is limited to :math:`N` CPUs for a computational mesh of size :math:`N^3`. The *pencil* decomposition is slower, but has the advantage that it can be used by :math:`N^2` CPUs and thus allows for much larger simulations. Figure :ref:`slab` shows how the distributed mesh is laid out for *slab* decomposition using 4 CPUs. Notice that in real space the decomposition is along the first index, whereas in wavenumber space it is along the second index. This is because the third and final FFT is performed along the x-direction, and for this operation the mesh needs to be aligned either in the x-z plane or in the x-y plane. Her we have simply chosen the first option.
+The computational mesh is structured and the most common approaches to mesh decomposition are the *slab* and the *pencil* methods. The *slab* decomposition distributes the mesh along one single index, whereas the *pencil* distributes two of the three indices. The advantage of the *slab* decomposition is that it is generally faster than *pencil*, but it is limited to :math:`N` CPUs for a computational mesh of size :math:`N^3`. The *pencil* decomposition is slower, but has the advantage that it can be used by :math:`N^2` CPUs and thus allows for much larger simulations. Figure :ref:`slab` shows how the distributed mesh is laid out for *slab* decomposition using 4 CPUs. Notice that in real space the decomposition is along the first index, whereas in wavenumber space it is along the second index. This is because the third and final FFT is performed along the x-direction, and for this operation the mesh needs to be aligned either in the x-z plane or in the x-y plane. Here we have simply chosen the first option.
 
 .. figure:: slabs.png
    :scale: 15%
@@ -138,6 +138,8 @@ The regular Python modules `numpy.fft`, `scipy.fftpack`, [pyfftw]_ all provide r
 
 
 .. code-block:: python
+
+    from pyfftw import fft, ifft, rfft2, irfft2, empty
 
     # Preallocated work array for MPI
     U_mpi = empty((num_processes, Np, Np, Nf), 
@@ -163,18 +165,20 @@ The regular Python modules `numpy.fft`, `scipy.fftpack`, [pyfftw]_ all provide r
         return u
 
 
-Note that merely one single work array needs to be pre-allocated for the collective call to `Alltoall`. The `pyfftw` wrapping of the `libFFTW` library allocates internally work arrays for both input and output arrays, and the pointers `Uc_hatT` and `Uc_hat` above are simply references to this internal storage. 
+Note that merely one single work array needs to be pre-allocated for the collective call to `Alltoall`. The `pyFFTW` wrapping of the `libFFTW` library allocates internally work arrays for both input and output arrays, and the pointers `Uc_hatT` and `Uc_hat` above are simply references to this internal storage. 
 
 For short of space the implementation for the *pencil* decomposition is not shown here, but it requires about twice the amount of code since the mesh needs to be transformed and distributed twice (along two indices).
 
-Vectorization and numpy ufuncs
+Vectorization and NumPy ufuncs
 ==============================
 
-Besides the FFTs, the major computational cost of the pseudospectral solver lies in element-wise multiplications, divisions, subtractions and additions that are required to assemble the right hand side of Eq (:ref:`eq:NSfinal`). For efficiency it is imperative that the numpy code is vectorized, thus avoiding for-loops that are very expensive in Python. When properly vectorized the element-wise operations are carried out by numpy universal functions (so called ufuncs), calling compiled C-code on loops over the entire (or parts of) the data structures. When properly set up many arithmetic operations may be performed at near optimal speed, but, unfortunately, complex expressions are known to be rather slow compared to low-level implementations due to multiple calls to the same loop and the creation of temporary arrays. The [numexpr]_ module has actually been created with the specific goal of speeding up such element-wise complex expressions. Besides `numexpr`, the most common ways of speeding up pure Python code is through [cython]_, [numba]_ or [weave]_.
+Besides the FFTs, the major computational cost of the pseudospectral solver lies in element-wise multiplications, divisions, subtractions and additions that are required to assemble the right hand side of Eq (:ref:`eq:NSfinal`). For efficiency it is imperative that the NumPy code is vectorized, thus avoiding for-loops that are very expensive in Python. When properly vectorized the element-wise operations are carried out by NumPy universal functions (so called ufuncs), calling compiled C-code on loops over the entire (or parts of) the data structures. When properly set up many arithmetic operations may be performed at near optimal speed, but, unfortunately, complex expressions are known to be rather slow compared to low-level implementations due to multiple calls to the same loop and the creation of temporary arrays. The [numexpr]_ module has actually been created with the specific goal of speeding up such element-wise complex expressions. Besides `numexpr`, the most common ways of speeding up pure Python code is through [Cython]_, [Numba]_ or [weave]_.
 
 Two bottlenecks appear in the pure Python implementation of the pseudo spectral solver. The first is the *for* loops seen in the *fftn_mpi/ifftn_mpi* functions previously described. The second is the cross product that needs to be computed in Eq. (:ref:`eq:NSfinal`). A straight forward vectorized implementation and usage of the cross product is 
 
 .. code-block:: python
+
+    import numpy
 
     def cross(c, a, b):
         """Regular c = a x b"""
@@ -186,12 +190,12 @@ Two bottlenecks appear in the pure Python implementation of the pseudo spectral 
 
     # Usage
     N = 200
-    U = zeros((3, N, N, N))
-    W = zeros((3, N, N, N))
-    F = zeros((3, N, N, N))
+    U = numpy.zeros((3, N, N, N))
+    W = numpy.zeros((3, N, N, N))
+    F = numpyzeros((3, N, N, N))
     F = cross(U, W, F)
 
-The cross product actually makes 6 calls to the multiply ufunc, 3 to subtract, and also requires temporary arrays for storage. Each ufunc loops over the entire computational mesh and as such it is not unexpected that the computation of the cross product becomes a bottleneck. The built-in `numpy.cross` (shown in the cross code listing) uses ufuncs as well and runs approximately as fast as the code shown. Moving this routine to numba or cython we can hardcode the loop over the mesh just once and speed-up is approximately a factor 5. A numba implementation is shown below
+The cross product actually makes 6 calls to the multiply ufunc, 3 to subtract, and also requires temporary arrays for storage. Each ufunc loops over the entire computational mesh and as such it is not unexpected that the computation of the cross product becomes a bottleneck. The built-in `numpy.cross` (shown in the cross code listing) uses ufuncs as well and runs approximately as fast as the code shown. Moving this routine to Numba or Cython we can hardcode the loop over the mesh just once and speed-up is approximately a factor of 5. A Numba implementation is shown below
 
 .. code-block:: python
 
@@ -214,7 +218,7 @@ The cross product actually makes 6 calls to the multiply ufunc, 3 to subtract, a
                     c[2,i,j,k] = a0*b1 - a1*b0
         return c
 
-The numba code works out of the box and is compiled on the fly by a just-in-time compiler. A cython version looks very similar, but requires compilation into a module that is subsequently imported back into python. The cython code below uses fused types to generate code for single and double precision simultaneously.
+The Numba code works out of the box and is compiled on the fly by a just-in-time compiler. A Cython version looks very similar, but requires compilation into a module that is subsequently imported back into python. The Cython code below uses fused types to generate code for single and double precision simultaneously.
 
 
 .. code-block:: python
@@ -243,7 +247,7 @@ The numba code works out of the box and is compiled on the fly by a just-in-time
                     c[2,i,j,k] = a0*b1 - a1*b0
         return c
 
-In addition, both *scipy.weave* and *numexpr* have been tested as well, but they have been found to be slower than numba and cython.
+In addition, both *scipy.weave* and *numexpr* have been tested as well, but they have been found to be slower than Numba and Cython.
 
 Dynamic loading of Python on supercomputers
 ===========================================
@@ -254,7 +258,7 @@ The dynamic loading of Python on supercomputers can be very slow due to bottlene
 Parallel scaling on Blue Gene/P
 -------------------------------
 
-In this section we compare the performance of the solver with a pure C++ implementation on Shaheen II, a Blue Gene/P supercomputer at the KAUST supercomputing Laboratory. The C++ solver we are comparing with has been implemented using the Python solver as prototype and the only real difference is that the C++ solver is using the 3D FFT routines from [FFTW]_ with MPI included.
+In this section we compare the performance of the solver with a pure C++ implementation on Shaheen I, a Blue Gene/P supercomputer at the KAUST supercomputing Laboratory. The C++ solver we are comparing with has been implemented using the Python solver as prototype and the only real difference is that the C++ solver is using the 3D FFT routines from [FFTW]_ with MPI included.
 
 The solver is run for a Taylor Green test case initialized as 
 
@@ -281,14 +285,16 @@ with a Reynolds number of 1600 and a time step of 0.001. At first the implementa
 
    Strong scaling of various versions of the DNS solver. The C++ solver uses slab decomposition and MPI communication is performed through the FFTW library. The top figure is for a pure Python solver, whereas the lower figure has some key routines optimized by Cython. :label:`strong`
 
-Next the weak scaling of the solver is tested by running the case for increasing number of processors, keeping the number of mesh nodes per CPU constant. Since the FFT is known to scale with problem size as :math:`N \log_2 N`, and  assuming further that FFT is the major cost, the ideal weak scaling computing time should then scale proportional to :math:`\log_2 N`. The upper panel of Figure :ref:`weak`, shows the scaling of the pure Python solver, both with *slab* and *pencil* decomposition, compared also with the C++ solver. The pure Python solver is evidently 30-40 % slower, but scaling is good - indicating that the MPI communications are performing at the level with C++. The lower panel of Figure :ref:`weak` shows the performance of the solver when certain routines, most notably the cross product and the for-loop in the routines *fftn_mpi/ifftn_mpi*, have been computed with cython. The results show that the Python solver now operates very close to the speed of pure C++, and the scaling is equally good. Note that the largest simulations in Figure :ref:`weak` are using a computational box of size :math:`2048^3` - approximately 8 billion mesh nodes.
+Next the weak scaling of the solver is tested by running the case for increasing number of processors, keeping the number of mesh nodes per CPU constant. Since the FFT is known to scale with problem size as :math:`N \log_2 N`, and  assuming further that FFT is the major cost, the ideal weak scaling computing time should then scale proportional to :math:`\log_2 N`. The upper panel of Figure :ref:`weak`, shows the scaling of the pure Python solver, both with *slab* and *pencil* decomposition, compared also with the C++ solver. The *slab* solver uses mesh sizes of :math:`N=(2, 16, 128, 1024)`, whereas the *pencil* solver uses mesh sizes of :math:`N=(4, 32, 256, 2048)`. The pure Python solver is evidently 30-40 % slower, but scaling is good - indicating that the MPI communications are performing at the level with C++. The lower panel of Figure :ref:`weak` shows the performance of the solver when certain routines, most notably the cross product and the for-loop in the routines *fftn_mpi/ifftn_mpi*, have been computed with Cython. The results show that the Python solver now operates very close to the speed of pure C++, and the scaling is equally good. Note that the largest simulations in Figure :ref:`weak` are using a computational box of size :math:`2048^3` - approximately 8 billion mesh nodes.
 
-Strong scaling is tested for a computational box of size :math:`512^3`, for a various number of processors larger than 64. For *slab* decomposition the maximum number of CPUs is now 512, whereas for *pencil* :math:`512^2` CPUs can be used. The top panel of Figure :ref:`strong` shows the performance of the pure Python solvers. Evidently, the performance is degrading when the number of mesh nodes per CPU becomes lower and the number of processors increases. The main reason for this poor performance can be found in the implementation of the 3D FFT, where there is a for-loop over the number of processors. When this for-loop (as well as a few other routines) is moved to cython, we observe very good strong scaling, even better than the C++ implementation that is using MPI directly from within FFTW.
+Strong scaling is tested for a computational box of size :math:`512^3`, for a various number of processors larger than 64. For *slab* decomposition the maximum number of CPUs is now 512, whereas for *pencil* :math:`512^2` CPUs can be used. The top panel of Figure :ref:`strong` shows the performance of the pure Python solvers. Evidently, the performance is degrading when the number of mesh nodes per CPU becomes lower and the number of processors increases. The main reason for this poor performance can be found in the implementation of the 3D FFT, where there is a for-loop over the number of processors. When this for-loop (as well as a few other routines) is moved to Cython, we observe very good strong scaling, even better than the C++ implementation that is using MPI directly from within FFTW.
+
+To further elaborate on the performance of the code, we note that the open source pseudospectral C++ solver [Tarang]_ has been benchmarked on exactly the same computer (Shaheen) and as such opens up for direct comparison. In Figure 2 of [Tarang]_ it is shown that a computational box of size :math:`1024^3` is running with 512 CPUs at approximately 50 seconds per time step. In the lower panel of Figure :ref:`weak`, we see that the current optimized solver is running the same box (:math:`1024^3`) with twice as many CPUs (1024) at approximately 20 seconds per time step. Assuming perfect strong scaling this would correspond to 40 seconds per time step using half as many CPUs, which is 20 % faster than Tarang.  
 
 Conclusions
 -----------
 
-It is possible to write a very good solver for direct numerical simulations of turbulent flows directly in Python, with nothing more than standard modules like numpy, scipy and mpi4py. It is also possible to get a fully competitive solver, that runs with the speed of C on thousands of processors with billions of unknowns, but then it is necessary to move a few computationally heavy routines from numpy's ufuncs to Cython or numba.
+In this paper we show that it is possible to write a very good solver for direct numerical simulations of turbulent flows directly in Python, with nothing more than standard modules like NumPy, SciPy and MPI for Python (mpi4py). We also show that it is also possible to get a fully competitive solver, that runs with the speed of C on thousands of processors with billions of unknowns, but then it is necessary to move a few computationally heavy routines from NumPy's ufuncs to Cython or Numba. The current paper discusses only the triply periodic domain, suitable for studying isotropic turbulence. However, the use of Python/Cython for studying turbulence is not limited to only this configuration and work is currently in progress to develop efficient Python/Cython solvers for flows with one or two inhomogeneous direction.
 
 
 Acknowledgements
@@ -311,15 +317,19 @@ This work is supported by the 4DSpace Strategic Research Initiative at the Unive
 
 References
 ----------
-.. [Lee] Lee, Myoungkyu and Malaya, Nicholas and Moser, Robert D. *Petascale Direct Numerical Simulation of Turbulent Channel Flow on Up to 786K Cores* Proceedings of the International Conference on High Performance Computing, Networking, Storage and Analysis, (2013)
+.. [Lee] M. Lee, N. Malaya and R. D. Moser *Petascale Direct Numerical Simulation of Turbulent Channel Flow on Up to 786K Cores* Proceedings of the International Conference on High Performance Computing, Networking, Storage and Analysis, (2013)
 
 .. [deBruynKops] S. de Bruyn Kops, *Classical scaling and intermittency in strongly stratified Boussinesq turbulence*, J. Fluid Mechanics vol 775, p 436-463, (2015)
 
-.. [canuto1988] Canuto, C. and Hussaini, M. Y. and Quarteroni, A. and Zang, T. A. *Spectral Methods in Fluid Dynamics*, Springer-Verlag New York-Heidelberg-Berlin, 1988.
+.. [canuto1988] C. Canuto, M. Y. Hussaini,  A. Quarteroni, and T. A. Zang *Spectral Methods in Fluid Dynamics*, Springer-Verlag New York-Heidelberg-Berlin, 1988.
+
+.. [Runge-Kutta] C. W. Gear, *Numerical Initial Value Problems in Ordinary Differential Equations* (Englewood Cliffs, NJ: Prentice-Hall), Chapter 2. 1971.
 
 .. [CFD] The annual International Workshop on High-Order CFD Methods https://www.grc.nasa.gov/hiocfd/. Reference data: https://www.grc.nasa.gov/wp-content/uploads/sites/22/C3.3_datafiles.zip
 
-.. [GPAW] Jussi Enkovaara and Nichols A. Romero and Sameer Shende and Jens J. Mortensen, *GPAW - massively parallel electronic structure calculations with Python-based software*, Procedia Computer Science, 2011.
+.. [GPAW] J. Enkovaara, N. A. Romero, Sameer Shende and J. J. Mortensen, *GPAW - massively parallel electronic structure calculations with Python-based software*, Procedia Computer Science, 2011.
+
+.. [Tarang] M. Verma, A. Chatterjee, K. Reddy, R. Yadav, S. PAUL, M. Chandra and R. Samtaney *Benchmarking and scaling studies of pseudospectral code Tarang for turbulence simulations*, Pramana Journal of Physics, (81), (4) p. 617-629, (2013)
 
 .. [Enkovaara] https://gitorious.org/scalable-python
 
@@ -331,9 +341,9 @@ References
 
 .. [numexpr] https://github.com/pydata/numexpr
 
-.. [cython] http://cython.org/
+.. [Cython] http://cython.org/
 
-.. [numba] http://numba.pydata.org/
+.. [Numba] http://numba.pydata.org/
 
 .. [weave] https://github.com/scipy/weave
 
