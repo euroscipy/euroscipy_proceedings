@@ -13,10 +13,10 @@ Garbage Collection in JyNI – How to bridge Mark/Sweep and Reference Counting G
    Python code to Java bytecode and thus letting Java's JIT optimize it – an
    approach that enables Python code to call Java functions or to subclass
    Java classes. It enables Python code to leverage Java's
-   multithreading features and utilizes Java's built-in garbage collection.
+   multithreading features and utilizes Java's built-in garbage collection (GC).
    However, it currently does not support CPython's C-API and thus does not
    support native extensions like NumPy and SciPy. Since most scientific code
-   depends on such extensions, it is usually not runnable with Jython.
+   depends on such extensions, it is not runnable with Jython.
 
    Jython Native Interface (JyNI) is a compatibility layer that aims to provide
    CPython's native C extension API on top of Jython. JyNI is implemented using
@@ -26,22 +26,21 @@ Garbage Collection in JyNI – How to bridge Mark/Sweep and Reference Counting G
 
    For various reasons, implementing CPython's C-API is not an easy task.
    Just to name a few issues – it offers macros to access CPython internals,
-   uses a global interpreter lock in contrast to Jython and lets extensions
-   perform reference-counting-based garbage collection, which is incompatible
+   uses a global interpreter lock (GIL) in contrast to Jython and lets extensions
+   perform reference-counting-based GC, which is incompatible
    with Java's GC-approach. For each of the arising issues, JyNI proposes a
    feasible solution; most remarkably it emulates CPython's reference-counting
-   garbage collection on top of Java's mark-and-sweep-based approach (taking
+   GC on top of Java's mark-and-sweep-based approach (taking
    care of adjacent concepts like finalizers and weak references and their
    interference with Jython). (Note that there are vague considerations around
    to switch to mark-and-sweep-based GC in a future CPython too; cf. [PY3_PL15]_. So this
    algorithm might one day be even relevant to CPython in terms of running
    legacy modules.)
 
-   This paper's main purpose is to describe the algorithm JyNI uses to support
-   garbage collection in detail, also covering adjacent concepts like handling
-   weak references and testing native memory management. Beside this we give a
-   comprehension of JyNI's general design and briefly describe how it deals with
-   CPython's Global Interpreter Lock (GIL). Finally we provide runnable code
+   This works's main purpose is to describe the algorithm JyNI uses to support
+   GC in detail, also covering weak references and testing native memory management.
+   Beside this we give a comprehension of JyNI's general design and briefly describe
+   how it deals with CPython's GIL. Finally we provide runnable code
    examples, e.g. a demonstration of JyNI's upcoming support for the ctypes extension.
 
 
@@ -67,9 +66,9 @@ While Jython already enables Python code to access Java frameworks and also nati
 
 [JyNI]_ (Jython Native Interface) is going to improve this situation. It is a compatibility layer that implements CPython's C-API on top of JNI and Jython. This way it enables Jython to load native CPython extensions and use them the same way as one would do in CPython. To leverage this functionality, no modification to Python code or C extension source code is required – one just needs to add ``JyNI.jar`` to Jython's classpath (along with its binary libraries). That means JyNI is binary compatible with existing builds of CPython extensions.
  
-Developing JyNI is no trivial task, neither is it completed yet. Main reason for this is Python's rather complex C-API that allows to access internal structures, methods and memory positions directly or via C preprocessor macros (in some sense CPython simply exposes its own internal API via a set of public headers). Existing extensions frequently *do* make use of this, so it is not a purely academical concern. Concepts like Python's global interpreter lock (GIL), exception handling and the buffer protocol are further aspects that complicate writing JyNI. [PMB_PL15]_ mentions the same issues from PyPy's perspective and confirms the difficulty of providing CPython's native API.
+Developing JyNI is no trivial task, neither is it completed yet. Main reason for this is Python's rather complex C-API that allows to access internal structures, methods and memory positions directly or via C preprocessor macros (in some sense CPython simply exposes its own internal API via a set of public headers). Existing extensions frequently *do* make use of this, so it is not a purely academical concern. Concepts like Python's global interpreter lock (GIL), exception handling and the buffer protocol are further aspects that complicate writing JyNI. [PMB_PL15]_ mentions the same issues from [PyPy]_'s perspective and confirms the difficulty of providing CPython's native API.
 
-By far the most complex issue overall – and main focus of this paper – is garbage collection. Unlike JNI, CPython offers C-level access to its garbage collector (GC) and extensions can use it to manage their memory. Note that in contrast to Java's mark-and-sweep-based GC, CPython's GC uses reference-counting and performs reference-cycle-search. Adopting the original CPython-GC for native extensions is no feasible solution in JyNI-context as pure Java-objects can become part of reference-cycles that would be untraceable and cause immortal trash. Section :ref:`why-is-garbage-collection-an-issue` describes this issue in detail.
+By far the most complex issue overall – and main focus of this work – is garbage collection. Unlike JNI, CPython offers C-level access to its garbage collector (GC) and extensions can use it to manage their memory. Note that in contrast to Java's mark-and-sweep-based GC, CPython's GC uses reference-counting and performs reference-cycle-search. Adopting the original CPython-GC for native extensions is no feasible solution in JyNI-context as pure Java-objects can become part of reference-cycles that would be untraceable and cause immortal trash. Section :ref:`why-is-garbage-collection-an-issue` describes this issue in detail.
 
 .. Further we plan to have a GIL-free mode. Note that CPython mainly needs the GIL, because reference 
    counters are not atomic. Our GIL-free mode would completely substitutes extensions' reference 
@@ -78,7 +77,8 @@ By far the most complex issue overall – and main focus of this paper – is ga
    side, so developers must consider for each extension individually whether GIL-free mode is feasible 
    and valuable (JyNI will presumably allow to set this mode per extension).
 
-While there are conceptual solutions for all mentioned issues, JyNI does not yet implement the complete C-API and currently just works as a proof of concept. However, we are working to provide sufficient C-API to fully support ctypes (many Python libraries, e.g. for graphics (PyOpenGL) and 3D-plotting etc. have only a single native dependency on ctypes), NumPy, SciPy (multiarray libraries with blas- and lapack-bindings; frequently used in scientific code and machine learning frameworks) and other important extensions as soon as possible.
+While there are conceptual solutions for all mentioned issues, JyNI does not yet implement the complete C-API and currently just works as a proof of concept. It can already load the ctypes extension and perform some basic tasks with it; most tests are still failing though. We are working to complete ctypes support as soon as possible, since many Python libraries, e.g. for graphics (PyOpenGL) and 3D-plotting etc., have only a single native dependency on it.
+NumPy and SciPy are other important extensions we plan to support with priority, but this goal is still in unknown distance (cf. section :ref:`roadmap`).
 
 Overview
 ........
@@ -96,14 +96,20 @@ There have been similar efforts in other contexts.
   these approaches aims for integration with Jython. In contrast to that, JyNI is entirely based on 
   Jython and its runtime.
 
-* Ironclad ([ICLD]_) is a JyNI-equivalent approach for IronPython.
+* Ironclad ([ICLD]_) is a JyNI-equivalent approach for IronPython ([IRPY]_).
 
 * PyMetabiosis ([PMB]_) provides C extension support in PyPy to some extent by embedding the CPython 
   interpreter. So its approach is comparable to [JEP]_ and [JPY]_.
 
-* [CPYEXT]_ refers to PyPy's in-house (incomplete) C extension API support.
+* [CPYEXT]_ refers to [PyPy]_'s in-house (incomplete) C extension API support. The approach differs from
+  [JyNI]_ by requiring recompilation and sometimes adjustments of the extensions using PyPy-specific
+  headers [#noteCPYEXT]_.
 
-None of the named approaches reached a sufficient level of functionality/compatibility, at least not for current language versions (some of them used to work to some extend, but became unmaintained). In the Python ecosystem the C extension API has been an ongoing issue since its beginning. PyPy famously has been encouraging developers to favor CFFI over C extension API, as it is the only existing approach that has been designed to be well portable to other Python implementations. However, even if this effort would work out, there would be so many legacy extensions around that a serious move to CFFI won't be done in foreseeable future.
+.. [#noteCPYEXT] This yields advantages and disadvantages compared to JyNI; discussing these is out of scope for this work.
+
+None of the named approaches reached a sufficient level of functionality/compatibility, at least not for current language versions (some of them used to work to some extend, but became unmaintained). In the Python ecosystem the C extension API has been an ongoing issue since its beginning. PyPy famously has been encouraging developers to favor CFFI over C extension API, as it is the only existing approach that has been designed to be well portable to other Python implementations. However, even if this effort would work out, there would be so many legacy extensions around that a serious move to CFFI won't be done in foreseeable future [#noteCFFI]_.
+
+.. [#noteCFFI] Our plan is to support the CPython-variant of CFFI in JyNI as an alternative to the ideal approach of a direct port. Creating a true Jython version of CFFI would be a distinct project and was partly done based on [JNR]_/JFFI.
 
 For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PL15]_). Background here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Current reference counters are not atomic and switching to atomic reference counters yields insufficient performance.
 In context of a mark-and-sweep-based garbage collection in a future CPython the JyNI GC-approach could be potentially adopted to support legacy extensions and provide a smooth migration path.
@@ -123,20 +129,20 @@ different techniques, depending on the PyObject's implementation details.
 
 The basic approach is to back the C-API of PyObject by a Java-PyObject via JNI.
 This would avoid data synchronization issues, but is only feasible if there are matching counterparts of the PyObject type in Jython and CPython (fig. :ref:`modi`, left).
-For CPython-specific types we can do it the other way round  (fig. :ref:`modi`, center). Another problem is that CPython API defines macros in pulic headers that access PyObjects' internal data. To deal with these, we sometimes have to mirror the object (fig. :ref:`modi`, right).
-This might involve data synchronization issues, but luckily macors mostly exist for immutable types, so initial synchronization is sufficient. [JyNI_EP13]_ describes this in more detail.
+For CPython-specific types we can do it the other way round  (fig. :ref:`modi`, center). Another problem is that CPython API defines macros in public headers that access PyObjects' internal data. To deal with these, we sometimes have to mirror the object (fig. :ref:`modi`, right).
+This might involve data synchronization issues, but luckily macros mostly exist for immutable types, so initial synchronization is sufficient. [JyNI_EP13]_ describes this in more detail.
 
 
-Global interpreter lock (GIL)
-.............................
+Global interpreter lock
+.......................
 
-As mentioned before, CPython needs a global interpreter lock (GIL), because its reference-counting-based garbage collection uses non-atomic reference counters. That means that CPython is entirely single-threaded in its usual operation mode.
+As mentioned before, CPython needs a GIL, because its reference-counting-based garbage collection uses non-atomic reference counters. That means that CPython is entirely single-threaded in its usual operation mode.
 A native extension can explicitly release the GIL by inserting the macros ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` to deal with multiple threads and related things like input events (e.g. Tkinter needs this). In the potentially multithreaded code between these macros it is the extension's own responsibility to refrain from non-thread-safe operations like incrementing or decrementing reference counters. This can be error-prone and challenging as the extension must ensure this also for eventually called methods.
 
-Jython on the other hand has no GIL and is fully multithreaded based on Java's threading architecture. This does not mean multithreading would be trivial – one still has to care for concurrency issues and thread synchronization, but the whole machinary Java came up with for this topic is available to deal with it.
+Jython on the other hand has no GIL and is fully multithreaded based on Java's threading architecture. This does not mean multithreading would be trivial – one still has to care for concurrency issues and thread synchronization, but the whole machinery Java came up with for this topic is available to deal with it.
 
 From JyNI's perspective this is a difficult situation. On the one hand we want to avoid regressions on Jython-side, especially regarding an important feature like GIL-freeness. On the other hand, native C extensions might rely on CPython's GIL.
-So as a compromise JyNI provides a GIL for native side that is acquired by any thread that enters native code. On returning to Java code, i.e. finnishing the native method call, the JyNI-GIL is released. Note that re-entering Java-side by doing a Java call from a native method would *not* release the GIL. In case it is desired to release the GIL for such a re-entering of Java-side or in some other situation, JyNI also supports ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` from CPython. This architecture implies that multiple threads can exist on Java-side, while only one thread can exist on native side at the same time (unless allow-threads macros are used). When combining multithreaded Jython code with JyNI it is the developer's responsibility to avoid issues that might arise from this design.
+So as a compromise JyNI provides a GIL for native side that is acquired by any thread that enters native code. On returning to Java code, i.e. finishing the native method call, the JyNI-GIL is released. Note that re-entering Java-side by doing a Java call from a native method would *not* release the GIL. In case it is desired to release the GIL for such a re-entering of Java-side or in some other situation, JyNI also supports ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` from CPython. This architecture implies that multiple threads can exist on Java-side, while only one thread can exist on native side at the same time (unless allow-threads macros are used). When combining multithreaded Jython code with JyNI it is the developer's responsibility to avoid issues that might arise from this design.
 
 
 Garbage Collection
@@ -189,7 +195,7 @@ a native peer is backed by a Java-object (see figure :ref:`nnJ0`).
 To prevent Java-GC from destroying the Java-backend while it is in use, JNI offers
 the concept of global references – JNI-``GlobalRef``-objects. However, native code
 must explicitly create and release such global references. During the lifetime of a
-native global reference the Java-side referent is immortable. Now consider the referent
+native global reference the Java-side referent is immortal. Now consider the referent
 would hold further references to other Java-objects. The reference chain could at
 some point include an object that is a peer like shown in figure :ref:`oJNImm`. This peer
 would be keeping alive a native object by holding a reference-increment on it. If
@@ -276,7 +282,7 @@ PyObjects and update the mirrored graph on Java-side.
    recreated graph :label:`recreated`
 
 While we can easily recreate the GC-heads, there might be PyObjects that
-were weakly reachable from native side and were sweeped by Java-GC. In order
+were weakly reachable from native side and were swept by Java-GC. In order
 to restore such objects, we must perform a resurrection
 (c.f. figure :ref:`resurrected`).
 
@@ -528,7 +534,6 @@ Tkinter-program from [JyNI_EP13]_:
     #Include native Tkinter:
     sys.path.append('/usr/lib/python2.7/lib-dynload')
     sys.path.append('/usr/lib/python2.7/lib-tk')
-
     from Tkinter import *
 
     root = Tk()
@@ -571,16 +576,6 @@ To translate the program to Java, we must provide type-information via interface
     import org.python.core.Py;
     import org.python.core.imp;
 
-    public static interface Tk {
-        public void mainloop();
-        public void destroy();
-    }
-
-    public static interface StringVar {
-        public String get();
-        public void set(String text);
-    }
-
     public static interface Label {
         public void pack();
     }
@@ -591,6 +586,16 @@ To translate the program to Java, we must provide type-information via interface
 
     public static interface Entry {
         public void pack();
+    }
+
+    public static interface Tk {
+        public void mainloop();
+        public void destroy();
+    }
+
+    public static interface StringVar {
+        public String get();
+        public void set(String text);
     }
 
 We define the methods backing the button-actions as static methods with a special Python-compliant signature:
@@ -652,7 +657,6 @@ On top of this a rather Java-like main-method can be implemented. Note that cons
                 Py.newJavaFunc(TestTk.class,
                         "printTimeStamp"));
         buttonTimestamp.pack();
-        
         Button buttonQuit = tkModule.newJ(Button.class,
                 kw_txt_cmd, root, "Quit",
                 Py.newJavaFunc(TestTk.class,
@@ -672,7 +676,6 @@ As of version alpha.3 JyNI has experimental support for ctypes. The following co
 
   import sys
   sys.path.append('/usr/lib/python2.7/lib-dynload')
-  sys.path.insert(0, '../../Lib')
   
   import ctypes
   from java.lang import System
@@ -688,7 +691,7 @@ The output is as follows::
   <_FuncPtr object at 0x7f897c7165d8>
   Timestamp: 1446170809
 
-We briefly discuss the import section. Note that Jython already features an incomplete ctypes-module based on JFFI (which is part of [JNR]_). With an unmodified ``sys.path``-variable the output would look as follows::
+Note that Jython already features an incomplete ctypes-module based on JFFI (which is part of [JNR]_). Without JyNI the output would look as follows::
 
   <ctypes.CDLL instance at 0x2>
   <ctypes._Function object at 0x3>
@@ -699,76 +702,73 @@ We briefly discuss the import section. Note that Jython already features an inco
   NotImplementedError: variadic functions not
   supported yet;  specify a parameter list
 
-In ``sys.path.insert(0, '../../Lib')`` we insert a path to a ctypes-implementation bundled with JyNI. We insert it at the beginning of ``sys.path`` such that it overrides Jython's ctypes implementation. The ctypes implementation bundled with JyNI is almost identical to CPython's original ctypes and slight changes were only applied in ``__init__.py``, i.e. only in Python code. For the C-part JyNI can utilize the compiled ``_ctypes.so`` file bundled with CPython (remember that JyNI is binary compatible to such libraries). In our example we make CPython's C extension folder available by appending its usual posix location ``/usr/lib/python2.7/lib-dynload`` to ``sys.path``.
+JyNI bundles a custom version of ``ctypes/__init__.py`` and overrides the original one at import time. For the C-part JyNI can utilize the compiled ``_ctypes.so`` file bundled with CPython (remember that JyNI is binary compatible to such libraries). In our example we make CPython's C extension folder available by appending its usual posix location ``/usr/lib/python2.7/lib-dynload`` to ``sys.path``.
 
 In ``ctypes/__init__.py`` we had to fix posix-recognition; it was based on ``os.name``, which always reads “java” in Jython, breaking the original logic.
-We also adjusted some classes to old-style, because JyNI currently does not support new-style classes. Once we have added this support in version alpha.4 (cf. section :ref:`new-style-classes`) we will revert these changes.
+We also adjusted some classes to old-style, because JyNI currently does not support new-style classes. Once we have added this support in version alpha.4 (cf. section :ref:`roadmap`) we will revert these changes.
 
 
 Roadmap
 -------
 
-The main goal of JyNI is compatibility with NumPy and SciPy, since these extensions are of most scientific importance.
-Since NumPy has dependencies on several other extensions, we will have to ensure compatibility with these extensions first.
-Among these are ctypes and datetime – see previous section for a ctypes example and [JyNI_EP13]_ for a datetime example.
+While NumPy- and SciPy-support is the driving motivation for the JyNI-project (since these extensions are of most scientific importance),
+it is very hard to assess how much work will be needed to actually reach this goal. Determining even the feasibility of full NumPy support
+beforehand would be a project for itself – maybe even more complicated than actually developing the support –, so we focus on taking one  hurdle by another, converging to full NumPy support as far as possible.
+Major challenges for NumPy-support are dependencies on several other extensions, so we will have to ensure compatibility with these
+first. E.g. NumPy depends on ctypes and datetime (i.e. on datetime's C-API, rendering the Jython-variant of datetime as insufficient) – see previous section for a ctypes example and [JyNI_EP13]_ for a datetime example.
 
+Another important goal is a better cross-platform support. Currently JyNI works (i.e. is tested) with Linux and OSX and hypothetically (i.e. untested) with other posix systems.
 
-Cross-Platform support
-......................
-
-We will address cross-platform support when JyNI has reached a sufficiently stable state on our development platform.
-At least we require rough solutions for the remaining gaps. Ideally, we focus
-on cross-platform support once JyNI is capable of running NumPy.
-
-
-New-style classes
-.................
-
-Currently JyNI does not allow to hand instances of new-style classes to native code. This support is planned to be the main feature of JyNI 2.7-alpha.4.
+The planned main feature for the next release (alpha.4) is support for new-style classes
+(currently JyNI does not allow to hand instances of new-style classes to native code).
 
 
 References
 ----------
 
-.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2015-10-30
+.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2015-12-20
 
-.. [JyNI_EP13] Stefan Richthofer, JyNI - Using native CPython-Extensions in Jython, Proceedings of the 6th European Conference on Python in Science (EuroSciPy 2013), http://arxiv.org/abs/1404.6390, 2014-05-01, Web. 2015-10-30
+.. [JyNI_EP13] Stefan Richthofer, JyNI - Using native CPython-Extensions in Jython, Proceedings of the 6th European Conference on Python in Science (EuroSciPy 2013), http://arxiv.org/abs/1404.6390, 2014-05-01, Web. 2015-12-20
 
-.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, 2015-09-11, Web. 2015-10-30
+.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, 2015-09-11, Web. 2015-12-20
 
-.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 2015-10-30
+.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 2015-12-20
 
-.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing, et al., Cython, http://cython.org, 2015-10-10, Web. 2015-11-12
+.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing et al., Cython, http://cython.org, 2015-10-10, Web. 2015-12-20
 
-.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2015-11-12
+.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2015-12-20
 
-.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2015-11-12
+.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2015-12-20
 
-.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, 2015; https://github.com/jnr, Web. 2015-11-12
+.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, https://github.com/jnr, 2015, Web. 2015-12-20
 
-.. [JNA] Todd Fast, Timothy Wall, Liang Chen, et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2015-11-12
+.. [JNA] Todd Fast, Timothy Wall, Liang Chen et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2015-12-20
 
-.. [SWIG] Dave Beazley, William Fulton, et al., SWIG, http://www.swig.org, Web. 2015-11-12
+.. [SWIG] Dave Beazley, William Fulton et al., SWIG, http://www.swig.org, Web. 2015-12-20
 
-.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2015-11-12
+.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2015-12-20
 
-.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2015-11-12
+.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2015-12-20
 
-.. [SIP] Phil Thompson, Reverbank Computing, SIP, 2015; https://riverbankcomputing.com/software/sip/intro, Web. 2015-11-12
+.. [SIP] Phil Thompson, Reverbank Computing, SIP https://riverbankcomputing.com/software/sip/intro, 2015, Web. 2015-12-20
 
-.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2015-10-30
+.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2015-12-20
 
-.. [PMB_PL15] Romain Guillebert (write-up by Jake Edge), PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2015-10-30
+.. [PMB_PL15] Romain Guillebert (write-up by Jake Edge), PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2015-12-20
 
-.. [PY3_PL15] Larry Hastings (write-up by Jake Edge), Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2015-10-30
+.. [PyPy] Armin Rigo, Samuele Pedroni, Christian Tismer, Holger Krekel et al., PyPy, http://pypy.org, 2015-06-01, Web. 2015-12-20
 
-.. [ICLD] IronPython team, Ironclad, https://github.com/IronLanguages/ironclad, 2015-01-02, Web. 2015-10-30
+.. [PY3_PL15] Larry Hastings (write-up by Jake Edge), Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2015-12-20
 
-.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 2015-10-30
+.. [ICLD] IronPython team, Ironclad, https://github.com/IronLanguages/ironclad, 2015-01-02, Web. 2015-12-20
 
-.. [JEP] Mike Johnson/Jep Team, Jep - Java Embedded Python, https://github.com/mrj0/jep, 2015-09-13, Web. 2015-10-30
+.. [IRPY] Jim Hugunin, Dino Viehland, Jeff Hardy, Microsoft, IronPython – the Python programming language for the .NET Framework, http://ironpython.net, 2014-12-06, Web. 2015-12-20
 
-.. [JPY] Brockmann Consult GmbH, jpy, https://github.com/bcdev/jpy, 2015-10-30, Web. 2015-09-16
+.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 2015-12-20
 
-.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 1 Oct. 2002, Web. 2015-10-30
+.. [JEP] Mike Johnson/Jep Team, Jep - Java Embedded Python, https://github.com/mrj0/jep, 2015-09-13, Web. 2015-12-20
+
+.. [JPY] Brockmann Consult GmbH, jpy, https://github.com/bcdev/jpy, 2015-10-30, Web. 2015-12-20
+
+.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 2002-10-01, Web. 2015-12-20
 
