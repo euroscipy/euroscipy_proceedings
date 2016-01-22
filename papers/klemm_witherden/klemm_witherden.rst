@@ -27,7 +27,7 @@ Using the pyMIC Offload Module in PyFR
 
     PyFR is an open-source high-order accurate computational fluid dynamics solver for unstructured grids.
     It is designed to efficiently solve the compressible Navier-Stokes equations on a range of hardware platforms, including GPUs and CPUs.
-    In this paper we will describe how the pyMIC module was used to enable PyFR to run with near native performance on the Intel Xeon Phi coprocessor.
+    In this paper we will describe how the Python Offload Infrastructure for the Intel Many Integrated Core Architecture (pyMIC) was used to enable PyFR to run with near native performance on the Intel Xeon Phi coprocessor.
     We will introduce the architecture of both pyMIC and PyFR and present a variety of examples showcasing the capabilities of pyMIC.
     Further, we will also compare the contrast pyMIC to other approaches including native execution and OpenCL.
     The process of adding support for pyMIC into PyFR will be described in detail.
@@ -49,10 +49,10 @@ With these add-on packages, Python can draw from a variety of efficient algorith
 
 Heterogeneous architectures emerged as a consequence of the desire to compute at a faster pace to shorten time-to-solution or to tackle bigger problem sizes.
 Accelerators such as GPGPUs or coprocessors like the |Intel(R)| |Xeon Phi(tm)| coprocessor [Inte14]_ are instances of hardware that aim to speed up the floating-point intensive parts of HPC applications.
-A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house decrete extension cards.
+A typical design involves a cluster of host systems with traditional processors (e.g., |Intel(R)| |Xeon(R)| processors) that house discrete extension cards.
 One usage scenario is the so-called `offload model`, in which the host execution transfers data and control over to the coprocessing device to execute specialized, highly parallel kernels.
 
-In this paper, we present how pyMIC [KlEn14]_, a Python module designed to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR [Wit14]_.
+In this paper, we present how the Python Offload Infrastructure for the Intel Many Integrated Core Architecture (pyMIC) (see [KlEn14]_ [pyMIC]_), a Python module designed to support offloading to the Intel Xeon Phi coprocessor, is used in PyFR [Wit14]_.
 PyFR is a software package for solving advection-diffusion problems on streaming architectures.
 It is designed to solve a variety of governing systems on mixed structured grids consisting of different element types.
 Through its execution backends it supports a range of hardware platforms.
@@ -517,17 +517,18 @@ Conclusion and Future Work
 
 In this paper we have introduced the pyMIC offload module for executing kernels on the Intel Xeon Phi coprocessor.
 The architecture of pyMIC has been outlined and several examples have been presented.
-It is shown by utilising pyMIC in combination with MKL how it is possible to obtain a substantial speedup for ``dgemm``.
+It is shown by utilizing pyMIC in combination with MKL how it is possible to obtain a substantial speedup for ``dgemm``.
 We have also described PyFR, an open source framework for solving the compressible Navier-Stokes equations.
 The architecture of PyFR, including the techniques used that allow it to run performantly across a variety of hardware platforms, have also been presented.
-We have shown how using pyMIC it is possible add a backend into PyFR that can target the Intel Xeon Phi.
+We have shown how using pyMIC it is possible add a backend into PyFR that can target the Intel Xeon Phi coprocessor.
 Implementation details have been discussed and benchmarks presented that show a speedup compared with a conventional CPU for a benchmark flow problem.
 
 The roadmap for the pyMIC module contains several extensions that we are planning to develop over the course of the upcoming releases.
 The next release of pyMIC will support Python 3.
 We are also working on extending the synchronization capabilities of pyMIC to
 add support for multiple independent streams.
-A future version of pyMIC will add events that will allow for synchronizing host threads with streams objects as well as the synchonization of multiple streams.
+A future version of pyMIC will add events that will allow for synchronizing host threads with streams objects as well as the synchronization of multiple streams.
+Compression of the data stream to the target device may be of interest to leverage the compute power of the host system to compress the data stream before sending it over the PCIe bus.
 Finally, we are looking into extending pyMIC beyond native kernels on the target devices by providing offload capabilities for generic Python code.
 
 
@@ -577,6 +578,8 @@ References
 .. [McI14] S McIntosh-Smith and T Mattson, *High Performance Parallelism Pearls*: Chapter 22, Morgan Kaufmann, 2014.
 
 .. [NumP15] NumPy Developers. *NumPy*. 2015. http://www.NumPy.org/.
+
+.. [pyMIC] pyMIC Developers. *Intel Python Offload Infrastructure for the Many Integrated Core Architecture*. 2015. https://github.com/01org/pyMIC.
 
 .. [SciP15] SciPy Developers. *SciPy*. 2015. http://www.scipy.org/.
 
