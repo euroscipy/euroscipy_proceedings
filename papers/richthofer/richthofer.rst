@@ -396,7 +396,7 @@ Supporting the ``PyWeakRef`` built-in type in JyNI is not as complicated as
 garbage collection, but still a notably involved task. This is mainly due
 to consistency requirements that are not trivial to fulfill.
 
-- If a Jython weakref-object is handed to native side, this shall be converted
+- If a Jython weakref-object is handed to native side, this shall convert
   to a CPython weakref-object and vice versa.
 - If native code evaluates a native weakref, it shall return exactly the same
   referent-PyObject that would have been created if the Java-pendant (if one exists)
@@ -557,7 +557,6 @@ Tkinter-program from [JyNI_EP13]_:
             command=print_time_stamp).pack()
     Button(root, text="Quit",
             command=root.destroy).pack()
-
     root.mainloop()
 
 .. figure:: TkinterDemoJava.png
@@ -662,7 +661,6 @@ On top of this a rather Java-like main-method can be implemented. Note that cons
                 Py.newJavaFunc(TestTk.class,
                         "destroyRoot"));
         buttonQuit.pack();
-
         root.mainloop();
     }
 
@@ -670,7 +668,7 @@ On top of this a rather Java-like main-method can be implemented. Note that cons
 Using native ctypes
 ...................
 
-As of version alpha.3 JyNI has experimental support for ctypes. The following code provides a minimalistic example that uses Java- and C-API. Via an std-lib C-call we obtain system time and print it using Java console.
+As of version alpha.3 JyNI has experimental support for [CTYPES]_. The following code provides a minimalistic example that uses Java- and C-API. Via an std-lib C-call we obtain system time and print it using Java console.
 
 .. code-block:: python
 
@@ -705,7 +703,7 @@ Note that Jython already features an incomplete ctypes-module based on JFFI (whi
 JyNI bundles a custom version of ``ctypes/__init__.py`` and overrides the original one at import time. For the C-part JyNI can utilize the compiled ``_ctypes.so`` file bundled with CPython (remember that JyNI is binary compatible to such libraries). In our example we make CPython's C extension folder available by appending its usual posix location ``/usr/lib/python2.7/lib-dynload`` to ``sys.path``.
 
 In ``ctypes/__init__.py`` we had to fix posix-recognition; it was based on ``os.name``, which always reads “java” in Jython, breaking the original logic.
-We also adjusted some classes to old-style, because JyNI currently does not support new-style classes. Once we have added this support in version alpha.4 (cf. section :ref:`roadmap`) we will revert these changes.
+We also adjusted some classes to old-style, because JyNI currently does not support new-style classes. Once we have added this support in version alpha.4 (cf. section :ref:`roadmap`) we will revert these changes. Also see [JyNI_GSoC]_ for details regarding ctypes support.
 
 
 Roadmap
@@ -726,49 +724,50 @@ The planned main feature for the next release (alpha.4) is support for new-style
 References
 ----------
 
-.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2015-12-20
+.. [JyNI] Stefan Richthofer, Jython Native Interface (JyNI) Homepage, http://www.JyNI.org, 2015-08-17, Web. 2016-01-22
 
-.. [JyNI_EP13] Stefan Richthofer, JyNI - Using native CPython-Extensions in Jython, Proceedings of the 6th European Conference on Python in Science (EuroSciPy 2013), http://arxiv.org/abs/1404.6390, 2014-05-01, Web. 2015-12-20
+.. [JyNI_EP13] Stefan Richthofer, JyNI - Using native CPython-Extensions in Jython, Proceedings of the 6th European Conference on Python in Science (EuroSciPy 2013), http://arxiv.org/abs/1404.6390, 2014-05-01, Web. 2016-01-22
 
-.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, 2015-09-11, Web. 2015-12-20
+.. [JYTHON] Python Software Foundation, Corporation for National Research Initiatives, Jython: Python for the Java Platform, http://www.jython.org, 2015-09-11, Web. 2016-01-22
 
-.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 2015-12-20
+.. [C-API] Python Software Foundation, Python/C API Reference Manual, http://docs.python.org/2/c-api, Web. 2016-01-22
 
-.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing et al., Cython, http://cython.org, 2015-10-10, Web. 2015-12-20
+.. [CYTHON] Robert Bradshaw, Stefan Behnel, Dag Seljebotn, Greg Ewing et al., Cython, http://cython.org, 2015-10-10, Web. 2016-01-22
 
-.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2015-12-20
+.. [CTYPES] Thomas Heller, ctypes, http://starship.python.net/crew/theller/ctypes, Web. 2016-01-22
 
-.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2015-12-20
+.. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2016-01-22
 
-.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, https://github.com/jnr, 2015, Web. 2015-12-20
+.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, https://github.com/jnr, 2015, Web. 2016-01-22
 
-.. [JNA] Todd Fast, Timothy Wall, Liang Chen et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2015-12-20
+.. [JNA] Todd Fast, Timothy Wall, Liang Chen et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2016-01-22
 
-.. [SWIG] Dave Beazley, William Fulton et al., SWIG, http://www.swig.org, Web. 2015-12-20
+.. [SWIG] Dave Beazley, William Fulton et al., SWIG, http://www.swig.org, Web. 2016-01-22
 
-.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2015-12-20
+.. [PYREX] Greg Ewing, Pyrex, http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex, Web. 2016-01-22
 
-.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2015-12-20
+.. [BOOSTPY] Dave Abrahams, Boost.Python, http://www.boost.org/doc/libs/1_59_0/libs/python/doc/index.html, 2003, Web. 2016-01-22
 
-.. [SIP] Phil Thompson, Reverbank Computing, SIP https://riverbankcomputing.com/software/sip/intro, 2015, Web. 2015-12-20
+.. [SIP] Phil Thompson, Reverbank Computing, SIP https://riverbankcomputing.com/software/sip/intro, 2015, Web. 2016-01-22
 
-.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2015-12-20
+.. [PMB] Romain Guillebert, PyMetabiosis, https://github.com/rguillebert/pymetabiosis, Web. 2016-01-22
 
-.. [PMB_PL15] Romain Guillebert (write-up by Jake Edge), PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2015-12-20
+.. [PMB_PL15] Romain Guillebert (write-up by Jake Edge), PyMBbiosis, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/641021, Web. 2016-01-22
 
-.. [PyPy] Armin Rigo, Samuele Pedroni, Christian Tismer, Holger Krekel et al., PyPy, http://pypy.org, 2015-06-01, Web. 2015-12-20
+.. [PyPy] Armin Rigo, Samuele Pedroni, Christian Tismer, Holger Krekel et al., PyPy, http://pypy.org, 2015-06-01, Web. 2016-01-22
 
-.. [PY3_PL15] Larry Hastings (write-up by Jake Edge), Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2015-12-20
+.. [PY3_PL15] Larry Hastings (write-up by Jake Edge), Making Python 3 more attractive, Python Language Summit 2015, PyCon 2015, LWN.net, https://lwn.net/Articles/640179, Web. 2016-01-22
 
-.. [ICLD] IronPython team, Ironclad, https://github.com/IronLanguages/ironclad, 2015-01-02, Web. 2015-12-20
+.. [ICLD] IronPython team, Ironclad, https://github.com/IronLanguages/ironclad, 2015-01-02, Web. 2016-01-22
 
-.. [IRPY] Jim Hugunin, Dino Viehland, Jeff Hardy, Microsoft, IronPython – the Python programming language for the .NET Framework, http://ironpython.net, 2014-12-06, Web. 2015-12-20
+.. [IRPY] Jim Hugunin, Dino Viehland, Jeff Hardy, Microsoft, IronPython – the Python programming language for the .NET Framework, http://ironpython.net, 2014-12-06, Web. 2016-01-22
 
-.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 2015-12-20
+.. [CPYEXT] PyPy team, PyPy/Python compatibility, http://pypy.org/compat.html, Web. 2016-01-22
 
-.. [JEP] Mike Johnson/Jep Team, Jep - Java Embedded Python, https://github.com/mrj0/jep, 2015-09-13, Web. 2015-12-20
+.. [JEP] Mike Johnson/Jep Team, Jep - Java Embedded Python, https://github.com/mrj0/jep, 2015-09-13, Web. 2016-01-22
 
-.. [JPY] Brockmann Consult GmbH, jpy, https://github.com/bcdev/jpy, 2015-10-30, Web. 2015-12-20
+.. [JPY] Brockmann Consult GmbH, jpy, https://github.com/bcdev/jpy, 2015-10-30, Web. 2016-01-22
 
-.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 2002-10-01, Web. 2015-12-20
+.. [JREF] Peter Haggar, IBM Corporation, http://www.ibm.com/developerworks/library/j-refs, 2002-10-01, Web. 2016-01-22
 
+.. [JyNI_GSoC] Stefan Richthofer, blog for Google Summer of Code 2015 project “Jython: Add full gc support to JyNI (and support ctypes)”, http://gsoc2015-jyni.blogspot.de/2016/01/follow-up-report.html, 2016-01-21, Web. 2016-01-22
