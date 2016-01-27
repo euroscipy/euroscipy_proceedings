@@ -25,7 +25,7 @@ Massively parallel implementation in Python of a pseudo-spectral DNS code for tu
    
 .. class:: keywords
 
-   computational fluid dynamics, direct numerical simulations, pseudospectral, python, FFT
+   computational fluid dynamics, direct numerical simulations, pseudo-spectral, python, FFT
 
 Introduction
 ------------
@@ -172,7 +172,7 @@ For short of space the implementation for the *pencil* decomposition is not show
 Vectorization and NumPy ufuncs
 ==============================
 
-Besides the FFTs, the major computational cost of the pseudospectral solver lies in element-wise multiplications, divisions, subtractions and additions that are required to assemble the right hand side of Eq (:ref:`eq:NSfinal`). For efficiency it is imperative that the NumPy code is vectorized, thus avoiding for-loops that are very expensive in Python. When properly vectorized the element-wise operations are carried out by NumPy universal functions (so called ufuncs), calling compiled C-code on loops over the entire (or parts of) the data structures. When properly set up many arithmetic operations may be performed at near optimal speed, but, unfortunately, complex expressions are known to be rather slow compared to low-level implementations due to multiple calls to the same loop and the creation of temporary arrays. The [numexpr]_ module has actually been created with the specific goal of speeding up such element-wise complex expressions. Besides `numexpr`, the most common ways of speeding up scientific Python code is through [Cython]_, [Numba]_ or [weave]_.
+Besides the FFTs, the major computational cost of the pseudo-spectral solver lies in element-wise multiplications, divisions, subtractions and additions that are required to assemble the right hand side of Eq (:ref:`eq:NSfinal`). For efficiency it is imperative that the NumPy code is vectorized, thus avoiding for-loops that are very expensive in Python. When properly vectorized the element-wise operations are carried out by NumPy universal functions (so called ufuncs), calling compiled C-code on loops over the entire (or parts of) the data structures. When properly set up many arithmetic operations may be performed at near optimal speed, but, unfortunately, complex expressions are known to be rather slow compared to low-level implementations due to multiple calls to the same loop and the creation of temporary arrays. The [numexpr]_ module has actually been created with the specific goal of speeding up such element-wise complex expressions. Besides `numexpr`, the most common ways of speeding up scientific Python code is through [Cython]_, [Numba]_ or [weave]_.
 
 Two bottlenecks appear in the standard scientific Python implementation of the pseudo spectral solver. The first is the *for* loops seen in the *fftn_mpi/ifftn_mpi* functions previously described. The second is the cross product that needs to be computed in Eq. (:ref:`eq:NSfinal`). A straight forward vectorized implementation and usage of the cross product is 
 
@@ -247,7 +247,7 @@ The Numba code works out of the box and is compiled on the fly by a just-in-time
                     c[2,i,j,k] = a0*b1 - a1*b0
         return c
 
-In addition, both *scipy.weave* and *numexpr* have been tested as well, but they have been found to be slower than Numba and Cython.
+In addition, both *scipy.weave* and *numexpr* have been tested as well, but they have been found to be slower than Numba and Cython. 
 
 Dynamic loading of Python on supercomputers
 ===========================================
@@ -258,7 +258,7 @@ The dynamic loading of Python on supercomputers can be very slow due to bottlene
 Parallel scaling on Blue Gene/P
 -------------------------------
 
-In this section we compare the performance of the solver with a pure C++ implementation on Shaheen I, a Blue Gene/P supercomputer at the KAUST supercomputing Laboratory. The C++ solver we are comparing with has been implemented using the Python solver as prototype and the only real difference is that the C++ solver is using the 3D FFT routines from [FFTW]_ with MPI included.
+In this section we compare the performance of the solver with a pure C++ implementation on Shaheen, a Blue Gene/P supercomputer at the KAUST supercomputing Laboratory. The C++ solver we are comparing with has been implemented using the Python solver as prototype and the only real difference is that the C++ solver is using the 3D FFT routines from [FFTW]_ with MPI included. For optimization we are only considering the Cython implementation, because we were not able to install Numba on Shaheen.
 
 The solver is run for a Taylor Green test case initialized as 
 
@@ -270,8 +270,7 @@ The solver is run for a Taylor Green test case initialized as
     {v}(x, y, z) &=&-\cos(x) \sin(y) \cos(z), \notag\\
     {w}(x, y, z) &=& 0, \notag
 
-with a Reynolds number of 1600 and a time step of 0.001. At first the implementation is verified by running the solver for a time :math:`t=[0, 20]`. We find that both the kinetic energy and the enstrophy compare very well with a reference solution produced by a pseudo-spectral solver for the annual International Workshop on High-Order [CFD]_ Methods, which verifies that the solver computes what it is supposed to.
-
+with a Reynolds number of 1600 and a time step of 0.001. At first the implementation is verified by running the solver for a time :math:`t=[0, 20]` and comparing the results to a previously verified reference solution, generated from a well tested and established low-level pseudo-spectral solver and utilized by the annual International Workshop on High-Order [CFD]_ Methods. From start to finish, over 20,000 time steps, the L2 error norm of the solution computed by our solver never strays more than 1e-6 from the reference solution.
 
 .. figure:: weak.png
    :scale: 50%
@@ -289,12 +288,12 @@ Next the weak scaling of the solver is tested by running the case for increasing
 
 Strong scaling is tested for a computational box of size :math:`512^3`, for a various number of processors larger than 64. For *slab* decomposition the maximum number of CPUs is now 512, whereas for *pencil* :math:`512^2` CPUs can be used. The top panel of Figure :ref:`strong` shows the performance of the scientific Python solvers. Evidently, the performance is degrading when the number of mesh nodes per CPU becomes lower and the number of processors increases. The main reason for this poor performance can be found in the implementation of the 3D FFT, where there is a for-loop over the number of processors. When this for-loop (as well as a few other routines) is moved to Cython, we observe very good strong scaling, even better than the C++ implementation that is using MPI directly from within FFTW.
 
-To further elaborate on the performance of the code, we note that the open source pseudospectral C++ solver [Tarang]_ has been benchmarked on exactly the same computer (Shaheen) and as such opens up for direct comparison. In Figure 2 of [Tarang]_ it is shown that a computational box of size :math:`1024^3` is running with 512 CPUs at approximately 50 seconds per time step. In the lower panel of Figure :ref:`weak`, we see that the current optimized solver is running the same box (:math:`1024^3`) with twice as many CPUs (1024) at approximately 20 seconds per time step. Assuming perfect strong scaling this would correspond to 40 seconds per time step using half as many CPUs, which is 20 % faster than Tarang.  
+To further elaborate on the performance of the code, we note that the open source pseudo-spectral C++ solver [Tarang]_ has been benchmarked on exactly the same computer (Shaheen). Furthermore, Tarang is using the same dealiasing technique and the same 4th order Runge-Kutta integrator as we are, which should open up for direct comparison of computational efficiency. In Figure 2 of [Tarang]_ it is shown that a computational box of size :math:`1024^3` is running with 512 CPUs at approximately 50 seconds per time step. In the lower panel of Figure :ref:`weak`, we see that the current optimized Cython solver is running the same box (:math:`1024^3`) with twice as many CPUs (1024) at approximately 20 seconds per time step. Assuming perfect strong scaling (which may be unfair considering Figure 2 of [Tarang]_) this would correspond to 40 seconds per time step using half the number of CPUs, which is actually 20 % faster than Tarang.  
 
 Conclusions
 -----------
 
-In this paper we show that it is possible to write a very good solver for direct numerical simulations of turbulent flows directly in Python, with nothing more than standard modules like NumPy, SciPy and MPI for Python (mpi4py). We also show that it is also possible to get a fully competitive solver, that runs with the speed of C on thousands of processors with billions of unknowns, but then it is necessary to move a few computationally heavy routines from NumPy's ufuncs to Cython or Numba. The current paper discusses only the triply periodic domain, suitable for studying isotropic turbulence. However, the use of Python/Cython for studying turbulence is not limited to only this configuration and work is currently in progress to develop efficient Python/Cython solvers for flows with one or two inhomogeneous direction.
+In this paper we show that it is possible to write a very good solver for direct numerical simulations of turbulent flows directly in Python, with nothing more than standard modules like NumPy, SciPy and MPI for Python (mpi4py). We also show that it is possible to get a fully competitive solver, that runs with the speed of C on thousands of processors with billions of unknowns, but then it is necessary to move a few computationally heavy routines from NumPy's ufuncs to Cython or Numba. The current paper discusses only the triply periodic domain, suitable for studying isotropic turbulence. However, the use of Python/Cython for studying turbulence is not limited to only this configuration and work is currently in progress to develop efficient Python/Cython solvers for flows with one or two inhomogeneous directions.
 
 
 Acknowledgements
@@ -329,7 +328,7 @@ References
 
 .. [GPAW] J. Enkovaara, N. A. Romero, Sameer Shende and J. J. Mortensen, *GPAW - massively parallel electronic structure calculations with Python-based software*, Procedia Computer Science, 2011.
 
-.. [Tarang] M. Verma, A. Chatterjee, K. Reddy, R. Yadav, S. PAUL, M. Chandra and R. Samtaney *Benchmarking and scaling studies of pseudospectral code Tarang for turbulence simulations*, Pramana Journal of Physics, (81), (4) p. 617-629, (2013)
+.. [Tarang] M. Verma, A. Chatterjee, K. Reddy, R. Yadav, S. PAUL, M. Chandra and R. Samtaney *Benchmarking and scaling studies of pseudo-spectral code Tarang for turbulence simulations*, Pramana Journal of Physics, (81), (4) p. 617-629, (2013)
 
 .. [Enkovaara] https://gitorious.org/scalable-python
 
