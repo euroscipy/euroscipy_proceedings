@@ -1,0 +1,163 @@
+One of the strengths of probabilistic programming is the ability to infer latent parameters. 
+These are parameters that can't be measured directly. Our 
+latent parameter is the strength of each team. We also want 
+to use this to rank the teams. 
+
+The league is made up by a total of T= 6 teams, playing each other once in a season. 
+We indicate the number of points scored by the home and the away team in the g-th game of the season (15 games) as :math:`y_{g1}` and :math:`y_{g2}`  respectively. </p>
+<p>The vector of observed counts :math:`y = (y_{g1}, y_{g2})` is modelled as independent Poisson:
+:math:`y_{gi}| \theta_{gj} \tilde\;\;  Poisson(\theta_{gj})`
+where the theta parameters represent the scoring intensity in the g-th game for the team playing at home (j=1) and away (j=2), respectively.
+
+We model these parameters according to a formulation that has been used widely in the statistical literature, assuming a log-linear random effect model:
+.. math::
+   :type: eqnarray
+
+   log \theta_{g1} = home + att_{h(g)} + def_{a(g)} \\
+   log \theta_{g2} = att_{a(g)} + def_{h(g)}
+
+The parameter home represents the advantage for the team hosting the game and we assume that this effect is constant for all the teams and throughout the season
+
+The scoring intensity is determined jointly by the attack and defense ability of the two teams involved, represented by the parameters att and def, respectively
+
+* Conversely, for each t = 1, ..., T, the team-specific effects are modelled as exchangeable from a common distribution:
+
+:math:`att_{t} \tilde Normal(\mu_{att},\tau_{att})`
+:math:`def_{t} \tilde Normal(\mu_{def},\tau_{def})`
+
+
+Note that they're breaking out team strength into attacking 
+and defending strength. 
+A negative defense parameter will sap the mojo from the opposing team's attacking parameter.
+I made two tweaks to the model. It didn't make sense to me 
+to have a μatt when we're enforcing the sum-to-zero 
+constraint by subtracting the mean anyway. 
+Also because of the sum-to-zero constraint, it seemed to me 
+that we needed an intercept term in the log-linear model, 
+capturing the average points scored per game by the away team
+. This we model with the following hyperprior.
+
+:math:`intercept~Normal(0,0.001)`.
+
+The hyper-priors on the attack and defense parameters are 
+also flat
+.. math::
+   :type: eqnarray
+
+   \mu_{att} \tilde Normal(0,0.001) \\
+   \mu_{def} \tilde Normal(0,0.001) \\
+   \tau_{att} \tilde \Gamma(0.1,0.1) \\
+   \tau_{def} \tilde \Gamma(0.1,0.1)
+
+Building and executing the model
+--------------
+
+Now we need to share some code, the other code is available at the Ipython Notebooks included in [Peadar]_ 
+
+.. code-block:: python
+    model = pm.Model()
+    with pm.Model() as model:
+        # global model parameters
+        home        = pm.Normal('home',      0, .0001)
+        tau_att     = pm.Gamma('tau_att',   .1, .1)
+        tau_def     = pm.Gamma('tau_def',   .1, .1)
+        intercept   = pm.Normal('intercept', 0, .0001)
+    
+        # team-specific model parameters
+        atts_star   = pm.Normal("atts_star", 
+                           mu   =0,
+                           tau  =tau_att, 
+                           shape=num_teams)
+        defs_star   = pm.Normal("defs_star", 
+                           mu   =0,
+                           tau  =tau_def,  
+                           shape=num_teams) 
+ 
+        atts        = pm.Deterministic('atts', atts_star - tt.mean(atts_star))
+        defs        = pm.Deterministic('defs', defs_star - tt.mean(defs_star))
+        home_theta  = tt.exp(intercept + home + atts[away_team] + defs[home_team])
+        away_theta  = tt.exp(intercept + atts[away_team] + defs[home_team])
+    
+        # likelihood of observed data
+        home_points = pm.Poisson('home_points', mu=home_theta, observed=observed_home_goals)
+        away_points = pm.Poisson('away_points', mu=away_theta, observed=observed_away_goals)
+
+We specified the model and the likelihood function. All of this runs on a Theano graph under the hood. 
+
+Now that we've specified and built our model we realize that we need to call a Monte Carlo sampler to simulate our likelihood function.
+We choose the No U Turn Sampler [NUTS]_
+
+
+.. figure:: figure1.png
+
+   This is the caption. :label:`egfig`
+
+.. figure:: figure1.png
+   :align: center
+   :figclass: w
+
+   This is a wide figure, specified by adding "w" to the figclass.  It is also
+   center aligned, by setting the align keyword (can be left, right or center).
+
+.. figure:: figure1.png
+   :scale: 20%
+   :figclass: bht
+
+   This is the caption on a smaller figure that will be placed by default at the
+   bottom of the page, and failing that it will be placed inline or at the top.
+   Note that for now, scale is relative to a completely arbitrary original
+   reference size which might be the original size of your image - you probably
+   have to play with it. :label:`egfig2`
+
+As you can see in Figures :ref:`egfig` and :ref:`egfig2`, this is how you reference auto-numbered
+figures.
+
+.. table:: This is the caption for the materials table. :label:`mtable`
+
+   +------------+----------------+
+   | Material   | Units          |
+   +------------+----------------+
+   | Stone      | 3              |
+   +------------+----------------+
+   | Water      | 12             |
+   +------------+----------------+
+   | Cement     | :math:`\alpha` |
+   +------------+----------------+
+
+
+We show the different quantities of materials required in Table
+:ref:`mtable`.
+
+
+.. The statement below shows how to adjust the width of a table.
+
+.. raw:: latex
+
+   \setlength{\tablewidth}{0.8\linewidth}
+
+
+.. table:: This is the caption for the wide table.
+   :class: w
+
+   +--------+----+------+------+------+------+--------+
+   | This   | is |  a   | very | very | wide | table  |
+   +--------+----+------+------+------+------+--------+
+
+
+Perhaps we want to end off with a quote by Lao Tse:
+
+  *Muddy water, let stand, becomes clear.*
+
+
+.. Customised LaTeX packages
+.. -------------------------
+
+.. Please avoid using this feature, unless agreed upon with the
+.. proceedings editors.
+
+.. ::
+
+..   .. latex::
+..      :usepackage: somepackage
+
+..      Some custom LaTeX source here.
