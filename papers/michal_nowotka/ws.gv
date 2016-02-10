@@ -1,0 +1,44 @@
+digraph web_services {
+                 splines=false;
+                 overlap=prism;
+                 overlap_scaling=0.01;
+                 ratio=1.0;
+		 assay [label="Assay"];
+		 source [label="Source"];
+		 cell_line [label="Cell Line"];
+		 target [label="Target"];
+		 document [label="Document"];
+		 activity [label="Activity"];
+		 molecule [label="Molecule"];
+		 biotherapeutic [label="Biotherapeutic"];
+		 molecule_forms [label="Molecule Forms"];
+		 atc [label="ATC"];
+		 similarity [label="Similarity"];
+		 substructure [label="Substructure"];
+		 image [label="Image"];
+		 mechanism [label="Mechanism"];
+		 binding_site [label="Binding Site"];
+		 target_component [label="Target Component"];
+		 protein_class [label="Protein Class"];
+		 chembl_id_lookup [label="ChEMBL ID Lookup"];
+     assay -> source;
+     assay -> cell_line;
+     assay -> target;
+     assay -> document;
+     activity -> assay;
+     activity -> document;
+     activity -> molecule;
+     biotherapeutic -> molecule;
+     molecule_forms -> molecule;
+     atc -> molecule;
+     similarity -> molecule [style=dashed];
+     substructure -> molecule [style=dashed];
+     image -> molecule [style=dashed];
+     mechanism -> molecule;
+     mechanism -> binding_site;
+     mechanism -> target;
+     target -> target_component;
+     target_component -> protein_class;
+     
+ }
+
