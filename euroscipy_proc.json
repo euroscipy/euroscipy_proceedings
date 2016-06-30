@@ -11,7 +11,6 @@
      "year": "2015",
      "copyright_year": "2015",
      "editor": [
-        "Pierre de Buyl",
         "Nelle Varoquaux"
      ],
      "volume": 8,
@@ -32,56 +31,58 @@
         {
             "name": "Conference Chairs",
             "members": [
-                {"name": "Pierre de Buyl",
-                 "org": "Université libre de Bruxelles"},
-                {"name": "Nicolas Pettiaux",
-                 "org": "Haute École de Bruxelles - École supérieure d'informatique"}
+                {"name": "Mark Hayes",
+                 "org": "University of Cambridge"},
+                {"name": "Didrik Pinte",
+                 "org": "Enthought Europe"}
                 ]
         },
- 
+
         {
             "name": "Program Committee Chair",
             "members": [
                 {"name": "Tiziano Zito",
-                 "org": "Humboldt-Universität zu Berlin"}
+                 "org": "Forschungszentrum Julich"},
+                {"name": "Nicolas P. Rougier",
+                 "org": "INRIA"}
                 ]
         },
 
         {
             "name": "Tutorial Chairs",
             "members": [
-                {"name": "Nicolas Rougier",
-                 "org": "Inria Nancy"}
+                {"name": "David Cournapeau",
+                 "org": "Enthought Europe"}
                 ]
         },
 
         {
             "name": "Program Committee",
             "members": [
+		{"name": "Francesc Alted",
+		 "org": "PyTables, Spain"},
+		{"name": "Evgeni Burovski",
+		 "org": "Lancaster University, UK"},
+		{"name": "Robert Cimrman",
+		 "org": "University of West Bohemia, Czech Republic"},
+		{"name": "Marianne Corvellec",
+		 "org": "Plotly, Canada"},
 		{"name": "Pierre de Buyl",
-		 "org": "Université libre de Bruxelles"},
-		{"name": "Ralf Gommers",
-		 "org": "ASML"},
-		{"name": "Emmanuelle Gouillart. Joint Unit CNRS/Saint-Gobain",
-		 "org": "France"},
-		{"name": "Kael Hanson",
-		 "org": "Université libre de Bruxelles"},
-		{"name": "Konrad Hinsen",
-		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
-		{"name": "Hans Petter Langtangen",
-		 "org": "Simula and University of Oslo"},
-		{"name": "Mike Müller",
-		 "org": "Python Academy"},
-		{"name": "Raphael Ritz",
-		 "org": "International Neuroinformatics Coordinating Facility"},
+		 "org": "KU, Leuven"},
+		{"name": "Almar Klein",
+		 "org": "Continuum Analytics, The Netherlands"},
+		{"name": "Federico Vaggi",
+		 "org": "Fondazione Edmund Mach, Italy"},
 		{"name": "Stéfan van der Walt",
-		 "org": "Applied Mathematics"},
-		{"name": "Gaël Varoquaux",
-		 "org": "INRIA Parietal"},
+		 "org": "University of California, Berkeley, USA"},
 		{"name": "Nelle Varoquaux",
-		 "org": "Mines ParisTech"},
+		 "org": "Mines ParisTech, INSERM, Institut Curie, France"},
 		{"name": "Pauli Virtanen",
-		 "org": "Aalto University"}
+		 "org": "Aalto University"},
+		{"name": "Raphael Ritz",
+		 "org": "Garching Computing Centre, Germany"},
+		{"name": "Oxana Sachenkova",
+		 "org": "SciLifeLab, Sweden"}
 	    ]
         },
 
@@ -113,35 +114,29 @@
             "name": "Proceedings reviewers",
             "members": [
 		{"name": "Francesc Alted",
-		 "org": "Continuum Analytics Inc."},
-		{"name": "Daniel J. Bates",
-		 "org": "Colorado State University"},
-		{"name": "Ondřej Čertík",
-		 "org": "Los Alamos National Laboratory"},
-		{"name": "David Cournapeau",
-		 "org": "Enthought"},
-		{"name": "Alexandre Gramfort",
-		 "org": "Telecom ParisTech, CNRS LTCI"},
-		{"name": "Valentin Haenel",
 		 "org": "Independent"},
+		{"name": "Pierre de Buyl",
+		 "org": "KU, Leuven"},
+		{"name": "Christopher Fonnesbeck",
+		 "org": "Vanderbilt University"},
 		{"name": "Konrad Hinsen",
 		 "org": "Centre National de la Recherche Scientifique (CNRS)"},
-		{"name": "Robert Kern",
-		 "org": "Enthought"},
-		{"name": "Mike Müller",
-		 "org": "Python Academy"},
-		{"name": "Andy R. Terrel",
-		 "org": "Continuum Analytics Inc."},
-		{"name": "C. Titus Brown",
-		 "org":  "Michigan State University"},
-		{"name": "Jake Vanderplas",
-		 "org": "University of Washington"},
-		{"name": "Gaël Varoquaux",
-		 "org": "INRIA Parietal"},
-		{"name": "Paul Zimmermann",
-		 "org": "INRIA"},
-                {"name": "Tiziano Zito",
-                 "org": "Humboldt-Universität zu Berlin"}
+		{"name": "Katy Huff",
+		 "org": "UC Berkeley"},
+		{"name": "Kyle Kastner",
+		 "org": "Université de Montréal"},
+		{"name": "Michael Klemm",
+		 "org": "Intel"},
+		{"name": "Vlad Niculae",
+		 "org": "Cornell University"},
+		{"name": "Claire Revillet",
+		 "org": "CNRS Orléans"},
+		{"name": "Armin Rigo",
+		 "org": "Independant"},
+		{"name": "Federico Vaggi",
+		 "org": "Fondazione Edmund Mach"},
+		{"name": "Stéfan van der Walt",
+		 "org": "UC Berkeley"}
 		]
 	}
 
