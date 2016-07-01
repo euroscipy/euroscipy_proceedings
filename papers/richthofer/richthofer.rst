@@ -61,7 +61,7 @@ While Jython already enables Python code to access Java frameworks and also nati
 
 * [CYTHON]_ is a popular tool to build optimized C code from Python source that has been annotated with types and other declaration, using the C-API to link.
 
-* The [CTYPES]_ and [CFFI]_ modules, comparable to [JNR]_ and [JNA]_ in the Java-world respectively, are other popular means of providing support for C bindings, also all written to use the C-API.
+* The [CTYPES]_ and [CFFI]_ modules, comparable to [JNA]_ and [JNR]_ in the Java-world respectively, are other popular means of providing support for C bindings, also all written to use the C-API.
 
 * [SWIG]_, [PYREX]_ (from which Cython was derived), Boost.Python ([BOOSTPY]_) and [SIP]_ are further tools that create extensions using the C-API.
 
@@ -115,7 +115,7 @@ None of the named approaches reached a sufficient level of functionality/compati
 .. [#noteCFFI] Our plan is to support the CPython-variant of CFFI in JyNI as an alternative to the ideal approach of a direct port. Creating a true Jython version of CFFI would be a distinct project and was partly done based on [JNR]_/JFFI.
 
 For some of these projects JyNI's GC-approach might be a relevant inspiration, as they face the same problem if it comes to native extensions. There are even vague considerations for CPython to switch to mark-and-sweep-based GC one day to enable a GIL-free version (c.f. [PY3_PL15]_). Background here is the fact that reference-counting-based garbage collection is the main reason why CPython needs a GIL: Current reference counters are not atomic and switching to atomic reference counters yields insufficient performance.
-In context of a mark-and-sweep-based garbage collection in a future CPython the JyNI GC-approach could be potentially adopted to support legacy extensions and provide a smooth migration path.
+In context of a mark-and-sweep-based garbage collection in a future CPython the JyNI GC-approach could potentially be adopted to support legacy extensions and provide a smooth migration path.
 
 
 Implementation
@@ -144,7 +144,7 @@ A native extension can explicitly release the GIL by inserting the macros ``Py_B
 
 Jython on the other hand has no GIL and is fully multithreaded based on Java's threading architecture. This does not mean multithreading would be trivial – one still has to care for concurrency issues and thread synchronization, but the whole machinery Java came up with for this topic is available to deal with it.
 
-From JyNI's perspective this is a difficult situation. On the one hand we want to avoid regressions on Jython-site, especially regarding an important feature like GIL-freeness. On the other hand, native C extensions might rely on CPython's GIL.
+From JyNI's perspective this is a difficult situation. On one hand we want to avoid regressions on Jython-site, especially regarding an important feature like GIL-freeness. On the other hand, native C extensions might rely on CPython's GIL.
 So as a compromise JyNI provides a GIL for native site that is acquired by any thread that enters native code. On returning to Java code, i.e. finishing the native method call, the JyNI-GIL is released. Note that re-entering Java-site by doing a Java call from a native method would *not* release the GIL. In case it is desired to release the GIL for such a re-entering of Java-site or in some other situation, JyNI also supports ``Py_BEGIN_ALLOW_THREADS`` and ``Py_END_ALLOW_THREADS`` from CPython. This architecture implies that multiple threads can exist on Java-site, while only one thread can exist on native site at the same time (unless allow-threads macros are used). When combining multithreaded Jython code with JyNI it is the developer's responsibility to avoid issues that might arise from this design.
 
 
@@ -568,7 +568,7 @@ Tkinter-program from [JyNI_EP13]_:
    Tkinter demonstration by Java code. Note that the class ``JyNI.TestTk`` is executed
    rather than ``org.python.util.jython``. :label:`tkDemo`
 
-To translate the program to Java, we must provide type-information via interfaces (after some Jython-imports):
+To translate the program to Java, we must provide type-information via interfaces:
 
 .. code-block:: java
 
@@ -703,9 +703,9 @@ Note that Jython already features an incomplete ctypes-module based on JFFI (whi
   NotImplementedError: variadic functions not
   supported yet;  specify a parameter list
 
-JyNI bundles a custom version of ``ctypes/__init__.py`` and overrides the original one at import time. For the C-part JyNI can utilize the compiled ``_ctypes.so`` file bundled with CPython (remember that JyNI is binary compatible to such libraries). In our example we make CPython's C extension folder available by appending its usual posix location ``/usr/lib/python2.7/lib-dynload`` to ``sys.path``.
+JyNI bundles a custom version of ``ctypes/__init__.py`` and overrides the original one at import time. For the C-part JyNI can utilize the compiled ``_ctypes.so`` file bundled with CPython (remember that JyNI is binary compatible to such libraries). In our example we make CPython's C extension folder available by appending its usual POSIX location ``/usr/lib/python2.7/lib-dynload`` to ``sys.path``.
 
-In ``ctypes/__init__.py`` we had to fix posix-recognition; it was based on ``os.name``, which always reads “java” in Jython, breaking the original logic. See [JyNI_GSoC]_ for details.
+In ``ctypes/__init__.py`` we had to fix POSIX-recognition; it was based on ``os.name``, which always reads “java” in Jython, breaking the original logic. See [JyNI_GSoC]_ for details.
 
 .. We also adjusted some classes to old-style, because JyNI currently does not support new-style classes.
    Once we have added this support in version alpha.4 (cf. section :ref:`roadmap`) we will revert these
@@ -751,7 +751,7 @@ Roadmap
 
 While NumPy- and SciPy-support is the driving motivation for the JyNI-project (since these extensions are of most scientific importance), it is very hard to assess how much work will be needed to actually reach this goal. Determining even the feasibility of full NumPy support beforehand would be a project for itself, so we focus on taking one  hurdle by another, converging to full NumPy support as far as possible.
 
-Another important goal is better cross-platform support. Currently JyNI works (i.e. is tested) with Linux and OSX and hypothetically (i.e. untested) with other posix systems.
+Another important goal is better cross-platform support. Currently JyNI works (i.e. is tested) with Linux and OSX and hypothetically (i.e. untested) with other POSIX systems.
 
 The planned main features for the next release (alpha.5) are support for the buffer protocol and improved NumPy-support. More testing with Cython and improved support will be addressed after JyNI alpha.5.
 
@@ -773,9 +773,9 @@ References
 
 .. [CFFI] Armin Rigo, Maciej Fijalkowski, CFFI, http://cffi.readthedocs.org/en/latest, 2015, Web. 2016-07-01
 
-.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, https://github.com/jnr, 2015, Web. 2016-07-01
-
 .. [JNA] Todd Fast, Timothy Wall, Liang Chen et al., Java Native Access, https://github.com/java-native-access/jna, Web. 2016-07-01
+
+.. [JNR] Charles Nutter, Thomas Enebo, Nick Sieger, Java Native Runtime, https://github.com/jnr, 2015, Web. 2016-07-01
 
 .. [SWIG] Dave Beazley, William Fulton et al., SWIG, http://www.swig.org, Web. 2016-07-01
 
